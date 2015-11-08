@@ -20,7 +20,7 @@
 
 #include "res_outbound.h"
 
-MYSQL* g_db = NULL;
+static MYSQL* g_db = NULL;
 
 #define MAX_BIND_BUF 4096
 #define DELIMITER   0x02
@@ -34,6 +34,7 @@ int db_connect(const char* host, int port, const char* user, const char* pass, c
 {
     if(g_db == NULL) {
         g_db = mysql_init(NULL);
+        ast_log(LOG_DEBUG, "Initiated mysql. g_db[%p]\n", g_db);
     }
     if(g_db == NULL) {
         ast_log(LOG_ERROR, "Could not initiate mysql. err[%d:%s]\n", mysql_errno(g_db), mysql_error(g_db));
@@ -46,6 +47,7 @@ int db_connect(const char* host, int port, const char* user, const char* pass, c
         mysql_close(g_db);
         return false;
     }
+    ast_log(LOG_VERBOSE, "Connected to mysql. host[%s], user[%s], dbname[%s]\n", host, user, dbname);
 
     return true;
 }
@@ -56,9 +58,13 @@ int db_connect(const char* host, int port, const char* user, const char* pass, c
 void db_exit(void)
 {
     if(g_db == NULL) {
+        ast_log(LOG_WARNING, "Nothing to release.\n");
         return;
     }
+    ast_log(LOG_NOTICE, "Release database context. g_db[%p]\n", g_db);
+
     mysql_close(g_db);
+    g_db = NULL;
 }
 
 /**
