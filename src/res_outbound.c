@@ -18,7 +18,8 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 #include "asterisk/config.h"
 #include "asterisk/utils.h"
 
-#include "outbound/res_outbound.h"
+#include "res_outbound.h"
+#include "db_handler.h"
 
 #include <stdbool.h>
 #include <mysql/mysql.h>

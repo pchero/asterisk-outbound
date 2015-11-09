@@ -6,6 +6,8 @@
  */
 
 
+#include "db_handler.h"
+
 #include "asterisk.h"
 
 #include <stdio.h>
@@ -18,7 +20,6 @@
 #include "asterisk/module.h"
 #include "asterisk/json.h"
 
-#include "res_outbound.h"
 
 static MYSQL* g_db = NULL;
 
