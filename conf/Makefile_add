@@ -1,0 +1,13 @@
+
+
+$(if $(filter res_outbound,$(EMBEDDED_MODS)),modules.link,res_outbound.so): outbound/db_handler.o
+outbound/db_handler.o: _ASTCFLAGS+=$(call MOD_ASTCFLAGS,res_outbound)
+
+
+clean::
+        rm -f snmp/*.o snmp/*.i ael/*.o ael/*.i ais/*.o ais/*.i snmp/*.gcda snmp/*.gcno ael/*.gcda ael/*.gcno
+        rm -f res_pjsip/*.[oi] res_pjsip/*.gcda res_pjsip/*.gcno
+        rm -f stasis/*.[oi] stasis/*.gcda stasis/*.gcno
+        rm -f parking/*.[oi] parking/*.gcda parking/*.gcno
+        rm -f stasis_recording/*.[oi] stasis_recording/*.gcda stasis_recording/*.gcno
+        rm -f outbound/*.[oi] outbound/*.gcda outboud/*.gcno
