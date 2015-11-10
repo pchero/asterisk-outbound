@@ -37,7 +37,7 @@ CFLAGS_res_outbound.so = \
 	
 #CPPFLAGS_res_outbound.so =
 
-LDLIBS_res_outbound.so = $(OSLDLIBS) `mysql_config --libs` -levent
+LDLIBS_res_outbound.so = $(OSLDLIBS) `mysql_config --libs` -levent -lpthread -levent_pthreads
 
 OBJS_res_outbound.so =  \
 	$(TARGETDIR_res_outbound.so)/res_outbound.o \

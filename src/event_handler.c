@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 #include <event2/event.h>
+#include <event2/thread.h>
 #include <errno.h>
 
 #include "asterisk/json.h"
@@ -29,7 +30,7 @@ int run_outbound(void)
     int ret;
     struct event* ev;
 //    struct timeval tm_fast = {0, 20000};    // 20 ms
-    struct timeval tm_fast = {0, 200000};    // 20 ms
+    struct timeval tm_fast = {2, 0};    // 20 ms
 //    struct timeval tm_slow = {0, 500000};   // 500 ms
 
     // init libevent
@@ -53,6 +54,11 @@ static int init_outbound(void)
     int ret;
     struct ast_json* j_res;
     db_res_t* db_res;
+
+    ret = evthread_use_pthreads();
+    if(ret == -1){
+        ast_log(LOG_ERROR, "Could not initiated event thread.");
+    }
 
     // init libevent
     if(g_base == NULL) {
