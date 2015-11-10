@@ -23,6 +23,7 @@
 
 static MYSQL* g_db = NULL;
 
+
 #define MAX_BIND_BUF 4096
 #define DELIMITER   0x02
 
@@ -33,17 +34,23 @@ static MYSQL* g_db = NULL;
  */
 int db_connect(const char* host, int port, const char* user, const char* pass, const char* dbname)
 {
+    int ret;
+    ret = mysql_thread_safe();
+    ast_log(LOG_DEBUG, "Thread safe. ret[%d]\n", ret);
+
     if(g_db == NULL) {
         g_db = mysql_init(NULL);
         ast_log(LOG_DEBUG, "Initiated mysql. g_db[%p]\n", g_db);
     }
+
     if(g_db == NULL) {
         ast_log(LOG_ERROR, "Could not initiate mysql. err[%d:%s]\n", mysql_errno(g_db), mysql_error(g_db));
         return false;
     }
 
     // connect
-    if(mysql_real_connect(g_db, host, user, pass, dbname, port, NULL, 0) == NULL) {
+    g_db = mysql_real_connect(g_db, host, user, pass, dbname, port, NULL, 0);
+    if(g_db == NULL) {
         ast_log(LOG_ERROR, "Could not connect to mysql. err[%d:%s]\n", mysql_errno(g_db), mysql_error(g_db));
         mysql_close(g_db);
         return false;
@@ -86,17 +93,17 @@ db_res_t* db_query(char* query)
 
     ret = mysql_query(g_db, query);
     if(ret != 0) {
-        ast_log(LOG_ERROR, "Could not query to db. sql[%s], err[%d:%s]\n", query, ret, mysql_error(g_db));
+        ast_log(LOG_ERROR, "Could not query to db. sql[%s], err[%d:%s]\n", query, mysql_errno(g_db), mysql_error(g_db));
         return NULL;
     }
 
     result = mysql_store_result(g_db);
     if(result == NULL) {
-        ast_log(LOG_ERROR, "Could not store result. sql[%s], err[%s]\n", query, mysql_error(g_db));
+        ast_log(LOG_ERROR, "Could not store result. sql[%s], err[%d:%s]\n", query, mysql_errno(g_db), mysql_error(g_db));
         return NULL;
     }
 
-    db_ctx = calloc(1, sizeof(db_res_t));
+    db_ctx = ast_calloc(1, sizeof(db_res_t));
     db_ctx->result = result;
 
     return db_ctx;
@@ -191,7 +198,7 @@ void db_free(db_res_t* ctx)
         return;
     }
     mysql_free_result(ctx->result);
-    free(ctx);
+    ast_free(ctx);
 
     return;
 }
@@ -236,10 +243,10 @@ int db_insert(const char* table, const struct ast_json* j_data)
         else {
             ret = ast_asprintf(&tmp, "%s, %s", sql_keys, key);
         }
-        free(sql_keys);
+        ast_free(sql_keys);
         ret = ast_asprintf(&sql_keys, "%s", tmp);
 
-        free(tmp);
+        ast_free(tmp);
         iter = ast_json_object_iter_next(j_data_cp, iter);
     }
 
@@ -302,20 +309,20 @@ int db_insert(const char* table, const struct ast_json* j_data)
             break;
         }
 
-        free(tmp_sub);
-        free(sql_values);
+        ast_free(tmp_sub);
+        ast_free(sql_values);
         ret = ast_asprintf(&sql_values, "%s", tmp);
 
-        free(tmp);
+        ast_free(tmp);
     }
     ast_json_unref(j_data_cp);
 
     ret = ast_asprintf(&sql, "insert into %s(%s) values (%s);", table, sql_keys, sql_values);
-    free(sql_keys);
-    free(sql_values);
+    ast_free(sql_keys);
+    ast_free(sql_values);
 
     ret = db_exec(sql);
-    free(sql);
+    ast_free(sql);
     if(ret == false) {
         ast_log(LOG_ERROR, "Could not insert dialing info.\n");
         return false;
@@ -358,7 +365,7 @@ char* db_get_update_str(const struct ast_json* j_data)
         else {
             ret = ast_asprintf(&tmp, "%s, ", res);
         }
-        free(res);
+        ast_free(res);
 
         j_val = ast_json_object_iter_value(iter);
         key = ast_json_object_iter_key(iter);
@@ -404,7 +411,7 @@ char* db_get_update_str(const struct ast_json* j_data)
             }
             break;
         }
-        free(tmp);
+        ast_free(tmp);
         iter = ast_json_object_iter_next(j_data_cp, iter);
     }
 

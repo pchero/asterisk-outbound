@@ -20,14 +20,17 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 
 #include "res_outbound.h"
 #include "db_handler.h"
+#include "event_handler.h"
 
 #include <stdbool.h>
 #include <mysql/mysql.h>
+#include <errno.h>
 
 #define MODULE_DESCRIPTION  "Outbound manager for Asterisk"
 
 struct ast_json* g_cfg = NULL;
 MYSQL* g_mydb;
+pthread_t pth_outbound;
 
 /*!
  * \brief Load res_snmp.conf config file
@@ -138,8 +141,13 @@ static void release_module(void)
 static int unload_module(void)
 {
     release_module();
-    ast_log(LOG_NOTICE, "Released res_outbound.\n");
+    stop_outbound();
 
+    pthread_cancel(pth_outbound);
+    pthread_kill(pth_outbound, SIGTERM);
+    pthread_join(pth_outbound, NULL);
+
+    ast_log(LOG_NOTICE, "Released res_outbound.\n");
     return 0;
 }
 
@@ -161,6 +169,13 @@ static int load_module(void)
 
         release_module();
         return AST_MODULE_LOAD_DECLINE;
+    }
+
+    ret = ast_pthread_create_background(&pth_outbound, NULL, (void*)&run_outbound, NULL);
+    if(ret > 0)
+    {
+        ast_log(LOG_ERROR, "Unable to launch thread for outbound. err[%d:%s]\n", errno, strerror(errno));
+        return AST_MODULE_LOAD_FAILURE;
     }
 
     return AST_MODULE_LOAD_SUCCESS;
