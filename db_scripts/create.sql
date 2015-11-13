@@ -21,6 +21,7 @@ create table plan(
     answer_handle   varchar(255),       -- answer handling.(all, human_only, human_possible)
     dl_end_handle   varchar(255),       -- stratery when it running out dial list(keep_running, stop)
     retry_delay     varchar(255),       -- retry delaytime(ms)
+    queue_name      varchar(255),       -- queue name
     
     -- retry number
     max_retry_cnt_1     int default 5,  -- max retry count for dial number 1
@@ -227,8 +228,8 @@ create table campaign_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle) values (
-"5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all"
+insert into plan(uuid, name, dial_mode, answer_handle, queue_name) values (
+"5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "sales"
 );
 
 -- create dial list
