@@ -7,6 +7,7 @@
 CC = gcc
 UNAME := $(shell uname)
 # -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations
+#BASICOPTS = -g -pthread -pipe -g3 -O6 -fPIC -DAST_MODULE=\"res_outbound\"
 BASICOPTS = -Wall -g -pthread -pipe -g3 -O6 -fPIC -DAST_MODULE=\"res_outbound\"
 CFLAGS = $(BASICOPTS)
 PKGCONFIG="pkg-config"
@@ -37,12 +38,14 @@ CFLAGS_res_outbound.so = \
 	
 #CPPFLAGS_res_outbound.so =
 
-LDLIBS_res_outbound.so = $(OSLDLIBS) `mysql_config --libs` -levent
+LDLIBS_res_outbound.so = $(OSLDLIBS) `mysql_config --libs` -levent -lpthread -levent_pthreads
 
 OBJS_res_outbound.so =  \
 	$(TARGETDIR_res_outbound.so)/res_outbound.o \
 	$(TARGETDIR_res_outbound.so)/db_handler.o \
-	$(TARGETDIR_res_outbound.so)/event_handler.o
+	$(TARGETDIR_res_outbound.so)/event_handler.o \
+	$(TARGETDIR_res_outbound.so)/ami_handler.o
+	
 
 # WARNING: do not run this directly, it should be run by the master Makefile 
 $(TARGETDIR_res_outbound.so)/res_outbound.so: $(TARGETDIR_res_outbound.so) $(OBJS_res_outbound.so) $(DEPLIBS_res_outbound.so)
@@ -57,6 +60,9 @@ $(TARGETDIR_res_outbound.so)/db_handler.o: $(TARGETDIR_res_outbound.so) src/db_h
 
 $(TARGETDIR_res_outbound.so)/event_handler.o: $(TARGETDIR_res_outbound.so) src/event_handler.c 
 	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/event_handler.c
+
+$(TARGETDIR_res_outbound.so)/ami_handler.o: $(TARGETDIR_res_outbound.so) src/ami_handler.c 
+	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/ami_handler.c
 
 
 #### Clean target deletes all generated files ####

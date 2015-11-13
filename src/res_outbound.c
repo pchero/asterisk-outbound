@@ -144,7 +144,7 @@ static int unload_module(void)
     stop_outbound();
 
     pthread_cancel(pth_outbound);
-    pthread_kill(pth_outbound, SIGTERM);
+    pthread_kill(pth_outbound, SIGURG);
     pthread_join(pth_outbound, NULL);
 
     ast_log(LOG_NOTICE, "Released res_outbound.\n");
