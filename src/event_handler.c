@@ -46,8 +46,6 @@ static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* 
 static struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast_json* j_plan);
 
 char* get_utc_timestamp(void);
-struct ast_json* cmd_queue_summary(const char* name);
-struct ast_json* cmd_originate_to_queue(struct ast_json* j_dial);
 
 struct ast_json* get_queue_summary(const char* name);
 int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table);
@@ -55,7 +53,7 @@ int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table);
 
 // todo
 static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
-struct ast_json* create_dialing_info(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma, const struct ast_json* j_dl_list);
+struct ast_json* create_dialing_info(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dl_list);
 struct ast_json* create_dial_info(const struct ast_json* j_camp);
 int cmd_originate(const struct ast_json* j_dial);
 int memdb_insert(const char* table, const struct ast_json* j_data);
@@ -478,6 +476,12 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 
     // dial to customer
     j_res = cmd_originate_to_queue(j_dial);
+    ast_json_unref(j_dial);
+    ret = ami_is_response_success(j_res);
+    if(ret == false) {
+        ast_log(LOG_ERROR, "Could not originate call to destination.\n");
+        return;
+    }
 
     ret = cmd_originate(j_dial);
     ast_json_unref(j_dial);
@@ -678,11 +682,52 @@ static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_js
     return 1;
 }
 
-struct ast_json* create_dialing_info(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma, const struct ast_json* j_dl_list)
+/**
+ * Create dialing json object
+ * @param j_camp
+ * @param j_plan
+ * @param j_dlma
+ * @param j_dl_list
+ * @return
+ */
+struct ast_json* create_dialing_info(
+        struct ast_json* j_camp,
+        struct ast_json* j_plan,
+        struct ast_json* j_dlma,
+        struct ast_json* j_dl_list
+        )
 {
     struct ast_json* j_dial;
 
-    j_dial = ast_json_pack("{}"
+//    Action: Originate
+//    ActionID: <value>
+//    Channel: <value>
+//    Exten: <value>
+//    Context: <value>
+//    Priority: <value>
+//    Application: <value>
+//    Data: <value>
+//    Timeout: <value>
+//    CallerID: <value>
+//    Variable: <value>
+//    Account: <value>
+//    EarlyMedia: <value>
+//    Async: <value>
+//    Codecs: <value>
+//    ChannelId: <value>
+//    OtherChannelId: <value>
+
+    j_dial = ast_json_pack("{}",
+            "Channel",      ///< Destination
+            "Data",         ///< Queue name
+            "Timeout",
+            "CallerID",     ///< Caller id
+            "Variable",     ///< More set dial info
+            "Account",      ///< ????.
+            "ChannelId",    ///< Channel ID
+            "OtherChannelId"    ///< Other channel id.
+
+
 
             );
 
@@ -725,74 +770,6 @@ char* get_utc_timestamp(void)
     ast_asprintf(&res, "%s.%ldZ", timestr, timeptr.tv_nsec);
 
     return res;
-}
-
-/**
- * Send/Get QueueSummary AMI.
- * @param name
- * @return
- */
-struct ast_json* cmd_queue_summary(const char* name)
-{
-    struct ast_json* j_cmd;
-    struct ast_json* j_res;
-
-    if(name == NULL) {
-        return NULL;
-    }
-
-    j_cmd = ast_json_pack("{s:s, s:s}",
-            "Action",   "QueueSummary",
-            "Queue",    name
-            );
-    if(j_cmd == NULL) {
-        ast_log(LOG_ERROR, "Could not create ami json. name[%s]\n", name);
-        return NULL;
-    }
-
-    j_res = ami_cmd_handler(j_cmd);
-
-    return j_res;
-}
-
-/**
- * Send/Get QueueSummary AMI.
- * @param name
- * @return
- */
-struct ast_json* cmd_originate_to_queue(struct ast_json* j_dial)
-{
-    struct ast_json* j_cmd;
-    struct ast_json* j_res;
-
-    if(j_dial == NULL) {
-        return NULL;
-    }
-
-    j_cmd = ast_json_pack("{s:s, s:s}",
-            "Action",       "Originate",
-            "Application",  "Queue",
-            "Async",        "true",
-            "Channel",      ast_json_string_get(ast_json_object_get(j_dial, "channel")),
-            "Data",         ast_json_string_get(ast_json_object_get(j_dial, "queue_name"))
-            );
-    if(ast_json_object_get(j_dial, "timeout") != NULL)        ast_json_object_set(j_cmd, "Timeout", ast_json_ref(ast_json_object_get(j_dial, "timeout")));
-    if(ast_json_object_get(j_dial, "callerid") != NULL)       ast_json_object_set(j_cmd, "CallerID", ast_json_ref(ast_json_object_get(j_dial, "callerid")));
-    if(ast_json_object_get(j_dial, "variable") != NULL)       ast_json_object_set(j_cmd, "Variable", ast_json_ref(ast_json_object_get(j_dial, "variable")));
-    if(ast_json_object_get(j_dial, "account") != NULL)        ast_json_object_set(j_cmd, "Account", ast_json_ref(ast_json_object_get(j_dial, "account")));
-    if(ast_json_object_get(j_dial, "earlymedia") != NULL)     ast_json_object_set(j_cmd, "EarlyMedia", ast_json_ref(ast_json_object_get(j_dial, "earlymedia")));
-    if(ast_json_object_get(j_dial, "codecs") != NULL)         ast_json_object_set(j_cmd, "Codecs", ast_json_ref(ast_json_object_get(j_dial, "codecs")));
-    if(ast_json_object_get(j_dial, "channelid") != NULL)      ast_json_object_set(j_cmd, "ChannelId", ast_json_ref(ast_json_object_get(j_dial, "channelid")));
-    if(ast_json_object_get(j_dial, "otherchannelid") != NULL) ast_json_object_set(j_cmd, "OtherChannelId", ast_json_ref(ast_json_object_get(j_dial, "otherchannelid")));
-
-    if(j_cmd == NULL) {
-        ast_log(LOG_ERROR, "Could not create ami json.");
-        return NULL;
-    }
-
-    j_res = ami_cmd_handler(j_cmd);
-
-    return j_res;
 }
 
 struct ast_json* get_queue_summary(const char* name)
@@ -839,6 +816,7 @@ struct ast_json* get_queue_summary(const char* name)
     return j_queue;
 }
 
+
 /**
  *
  * @param camp_uuid
@@ -880,4 +858,89 @@ int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table)
     ast_json_unref(j_tmp);
 
     return ret;
+}
+
+/**
+ * Create dl_list's dial address.
+ * @param j_camp
+ * @param j_plan
+ * @param j_dl_list
+ * @return
+ */
+static char* create_dial_addr_from_dl(
+        struct ast_json* j_camp,
+        struct ast_json* j_plan,
+        struct ast_json* j_dl_list
+        )
+{
+    int dial_num_point;
+    char* cust_addr;
+    char* dial_addr;
+    struct ast_json* j_trunk;
+
+    dial_num_point = get_dial_num_point(j_dl_list, j_plan);
+    if(dial_num_point < 0) {
+        ast_log(LOG_ERROR, "Could not find correct number count.");
+        return NULL;
+    }
+
+    // get available trunk
+    j_trunk = sip_get_trunk_avaialbe(json_string_value(json_object_get(j_plan, "trunk_group")));
+    if(j_trunk == NULL) {
+        // No available trunk.
+        ast_log(LOG_NOTICE, "No available trunk.");
+        return NULL;
+    }
+
+    cust_addr = get_dial_number(j_dl_list, dial_num_point);
+    dial_addr = sip_gen_call_addr(j_trunk, cust_addr);
+
+    free(cust_addr);
+    json_decref(j_trunk);
+
+    return dial_addr;
+}
+
+
+/**
+ * Get dial number index
+ * @param j_dl_list
+ * @param j_plan
+ * @return
+ */
+static int get_dial_num_point(const json_t* j_dl_list, const json_t* j_plan)
+{
+    int ret;
+    int i;
+    int dial_num_point;
+    int cur_trycnt;
+    int max_trycnt;
+    char* tmp;
+
+    // get dial number
+    dial_num_point = -1;
+    for(i = 1; i < 9; i++) {
+        ret = asprintf(&tmp, "number_%d", i);
+        ret = strlen(json_string_value(json_object_get(j_dl_list, tmp)));
+        free(tmp);
+        if(ret == 0) {
+            // No number set.
+            continue;
+        }
+
+        ret = asprintf(&tmp, "trycnt_%d", i);
+        cur_trycnt = json_integer_value(json_object_get(j_dl_list, tmp));
+        free(tmp);
+
+        ret = asprintf(&tmp, "max_retry_cnt_%d", i);
+        max_trycnt = json_integer_value(json_object_get(j_plan, tmp));
+        free(tmp);
+
+        if(cur_trycnt < max_trycnt) {
+            dial_num_point = i;
+            break;
+        }
+    }
+
+    return dial_num_point;
 }
