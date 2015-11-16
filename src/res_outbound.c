@@ -25,6 +25,7 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 #include <stdbool.h>
 #include <mysql/mysql.h>
 #include <errno.h>
+#include <signal.h>
 
 #define MODULE_DESCRIPTION  "Outbound manager for Asterisk"
 

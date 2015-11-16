@@ -11,7 +11,7 @@ create table plan(
     detail      varchar(1023),          -- description
     
     -- resource
-    trunk_group     varchar(255),       -- trunk_group_ma uuid.
+--    trunk_group     varchar(255),       -- trunk_group_ma uuid.
     uui_field       varchar(255),       -- x-header name for UUI
     
     -- strategy
@@ -22,6 +22,7 @@ create table plan(
     dl_end_handle   varchar(255),       -- stratery when it running out dial list(keep_running, stop)
     retry_delay     varchar(255),       -- retry delaytime(ms)
     queue_name      varchar(255),       -- queue name
+    trunk_name      varchar(255),       -- trunk name
     
     -- retry number
     max_retry_cnt_1     int default 5,  -- max retry count for dial number 1
