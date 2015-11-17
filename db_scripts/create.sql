@@ -109,6 +109,9 @@ create table dl_org(
     primary key(uuid)
 );
 
+CREATE TRIGGER init_uuid BEFORE INSERT ON dl_org
+  FOR EACH ROW SET NEW.uuid = UUID();
+
 drop table if exists dial_list_ma;
 create table dial_list_ma(
 -- dial list
@@ -229,19 +232,20 @@ create table campaign_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle, queue_name) values (
-"5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "sales"
-);
+insert into plan(uuid, name, dial_mode, answer_handle, queue_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "TestQueue");
 
 -- create dial list
 drop table if exists dl_e276d8be;
 create table dl_e276d8be like dl_org;
+CREATE TRIGGER init_uuid BEFORE INSERT ON dl_e276d8be FOR EACH ROW SET NEW.uuid = UUID();
 insert into dial_list_ma(uuid, name, dl_table) values ("e276d8be-a558-4546-948a-f99913a7fea2", "sample_dial_list", "dl_e276d8be");
 
 -- insert dial list
-insert into dl_e276d8be(uuid, name, number_1) values ("04f9e9b6-5374-4c77-9a5a-4a9d79ea3937", "test1", "111-111-0001");
-insert into dl_e276d8be(uuid, name, number_1) values ("8c80989e-f8bd-4d17-b6c1-950e053e61f6", "test2", "111-111-0002");
-insert into dl_e276d8be(uuid, name, number_1) values ("c0d99b70-4661-45ae-b47f-7ed9282c977f", "test3", "111-111-0003");
+insert into dl_e276d8be(name, number_1) values ("test1", "111-111-0001");
+insert into dl_e276d8be(name, number_1) values ("test2", "111-111-0002");
+insert into dl_e276d8be(name, number_1) values ("test3", "111-111-0003");
+insert into dl_e276d8be(name, number_1) values ("test4", "111-111-0004");
+
 
 -- insert campaign
 insert into campaign(uuid, name, status, plan, dlma) 
