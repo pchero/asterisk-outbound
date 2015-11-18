@@ -50,7 +50,7 @@ static struct ast_json* parse_ami_msg(char* msg)
     char* value;
     char* dump;
 
-    ast_log(LOG_DEBUG, "Parse ami message. msg[%s]\n", msg);
+//    ast_log(LOG_DEBUG, "Parse ami message. msg[%s]\n", msg);
     if(msg == NULL) {
         return NULL;
     }
@@ -132,6 +132,7 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 
     memset(str_cmd, 0x00, sizeof(str_cmd));
     sprintf(str_cmd, "Action: %s\n", ast_json_string_get(j_tmp));
+    ast_log(LOG_DEBUG, "AMI Action command. action[%s]\n", ast_json_string_get(j_tmp));
     for(j_iter = ast_json_object_iter(j_cmd);
             j_iter != NULL;
             j_iter = ast_json_object_iter_next(j_cmd, j_iter))
@@ -144,27 +145,24 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
         j_tmp = ast_json_object_iter_value(j_iter);
         sprintf(str_cmd, "%s%s: %s\n", str_cmd, tmp_const, ast_json_string_get(j_tmp));
     }
-
-    ast_log(LOG_DEBUG, "action command. command[%s]\n", str_cmd);
+//    ast_log(LOG_DEBUG, "action command. command[%s]\n", str_cmd);
 
     // Set hook
     hook = ast_calloc(1, sizeof(struct manager_custom_hook));
     hook->file      = NULL;
     hook->helper    = &ami_cmd_helper;
-    if(g_cmd_buf != NULL)
-    {
+    if(g_cmd_buf != NULL) {
         ast_free(g_cmd_buf);
         g_cmd_buf = NULL;
     }
 
     ret = ast_hook_send_action(hook, str_cmd);
     ast_free(hook);
-    if(ret != 0)
-    {
+    if(ret != 0) {
         ast_log(AST_LOG_ERROR, "Could not hook. ret[%d], err[%d:%s]\n", ret, errno, strerror(errno));
         return NULL;
     }
-    ast_log(AST_LOG_DEBUG, "End hook. ret[%d]\n", ret);
+//    ast_log(AST_LOG_DEBUG, "End hook. ret[%d]\n", ret);
 
     j_res = parse_ami_msg(g_cmd_buf);
     if(j_res == NULL) {
@@ -187,7 +185,7 @@ static int ami_cmd_helper(int category, const char *event, char *content)
     char* tmp;
     int   ret;
 
-    ast_log(LOG_DEBUG, "Fired ami_cmd_helper. len[%lu], category[%d], event[%s], content[%s]\n", strlen(content), category, event, content);
+//    ast_log(LOG_DEBUG, "Fired ami_cmd_helper. len[%lu], category[%d], event[%s], content[%s]\n", strlen(content), category, event, content);
     if(g_cmd_buf == NULL) {
         ast_asprintf(&tmp, "%s", content);
     }

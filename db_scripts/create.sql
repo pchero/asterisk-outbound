@@ -61,7 +61,8 @@ create table dl_org(
     name            varchar(255),                   -- Can be null
     detail          varchar(255),
     uui             text,                           -- user-user information
-    status          varchar(255) default "idle",    -- dial list status. ("idle", "dialing", ...)
+--    status          varchar(255) default "idle",    -- dial list status. ("idle", "dialing", ...)
+    status          int default 0,    -- dial list status. ("idle", "dialing", ...)
     
     -- current dialing
     dialing_camp_uuid       varchar(255),       -- dialing campaign_uuid
@@ -149,8 +150,8 @@ create table campaign(
     -- information
     detail                      varchar(1023),      -- description
     name                        varchar(255),       -- campaign name
-    status      varchar(10)     default "stop",     -- status(stop/start/starting/stopping/force_stopping)
-    status_code int             default 0,          -- status code(stop(0), start(1), pause(2), stopping(10), starting(11), pausing(12)
+--    status      varchar(10)     default "stop",     -- status(stop/start/starting/stopping/force_stopping)
+    status 	int             default 0,          -- status code(stop(0), start(1), pause(2), stopping(10), starting(11), pausing(12)
     
     next_campaign               varchar(255),       -- next campaign uuid
     
@@ -232,12 +233,12 @@ create table campaign_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle, queue_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "TestQueue");
+insert into plan(uuid, name, dial_mode, answer_handle, queue_name, trunk_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "TestQueue", "trunk_test_1");
 
 -- create dial list
 drop table if exists dl_e276d8be;
 create table dl_e276d8be like dl_org;
-CREATE TRIGGER init_uuid BEFORE INSERT ON dl_e276d8be FOR EACH ROW SET NEW.uuid = UUID();
+CREATE TRIGGER init_uuid_dl_e276d8be BEFORE INSERT ON dl_e276d8be FOR EACH ROW SET NEW.uuid = UUID();
 insert into dial_list_ma(uuid, name, dl_table) values ("e276d8be-a558-4546-948a-f99913a7fea2", "sample_dial_list", "dl_e276d8be");
 
 -- insert dial list
@@ -250,7 +251,7 @@ insert into dl_e276d8be(name, number_1) values ("test4", "111-111-0004");
 -- insert campaign
 insert into campaign(uuid, name, status, plan, dlma) 
 values (
-"8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", "start", "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2"
+"8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", 1, "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2"
 );
 
 commit;
