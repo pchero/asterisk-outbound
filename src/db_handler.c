@@ -359,11 +359,11 @@ char* db_get_update_str(const struct ast_json* j_data)
     while(iter) {
         // copy/set previous sql.
         if(is_first == true) {
-            ret = ast_asprintf(&tmp, "%s", " ");
+            ast_asprintf(&tmp, "%s", " ");
             is_first = false;
         }
         else {
-            ret = ast_asprintf(&tmp, "%s, ", res);
+            ast_asprintf(&tmp, "%s, ", res);
         }
         ast_free(res);
 
@@ -373,31 +373,35 @@ char* db_get_update_str(const struct ast_json* j_data)
         switch(type) {
             // string
             case AST_JSON_STRING: {
-                ret = ast_asprintf(&res, "%s%s = \'%s\'", tmp, key, ast_json_string_get(j_val));
+                ast_asprintf(&res, "%s%s = \'%s\'", tmp, key, ast_json_string_get(j_val));
             }
             break;
 
             // numbers
-            case AST_JSON_INTEGER:
+            case AST_JSON_INTEGER: {
+                ast_asprintf(&res, "%s%s = %ld", tmp, key, ast_json_integer_get(j_val));
+            }
+            break;
+
             case AST_JSON_REAL: {
-                ret = ast_asprintf(&res, "%s%s = %f", tmp, key, ast_json_real_get(j_val));
+                ast_asprintf(&res, "%s%s = %f", tmp, key, ast_json_real_get(j_val));
             }
             break;
 
             // true
             case AST_JSON_TRUE: {
-                ret = ast_asprintf(&res, "%s%s = \"%s\"", tmp, key, "true");
+                ast_asprintf(&res, "%s%s = \"%s\"", tmp, key, "true");
             }
             break;
 
             // false
             case AST_JSON_FALSE: {
-                ret = ast_asprintf(&res, "%s%s = \"%s\"", tmp, key, "false");
+                ast_asprintf(&res, "%s%s = \"%s\"", tmp, key, "false");
             }
             break;
 
             case AST_JSON_NULL: {
-                ret = ast_asprintf(&res, "%s%s = \"%s\"", tmp, key, "null");
+                ast_asprintf(&res, "%s%s = \"%s\"", tmp, key, "null");
             }
             break;
 
@@ -407,7 +411,7 @@ char* db_get_update_str(const struct ast_json* j_data)
                 // Not done yet.
                 // we don't support another types.
                 ast_log(LOG_WARNING, "Wrong type input. We don't handle this.\n");
-                ret = ast_asprintf(&res, "%s%s = %s", tmp, key, key);
+                ast_asprintf(&res, "%s%s = %s", tmp, key, key);
             }
             break;
         }
