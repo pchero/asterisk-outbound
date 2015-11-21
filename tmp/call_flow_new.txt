@@ -1,0 +1,183 @@
+[Nov 14 00:38:07] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"Newchannel","calleridname":"<unknown>","channelstatedesc":"Down","priority":"1","privilege":"call,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"0","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","exten":"s","context":"from_provider"}]
+[Nov 14 00:38:07] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"Newexten","calleridname":"<unknown>","channelstatedesc":"Down","privilege":"call,all","priority":"1","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","channelstate":"0","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","extension":"","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","exten":"","context":"from_provider","appdata":"(Outgoing Line)","application":"AppDial2"}]
+[Nov 14 00:38:09] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"Newstate","calleridname":"<unknown>","channelstatedesc":"Up","priority":"1","privilege":"call,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"6","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","exten":"","context":"from_provider"}]
+[Nov 14 00:38:09] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"QueueCallerJoin","calleridname":"<unknown>","channelstatedesc":"Up","privilege":"agent,all","priority":"1","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","channelstate":"6","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","position":"1","language":"en","accountcode":"","exten":"","context":"from_provider","queue":"TestQueue","count":"1"}]
+[Nov 14 00:38:09] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"MusicOnHoldStart","calleridname":"<unknown>","channelstatedesc":"Up","privilege":"call,all","priority":"1","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","channelstate":"6","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","exten":"","context":"from_provider","class":"default"}]
+[Nov 14 00:38:09] DEBUG[17277] src/ami_handler.c: Received event. tmp[{"calleridname":"<unknown>","event":"OriginateResponse","privilege":"call,all","response":"Success","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","calleridnum":"<unknown>","channel":"SIP/trunk_test_1-00000000","context":"","exten":"","reason":"4"}]
+[Nov 14 00:38:09] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"AgentCalled","calleridname":"<unknown>","channelstatedesc":"Up","priority":"1","privilege":"agent,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"6","destconnectedlinename":"<unknown>","membername":"test 04","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","destchannelstatedesc":"Down","connectedlinename":"<unknown>","language":"en","destcalleridnum":"<unknown>","accountcode":"","destconnectedlinenum":"<unknown>","destlanguage":"en","exten":"","context":"from_provider","destchannel":"Local/test-04@common-incoming-00000000;1","destchannelstate":"0","destcalleridname":"<unknown>","destaccountcode":"","destcontext":"common-incoming","destexten":"","destpriority":"1","destuniqueid":"1447457889.1","destlinkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","queue":"TestQueue","interface":"Local/test-04@common-incoming"}]
+[Nov 14 00:38:09] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"DialBegin","calleridname":"<unknown>","channelstatedesc":"Up","privilege":"call,all","priority":"1","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","channelstate":"6","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","destconnectedlinename":"<unknown>","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","destchannelstatedesc":"Down","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","destcalleridnum":"<unknown>","language":"en","destconnectedlinenum":"<unknown>","accountcode":"","destlanguage":"en","exten":"","dialstring":"Local/test-04@common-incoming","context":"from_provider","destchannel":"Local/test-04@common-incoming-00000000;1","destchannelstate":"0","destcalleridname":"<unknown>","destaccountcode":"","destcontext":"common-incoming","destexten":"test-04","destpriority":"1","destlinkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","destuniqueid":"1447457889.1"}]
+[Nov 14 00:38:14] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"pt":"200(SR)","event":"RTCPSent","calleridname":"<unknown>","from":"127.0.1.1:0","channelstatedesc":"Up","priority":"1","privilege":"reporting,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","report0sourcessrc":"0x5e9b1863","report0sequencenumbercycles":"1","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"6","to":"211.233.26.248:20219","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","report0highestsequence":"129","exten":"","context":"from_provider","report0lsr":"0","ssrc":"0x7eab58b4","reportcount":"1","sentntp":"1447457894.1850339328","sentrtp":"40000","sentpackets":"250","sentoctets":"40000","report0cumulativelost":"0","report0fractionlost":"0","report0iajitter":"46","report0dlsr":"0.0000"}]
+[Nov 14 00:38:15] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"DialEnd","calleridname":"<unknown>","channelstatedesc":"Up","privilege":"call,all","priority":"1","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","channelstate":"6","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","destconnectedlinename":"<unknown>","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","destchannelstatedesc":"Up","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","destcalleridnum":"<unknown>","language":"en","destconnectedlinenum":"<unknown>","accountcode":"","destlanguage":"en","exten":"","context":"from_provider","destchannel":"Local/test-04@common-incoming-00000000;1","dialstatus":"ANSWER","destchannelstate":"6","destcalleridname":"<unknown>","destaccountcode":"","destcontext":"common-incoming","destexten":"","destpriority":"1","destlinkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","destuniqueid":"1447457889.1"}]
+[Nov 14 00:38:15] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"MusicOnHoldStop","calleridname":"<unknown>","channelstatedesc":"Up","priority":"1","privilege":"call,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"6","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","exten":"","context":"from_provider"}]
+[Nov 14 00:38:15] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"QueueCallerLeave","calleridname":"<unknown>","channelstatedesc":"Up","privilege":"agent,all","priority":"1","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","channelstate":"6","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","position":"1","language":"en","accountcode":"","exten":"","context":"from_provider","queue":"TestQueue","count":"0"}]
+[Nov 14 00:38:15] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"AgentConnect","calleridname":"<unknown>","channelstatedesc":"Up","priority":"1","privilege":"agent,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"6","destconnectedlinename":"<unknown>","membername":"test 04","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","destchannelstatedesc":"Up","connectedlinename":"<unknown>","language":"en","destcalleridnum":"<unknown>","accountcode":"","destconnectedlinenum":"<unknown>","destlanguage":"en","exten":"","context":"from_provider","destchannel":"Local/test-04@common-incoming-00000000;1","destchannelstate":"6","destcalleridname":"<unknown>","destaccountcode":"","destcontext":"common-incoming","destexten":"","destpriority":"1","ringtime":"5","destuniqueid":"1447457889.1","destlinkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","queue":"TestQueue","interface":"Local/test-04@common-incoming","holdtime":"6"}]
+[Nov 14 00:38:15] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"calleridname":"<unknown>","event":"BridgeEnter","priority":"1","privilege":"call,all","bridgenumchannels":"2","bridgetype":"basic","language":"en","bridgetechnology":"simple_bridge","context":"from_provider","bridgeuniqueid":"a1fb2848-2f37-4ded-971c-6effa20a7cb7","bridgecreator":"<unknown>","calleridnum":"<unknown>","channel":"SIP/trunk_test_1-00000000","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","bridgename":"<unknown>","channelstate":"6","channelstatedesc":"Up","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","accountcode":"","exten":"","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35"}]
+[Nov 14 00:38:19] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"pt":"200(SR)","event":"RTCPSent","calleridname":"<unknown>","from":"127.0.1.1:0","channelstatedesc":"Up","priority":"1","privilege":"reporting,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","report0sourcessrc":"0x5e9b1863","report0sequencenumbercycles":"1","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"6","to":"211.233.26.248:20219","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","report0highestsequence":"163","exten":"","context":"from_provider","report0lsr":"0","ssrc":"0x6602aa51","reportcount":"1","sentntp":"1447457899.1851584512","sentrtp":"45120","sentpackets":"282","sentoctets":"45120","report0cumulativelost":"0","report0fractionlost":"0","report0iajitter":"30","report0dlsr":"0.0000"}]
+[Nov 14 00:38:24] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"pt":"201(RR)","event":"RTCPSent","from":"127.0.1.1:0","calleridname":"<unknown>","channelstatedesc":"Up","privilege":"reporting,all","priority":"1","channel":"SIP/trunk_test_1-00000000","report0sourcessrc":"0x5e9b1863","calleridnum":"<unknown>","report0sequencenumbercycles":"1","channelstate":"6","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","to":"211.233.26.248:20219","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","report0highestsequence":"163","accountcode":"","exten":"","context":"from_provider","report0lsr":"0","ssrc":"0x6602aa51","reportcount":"1","report0cumulativelost":"0","report0fractionlost":"0","report0iajitter":"30","report0dlsr":"0.0000"}]
+[Nov 14 00:38:25] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"AgentComplete","calleridname":"<unknown>","channelstatedesc":"Up","priority":"1","privilege":"agent,all","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","channelstate":"6","destconnectedlinename":"<unknown>","membername":"test 04","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","connectedlinenum":"<unknown>","destchannelstatedesc":"Up","connectedlinename":"<unknown>","language":"en","destcalleridnum":"test-04","accountcode":"","destconnectedlinenum":"<unknown>","talktime":"10","destlanguage":"en","exten":"","context":"from_provider","destchannel":"SIP/test-04-00000001","destchannelstate":"6","destcalleridname":"<unknown>","destaccountcode":"","destcontext":"common-incoming","destexten":"","destpriority":"1","destuniqueid":"1447457889.3","destlinkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","queue":"TestQueue","interface":"Local/test-04@common-incoming","holdtime":"6","reason":"agent"}]
+[Nov 14 00:38:25] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"calleridname":"<unknown>","event":"BridgeLeave","priority":"1","privilege":"call,all","bridgenumchannels":"0","bridgetype":"basic","language":"en","bridgetechnology":"native_rtp","context":"from_provider","bridgeuniqueid":"a1fb2848-2f37-4ded-971c-6effa20a7cb7","bridgecreator":"<unknown>","calleridnum":"<unknown>","channel":"SIP/trunk_test_1-00000000","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","bridgename":"<unknown>","channelstate":"6","channelstatedesc":"Up","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","accountcode":"","exten":"","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35"}]
+[Nov 14 00:38:25] DEBUG[15368] src/ami_handler.c: Received event. tmp[{"event":"Hangup","calleridname":"<unknown>","channelstatedesc":"Up","privilege":"call,all","priority":"1","channel":"SIP/trunk_test_1-00000000","calleridnum":"<unknown>","channelstate":"6","linkedid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","uniqueid":"dee9d42f-972c-4f87-b5fb-ff8edf1e6f35","cause":"16","connectedlinenum":"<unknown>","connectedlinename":"<unknown>","language":"en","accountcode":"","exten":"","context":"from_provider","cause-txt":"Normal Clearing"}]
+
+
+{
+    "event": "Newchannel",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Down",
+    "priority": "1",
+    "privilege": "call,all",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "channelstate": "0",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "accountcode": "",
+    "exten": "s",
+    "context": "from_provider"
+}
+
+{
+    "event": "Newexten",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Down",
+    "privilege": "call,all",
+    "priority": "1",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "channelstate": "0",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "extension": "",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "accountcode": "",
+    "exten": "",
+    "context": "from_provider",
+    "appdata": "(Outgoing Line)",
+    "application": "AppDial2"
+}
+
+{
+    "event": "Newstate",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "priority": "1",
+    "privilege": "call,all",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "channelstate": "6",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "accountcode": "",
+    "exten": "",
+    "context": "from_provider"
+}
+
+{
+    "event": "QueueCallerJoin",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "privilege": "agent,all",
+    "priority": "1",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "channelstate": "6",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "position": "1",
+    "language": "en",
+    "accountcode": "",
+    "exten": "",
+    "context": "from_provider",
+    "queue": "TestQueue",
+    "count": "1"
+}
+
+{
+    "event": "MusicOnHoldStart",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "privilege": "call,all",
+    "priority": "1",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "channelstate": "6",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "accountcode": "",
+    "exten": "",
+    "context": "from_provider",
+    "class": "default"
+}
+
+{
+    "calleridname": "<unknown>",
+    "event": "OriginateResponse",
+    "privilege": "call,all",
+    "response": "Success",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "calleridnum": "<unknown>",
+    "channel": "SIP/trunk_test_1-00000000",
+    "context": "",
+    "exten": "",
+    "reason": "4"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+    "event": "Hangup",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "privilege": "call,all",
+    "priority": "1",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "channelstate": "6",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "cause": "16",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "accountcode": "",
+    "exten": "",
+    "context": "from_provider",
+    "cause-txt": "Normal Clearing"
+}
