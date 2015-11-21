@@ -31,4 +31,6 @@ typedef enum _DL_STATUS_T
 
 } DL_STATUS_T;
 
+char* get_utc_timestamp(void);
+
 #endif /* SRC_EVENT_HANDLER_H_ */

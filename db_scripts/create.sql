@@ -193,7 +193,9 @@ create table campaign_result(
     -- dial_info
     info_camp   text    not null,   -- campaign info. json format.
     info_plan   text    not null,   -- plan info. json format.
-    info_dl     text    not null,   -- dl info. json format.    
+    info_dl     text    not null,   -- dl info. json format.
+    info_chan   text    not null,   -- channel info. json format.
+    info_queue  text    not null,   -- queue info. json format
     
     -- timestamp(UTC)
     tm_dial             datetime(6),   -- timestamp for dialing requested.

@@ -134,6 +134,41 @@
     "reason": "4"
 }
 
+{
+    "event": "AgentCalled",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "priority": "1",
+    "privilege": "agent,all",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "channelstate": "6",
+    "destconnectedlinename": "<unknown>",
+    "membername": "test 04",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "destchannelstatedesc": "Down",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "destcalleridnum": "<unknown>",
+    "accountcode": "",
+    "destconnectedlinenum": "<unknown>",
+    "destlanguage": "en",
+    "exten": "",
+    "context": "from_provider",
+    "destchannel": "Local/test-04@common-incoming-00000000;1",
+    "destchannelstate": "0",
+    "destcalleridname": "<unknown>",
+    "destaccountcode": "",
+    "destcontext": "common-incoming",
+    "destexten": "",
+    "destpriority": "1",
+    "destuniqueid": "1447457889.1",
+    "destlinkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "queue": "TestQueue",
+    "interface": "Local/test-04@common-incoming"
+}
 
 
 
@@ -147,8 +182,27 @@
 
 
 
-
-
+{
+    "event": "QueueCallerLeave",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "privilege": "agent,all",
+    "priority": "1",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "channelstate": "6",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "position": "1",
+    "language": "en",
+    "accountcode": "",
+    "exten": "",
+    "context": "from_provider",
+    "queue": "TestQueue",
+    "count": "0"
+}
 
 
 

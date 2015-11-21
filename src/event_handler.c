@@ -47,7 +47,6 @@ static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* 
 //static struct ast_json* get_dl_dial_available(const struct ast_json* j_dlma, const char* dial_mode);
 static struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast_json* j_plan);
 
-char* get_utc_timestamp(void);
 
 struct ast_json* get_queue_summary(const char* name);
 int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table);
@@ -69,7 +68,7 @@ int run_outbound(void)
 {
     int ret;
     struct event* ev;
-    struct timeval tm_fast = {3, 20000};    // 20 ms
+    struct timeval tm_fast = {3, 20000};    // 2 sec
 //    struct timeval tm_slow = {0, 500000};   // 500 ms
 
     // init libevent
@@ -278,7 +277,7 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
         ast_log(LOG_DEBUG, "Result chan. result[%s]\n", tmp);
         ast_json_free(tmp);
 
-        tmp = ast_json_dump_string_format(dialing->j_queue, 0);
+        tmp = ast_json_dump_string_format(dialing->j_queues, 0);
         ast_log(LOG_DEBUG, "Result queue. result[%s]\n", tmp);
         ast_json_free(tmp);
 
@@ -756,7 +755,6 @@ struct ast_json* create_dialing_info(
     char tmp_dial_num_point[10];
     char* channel_id;
     char* other_channel_id;
-    char* tm_dial;
     char* dial_try_count;
     int dial_count;
 
@@ -786,12 +784,11 @@ struct ast_json* create_dialing_info(
     sprintf(tmp_timeout, "%ld", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout")));
     channel_id = gen_uuid();
     other_channel_id = gen_uuid();
-    tm_dial = get_utc_timestamp();
 
     j_dial = ast_json_pack("{"
             "s:s, s:s, s:s, s:s, "
             "s:s, s:s, s:s, s:s, s:s, "
-            "s:s, s:s, s:i, s:s"
+            "s:s, s:i, s:s"
             "}",
             // identity info
             "uuid_camp",    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
@@ -810,7 +807,6 @@ struct ast_json* create_dialing_info(
 
             // other info
             "dial_num_point",   tmp_dial_num_point,
-            "tm_dial",          tm_dial,
             "dial_trycnt",      dial_count,
             "trycount_field",   dial_try_count
             );
@@ -821,7 +817,6 @@ struct ast_json* create_dialing_info(
     ast_free(dial_addr);
     ast_free(channel_id);
     ast_free(other_channel_id);
-    ast_free(tm_dial);
     ast_free(dial_try_count);
 
     return j_dial;

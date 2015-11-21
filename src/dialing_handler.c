@@ -19,6 +19,10 @@ static void rb_dialing_destructor(void* obj);
 
 static struct ao2_container* g_rb_dialings = NULL;  ///< dialing container
 
+/**
+ * Initiate rb_diailing.
+ * @return
+ */
 int init_rb_dialing(void)
 {
     g_rb_dialings = ao2_container_alloc_rbtree(AO2_ALLOC_OPT_LOCK_MUTEX, AO2_CONTAINER_ALLOC_OPT_DUPS_REJECT, rb_dialing_sort_cb, rb_dialing_cmp_cb);
@@ -29,6 +33,13 @@ int init_rb_dialing(void)
     return true;
 }
 
+/**
+ *
+ * @param o_left
+ * @param o_right
+ * @param flags
+ * @return
+ */
 static int rb_dialing_sort_cb(const void* o_left, const void* o_right, int flags)
 {
     const rb_dialing* dialing_left;
@@ -54,6 +65,13 @@ static int rb_dialing_sort_cb(const void* o_left, const void* o_right, int flags
     }
 }
 
+/**
+ *
+ * @param obj
+ * @param arg
+ * @param flags
+ * @return
+ */
 static int rb_dialing_cmp_cb(void* obj, void* arg, int flags)
 {
     rb_dialing* dialing;
@@ -109,6 +127,9 @@ rb_dialing* rb_dialing_create(struct ast_json* j_dl)
 
     dialing->uuid = ast_strdup(tmp_const);
     dialing->j_dl = ast_json_deep_copy(j_dl);
+    dialing->j_queues = ast_json_array_create();
+    dialing->j_agents = ast_json_array_create();
+    dialing->j_chan = ast_json_object_create();
 
     if(ao2_link(g_rb_dialings, dialing) == 0) {
         ast_log(LOG_DEBUG, "Could not register the dialing. uuid[%s]\n", dialing->uuid);
@@ -129,13 +150,13 @@ static void rb_dialing_destructor(void* obj)
 
     dialing = (rb_dialing*)obj;
 
-    if(dialing->uuid != NULL)   ast_free(dialing->uuid);
-    if(dialing->j_dl != NULL)   ast_json_unref(dialing->j_dl);
-    if(dialing->j_chan != NULL) ast_json_unref(dialing->j_chan);
-    if(dialing->j_queue != NULL) ast_json_unref(dialing->j_queue);
+    if(dialing->uuid != NULL)       ast_free(dialing->uuid);
+    if(dialing->j_dl != NULL)       ast_json_unref(dialing->j_dl);
+    if(dialing->j_chan != NULL)     ast_json_unref(dialing->j_chan);
+    if(dialing->j_queues != NULL)   ast_json_unref(dialing->j_queues);
+    if(dialing->j_agents != NULL)   ast_json_unref(dialing->j_queues);
 
     ast_log(LOG_DEBUG, "Called destoryer.\n");
-//    ao2_ref(dialing, -1);
 }
 
 rb_dialing* rb_dialing_find_uuid_dl(const char* chan)

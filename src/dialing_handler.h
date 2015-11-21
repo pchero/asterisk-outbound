@@ -11,10 +11,12 @@
 #include "asterisk/json.h"
 
 typedef struct _rb_dialing{
-    char* uuid;
+    char* uuid;                 ///< dialing uuid(channel's unique id)
     struct ast_json* j_dl;      ///< dl(dialing) info.
+
     struct ast_json* j_chan;    ///< channel info.
-    struct ast_json* j_queue;   ///< queue info.
+    struct ast_json* j_queues;  ///< queue info.(json array)
+    struct ast_json* j_agents;  ///< agents info. Who had a talk with. (json array)
 } rb_dialing;
 
 int init_rb_dialing(void);
