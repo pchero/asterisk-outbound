@@ -127,9 +127,10 @@ rb_dialing* rb_dialing_create(struct ast_json* j_dl)
 
     dialing->uuid = ast_strdup(tmp_const);
     dialing->j_dl = ast_json_deep_copy(j_dl);
+
+    dialing->j_chan = ast_json_object_create();
     dialing->j_queues = ast_json_array_create();
     dialing->j_agents = ast_json_array_create();
-    dialing->j_chan = ast_json_object_create();
 
     if(ao2_link(g_rb_dialings, dialing) == 0) {
         ast_log(LOG_DEBUG, "Could not register the dialing. uuid[%s]\n", dialing->uuid);
@@ -141,6 +142,8 @@ rb_dialing* rb_dialing_create(struct ast_json* j_dl)
 
 void rb_dialing_destory(rb_dialing* dialing)
 {
+    ast_log(LOG_DEBUG, "Destroying dialing.\n");
+    ao2_unlink(g_rb_dialings, dialing);
     ao2_ref(dialing, -1);
 }
 
@@ -174,6 +177,9 @@ rb_dialing* rb_dialing_find_uuid_chan(const char* uuid)
 
     ast_log(LOG_DEBUG, "rb_dialing_find_uuid. uuid[%s]\n", uuid);
     dialing = ao2_find(g_rb_dialings, uuid, OBJ_SEARCH_KEY);
+    if(dialing == NULL) {
+        return NULL;
+    }
     ao2_ref(dialing, -1);
 
     return dialing;
@@ -181,6 +187,6 @@ rb_dialing* rb_dialing_find_uuid_chan(const char* uuid)
 
 struct ao2_iterator rb_dialing_iter_init(void)
 {
-    ast_log(LOG_DEBUG, "rd_dialing count. count[%d]\n", ao2_container_count(g_rb_dialings));
+//    ast_log(LOG_DEBUG, "rd_dialing count. count[%d]\n", ao2_container_count(g_rb_dialings));
     return ao2_iterator_init(g_rb_dialings, 0);
 }

@@ -278,7 +278,11 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
         ast_json_free(tmp);
 
         tmp = ast_json_dump_string_format(dialing->j_queues, 0);
-        ast_log(LOG_DEBUG, "Result queue. result[%s]\n", tmp);
+        ast_log(LOG_DEBUG, "Result queues. result[%s]\n", tmp);
+        ast_json_free(tmp);
+
+        tmp = ast_json_dump_string_format(dialing->j_agents, 0);
+        ast_log(LOG_DEBUG, "Result agents. result[%s]\n", tmp);
         ast_json_free(tmp);
 
         ao2_ref(dialing, -1);
@@ -556,12 +560,11 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
             ast_json_string_get(ast_json_object_get(dialing->j_dl, "trycount_field")), ast_json_integer_get(ast_json_object_get(dialing->j_dl, "dial_trycnt")) + 1,
             "dialing_camp_uuid",        ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid_camp")),
             "dialing_chan_unique_id",   ast_json_string_get(ast_json_object_get(dialing->j_dl, "channelid")),
-            "tm_last_dial",             ast_json_string_get(ast_json_object_get(dialing->j_dl, "tm_dial"))
+            "tm_last_dial",             ast_json_string_get(ast_json_object_get(dialing->j_dl, "tm_originate_request"))
             );
     if(j_dl_update == NULL) {
-        ast_log(LOG_ERROR, "Could not create dl update info json.");
-        ao2_ref(dialing, -1);
-//        ast_json_unref(j_dialing);
+        ast_log(LOG_ERROR, "Could not create dl update info json.\n");
+        rb_dialing_destory(dialing);
         return;
     }
 

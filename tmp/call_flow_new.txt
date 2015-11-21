@@ -170,6 +170,75 @@
     "interface": "Local/test-04@common-incoming"
 }
 
+{
+    "event": "DialBegin",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "privilege": "call,all",
+    "priority": "1",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "channelstate": "6",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "destconnectedlinename": "<unknown>",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "destchannelstatedesc": "Down",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "destcalleridnum": "<unknown>",
+    "language": "en",
+    "destconnectedlinenum": "<unknown>",
+    "accountcode": "",
+    "destlanguage": "en",
+    "exten": "",
+    "dialstring": "Local/test-04@common-incoming",
+    "context": "from_provider",
+    "destchannel": "Local/test-04@common-incoming-00000000;1",
+    "destchannelstate": "0",
+    "destcalleridname": "<unknown>",
+    "destaccountcode": "",
+    "destcontext": "common-incoming",
+    "destexten": "test-04",
+    "destpriority": "1",
+    "destlinkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "destuniqueid": "1447457889.1"
+}
+
+{
+    "event": "DialEnd",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "privilege": "call,all",
+    "priority": "1",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "channelstate": "6",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "destconnectedlinename": "<unknown>",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "destchannelstatedesc": "Up",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "destcalleridnum": "<unknown>",
+    "language": "en",
+    "destconnectedlinenum": "<unknown>",
+    "accountcode": "",
+    "destlanguage": "en",
+    "exten": "",
+    "context": "from_provider",
+    "destchannel": "Local/test-04@common-incoming-00000000;1",
+    "dialstatus": "ANSWER",
+    "destchannelstate": "6",
+    "destcalleridname": "<unknown>",
+    "destaccountcode": "",
+    "destcontext": "common-incoming",
+    "destexten": "",
+    "destpriority": "1",
+    "destlinkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "destuniqueid": "1447457889.1"
+}
+
+
 
 
 

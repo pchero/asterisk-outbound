@@ -33,6 +33,8 @@ static void ami_evt_QueueCallerJoin(struct ast_json* j_evt);
 static void ami_evt_QueueCallerLeave(struct ast_json* j_evt);
 static void ami_evt_OriginateResponse(struct ast_json* j_evt);
 static void ami_evt_AgentCalled(struct ast_json* j_evt);
+static void ami_evt_DialBegin(struct ast_json* j_evt);
+static void ami_evt_DialEnd(struct ast_json* j_evt);
 static void ami_evt_Hangup(struct ast_json* j_evt);
 
 /**
@@ -435,7 +437,7 @@ struct ast_json* cmd_originate_to_queue(struct ast_json* j_dl)
 
     // set the timestamp.
     tmp = get_utc_timestamp();
-    ast_json_object_set(j_dl, "tm_originate_begin", ast_json_string_create(tmp));
+    ast_json_object_set(j_dl, "tm_originate_request", ast_json_string_create(tmp));
     ast_free(tmp);
 
     return j_res;
@@ -475,6 +477,12 @@ void ami_evt_process(struct ast_json* j_evt)
         return;
     }
 
+    // log
+    tmp = ast_json_dump_string_format(j_evt, 0);
+    ast_log(LOG_DEBUG, "Received event. tmp[%s]\n", tmp);
+    ast_json_free(tmp);
+
+
     if(strcmp(event, "Newchannel") == 0) {
         ami_evt_Newchannel(j_evt);
     }
@@ -496,14 +504,15 @@ void ami_evt_process(struct ast_json* j_evt)
     else if(strcmp(event, "AgentCalled") == 0) {
         ami_evt_AgentCalled(j_evt);
     }
+    else if(strcmp(event, "DialBegin") == 0) {
+        ami_evt_DialBegin(j_evt);
+    }
+    else if(strcmp(event, "DialEnd") == 0) {
+        ami_evt_DialEnd(j_evt);
+    }
     else if(strcmp(event, "Hangup") == 0) {
         ami_evt_Hangup(j_evt);
     }
-
-
-    tmp = ast_json_dump_string_format(j_evt, 0);
-    ast_log(LOG_DEBUG, "Received event. tmp[%s]\n", tmp);
-    ast_json_free(tmp);
 
     return;
 }
@@ -797,6 +806,162 @@ static void ami_evt_AgentCalled(struct ast_json* j_evt)
     ast_json_array_append(dialing->j_agents, j_tmp);
 }
 
+
+static void ami_evt_DialBegin(struct ast_json* j_evt)
+{
+//    {
+//        "event": "DialBegin",
+//        "calleridname": "<unknown>",
+//        "channelstatedesc": "Up",
+//        "privilege": "call,all",
+//        "priority": "1",
+//        "channel": "SIP/trunk_test_1-00000000",
+//        "calleridnum": "<unknown>",
+//        "channelstate": "6",
+//        "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+//        "destconnectedlinename": "<unknown>",
+//        "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+//        "destchannelstatedesc": "Down",
+//        "connectedlinenum": "<unknown>",
+//        "connectedlinename": "<unknown>",
+//        "destcalleridnum": "<unknown>",
+//        "language": "en",
+//        "destconnectedlinenum": "<unknown>",
+//        "accountcode": "",
+//        "destlanguage": "en",
+//        "exten": "",
+//        "dialstring": "Local/test-04@common-incoming",
+//        "context": "from_provider",
+//        "destchannel": "Local/test-04@common-incoming-00000000;1",
+//        "destchannelstate": "0",
+//        "destcalleridname": "<unknown>",
+//        "destaccountcode": "",
+//        "destcontext": "common-incoming",
+//        "destexten": "test-04",
+//        "destpriority": "1",
+//        "destlinkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+//        "destuniqueid": "1447457889.1"
+//    }
+
+    const char* tmp_const;
+    rb_dialing* dialing;
+    struct ast_json* j_tmp;
+    char* tmp;
+    int i;
+    int size;
+
+    // get rb_dialing
+    tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
+    dialing = rb_dialing_find_uuid_chan(tmp_const);
+    if(dialing == NULL) {
+        return;
+    }
+
+    tmp = get_utc_timestamp();
+    size = ast_json_array_size(dialing->j_agents);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(dialing->j_agents, i);
+        if(j_tmp == NULL) {
+            continue;
+        }
+
+        tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "destuniqueid"));
+        if(tmp == NULL) {
+            continue;
+        }
+
+        if(strcmp(tmp_const, ast_json_string_get(ast_json_object_get(j_evt, "destuniqueid"))) != 0) {
+            continue;
+        }
+
+        // update
+        ast_json_object_update(j_tmp, j_evt);
+        ast_json_object_del(j_tmp, "event");
+        ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(tmp));
+
+        break;
+    }
+    ast_free(tmp);
+}
+
+static void ami_evt_DialEnd(struct ast_json* j_evt)
+{
+//    {
+//        "event": "DialEnd",
+//        "calleridname": "<unknown>",
+//        "channelstatedesc": "Up",
+//        "privilege": "call,all",
+//        "priority": "1",
+//        "channel": "SIP/trunk_test_1-00000000",
+//        "calleridnum": "<unknown>",
+//        "channelstate": "6",
+//        "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+//        "destconnectedlinename": "<unknown>",
+//        "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+//        "destchannelstatedesc": "Up",
+//        "connectedlinenum": "<unknown>",
+//        "connectedlinename": "<unknown>",
+//        "destcalleridnum": "<unknown>",
+//        "language": "en",
+//        "destconnectedlinenum": "<unknown>",
+//        "accountcode": "",
+//        "destlanguage": "en",
+//        "exten": "",
+//        "context": "from_provider",
+//        "destchannel": "Local/test-04@common-incoming-00000000;1",
+//        "dialstatus": "ANSWER",
+//        "destchannelstate": "6",
+//        "destcalleridname": "<unknown>",
+//        "destaccountcode": "",
+//        "destcontext": "common-incoming",
+//        "destexten": "",
+//        "destpriority": "1",
+//        "destlinkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+//        "destuniqueid": "1447457889.1"
+//    }
+
+    const char* tmp_const;
+    rb_dialing* dialing;
+    struct ast_json* j_tmp;
+    char* tmp;
+    int i;
+    int size;
+
+    // get rb_dialing
+    tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
+    dialing = rb_dialing_find_uuid_chan(tmp_const);
+    if(dialing == NULL) {
+        return;
+    }
+
+    tmp = get_utc_timestamp();
+    size = ast_json_array_size(dialing->j_agents);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(dialing->j_agents, i);
+        if(j_tmp == NULL) {
+            continue;
+        }
+
+        tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "destuniqueid"));
+        if(tmp == NULL) {
+            continue;
+        }
+
+        if(strcmp(tmp_const, ast_json_string_get(ast_json_object_get(j_evt, "destuniqueid"))) != 0) {
+            continue;
+        }
+
+        // update
+        ast_json_object_update(j_tmp, j_evt);
+        ast_json_object_del(j_tmp, "event");
+        ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
+
+        break;
+    }
+    ast_free(tmp);
+}
+
+
 static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 {
 //    {
@@ -826,7 +991,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
     tmp = get_utc_timestamp();
     ast_json_object_set(dialing->j_dl, "channel", ast_json_ref(ast_json_object_get(j_evt, "channel")));
     ast_json_object_set(dialing->j_dl, "dial_result", ast_json_ref(ast_json_object_get(j_evt, "reason")));
-    ast_json_object_set(dialing->j_dl, "tm_originate_end", ast_json_string_create(tmp));
+    ast_json_object_set(dialing->j_dl, "tm_originate_response", ast_json_string_create(tmp));
     ast_free(tmp);
 }
 
