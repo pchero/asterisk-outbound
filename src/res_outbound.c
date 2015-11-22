@@ -23,6 +23,7 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 #include "event_handler.h"
 #include "ami_handler.h"
 #include "dialing_handler.h"
+#include "cli_handler.h"
 
 
 #include <stdbool.h>
@@ -147,6 +148,7 @@ static int unload_module(void)
     release_module();
     stop_outbound();
     term_ami_handle();
+    term_cli_handler();
 
     pthread_cancel(pth_outbound);
     pthread_kill(pth_outbound, SIGURG);
@@ -163,28 +165,35 @@ static int load_module(void)
     ret = load_config();
     if(ret == false) {
         ast_log(LOG_ERROR, "Could not load config file.");
-        release_module();
+        unload_module();
         return AST_MODULE_LOAD_DECLINE;
     }
 
     ret = init_module();
     if(ret == false) {
         ast_log(LOG_ERROR, "Could not connect to db.\n");
-        release_module();
+        unload_module();
         return AST_MODULE_LOAD_DECLINE;
     }
 
     ret = init_rb_dialing();
     if(ret == false) {
         ast_log(LOG_ERROR, "Could not initiate dialing handler.\n");
-        release_module();
+        unload_module();
         return AST_MODULE_LOAD_DECLINE;
     }
 
     ret = init_ami_handle();
     if(ret == false) {
         ast_log(LOG_ERROR, "Could not initiate AMI handler.\n");
-        release_module();
+        unload_module();
+        return AST_MODULE_LOAD_DECLINE;
+    }
+
+    ret = init_cli_handler();
+    if(ret == false) {
+        ast_log(LOG_ERROR, "Could not initiate AMI handler.\n");
+        unload_module();
         return AST_MODULE_LOAD_DECLINE;
     }
 
@@ -192,6 +201,7 @@ static int load_module(void)
     if(ret > 0)
     {
         ast_log(LOG_ERROR, "Unable to launch thread for outbound. err[%d:%s]\n", errno, strerror(errno));
+        unload_module();
         return AST_MODULE_LOAD_FAILURE;
     }
 

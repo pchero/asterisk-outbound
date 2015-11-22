@@ -68,7 +68,8 @@ int run_outbound(void)
 {
     int ret;
     struct event* ev;
-    struct timeval tm_fast = {3, 20000};    // 2 sec
+    struct timeval tm_fast = {0, 2000};    // 20 ms
+//    struct timeval tm_fast = {3, 20000};    // 2 sec
 //    struct timeval tm_slow = {0, 500000};   // 500 ms
 
     // init libevent
@@ -149,7 +150,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     struct ast_json* j_dlma;
     const char* dial_mode;
 
-    ast_log(LOG_DEBUG, "cb_campagin start\n");
+//    ast_log(LOG_DEBUG, "cb_campagin start\n");
 
     j_camp = get_campaign_info_for_dialing();
     if(j_camp == NULL) {
@@ -245,7 +246,7 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
     char* tmp;
     struct ast_json* j_res;
 
-    ast_log(LOG_DEBUG, "cb_check_dialing_end.\n");
+//    ast_log(LOG_DEBUG, "cb_check_dialing_end.\n");
 
     iter = rb_dialing_iter_init();
 //    for(dialing = ao2_iterator_next(&iter); dialing != NULL; dialing = ao2_iterator_next(&iter)) {
@@ -316,11 +317,46 @@ static struct ast_json* get_campaign_info_for_dialing(void)
     db_res = db_query(sql);
     ast_free(sql);
     if(db_res == NULL) {
-        ast_log(LOG_WARNING, "Could not get campaign info.");
+        ast_log(LOG_WARNING, "Could not get campaign info.\n");
         return NULL;
     }
 
     j_res = db_get_record(db_res);
+    db_free(db_res);
+
+    return j_res;
+}
+
+/**
+ * Get all campaigns
+ * @return
+ */
+struct ast_json* get_campaign_info_all(void)
+{
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    db_res_t* db_res;
+    char* sql;
+
+    // get all campaigns
+    ast_asprintf(&sql, "%s", "select * from campaign");
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_WARNING, "Could not get campaign info.\n");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1) {
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+
+        ast_json_array_append(j_res, j_tmp);
+    }
     db_free(db_res);
 
     return j_res;
@@ -920,12 +956,12 @@ int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table)
     }
 
     j_tmp = db_get_record(db_res);
+    db_free(db_res);
     if(j_tmp == NULL) {
         // shouldn't be reach to here.
         ast_log(LOG_ERROR, "Could not get dialing count.");
         return false;
     }
-    db_free(db_res);
 
     ret = ast_json_integer_get(ast_json_object_get(j_tmp, "count(*)"));
     ast_json_unref(j_tmp);
