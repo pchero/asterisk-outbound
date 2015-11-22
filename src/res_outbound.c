@@ -21,6 +21,10 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 #include "res_outbound.h"
 #include "db_handler.h"
 #include "event_handler.h"
+#include "ami_handler.h"
+#include "dialing_handler.h"
+#include "cli_handler.h"
+
 
 #include <stdbool.h>
 #include <mysql/mysql.h>
@@ -143,6 +147,8 @@ static int unload_module(void)
 {
     release_module();
     stop_outbound();
+    term_ami_handle();
+    term_cli_handler();
 
     pthread_cancel(pth_outbound);
     pthread_kill(pth_outbound, SIGURG);
@@ -159,16 +165,35 @@ static int load_module(void)
     ret = load_config();
     if(ret == false) {
         ast_log(LOG_ERROR, "Could not load config file.");
-
-        release_module();
+        unload_module();
         return AST_MODULE_LOAD_DECLINE;
     }
 
     ret = init_module();
     if(ret == false) {
         ast_log(LOG_ERROR, "Could not connect to db.\n");
+        unload_module();
+        return AST_MODULE_LOAD_DECLINE;
+    }
 
-        release_module();
+    ret = init_rb_dialing();
+    if(ret == false) {
+        ast_log(LOG_ERROR, "Could not initiate dialing handler.\n");
+        unload_module();
+        return AST_MODULE_LOAD_DECLINE;
+    }
+
+    ret = init_ami_handle();
+    if(ret == false) {
+        ast_log(LOG_ERROR, "Could not initiate AMI handler.\n");
+        unload_module();
+        return AST_MODULE_LOAD_DECLINE;
+    }
+
+    ret = init_cli_handler();
+    if(ret == false) {
+        ast_log(LOG_ERROR, "Could not initiate AMI handler.\n");
+        unload_module();
         return AST_MODULE_LOAD_DECLINE;
     }
 
@@ -176,10 +201,39 @@ static int load_module(void)
     if(ret > 0)
     {
         ast_log(LOG_ERROR, "Unable to launch thread for outbound. err[%d:%s]\n", errno, strerror(errno));
+        unload_module();
         return AST_MODULE_LOAD_FAILURE;
     }
 
     return AST_MODULE_LOAD_SUCCESS;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Outbound manager");
+static int reload_module(void)
+{
+    int ret;
+
+    ret = unload_module();
+    if(ret == false) {
+        return AST_MODULE_LOAD_DECLINE;
+    }
+
+    ret = load_module();
+    if(ret == false) {
+        return AST_MODULE_LOAD_DECLINE;
+    }
+
+    return AST_MODULE_LOAD_SUCCESS;
+}
+
+
+//AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Outbound manager");
+
+AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_LOAD_ORDER, "Outbound manager",
+        .load = load_module,
+        .unload = unload_module,
+        .reload = reload_module,
+        .load_pri = AST_MODPRI_DEFAULT,
+        .support_level = AST_MODULE_SUPPORT_CORE,
+        );
+
+

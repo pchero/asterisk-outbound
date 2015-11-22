@@ -19,9 +19,12 @@
 #include "asterisk/utils.h"
 #include "asterisk/module.h"
 #include "asterisk/json.h"
+#include "asterisk/lock.h"
 
 
 static MYSQL* g_db = NULL;
+AST_MUTEX_DEFINE_STATIC(g_mysql_mutex);
+
 
 
 #define MAX_BIND_BUF 4096
@@ -91,17 +94,21 @@ db_res_t* db_query(char* query)
         return NULL;
     }
 
+    ast_mutex_lock(&g_mysql_mutex);
     ret = mysql_query(g_db, query);
     if(ret != 0) {
+        ast_mutex_unlock(&g_mysql_mutex);
         ast_log(LOG_ERROR, "Could not query to db. sql[%s], err[%d:%s]\n", query, mysql_errno(g_db), mysql_error(g_db));
         return NULL;
     }
 
     result = mysql_store_result(g_db);
     if(result == NULL) {
+        ast_mutex_unlock(&g_mysql_mutex);
         ast_log(LOG_ERROR, "Could not store result. sql[%s], err[%d:%s]\n", query, mysql_errno(g_db), mysql_error(g_db));
         return NULL;
     }
+    ast_mutex_unlock(&g_mysql_mutex);
 
     db_ctx = ast_calloc(1, sizeof(db_res_t));
     db_ctx->result = result;
@@ -118,7 +125,9 @@ int db_exec(char* query)
 {
     int ret;
 
+    ast_mutex_lock(&g_mysql_mutex);
     ret = mysql_query(g_db, query);
+    ast_mutex_unlock(&g_mysql_mutex);
     if(ret != 0) {
         ast_log(LOG_ERROR, "Could not execute query. qeury[%s], err[%d:%s]\n", query, ret, mysql_error(g_db));
         return false;
@@ -314,6 +323,8 @@ int db_insert(const char* table, const struct ast_json* j_data)
         ret = ast_asprintf(&sql_values, "%s", tmp);
 
         ast_free(tmp);
+
+        iter = ast_json_object_iter_next(j_data_cp, iter);
     }
     ast_json_unref(j_data_cp);
 

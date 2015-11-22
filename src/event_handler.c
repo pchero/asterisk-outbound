@@ -17,27 +17,21 @@
 #include "asterisk/cli.h"
 #include "asterisk/uuid.h"
 #include "asterisk/file.h"
-#include "asterisk/astobj2.h"
 
 #include "db_handler.h"
 #include "ami_handler.h"
 #include "event_handler.h"
+#include "dialing_handler.h"
 
 #define TEMP_FILENAME "/tmp/asterisk_outbound_tmp.txt"
 
 
 struct event_base*  g_base = NULL;
-static struct ao2_container* g_rb_dialings = NULL;
-
-typedef struct _rb_channel{
-    char* uuid;
-    struct ast_json* j_dl;
-} rb_dialing;
-
 
 static int init_outbound(void);
 
 static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 
 static struct ast_json* get_campaign_info_for_dialing(void);
 static struct ast_json* get_plan_info(const char* uuid);
@@ -53,7 +47,6 @@ static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* 
 //static struct ast_json* get_dl_dial_available(const struct ast_json* j_dlma, const char* dial_mode);
 static struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast_json* j_plan);
 
-char* get_utc_timestamp(void);
 
 struct ast_json* get_queue_summary(const char* name);
 int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table);
@@ -65,67 +58,18 @@ static char* gen_uuid(void);
 static int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point);
 static int update_dl_list(const char* table, struct ast_json* j_dlinfo);
 
-static rb_dialing* rb_dialing_creator(struct ast_json* j_dl);
-static int rb_dialing_cmp_cb(void* obj, void* arg, int flags);
-static int rb_dialing_sort_cb(const void* o_left, const void* o_right, int flags);
-static void rb_dialing_destructor(void* obj);
-static rb_dialing* rb_dialing_find_uuid_dl(const char* chan);
-static rb_dialing* rb_dialing_find_uuid_chan(const char* uuid);
-
+static struct ast_json* create_campaign_result(rb_dialing* dialing);
 
 // todo
 static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
-struct ast_json* create_dialing_info(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dl_list);
-struct ast_json* create_dial_info(const struct ast_json* j_camp);
-int cmd_originate(const struct ast_json* j_dial);
-int memdb_insert(const char* table, const struct ast_json* j_data);
-
-static int rb_dialing_cmp_cb(void* obj, void* arg, int flags)
-{
-    rb_dialing* dialing;
-    const char *uuid;
-
-    dialing = (rb_dialing*)obj;
-
-//    ast_log(LOG_DEBUG, "Find. uuid[%s], flag[%d]s\n", uuid, flags);
-    if(flags & OBJ_KEY) {
-        uuid = (const char*)arg;
-
-        // channel id
-        if(dialing->uuid == NULL) {
-            return 0;
-        }
-        if(strcmp(dialing->uuid, uuid) == 0) {
-            return CMP_MATCH;
-        }
-        return 0;
-    }
-    else if(flags & OBJ_PARTIAL_KEY) {
-        uuid = (const char*)arg;
-
-        // uuid_dl
-        if(strcmp(ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid_dl")), uuid) == 0) {
-            return CMP_MATCH;
-        }
-        return 0;
-    }
-    else {
-        // channel id
-        rb_dialing* dialing_right;
-
-        dialing_right = (rb_dialing*)arg;
-        if(strcmp(dialing->uuid, dialing_right->uuid) == 0) {
-            return CMP_MATCH;
-        }
-        return 0;
-    }
-}
+struct ast_json* create_dialing_info(struct ast_json* j_plan, struct ast_json* j_dl_list);
 
 int run_outbound(void)
 {
     int ret;
     struct event* ev;
-    struct timeval tm_fast = {3, 20000};    // 20 ms
+    struct timeval tm_fast = {0, 2000};    // 20 ms
+//    struct timeval tm_fast = {3, 20000};    // 2 sec
 //    struct timeval tm_slow = {0, 500000};   // 500 ms
 
     // init libevent
@@ -137,6 +81,9 @@ int run_outbound(void)
 
     // check start.
     ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_start, NULL);
+    event_add(ev, &tm_fast);
+
+    ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_dialing_end, NULL);
     event_add(ev, &tm_fast);
 
     event_base_loop(g_base, 0);
@@ -176,15 +123,6 @@ static int init_outbound(void)
     db_free(db_res);
     ast_json_unref(j_res);
 
-    // set rbtree
-    g_rb_dialings = ao2_container_alloc_rbtree(AO2_ALLOC_OPT_LOCK_MUTEX, AO2_CONTAINER_ALLOC_OPT_DUPS_REJECT, rb_dialing_sort_cb, rb_dialing_cmp_cb);
-    if(g_rb_dialings == NULL) {
-        ast_log(LOG_ERROR, "Could not create rbtree.\n");
-        return false;
-    }
-
-    ami_evt_handler();
-
     ast_log(LOG_NOTICE, "Initiated outbound.\n");
 
     return true;
@@ -212,7 +150,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     struct ast_json* j_dlma;
     const char* dial_mode;
 
-    ast_log(LOG_DEBUG, "cb_campagin start\n");
+//    ast_log(LOG_DEBUG, "cb_campagin start\n");
 
     j_camp = get_campaign_info_for_dialing();
     if(j_camp == NULL) {
@@ -300,6 +238,67 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     return;
 }
 
+static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
+{
+    struct ao2_iterator iter;
+    rb_dialing* dialing;
+    const char* tmp_const;
+    char* tmp;
+    struct ast_json* j_res;
+
+//    ast_log(LOG_DEBUG, "cb_check_dialing_end.\n");
+
+    iter = rb_dialing_iter_init();
+//    for(dialing = ao2_iterator_next(&iter); dialing != NULL; dialing = ao2_iterator_next(&iter)) {
+
+    while((dialing = ao2_iterator_next(&iter))) {
+        ao2_ref(dialing, -1);
+
+        tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_chan, "tm_hangup"));
+        if(tmp_const == NULL) {
+            continue;
+        }
+
+        // create result data
+        j_res = create_campaign_result(dialing);
+        db_insert("campaign_result", j_res);
+        ast_json_unref(j_res);
+
+//        if(strcmp(tmp_const, "6") != 0) {
+//            continue;
+//        }
+//
+//        tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_chan, "cause"));
+//        if(tmp_const == NULL) {
+//            continue;
+//        }
+
+        tmp = ast_json_dump_string_format(dialing->j_dl, 0);
+        ast_log(LOG_DEBUG, "Result dl. result[%s]\n", tmp);
+        ast_json_free(tmp);
+
+        tmp = ast_json_dump_string_format(dialing->j_chan, 0);
+        ast_log(LOG_DEBUG, "Result chan. result[%s]\n", tmp);
+        ast_json_free(tmp);
+
+        tmp = ast_json_dump_string_format(dialing->j_queues, 0);
+        ast_log(LOG_DEBUG, "Result queues. result[%s]\n", tmp);
+        ast_json_free(tmp);
+
+        tmp = ast_json_dump_string_format(dialing->j_agents, 0);
+        ast_log(LOG_DEBUG, "Result agents. result[%s]\n", tmp);
+        ast_json_free(tmp);
+
+        rb_dialing_destory(dialing);
+        ast_log(LOG_DEBUG, "Destroied!\n");
+
+    }
+    ao2_iterator_destroy(&iter);
+
+    return;
+}
+
+
 /**
  * Get campaign for dialing.
  * @return
@@ -318,11 +317,46 @@ static struct ast_json* get_campaign_info_for_dialing(void)
     db_res = db_query(sql);
     ast_free(sql);
     if(db_res == NULL) {
-        ast_log(LOG_WARNING, "Could not get campaign info.");
+        ast_log(LOG_WARNING, "Could not get campaign info.\n");
         return NULL;
     }
 
     j_res = db_get_record(db_res);
+    db_free(db_res);
+
+    return j_res;
+}
+
+/**
+ * Get all campaigns
+ * @return
+ */
+struct ast_json* get_campaign_info_all(void)
+{
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    db_res_t* db_res;
+    char* sql;
+
+    // get all campaigns
+    ast_asprintf(&sql, "%s", "select * from campaign");
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_WARNING, "Could not get campaign info.\n");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1) {
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+
+        ast_json_array_append(j_res, j_tmp);
+    }
     db_free(db_res);
 
     return j_res;
@@ -360,6 +394,39 @@ static struct ast_json* get_plan_info(const char* uuid)
 }
 
 /**
+ * Get all plan info.
+ * @return
+ */
+struct ast_json* get_plan_info_all(void)
+{
+    char* sql;
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    db_res_t* db_res;
+
+    ast_asprintf(&sql, "%s", "select * from plan;");
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_ERROR, "Could not get plan all info.\n");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1) {
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+        ast_json_array_append(j_res, j_tmp);
+    }
+    db_free(db_res);
+
+    return j_res;
+}
+
+/**
  *
  * @param uuid
  * @return
@@ -385,6 +452,40 @@ struct ast_json* get_dl_master_info(const char* uuid)
     }
 
     j_res = db_get_record(db_res);
+    db_free(db_res);
+
+    return j_res;
+}
+
+/**
+ *
+ * @param uuid
+ * @return
+ */
+struct ast_json* get_dl_master_info_all(void)
+{
+    char* sql;
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    db_res_t* db_res;
+
+    ast_asprintf(&sql, "%s", "select * from dial_list_ma;");
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_ERROR, "Could not get dial_list_ma info.\n");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1) {
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+        ast_json_array_append(j_res, j_tmp);
+    }
     db_free(db_res);
 
     return j_res;
@@ -497,7 +598,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     }
 
     // creating dialing info
-    j_dialing = create_dialing_info(j_camp, j_plan, j_dlma, j_dl_list);
+    j_dialing = create_dialing_info(j_plan, j_dl_list);
     ast_json_unref(j_dl_list);
     if(j_dialing == NULL) {
         ast_log(LOG_DEBUG, "Could not create dialing info.");
@@ -506,13 +607,13 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     ast_log(LOG_NOTICE, "Originating. camp_uuid[%s], camp_name[%s], channel[%s], chan_id[%s], timeout[%s]\n",
             ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
             ast_json_string_get(ast_json_object_get(j_camp, "name")),
-            ast_json_string_get(ast_json_object_get(j_dialing, "channel")),
+            ast_json_string_get(ast_json_object_get(j_dialing, "dial_addr")),
             ast_json_string_get(ast_json_object_get(j_dialing, "channelid")),
             ast_json_string_get(ast_json_object_get(j_dialing, "timeout"))
             );
 
     // create rbtree
-    dialing = rb_dialing_creator(j_dialing);
+    dialing = rb_dialing_create(j_camp, j_plan, j_dlma, j_dialing);
     ast_json_unref(j_dialing);
     if(dialing == NULL) {
         ast_log(LOG_WARNING, "Could not create rbtree object.");
@@ -560,16 +661,15 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 //    }
     j_dl_update = ast_json_pack("{s:i, s:s, s:i, s:s, s:s, s:s}",
             "status",                   E_DL_DIALING,
-            "uuid",                     ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid_dl")),
+            "uuid",                     ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid")),
             ast_json_string_get(ast_json_object_get(dialing->j_dl, "trycount_field")), ast_json_integer_get(ast_json_object_get(dialing->j_dl, "dial_trycnt")) + 1,
-            "dialing_camp_uuid",        ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid_camp")),
+            "dialing_camp_uuid",        ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid")),
             "dialing_chan_unique_id",   ast_json_string_get(ast_json_object_get(dialing->j_dl, "channelid")),
-            "tm_last_dial",             ast_json_string_get(ast_json_object_get(dialing->j_dl, "tm_dial"))
+            "tm_last_dial",             ast_json_string_get(ast_json_object_get(dialing->j_dl, "tm_originate_request"))
             );
     if(j_dl_update == NULL) {
-        ast_log(LOG_ERROR, "Could not create dl update info json.");
-        ao2_ref(dialing, -1);
-//        ast_json_unref(j_dialing);
+        ast_log(LOG_ERROR, "Could not create dl update info json.\n");
+        rb_dialing_destory(dialing);
         return;
     }
 
@@ -750,20 +850,17 @@ static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_js
  * @return
  */
 struct ast_json* create_dialing_info(
-        struct ast_json* j_camp,
         struct ast_json* j_plan,
-        struct ast_json* j_dlma,
         struct ast_json* j_dl_list
         )
 {
     struct ast_json* j_dial;
-    char* chan_addr;
+    char* dial_addr;
     int dial_num_point;
     char tmp_timeout[10];
     char tmp_dial_num_point[10];
     char* channel_id;
     char* other_channel_id;
-    char* tm_dial;
     char* dial_try_count;
     int dial_count;
 
@@ -783,8 +880,8 @@ struct ast_json* create_dialing_info(
     }
 
     // create destination channel address.
-    chan_addr = create_chan_addr_for_dial(j_plan, j_dl_list, dial_num_point);
-    if(chan_addr == NULL) {
+    dial_addr = create_chan_addr_for_dial(j_plan, j_dl_list, dial_num_point);
+    if(dial_addr == NULL) {
         ast_log(LOG_ERROR, "Could not get correct channel address.\n");
         return NULL;
     }
@@ -793,21 +890,17 @@ struct ast_json* create_dialing_info(
     sprintf(tmp_timeout, "%ld", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout")));
     channel_id = gen_uuid();
     other_channel_id = gen_uuid();
-    tm_dial = get_utc_timestamp();
 
     j_dial = ast_json_pack("{"
-            "s:s, s:s, s:s, s:s, "
+            "s:s, "
             "s:s, s:s, s:s, s:s, s:s, "
-            "s:s, s:s, s:i, s:s"
+            "s:s, s:i, s:s"
             "}",
             // identity info
-            "uuid_camp",    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-            "uuid_plan",    ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
-            "uuid_dlma",    ast_json_string_get(ast_json_object_get(j_dlma, "uuid")),
-            "uuid_dl",      ast_json_string_get(ast_json_object_get(j_dl_list, "uuid")),
+            "uuid",      ast_json_string_get(ast_json_object_get(j_dl_list, "uuid")),
 
             // channel set
-            "channel",      chan_addr,      ///< Destination
+            "dial_addr",    dial_addr,      ///< Destination
             "data",         ast_json_string_get(ast_json_object_get(j_plan, "queue_name")),        ///< Queue name
             "timeout",      tmp_timeout,
             "channelid",        channel_id, ///< Channel unique ID
@@ -817,7 +910,6 @@ struct ast_json* create_dialing_info(
 
             // other info
             "dial_num_point",   tmp_dial_num_point,
-            "tm_dial",          tm_dial,
             "dial_trycnt",      dial_count,
             "trycount_field",   dial_try_count
             );
@@ -825,29 +917,14 @@ struct ast_json* create_dialing_info(
     if(ast_json_string_get(ast_json_object_get(j_plan, "caller_id")) != NULL)   ast_json_object_set(j_dial, "callerid", ast_json_ref(ast_json_object_get(j_plan, "caller_id")));
 
 
-    ast_free(chan_addr);
+    ast_free(dial_addr);
     ast_free(channel_id);
     ast_free(other_channel_id);
-    ast_free(tm_dial);
     ast_free(dial_try_count);
 
     return j_dial;
 }
 
-struct ast_json* create_dial_info(const struct ast_json* j_camp)
-{
-    return NULL;
-}
-
-int cmd_originate(const struct ast_json* j_dial)
-{
-    return true;
-}
-
-int memdb_insert(const char* table, const struct ast_json* j_data)
-{
-    return true;
-}
 
 /**
  * return utc time.
@@ -946,12 +1023,12 @@ int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table)
     }
 
     j_tmp = db_get_record(db_res);
+    db_free(db_res);
     if(j_tmp == NULL) {
         // shouldn't be reach to here.
         ast_log(LOG_ERROR, "Could not get dialing count.");
         return false;
     }
-    db_free(db_res);
 
     ret = ast_json_integer_get(ast_json_object_get(j_tmp, "count(*)"));
     ast_json_unref(j_tmp);
@@ -1124,83 +1201,62 @@ static int update_dl_list(const char* table, struct ast_json* j_dlinfo)
     return true;
 }
 
-static int rb_dialing_sort_cb(const void* o_left, const void* o_right, int flags)
+static struct ast_json* create_campaign_result(rb_dialing* dialing)
 {
-    const rb_dialing* dialing_left;
-    const char* key;
+    struct ast_json* j_res;
+    char* tmp;
 
-    dialing_left = (rb_dialing*)o_left;
+    ast_log(LOG_DEBUG, "Check value. dialing_uuid[%s], camp_uuid[%s], plan_uuid[%s], dlma_uuid[%s], dl_uuid[%s]\n",
+            dialing->uuid,
+            ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid")),
+            ast_json_string_get(ast_json_object_get(dialing->j_plan, "uuid")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dlma, "uuid")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid"))
+            );
+    j_res = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
+            "dialing_uuid", dialing->uuid,
+            "camp_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid")),
+            "plan_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_plan, "uuid")),
+            "dlma_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_dlma, "uuid")),
+            "dl_uuid",      ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid"))
+            );
 
-    if(flags & OBJ_KEY) {
-        key = (char*)o_right;
+    // info_camp
+    tmp = ast_json_dump_string_format(dialing->j_camp, 0);
+    ast_json_object_set(j_res, "info_camp", ast_json_string_create(tmp));
+    ast_json_free(tmp);
 
-        return strcmp(dialing_left->uuid, key);
-    }
-    else if(flags & OBJ_PARTIAL_KEY) {
-        key = (char*)o_right;
+    // info_plan
+    tmp = ast_json_dump_string_format(dialing->j_plan, 0);
+    ast_json_object_set(j_res, "info_plan", ast_json_string_create(tmp));
+    ast_json_free(tmp);
 
-        return strcmp(ast_json_string_get(ast_json_object_get(dialing_left->j_dl, "uuid_dl")), key);
-    }
-    else {
-        const rb_dialing* dialing_right;
+    // info_plan
+    tmp = ast_json_dump_string_format(dialing->j_dlma, 0);
+    ast_json_object_set(j_res, "info_dlma", ast_json_string_create(tmp));
+    ast_json_free(tmp);
 
-        dialing_right = (rb_dialing*)o_right;
-        return strcmp(dialing_left->uuid, dialing_right->uuid);
-    }
+    // info_dl
+    tmp = ast_json_dump_string_format(dialing->j_dl, 0);
+    ast_json_object_set(j_res, "info_dl", ast_json_string_create(tmp));
+    ast_json_free(tmp);
+
+    // info_chan
+    tmp = ast_json_dump_string_format(dialing->j_chan, 0);
+    ast_json_object_set(j_res, "info_chan", ast_json_string_create(tmp));
+    ast_json_free(tmp);
+
+    // info_queues
+    tmp = ast_json_dump_string_format(dialing->j_queues, 0);
+    ast_json_object_set(j_res, "info_queues", ast_json_string_create(tmp));
+    ast_json_free(tmp);
+
+    // info_agents
+    tmp = ast_json_dump_string_format(dialing->j_agents, 0);
+    ast_json_object_set(j_res, "info_agents", ast_json_string_create(tmp));
+    ast_json_free(tmp);
+
+
+    return j_res;
 }
 
-static rb_dialing* rb_dialing_creator(struct ast_json* j_dl)
-{
-    rb_dialing* dialing;
-    const char* tmp_const;
-
-    tmp_const = ast_json_string_get(ast_json_object_get(j_dl, "channelid"));
-    if(tmp_const == NULL) {
-        return NULL;
-    }
-
-//    dialing = ao2_t_alloc(sizeof(rb_dialing), rb_dialing_destructor, "Created rb_dl");
-    dialing = ao2_alloc(sizeof(rb_dialing), rb_dialing_destructor);
-
-    dialing->uuid = ast_strdup(tmp_const);
-    dialing->j_dl = ast_json_deep_copy(j_dl);
-
-    if(ao2_link(g_rb_dialings, dialing) == 0) {
-        ast_log(LOG_DEBUG, "Could not register the dialing. uuid[%s]\n", dialing->uuid);
-        rb_dialing_destructor(dialing);
-        return NULL;
-    }
-//    ao2_ref(dialing, +1);
-
-    return dialing;
-}
-
-static void rb_dialing_destructor(void* obj)
-{
-    rb_dialing* dialing;
-
-    dialing = (rb_dialing*)obj;
-
-    if(dialing->uuid != NULL)   ast_free(dialing->uuid);
-    if(dialing->j_dl != NULL)   ast_json_unref(dialing->j_dl);
-
-    ao2_ref(dialing, -1);
-}
-
-static rb_dialing* rb_dialing_find_uuid_dl(const char* chan)
-{
-    rb_dialing* dialing;
-    dialing = ao2_find(g_rb_dialings, chan, OBJ_PARTIAL_KEY);
-
-    return dialing;
-}
-
-static rb_dialing* rb_dialing_find_uuid_chan(const char* uuid)
-{
-    rb_dialing* dialing;
-
-    ast_log(LOG_DEBUG, "rb_dialing_find_uuid. uuid[%s]\n", uuid);
-    dialing = ao2_find(g_rb_dialings, uuid, OBJ_KEY);
-
-    return dialing;
-}

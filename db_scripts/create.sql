@@ -185,15 +185,20 @@ create table campaign_result(
 -- campaign dial result table.
     -- identity
     seq                 int(10)         unsigned auto_increment,
-    chan_unique_id      varchar(255)    not null,   -- channel unique id.
-    dl_uuid             varchar(255)    not null,   -- dl uuid
-    dlma_uuid           varchar(255)    not null,   -- dial_list_ma uuid.
+    dialing_uuid        varchar(255)    not null,   -- dialing uuid(channel unique id).
     camp_uuid           varchar(255)    not null,   -- campaign uuid.
+    plan_uuid           varchar(255)    not null,   -- plan uuid.
+    dlma_uuid           varchar(255)    not null,   -- dial_list_ma uuid.
+    dl_uuid             varchar(255)    not null,   -- dl uuid
 
     -- dial_info
     info_camp   text    not null,   -- campaign info. json format.
     info_plan   text    not null,   -- plan info. json format.
-    info_dl     text    not null,   -- dl info. json format.    
+    info_dlma	text    not null,   -- dlma info. json format.
+    info_dl     text    not null,   -- dl info. json format.
+    info_chan   text    not null,   -- channel info. json format.
+    info_queues text    not null,   -- queue info. json format
+    info_agents text    not null,   -- agents info. json format
     
     -- timestamp(UTC)
     tm_dial             datetime(6),   -- timestamp for dialing requested.
@@ -228,7 +233,7 @@ create table campaign_result(
     res_tr_hangup           varchar(255),   -- hangup code.
     res_tr_hangup_detail    varchar(255),   -- hangup detail.
         
-    primary key(seq, chan_unique_id)
+    primary key(seq, dialing_uuid)
     
 );
 

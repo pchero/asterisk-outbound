@@ -44,7 +44,9 @@ OBJS_res_outbound.so =  \
 	$(TARGETDIR_res_outbound.so)/res_outbound.o \
 	$(TARGETDIR_res_outbound.so)/db_handler.o \
 	$(TARGETDIR_res_outbound.so)/event_handler.o \
-	$(TARGETDIR_res_outbound.so)/ami_handler.o
+	$(TARGETDIR_res_outbound.so)/ami_handler.o \
+	$(TARGETDIR_res_outbound.so)/dialing_handler.o \
+	$(TARGETDIR_res_outbound.so)/cli_handler.o 
 	
 
 # WARNING: do not run this directly, it should be run by the master Makefile 
@@ -63,6 +65,12 @@ $(TARGETDIR_res_outbound.so)/event_handler.o: $(TARGETDIR_res_outbound.so) src/e
 
 $(TARGETDIR_res_outbound.so)/ami_handler.o: $(TARGETDIR_res_outbound.so) src/ami_handler.c 
 	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/ami_handler.c
+
+$(TARGETDIR_res_outbound.so)/dialing_handler.o: $(TARGETDIR_res_outbound.so) src/dialing_handler.c 
+	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/dialing_handler.c
+
+$(TARGETDIR_res_outbound.so)/cli_handler.o: $(TARGETDIR_res_outbound.so) src/cli_handler.c 
+	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/cli_handler.c
 
 
 #### Clean target deletes all generated files ####

@@ -31,4 +31,10 @@ typedef enum _DL_STATUS_T
 
 } DL_STATUS_T;
 
+char* get_utc_timestamp(void);
+
+struct ast_json* get_campaign_info_all(void);
+struct ast_json* get_plan_info_all(void);
+struct ast_json* get_dl_master_info_all(void);
+
 #endif /* SRC_EVENT_HANDLER_H_ */
