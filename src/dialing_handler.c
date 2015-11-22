@@ -30,6 +30,8 @@ int init_rb_dialing(void)
         ast_log(LOG_ERROR, "Could not create rbtree.\n");
         return false;
     }
+   ast_log(LOG_NOTICE, "Initiated dialing handler.\n");
+
     return true;
 }
 
@@ -113,10 +115,21 @@ static int rb_dialing_cmp_cb(void* obj, void* arg, int flags)
     }
 }
 
-rb_dialing* rb_dialing_create(struct ast_json* j_dl)
+/**
+ * Create dialing obj.
+ * @param j_camp
+ * @param j_plan
+ * @param j_dl
+ * @return
+ */
+rb_dialing* rb_dialing_create(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dl)
 {
     rb_dialing* dialing;
     const char* tmp_const;
+
+    if((j_camp == NULL) || (j_plan == NULL) || (j_dl == NULL)) {
+        return NULL;
+    }
 
     tmp_const = ast_json_string_get(ast_json_object_get(j_dl, "channelid"));
     if(tmp_const == NULL) {
@@ -126,6 +139,9 @@ rb_dialing* rb_dialing_create(struct ast_json* j_dl)
     dialing = ao2_alloc(sizeof(rb_dialing), rb_dialing_destructor);
 
     dialing->uuid = ast_strdup(tmp_const);
+    dialing->j_camp = ast_json_deep_copy(j_camp);
+    dialing->j_plan = ast_json_deep_copy(j_plan);
+    dialing->j_dlma = ast_json_deep_copy(j_dlma);
     dialing->j_dl = ast_json_deep_copy(j_dl);
 
     dialing->j_chan = ast_json_object_create();
@@ -154,18 +170,25 @@ static void rb_dialing_destructor(void* obj)
     dialing = (rb_dialing*)obj;
 
     if(dialing->uuid != NULL)       ast_free(dialing->uuid);
+
+    if(dialing->j_camp != NULL)     ast_json_unref(dialing->j_camp);
+    if(dialing->j_plan != NULL)     ast_json_unref(dialing->j_plan);
+    if(dialing->j_dlma != NULL)     ast_json_unref(dialing->j_dlma);
     if(dialing->j_dl != NULL)       ast_json_unref(dialing->j_dl);
     if(dialing->j_chan != NULL)     ast_json_unref(dialing->j_chan);
     if(dialing->j_queues != NULL)   ast_json_unref(dialing->j_queues);
-    if(dialing->j_agents != NULL)   ast_json_unref(dialing->j_queues);
+    if(dialing->j_agents != NULL)   ast_json_unref(dialing->j_agents);
 
-    ast_log(LOG_DEBUG, "Called destoryer.\n");
+    ast_log(LOG_DEBUG, "Called destroyer.\n");
 }
 
 rb_dialing* rb_dialing_find_uuid_dl(const char* chan)
 {
     rb_dialing* dialing;
     dialing = ao2_find(g_rb_dialings, chan, OBJ_SEARCH_PARTIAL_KEY);
+    if(dialing == NULL) {
+        return NULL;
+    }
     ao2_ref(dialing, -1);
 
     return dialing;
@@ -174,6 +197,10 @@ rb_dialing* rb_dialing_find_uuid_dl(const char* chan)
 rb_dialing* rb_dialing_find_uuid_chan(const char* uuid)
 {
     rb_dialing* dialing;
+
+    if(uuid == NULL) {
+        return NULL;
+    }
 
     ast_log(LOG_DEBUG, "rb_dialing_find_uuid. uuid[%s]\n", uuid);
     dialing = ao2_find(g_rb_dialings, uuid, OBJ_SEARCH_KEY);

@@ -18,7 +18,9 @@
 
 
 static char* g_cmd_buf = NULL;  //!< action cmd buffer
+struct manager_custom_hook* g_hook_evt;
 
+static int ami_evt_handler(void);
 static int ami_cmd_helper(int category, const char *event, char *content);
 static int ami_evt_helper(int category, const char *event, char *content);
 static struct ast_json* parse_ami_msg(char* msg);
@@ -36,6 +38,25 @@ static void ami_evt_AgentCalled(struct ast_json* j_evt);
 static void ami_evt_DialBegin(struct ast_json* j_evt);
 static void ami_evt_DialEnd(struct ast_json* j_evt);
 static void ami_evt_Hangup(struct ast_json* j_evt);
+
+
+int init_ami_handle(void)
+{
+    int ret;
+
+    ret = ami_evt_handler();
+    if(ret == false) {
+        return false;
+    }
+    ast_log(LOG_NOTICE, "Initiated AMI handler.\n");
+
+    return true;
+}
+
+void term_ami_handle(void)
+{
+    ast_manager_unregister_hook(g_hook_evt);
+}
 
 /**
  *
@@ -237,14 +258,14 @@ static int ami_cmd_helper(int category, const char *event, char *content)
     return 1;
 }
 
-int ami_evt_handler(void)
+static int ami_evt_handler(void)
 {
-    struct manager_custom_hook* hook;
+//    struct manager_custom_hook* hook;
 
-    hook = ast_calloc(1, sizeof(struct manager_custom_hook));
-    hook->file = __FILE__;
-    hook->helper = &ami_evt_helper;
-    ast_manager_register_hook(hook);
+    g_hook_evt = ast_calloc(1, sizeof(struct manager_custom_hook));
+    g_hook_evt->file = __FILE__;
+    g_hook_evt->helper = &ami_evt_helper;
+    ast_manager_register_hook(g_hook_evt);
     ast_log(LOG_NOTICE, "Start zmq_evt hook.\n");
 
     return true;
@@ -557,7 +578,8 @@ static void ami_evt_Newchannel(struct ast_json* j_evt)
     ast_json_object_set(j_tmp, "tm_create", ast_json_string_create(tmp));
     ast_free(tmp);
 
-    dialing->j_chan = j_tmp;
+    ast_json_object_update(dialing->j_chan, j_tmp);
+    ast_json_unref(j_tmp);
 }
 
 static void ami_evt_Newexten(struct ast_json* j_evt)
@@ -1021,6 +1043,7 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
     const char* tmp_const;
     rb_dialing* dialing;
     struct ast_json* j_tmp;
+    char* tmp;
 
     // get rb_dialing
     tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -1029,9 +1052,12 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
         return;
     }
 
+    tmp = get_utc_timestamp();
     j_tmp = ast_json_deep_copy(j_evt);
     ast_json_object_del(j_tmp, "event");
+    ast_json_object_set(j_tmp, "tm_hangup", ast_json_string_create(tmp));
 
     ast_json_object_update(dialing->j_chan, j_tmp);
     ast_json_unref(j_tmp);
+    ast_free(tmp);
 }

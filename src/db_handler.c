@@ -314,6 +314,8 @@ int db_insert(const char* table, const struct ast_json* j_data)
         ret = ast_asprintf(&sql_values, "%s", tmp);
 
         ast_free(tmp);
+
+        iter = ast_json_object_iter_next(j_data_cp, iter);
     }
     ast_json_unref(j_data_cp);
 

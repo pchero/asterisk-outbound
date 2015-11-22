@@ -12,6 +12,10 @@
 
 typedef struct _rb_dialing{
     char* uuid;                 ///< dialing uuid(channel's unique id)
+
+    struct ast_json* j_camp;    ///< campaign
+    struct ast_json* j_plan;    ///< plan
+    struct ast_json* j_dlma;    ///< dlma
     struct ast_json* j_dl;      ///< dl(dialing) info.
 
     struct ast_json* j_chan;    ///< channel info.
@@ -20,7 +24,7 @@ typedef struct _rb_dialing{
 } rb_dialing;
 
 int init_rb_dialing(void);
-rb_dialing* rb_dialing_create(struct ast_json* j_dl);
+rb_dialing* rb_dialing_create(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dl);
 void rb_dialing_destory(rb_dialing* dialing);
 
 rb_dialing* rb_dialing_find_uuid_dl(const char* chan);
