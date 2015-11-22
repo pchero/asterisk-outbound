@@ -238,18 +238,24 @@
     "destuniqueid": "1447457889.1"
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+{
+    "event": "MusicOnHoldStop",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "priority": "1",
+    "privilege": "call,all",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "channelstate": "6",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "accountcode": "",
+    "exten": "",
+    "context": "from_provider"
+}
 
 {
     "event": "QueueCallerLeave",
@@ -272,6 +278,134 @@
     "queue": "TestQueue",
     "count": "0"
 }
+
+{
+    "event": "AgentConnect",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "priority": "1",
+    "privilege": "agent,all",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "channelstate": "6",
+    "destconnectedlinename": "<unknown>",
+    "membername": "test 04",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "destchannelstatedesc": "Up",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "destcalleridnum": "<unknown>",
+    "accountcode": "",
+    "destconnectedlinenum": "<unknown>",
+    "destlanguage": "en",
+    "exten": "",
+    "context": "from_provider",
+    "destchannel": "Local/test-04@common-incoming-00000000;1",
+    "destchannelstate": "6",
+    "destcalleridname": "<unknown>",
+    "destaccountcode": "",
+    "destcontext": "common-incoming",
+    "destexten": "",
+    "destpriority": "1",
+    "ringtime": "5",
+    "destuniqueid": "1447457889.1",
+    "destlinkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "queue": "TestQueue",
+    "interface": "Local/test-04@common-incoming",
+    "holdtime": "6"
+}
+
+{
+    "calleridname": "<unknown>",
+    "event": "BridgeEnter",
+    "priority": "1",
+    "privilege": "call,all",
+    "bridgenumchannels": "2",
+    "bridgetype": "basic",
+    "language": "en",
+    "bridgetechnology": "simple_bridge",
+    "context": "from_provider",
+    "bridgeuniqueid": "a1fb2848-2f37-4ded-971c-6effa20a7cb7",
+    "bridgecreator": "<unknown>",
+    "calleridnum": "<unknown>",
+    "channel": "SIP/trunk_test_1-00000000",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "bridgename": "<unknown>",
+    "channelstate": "6",
+    "channelstatedesc": "Up",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "accountcode": "",
+    "exten": "",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35"
+}
+
+{
+    "event": "AgentComplete",
+    "calleridname": "<unknown>",
+    "channelstatedesc": "Up",
+    "priority": "1",
+    "privilege": "agent,all",
+    "channel": "SIP/trunk_test_1-00000000",
+    "calleridnum": "<unknown>",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "channelstate": "6",
+    "destconnectedlinename": "<unknown>",
+    "membername": "test 04",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "connectedlinenum": "<unknown>",
+    "destchannelstatedesc": "Up",
+    "connectedlinename": "<unknown>",
+    "language": "en",
+    "destcalleridnum": "test-04",
+    "accountcode": "",
+    "destconnectedlinenum": "<unknown>",
+    "talktime": "10",
+    "destlanguage": "en",
+    "exten": "",
+    "context": "from_provider",
+    "destchannel": "SIP/test-04-00000001",
+    "destchannelstate": "6",
+    "destcalleridname": "<unknown>",
+    "destaccountcode": "",
+    "destcontext": "common-incoming",
+    "destexten": "",
+    "destpriority": "1",
+    "destuniqueid": "1447457889.3",
+    "destlinkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "queue": "TestQueue",
+    "interface": "Local/test-04@common-incoming",
+    "holdtime": "6",
+    "reason": "agent"
+}
+
+{
+    "calleridname": "<unknown>",
+    "event": "BridgeLeave",
+    "priority": "1",
+    "privilege": "call,all",
+    "bridgenumchannels": "0",
+    "bridgetype": "basic",
+    "language": "en",
+    "bridgetechnology": "native_rtp",
+    "context": "from_provider",
+    "bridgeuniqueid": "a1fb2848-2f37-4ded-971c-6effa20a7cb7",
+    "bridgecreator": "<unknown>",
+    "calleridnum": "<unknown>",
+    "channel": "SIP/trunk_test_1-00000000",
+    "linkedid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35",
+    "bridgename": "<unknown>",
+    "channelstate": "6",
+    "channelstatedesc": "Up",
+    "connectedlinenum": "<unknown>",
+    "connectedlinename": "<unknown>",
+    "accountcode": "",
+    "exten": "",
+    "uniqueid": "dee9d42f-972c-4f87-b5fb-ff8edf1e6f35"
+}
+
 
 
 

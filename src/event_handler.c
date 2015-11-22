@@ -246,11 +246,7 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
     char* tmp;
     struct ast_json* j_res;
 
-//    ast_log(LOG_DEBUG, "cb_check_dialing_end.\n");
-
     iter = rb_dialing_iter_init();
-//    for(dialing = ao2_iterator_next(&iter); dialing != NULL; dialing = ao2_iterator_next(&iter)) {
-
     while((dialing = ao2_iterator_next(&iter))) {
         ao2_ref(dialing, -1);
 
@@ -263,15 +259,6 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
         j_res = create_campaign_result(dialing);
         db_insert("campaign_result", j_res);
         ast_json_unref(j_res);
-
-//        if(strcmp(tmp_const, "6") != 0) {
-//            continue;
-//        }
-//
-//        tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_chan, "cause"));
-//        if(tmp_const == NULL) {
-//            continue;
-//        }
 
         tmp = ast_json_dump_string_format(dialing->j_dl, 0);
         ast_log(LOG_DEBUG, "Result dl. result[%s]\n", tmp);

@@ -13,6 +13,8 @@
 
 #include "cli_handler.h"
 #include "event_handler.h"
+#include "dialing_handler.h"
+
 
 
 static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
@@ -21,12 +23,14 @@ static char *out_show_plans(struct ast_cli_entry *e, int cmd, struct ast_cli_arg
 static char* _out_show_plans(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
 static char *out_show_dlmas(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
 static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
-
+static char *out_show_dialings(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
+static char* _out_show_dialings(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
 
 struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_campaigns, "List defined outbound campaigns"),
     AST_CLI_DEFINE(out_show_plans, "List defined outbound plans"),
-    AST_CLI_DEFINE(out_show_dlmas, "List defined outbound dlmas")
+    AST_CLI_DEFINE(out_show_dlmas, "List defined outbound dlmas"),
+    AST_CLI_DEFINE(out_show_dialings, "List currently on serviced dialings")
 };
 
 int init_cli_handler(void)
@@ -197,6 +201,60 @@ static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const str
                 ast_json_string_get(ast_json_object_get(j_tmp, "name")) ? : "",
                 ast_json_string_get(ast_json_object_get(j_tmp, "detail")) ? : "",
                 ast_json_string_get(ast_json_object_get(j_tmp, "dl_table")) ? : ""
+                );
+    }
+    ast_json_unref(j_res);
+
+    return CLI_SUCCESS;
+}
+
+/*! \brief CLI for show plans.
+ */
+static char *out_show_dialings(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+
+    if (cmd == CLI_INIT) {
+        e->command = "out show dialings";
+        e->usage =
+            "Usage: out show dialings\n"
+            "       Lists all currently on service dialings.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_show_dialings(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
+#define DIALING_FORMAT2 "%-36.36s %-5.5s %-20.20s %-10.10s %-10.10s %-10.10s\n"
+#define DIALING_FORMAT3 "%-36.36s %-5.5s %-20.20s %-10.10s %-10.10s %-10.10s\n"
+
+static char* _out_show_dialings(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    int size;
+    int i;
+
+    j_res = rb_dialing_get_all_for_cli();
+
+    if (!s) {
+        /* Normal list */
+        ast_cli(fd, DIALING_FORMAT2, "UUID", "State", "Channel", "Queue", "MemberName", "TM_Hangup");
+    }
+
+    size = ast_json_array_size(j_res);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(j_res, i);
+        if(j_tmp == NULL) {
+            continue;
+        }
+        ast_cli(fd, DIALING_FORMAT3,
+                ast_json_string_get(ast_json_object_get(j_tmp, "uuid")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "channelstate")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "channel")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "queue")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "membername")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "tm_hangup")) ? : ""
                 );
     }
     ast_json_unref(j_res);

@@ -30,5 +30,6 @@ void rb_dialing_destory(rb_dialing* dialing);
 rb_dialing* rb_dialing_find_uuid_dl(const char* chan);
 rb_dialing* rb_dialing_find_uuid_chan(const char* chan);
 struct ao2_iterator rb_dialing_iter_init(void);
+struct ast_json* rb_dialing_get_all_for_cli(void);
 
 #endif /* SRC_DIALING_HANDLER_H_ */
