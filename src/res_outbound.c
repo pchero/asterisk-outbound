@@ -208,4 +208,32 @@ static int load_module(void)
     return AST_MODULE_LOAD_SUCCESS;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Outbound manager");
+static int reload_module(void)
+{
+    int ret;
+
+    ret = unload_module();
+    if(ret == false) {
+        return AST_MODULE_LOAD_DECLINE;
+    }
+
+    ret = load_module();
+    if(ret == false) {
+        return AST_MODULE_LOAD_DECLINE;
+    }
+
+    return AST_MODULE_LOAD_SUCCESS;
+}
+
+
+//AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Outbound manager");
+
+AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_LOAD_ORDER, "Outbound manager",
+        .load = load_module,
+        .unload = unload_module,
+        .reload = reload_module,
+        .load_pri = AST_MODPRI_DEFAULT,
+        .support_level = AST_MODULE_SUPPORT_CORE,
+        );
+
+

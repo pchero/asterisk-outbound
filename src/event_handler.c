@@ -394,6 +394,39 @@ static struct ast_json* get_plan_info(const char* uuid)
 }
 
 /**
+ * Get all plan info.
+ * @return
+ */
+struct ast_json* get_plan_info_all(void)
+{
+    char* sql;
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    db_res_t* db_res;
+
+    ast_asprintf(&sql, "%s", "select * from plan;");
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_ERROR, "Could not get plan all info.\n");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1) {
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+        ast_json_array_append(j_res, j_tmp);
+    }
+    db_free(db_res);
+
+    return j_res;
+}
+
+/**
  *
  * @param uuid
  * @return
@@ -419,6 +452,40 @@ struct ast_json* get_dl_master_info(const char* uuid)
     }
 
     j_res = db_get_record(db_res);
+    db_free(db_res);
+
+    return j_res;
+}
+
+/**
+ *
+ * @param uuid
+ * @return
+ */
+struct ast_json* get_dl_master_info_all(void)
+{
+    char* sql;
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    db_res_t* db_res;
+
+    ast_asprintf(&sql, "%s", "select * from dial_list_ma;");
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_ERROR, "Could not get dial_list_ma info.\n");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1) {
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+        ast_json_array_append(j_res, j_tmp);
+    }
     db_free(db_res);
 
     return j_res;

@@ -17,9 +17,16 @@
 
 static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
 static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
+static char *out_show_plans(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
+static char* _out_show_plans(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
+static char *out_show_dlmas(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
+static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
+
 
 struct ast_cli_entry cli_out[] = {
-    AST_CLI_DEFINE(out_show_campaigns, "List defined outbound campaigns")
+    AST_CLI_DEFINE(out_show_campaigns, "List defined outbound campaigns"),
+    AST_CLI_DEFINE(out_show_plans, "List defined outbound plans"),
+    AST_CLI_DEFINE(out_show_dlmas, "List defined outbound dlmas")
 };
 
 int init_cli_handler(void)
@@ -34,10 +41,7 @@ void term_cli_handler(void)
 }
 
 
-/*! \brief CLI for show channels or subscriptions.
- * This is a new-style CLI handler so a single function contains
- * the prototype for the function, the 'generator' to produce multiple
- * entries in case it is required, and the actual handler for the command.
+/*! \brief CLI for show campaigns.
  */
 static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
@@ -47,13 +51,16 @@ static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli
         e->command = "out show campaigns";
         e->usage =
             "Usage: out show campaigns\n"
-            "       Lists all currently active campaigns.\n";
+            "       Lists all currently registered campaigns.\n";
         return NULL;
     } else if (cmd == CLI_GENERATE) {
         return NULL;
     }
     return _out_show_campaigns(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
+
+#define CAMP_FORMAT2 "%-36.36s %-40.40s %-6.6s %-36.36s %-36.36s %-40.40s\n"
+#define CAMP_FORMAT3 "%-36.36s %-40.40s %-6.6ld %-36.36s %-36.36s %-40.40s\n"
 
 static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
@@ -64,18 +71,25 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
 
     j_res = get_campaign_info_all();
 
+    if (!s) {
+        /* Normal list */
+        ast_cli(fd, CAMP_FORMAT2, "UUID", "Name", "STATUS", "Plan", "DLMA", "Detail");
+    }
+
+
     size = ast_json_array_size(j_res);
     for(i = 0; i < size; i++) {
         j_tmp = ast_json_array_get(j_res, i);
         if(j_tmp == NULL) {
             continue;
         }
-        ast_cli(fd, "%s %s %ld %s %s\n",
-                ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
-                ast_json_string_get(ast_json_object_get(j_tmp, "name")),
-                ast_json_integer_get(ast_json_object_get(j_tmp, "status")),
-                ast_json_string_get(ast_json_object_get(j_tmp, "plan")),
-                ast_json_string_get(ast_json_object_get(j_tmp, "dlma"))
+        ast_cli(fd, CAMP_FORMAT3,
+                ast_json_string_get(ast_json_object_get(j_tmp, "uuid")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "name")) ? : "",
+                ast_json_integer_get(ast_json_object_get(j_tmp, "status")) ? : -1,
+                ast_json_string_get(ast_json_object_get(j_tmp, "plan")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "dlma")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "detail")) ? : ""
                 );
     }
     ast_json_unref(j_res);
@@ -83,4 +97,109 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
     return CLI_SUCCESS;
 }
 
+/*! \brief CLI for show plans.
+ */
+static char *out_show_plans(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
 
+    if (cmd == CLI_INIT) {
+        e->command = "out show plans";
+        e->usage =
+            "Usage: out show plans\n"
+            "       Lists all currently registered plans.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_show_plans(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
+#define PLAN_FORMAT2 "%-36.36s %-40.40s %-40.40s %-8.8s %-11.11s %-5.5s %-5.5s\n"
+#define PLAN_FORMAT3 "%-36.36s %-40.40s %-40.40s %-8.8s %-11.11ld %-5.5s %-5.5s\n"
+
+static char* _out_show_plans(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    int size;
+    int i;
+
+    j_res = get_plan_info_all();
+
+    if (!s) {
+        /* Normal list */
+        ast_cli(fd, PLAN_FORMAT2, "UUID", "Name", "Detail", "DialMode", "DialTimeout", "Queue", "Trunk");
+    }
+
+    size = ast_json_array_size(j_res);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(j_res, i);
+        if(j_tmp == NULL) {
+            continue;
+        }
+        ast_cli(fd, PLAN_FORMAT3,
+                ast_json_string_get(ast_json_object_get(j_tmp, "uuid")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "name")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "detail")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "dial_mode")) ? : "",
+                ast_json_integer_get(ast_json_object_get(j_tmp, "dial_timeout")) ? : -1,
+                ast_json_string_get(ast_json_object_get(j_tmp, "queue_name")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "trunk_name")) ? : ""
+                );
+    }
+    ast_json_unref(j_res);
+
+    return CLI_SUCCESS;
+}
+
+/*! \brief CLI for show plans.
+ */
+static char *out_show_dlmas(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+
+    if (cmd == CLI_INIT) {
+        e->command = "out show dlmas";
+        e->usage =
+            "Usage: out show dlmas\n"
+            "       Lists all currently registered dlmas.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_show_dlmas(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
+#define DLMA_FORMAT2 "%-36.36s %-40.40s %-40.40s %-30.30s\n"
+#define DLMA_FORMAT3 "%-36.36s %-40.40s %-40.40s %-30.30s\n"
+
+static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    int size;
+    int i;
+
+    j_res = get_dl_master_info_all();
+
+    if (!s) {
+        /* Normal list */
+        ast_cli(fd, DLMA_FORMAT2, "UUID", "Name", "Detail", "Table");
+    }
+
+    size = ast_json_array_size(j_res);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(j_res, i);
+        if(j_tmp == NULL) {
+            continue;
+        }
+        ast_cli(fd, DLMA_FORMAT3,
+                ast_json_string_get(ast_json_object_get(j_tmp, "uuid")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "name")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "detail")) ? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "dl_table")) ? : ""
+                );
+    }
+    ast_json_unref(j_res);
+
+    return CLI_SUCCESS;
+}
