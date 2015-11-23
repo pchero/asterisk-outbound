@@ -38,7 +38,6 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 static struct ast_json* get_campaign_info_for_dialing(void);
 static struct ast_json* get_plan_info(const char* uuid);
 static struct ast_json* get_dl_master_info(const char* uuid);
-static int update_campaign_info_status(const char* uuid, CAMP_STATUS_T status);
 
 static void dial_desktop(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 static void dial_power(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
@@ -61,7 +60,7 @@ static int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point);
 static int update_dl_list(const char* table, struct ast_json* j_dlinfo);
 
 static struct ast_json* create_campaign_result(rb_dialing* dialing);
-static struct ast_json* get_campaigns_info_by_status(CAMP_STATUS_T status);
+static struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status);
 
 // todo
 static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
@@ -428,7 +427,7 @@ static struct ast_json* get_campaign_info_for_dialing(void)
 
     // get "start" status campaign only.
     ast_asprintf(&sql, "select * from campaign where status = %d order by rand() limit 1;",
-            E_CAMP_RUN
+            E_CAMP_START
             );
 
     db_res = db_query(sql);
@@ -448,7 +447,7 @@ static struct ast_json* get_campaign_info_for_dialing(void)
  * Get campaign for dialing.
  * @return
  */
-static struct ast_json* get_campaigns_info_by_status(CAMP_STATUS_T status)
+static struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status)
 {
     struct ast_json* j_res;
     struct ast_json* j_tmp;
@@ -681,7 +680,7 @@ struct ast_json* get_dl_master_info_all(void)
  * @param status
  * @return
  */
-static int update_campaign_info_status(const char* uuid, CAMP_STATUS_T status)
+int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status)
 {
     char* sql;
     int ret;
@@ -693,10 +692,10 @@ static int update_campaign_info_status(const char* uuid, CAMP_STATUS_T status)
     }
     ast_log(LOG_NOTICE, "Update campaign status. uuid[%s], status[%d]\n", uuid, status);
 
-    if(status == E_CAMP_RUN) tmp_status = "run";
+    if(status == E_CAMP_START) tmp_status = "run";
     else if(status == E_CAMP_STOP) tmp_status = "stop";
     else if(status == E_CAMP_PAUSE) tmp_status = "pause";
-    else if(status == E_CAMP_RUNNING) tmp_status = "running";
+    else if(status == E_CAMP_STARTING) tmp_status = "running";
     else if(status == E_CAMP_STOPPING) tmp_status = "stopping";
     else if(status == E_CAMP_PAUSING) tmp_status = "pausing";
     else {
