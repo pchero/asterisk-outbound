@@ -22,6 +22,9 @@ typedef enum _CAMP_STATUS_T
     E_CAMP_STOPPING = 10,
     E_CAMP_RUNNING  = 11,
     E_CAMP_PAUSING  = 12,
+
+    // force status
+    E_CAMP_STOPPING_FORCE = 30,
 } CAMP_STATUS_T;
 
 typedef enum _DL_STATUS_T
