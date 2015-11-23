@@ -95,6 +95,71 @@ static char* _out_show_campaign(int fd, int *total, struct mansession *s, const 
     return CLI_SUCCESS;
 }
 
+static char* _out_set_campaign(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+    // out set campaign <uuid> <key> <value>
+    // out set status {start|starting|stop|stopping|pause|pausing} on <uuid-campaign>
+    int ret;
+    const char* uuid;
+    const char* value;
+    E_CAMP_STATUS_T status;
+
+    value = argv[3];
+    uuid = argv[5];
+
+    if((uuid == NULL) || (value == NULL)) {
+        return NULL;
+    }
+
+    if(strcmp(value, "stop") == 0) {
+        status = E_CAMP_STOPPING;
+    }
+    else if(strcmp(value, "stopping") == 0) {
+        status = E_CAMP_STOPPING;
+    }
+    else if(strcmp(value, "start") == 0) {
+        status = E_CAMP_STARTING;
+    }
+    else if(strcmp(value, "starting") == 0) {
+        status = E_CAMP_STARTING;
+    }
+    else if(strcmp(value, "pause") == 0) {
+        status = E_CAMP_PAUSING;
+    }
+    else if(strcmp(value, "pausing") == 0) {
+        status = E_CAMP_PAUSING;
+    }
+    else {
+        // wrong status value.
+        ast_cli(fd, "Wrong status value. value[%s]\n", value);
+        ast_cli(fd, "\n");
+        return CLI_SUCCESS;
+    }
+
+    ret = update_campaign_info_status(uuid, status);
+    if(ret == false) {
+        ast_cli(fd, "Could not set campaign status. uuid[%s]\n", uuid);
+        return CLI_FAILURE;
+    }
+    return CLI_SUCCESS;
+}
+
+/*! \brief CLI for set campaigns.
+ */
+static char *out_set_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+    if (cmd == CLI_INIT) {
+        e->command = "out set status {start|starting|stop|stopping|pause|pausing} on";
+        e->usage =
+            "Usage: out set status {start|starting|stop|stopping|pause|pausing} on <uuid-campaign>\n"
+            "       Set campaign's status.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_set_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
 /*! \brief CLI for show campaign.
  */
 static char *out_show_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
@@ -110,6 +175,8 @@ static char *out_show_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_
     }
     return _out_show_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
+
+
 
 #define PLAN_FORMAT2 "%-36.36s %-40.40s %-40.40s %-8.8s %-11.11s %-5.5s %-5.5s\n"
 #define PLAN_FORMAT3 "%-36.36s %-40.40s %-40.40s %-8.8s %11ld %-5.5s %-5.5s\n"
@@ -278,7 +345,8 @@ struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_plans, "List defined outbound plans"),
     AST_CLI_DEFINE(out_show_dlmas, "List defined outbound dlmas"),
     AST_CLI_DEFINE(out_show_dialings, "List currently on serviced dialings"),
-    AST_CLI_DEFINE(out_show_campaign, "Shows detail campaign info")
+    AST_CLI_DEFINE(out_show_campaign, "Shows detail campaign info"),
+    AST_CLI_DEFINE(out_set_campaign, "Set campaign parameters")
 };
 
 int init_cli_handler(void)
