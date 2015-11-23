@@ -217,3 +217,31 @@ struct ao2_iterator rb_dialing_iter_init(void)
 //    ast_log(LOG_DEBUG, "rd_dialing count. count[%d]\n", ao2_container_count(g_rb_dialings));
     return ao2_iterator_init(g_rb_dialings, 0);
 }
+
+struct ast_json* rb_dialing_get_all_for_cli(void)
+{
+    struct ao2_iterator iter;
+    rb_dialing* dialing;
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+
+    j_res = ast_json_array_create();
+    iter = rb_dialing_iter_init();
+    while((dialing = ao2_iterator_next(&iter))) {
+        ao2_ref(dialing, -1);
+
+        j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s, s:s}",
+                "uuid",         dialing->uuid,
+                "channelstate", ast_json_string_get(ast_json_object_get(dialing->j_chan, "channelstate")) ? : "",
+                "channel",      ast_json_string_get(ast_json_object_get(dialing->j_chan, "channel")) ? : "",
+                "queue",        ast_json_string_get(ast_json_object_get(dialing->j_chan, "queue")) ? : "",
+                "membername",   ast_json_string_get(ast_json_object_get(dialing->j_chan, "membername")) ? : "",
+                "tm_hangup",    ast_json_string_get(ast_json_object_get(dialing->j_chan, "tm_hangup")) ? : ""
+                );
+
+        ast_json_array_append(j_res, j_tmp);
+    }
+    ao2_iterator_destroy(&iter);
+
+    return j_res;
+}
