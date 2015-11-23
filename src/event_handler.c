@@ -31,6 +31,8 @@ struct event_base*  g_base = NULL;
 static int init_outbound(void);
 
 static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 
 static struct ast_json* get_campaign_info_for_dialing(void);
@@ -59,6 +61,7 @@ static int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point);
 static int update_dl_list(const char* table, struct ast_json* j_dlinfo);
 
 static struct ast_json* create_campaign_result(rb_dialing* dialing);
+static struct ast_json* get_campaigns_info_by_status(CAMP_STATUS_T status);
 
 // todo
 static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
@@ -82,6 +85,16 @@ int run_outbound(void)
     // check start.
     ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_start, NULL);
     event_add(ev, &tm_fast);
+
+    // check stopping.
+    ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_stopping, NULL);
+    event_add(ev, &tm_fast);
+
+    // check force stopping
+    ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_stopping_force, NULL);
+    event_add(ev, &tm_fast);
+
+
 
     ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_dialing_end, NULL);
     event_add(ev, &tm_fast);
@@ -132,7 +145,7 @@ void stop_outbound(void)
 {
     struct timeval sec;
 
-    sec.tv_sec = 1;
+    sec.tv_sec = 0;
     sec.tv_usec = 0;
 
     event_base_loopexit(g_base, &sec);
@@ -238,6 +251,123 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     return;
 }
 
+/**
+ * Check Stopping status campaign, and update to stop.
+ * @param fd
+ * @param event
+ * @param arg
+ */
+static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
+{
+    struct ast_json* j_camps;
+    struct ast_json* j_camp;
+    struct ao2_iterator iter;
+    rb_dialing* dialing;
+    const char* tmp_const;
+    int i;
+    int size;
+    int flg_dialing;
+
+    j_camps = get_campaigns_info_by_status(E_CAMP_STOPPING);
+    if(j_camps == NULL) {
+        // Nothing.
+        return;
+    }
+
+    size = ast_json_array_size(j_camps);
+    for(i = 0; i < size; i++) {
+        j_camp = ast_json_array_get(j_camps, i);
+
+        flg_dialing = false;
+        iter = rb_dialing_iter_init();
+        while((dialing = ao2_iterator_next(&iter))) {
+            ao2_ref(dialing, -1);
+
+            tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid"));
+            if(tmp_const == NULL) {
+                continue;
+            }
+
+            if(strcmp(tmp_const, ast_json_string_get(ast_json_object_get(j_camp, "uuid"))) == 0) {
+                flg_dialing = true;
+                continue;
+            }
+        }
+        ao2_iterator_destroy(&iter);
+
+        if(flg_dialing == false) {
+            // update status to stop
+            ast_log(LOG_DEBUG, "Stop campaign info. camp_uuid[%s], camp_name[%s]\n",
+                    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                    ast_json_string_get(ast_json_object_get(j_camp, "name"))
+                    );
+            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
+        }
+    }
+
+    ast_json_unref(j_camps);
+
+}
+
+/**
+ * Check Stopping status campaign, and update to stop.
+ * @param fd
+ * @param event
+ * @param arg
+ */
+static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
+{
+    struct ast_json* j_camps;
+    struct ast_json* j_camp;
+    struct ao2_iterator iter;
+    rb_dialing* dialing;
+    const char* tmp_const;
+    int i;
+    int size;
+
+    j_camps = get_campaigns_info_by_status(E_CAMP_STOPPING_FORCE);
+    if(j_camps == NULL) {
+        // Nothing.
+        return;
+    }
+
+    // find dialing info
+    size = ast_json_array_size(j_camps);
+    for(i = 0; i < size; i++) {
+        j_camp = ast_json_array_get(j_camps, i);
+        ast_log(LOG_DEBUG, "Force stop campaign info. camp_uuid[%s], camp_name[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                ast_json_string_get(ast_json_object_get(j_camp, "name"))
+                );
+
+        iter = rb_dialing_iter_init();
+        while((dialing = ao2_iterator_next(&iter))) {
+            ao2_ref(dialing, -1);
+
+            tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid"));
+            if(tmp_const == NULL) {
+                continue;
+            }
+
+            if(strcmp(tmp_const, ast_json_string_get(ast_json_object_get(j_camp, "uuid"))) != 0) {
+                continue;
+            }
+
+            // hang up the channel
+            ast_log(LOG_NOTICE, "Hangup channel. uuid[%s], channel[%s]\n",
+                    dialing->uuid,
+                    ast_json_string_get(ast_json_object_get(dialing->j_chan, "channel"))
+                    );
+            ami_cmd_hangup(ast_json_string_get(ast_json_object_get(dialing->j_chan, "channel")), AST_CAUSE_NORMAL_CLEARING);
+        }
+        ao2_iterator_destroy(&iter);
+
+        // update status to stop
+        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
+    }
+    ast_json_unref(j_camps);
+}
+
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
 {
     struct ao2_iterator iter;
@@ -309,6 +439,42 @@ static struct ast_json* get_campaign_info_for_dialing(void)
     }
 
     j_res = db_get_record(db_res);
+    db_free(db_res);
+
+    return j_res;
+}
+
+/**
+ * Get campaign for dialing.
+ * @return
+ */
+static struct ast_json* get_campaigns_info_by_status(CAMP_STATUS_T status)
+{
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    db_res_t* db_res;
+    char* sql;
+
+    // get "start" status campaign only.
+    ast_asprintf(&sql, "select * from campaign where status = %d;",
+            status
+            );
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_WARNING, "Could not get campaign info.\n");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1){
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+        ast_json_array_append(j_res, j_tmp);
+    }
     db_free(db_res);
 
     return j_res;
@@ -619,8 +785,8 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 //    ast_log(LOG_DEBUG, "Found info. dl_uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_tmp, "uuid_dl")));
 
     // dial to customer
-//    j_res = cmd_originate_to_queue(j_dialing);
-    j_res = cmd_originate_to_queue(dialing->j_dl);
+//    j_res = ami_cmd_originate_to_queue(j_dialing);
+    j_res = ami_cmd_originate_to_queue(dialing->j_dl);
     if(j_res == NULL) {
         ast_log(LOG_WARNING, "Originating has failed.");
 //        ast_json_unref(j_dialing);
@@ -949,7 +1115,7 @@ struct ast_json* get_queue_summary(const char* name)
         return NULL;
     }
 
-    j_ami_res = cmd_queue_summary(name);
+    j_ami_res = ami_cmd_queue_summary(name);
     if(j_ami_res == NULL) {
         ast_log(LOG_NOTICE, "Could not get queue summary. name[%s]\n", name);
         return NULL;

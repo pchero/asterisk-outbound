@@ -145,16 +145,17 @@ static void release_module(void)
 
 static int unload_module(void)
 {
-    release_module();
-    stop_outbound();
     term_ami_handle();
     term_cli_handler();
+    stop_outbound();
+    usleep(10000);
+    release_module();
 
     pthread_cancel(pth_outbound);
     pthread_kill(pth_outbound, SIGURG);
     pthread_join(pth_outbound, NULL);
 
-    ast_log(LOG_NOTICE, "Released res_outbound.\n");
+    ast_log(LOG_NOTICE, "unload res_outbound.\n");
     return 0;
 }
 

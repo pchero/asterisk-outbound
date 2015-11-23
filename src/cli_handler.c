@@ -64,7 +64,7 @@ static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli
 }
 
 #define CAMP_FORMAT2 "%-36.36s %-40.40s %-6.6s %-36.36s %-36.36s %-40.40s\n"
-#define CAMP_FORMAT3 "%-36.36s %-40.40s %-6.6ld %-36.36s %-36.36s %-40.40s\n"
+#define CAMP_FORMAT3 "%-36.36s %-40.40s %6ld %-36.36s %-36.36s %-40.40s\n"
 
 static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
@@ -77,9 +77,8 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
 
     if (!s) {
         /* Normal list */
-        ast_cli(fd, CAMP_FORMAT2, "UUID", "Name", "STATUS", "Plan", "DLMA", "Detail");
+        ast_cli(fd, CAMP_FORMAT2, "UUID", "Name", "Status", "Plan", "DLMA", "Detail");
     }
-
 
     size = ast_json_array_size(j_res);
     for(i = 0; i < size; i++) {
@@ -90,7 +89,7 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
         ast_cli(fd, CAMP_FORMAT3,
                 ast_json_string_get(ast_json_object_get(j_tmp, "uuid")) ? : "",
                 ast_json_string_get(ast_json_object_get(j_tmp, "name")) ? : "",
-                ast_json_integer_get(ast_json_object_get(j_tmp, "status")) ? : -1,
+                ast_json_integer_get(ast_json_object_get(j_tmp, "status")),
                 ast_json_string_get(ast_json_object_get(j_tmp, "plan")) ? : "",
                 ast_json_string_get(ast_json_object_get(j_tmp, "dlma")) ? : "",
                 ast_json_string_get(ast_json_object_get(j_tmp, "detail")) ? : ""

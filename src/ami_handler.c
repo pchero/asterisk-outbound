@@ -367,7 +367,7 @@ int ami_is_response_success(struct ast_json* j_ami)
  * @param name
  * @return
  */
-struct ast_json* cmd_queue_summary(const char* name)
+struct ast_json* ami_cmd_queue_summary(const char* name)
 {
     struct ast_json* j_cmd;
     struct ast_json* j_res;
@@ -396,7 +396,7 @@ struct ast_json* cmd_queue_summary(const char* name)
  * @param name
  * @return
  */
-struct ast_json* cmd_originate_to_queue(struct ast_json* j_dl)
+struct ast_json* ami_cmd_originate_to_queue(struct ast_json* j_dl)
 {
     struct ast_json* j_cmd;
     struct ast_json* j_res;
@@ -464,6 +464,49 @@ struct ast_json* cmd_originate_to_queue(struct ast_json* j_dl)
 
     return j_res;
 }
+
+struct ast_json* ami_cmd_hangup(const char* channel, int cause)
+{
+//    Action: Hangup
+//    ActionID: <value>
+//    Channel: <value>
+//    Cause: <value>
+
+    struct ast_json* j_cmd;
+    struct ast_json* j_res;
+    int ret;
+    char* tmp;
+
+    if(channel == NULL) {
+        ast_log(LOG_WARNING, "Wrong input parameters.\n");
+        return NULL;
+    }
+
+    ast_asprintf(&tmp, "%d", cause);
+    j_cmd = ast_json_pack("{s:s, s:s, s:s}",
+            "Action",   "Hangup",
+            "Channel",  channel,
+            "Cause",    tmp
+            );
+    ast_free(tmp);
+
+    tmp = ast_json_dump_string_format(j_cmd, 0);
+    ast_log(LOG_DEBUG, "Hangup. tmp[%s]\n", tmp);
+    ast_json_free(tmp);
+
+    j_res = ami_cmd_handler(j_cmd);
+    ast_json_unref(j_cmd);
+
+    ret = ami_is_response_success(j_res);
+    if(ret == false) {
+        ast_json_unref(j_res);
+        return NULL;
+    }
+
+    return j_res;
+}
+
+
 
 struct ast_json* ami_cmd_SIPshowregistry(void)
 {
