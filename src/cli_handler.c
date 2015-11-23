@@ -16,53 +16,6 @@
 #include "dialing_handler.h"
 
 
-
-static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
-static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
-static char *out_show_plans(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
-static char* _out_show_plans(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
-static char *out_show_dlmas(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
-static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
-static char *out_show_dialings(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
-static char* _out_show_dialings(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[]);
-
-struct ast_cli_entry cli_out[] = {
-    AST_CLI_DEFINE(out_show_campaigns, "List defined outbound campaigns"),
-    AST_CLI_DEFINE(out_show_plans, "List defined outbound plans"),
-    AST_CLI_DEFINE(out_show_dlmas, "List defined outbound dlmas"),
-    AST_CLI_DEFINE(out_show_dialings, "List currently on serviced dialings")
-};
-
-int init_cli_handler(void)
-{
-    ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
-    return true;
-}
-
-void term_cli_handler(void)
-{
-    ast_cli_unregister_multiple(cli_out, ARRAY_LEN(cli_out));
-}
-
-
-/*! \brief CLI for show campaigns.
- */
-static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
-{
-//    struct __show_chan_arg arg = { .fd = a->fd, .numchans = 0 };
-
-    if (cmd == CLI_INIT) {
-        e->command = "out show campaigns";
-        e->usage =
-            "Usage: out show campaigns\n"
-            "       Lists all currently registered campaigns.\n";
-        return NULL;
-    } else if (cmd == CLI_GENERATE) {
-        return NULL;
-    }
-    return _out_show_campaigns(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
-}
-
 #define CAMP_FORMAT2 "%-36.36s %-40.40s %-6.6s %-36.36s %-36.36s %-40.40s\n"
 #define CAMP_FORMAT3 "%-36.36s %-40.40s %6ld %-36.36s %-36.36s %-40.40s\n"
 
@@ -100,25 +53,66 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
     return CLI_SUCCESS;
 }
 
-/*! \brief CLI for show plans.
+/*! \brief CLI for show campaigns.
  */
-static char *out_show_plans(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+static char *out_show_campaigns(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
+//    struct __show_chan_arg arg = { .fd = a->fd, .numchans = 0 };
 
     if (cmd == CLI_INIT) {
-        e->command = "out show plans";
+        e->command = "out show campaigns";
         e->usage =
-            "Usage: out show plans\n"
-            "       Lists all currently registered plans.\n";
+            "Usage: out show campaigns\n"
+            "       Lists all currently registered campaigns.\n";
         return NULL;
     } else if (cmd == CLI_GENERATE) {
         return NULL;
     }
-    return _out_show_plans(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+    return _out_show_campaigns(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
+static char* _out_show_campaign(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+    struct ast_json* j_res;
+
+    j_res = get_campaign_info(argv[3]);
+    if(j_res == NULL) {
+        ast_cli(fd, "Could not find campaign info. uuid[%s]\n", argv[3]);
+        ast_cli(fd, "\n");
+        return CLI_SUCCESS;
+    }
+
+    ast_cli(fd, "  Uuid   : %s\n", ast_json_string_get(ast_json_object_get(j_res, "uuid")));
+    ast_cli(fd, "  Name   : %s\n", ast_json_string_get(ast_json_object_get(j_res, "name")));
+    ast_cli(fd, "  Detail : %s\n", ast_json_string_get(ast_json_object_get(j_res, "detail")));
+    ast_cli(fd, "  Status : %ld\n", ast_json_integer_get(ast_json_object_get(j_res, "status")));
+    ast_cli(fd, "  Plan : %s\n", ast_json_string_get(ast_json_object_get(j_res, "plan")));
+    ast_cli(fd, "  DLMA : %s\n", ast_json_string_get(ast_json_object_get(j_res, "dlma")));
+    ast_cli(fd, "\n");
+
+    ast_json_unref(j_res);
+
+    return CLI_SUCCESS;
+}
+
+/*! \brief CLI for show campaign.
+ */
+static char *out_show_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+    if (cmd == CLI_INIT) {
+        e->command = "out show campaign";
+        e->usage =
+            "Usage: out show campaign <uuid>\n"
+            "       Shows all details on one campaign and the current status.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_show_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
 #define PLAN_FORMAT2 "%-36.36s %-40.40s %-40.40s %-8.8s %-11.11s %-5.5s %-5.5s\n"
-#define PLAN_FORMAT3 "%-36.36s %-40.40s %-40.40s %-8.8s %-11.11ld %-5.5s %-5.5s\n"
+#define PLAN_FORMAT3 "%-36.36s %-40.40s %-40.40s %-8.8s %11ld %-5.5s %-5.5s\n"
 
 static char* _out_show_plans(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
@@ -157,19 +151,19 @@ static char* _out_show_plans(int fd, int *total, struct mansession *s, const str
 
 /*! \brief CLI for show plans.
  */
-static char *out_show_dlmas(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+static char *out_show_plans(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
 
     if (cmd == CLI_INIT) {
-        e->command = "out show dlmas";
+        e->command = "out show plans";
         e->usage =
-            "Usage: out show dlmas\n"
-            "       Lists all currently registered dlmas.\n";
+            "Usage: out show plans\n"
+            "       Lists all currently registered plans.\n";
         return NULL;
     } else if (cmd == CLI_GENERATE) {
         return NULL;
     }
-    return _out_show_dlmas(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+    return _out_show_plans(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
 #define DLMA_FORMAT2 "%-36.36s %-40.40s %-40.40s %-30.30s\n"
@@ -209,20 +203,21 @@ static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const str
 
 /*! \brief CLI for show plans.
  */
-static char *out_show_dialings(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+static char *out_show_dlmas(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
 
     if (cmd == CLI_INIT) {
-        e->command = "out show dialings";
+        e->command = "out show dlmas";
         e->usage =
-            "Usage: out show dialings\n"
-            "       Lists all currently on service dialings.\n";
+            "Usage: out show dlmas\n"
+            "       Lists all currently registered dlmas.\n";
         return NULL;
     } else if (cmd == CLI_GENERATE) {
         return NULL;
     }
-    return _out_show_dialings(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+    return _out_show_dlmas(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
+
 
 #define DIALING_FORMAT2 "%-36.36s %-5.5s %-20.20s %-10.10s %-10.10s %-10.10s\n"
 #define DIALING_FORMAT3 "%-36.36s %-5.5s %-20.20s %-10.10s %-10.10s %-10.10s\n"
@@ -259,4 +254,40 @@ static char* _out_show_dialings(int fd, int *total, struct mansession *s, const 
     ast_json_unref(j_res);
 
     return CLI_SUCCESS;
+}
+
+/*! \brief CLI for show plans.
+ */
+static char *out_show_dialings(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+
+    if (cmd == CLI_INIT) {
+        e->command = "out show dialings";
+        e->usage =
+            "Usage: out show dialings\n"
+            "       Lists all currently on service dialings.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_show_dialings(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
+struct ast_cli_entry cli_out[] = {
+    AST_CLI_DEFINE(out_show_campaigns, "List defined outbound campaigns"),
+    AST_CLI_DEFINE(out_show_plans, "List defined outbound plans"),
+    AST_CLI_DEFINE(out_show_dlmas, "List defined outbound dlmas"),
+    AST_CLI_DEFINE(out_show_dialings, "List currently on serviced dialings"),
+    AST_CLI_DEFINE(out_show_campaign, "Shows detail campaign info")
+};
+
+int init_cli_handler(void)
+{
+    ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
+    return true;
+}
+
+void term_cli_handler(void)
+{
+    ast_cli_unregister_multiple(cli_out, ARRAY_LEN(cli_out));
 }
