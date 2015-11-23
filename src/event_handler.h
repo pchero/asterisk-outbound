@@ -37,6 +37,7 @@ typedef enum _DL_STATUS_T
 char* get_utc_timestamp(void);
 
 struct ast_json* get_campaign_info_all(void);
+struct ast_json* get_campaign_info(const char* uuid);
 struct ast_json* get_plan_info_all(void);
 struct ast_json* get_dl_master_info_all(void);
 
