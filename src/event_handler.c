@@ -58,7 +58,7 @@ static char* gen_uuid(void);
 static int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point);
 static int update_dl_list(const char* table, struct ast_json* j_dlinfo);
 
-static struct ast_json* create_campaign_result(rb_dialing* dialing);
+static struct ast_json* create_dl_result(rb_dialing* dialing);
 static struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status);
 
 // todo
@@ -384,8 +384,8 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
         }
 
         // create result data
-        j_res = create_campaign_result(dialing);
-        db_insert("campaign_result", j_res);
+        j_res = create_dl_result(dialing);
+        db_insert("dl_result", j_res);
         ast_json_unref(j_res);
 
         tmp = ast_json_dump_string_format(dialing->j_dl, 0);
@@ -624,12 +624,12 @@ struct ast_json* get_dl_master_info(const char* uuid)
         return NULL;
     }
 
-    ast_asprintf(&sql, "select * from dial_list_ma where uuid = \"%s\";", uuid);
+    ast_asprintf(&sql, "select * from dl_list_ma where uuid = \"%s\";", uuid);
 
     db_res = db_query(sql);
     ast_free(sql);
     if(db_res == NULL) {
-        ast_log(LOG_ERROR, "Could not get dial_list_ma info. uuid[%s]\n", uuid);
+        ast_log(LOG_ERROR, "Could not get dl_list_ma info. uuid[%s]\n", uuid);
         return NULL;
     }
 
@@ -651,12 +651,12 @@ struct ast_json* get_dl_master_info_all(void)
     struct ast_json* j_tmp;
     db_res_t* db_res;
 
-    ast_asprintf(&sql, "%s", "select * from dial_list_ma;");
+    ast_asprintf(&sql, "%s", "select * from dl_list_ma;");
 
     db_res = db_query(sql);
     ast_free(sql);
     if(db_res == NULL) {
-        ast_log(LOG_ERROR, "Could not get dial_list_ma info.\n");
+        ast_log(LOG_ERROR, "Could not get dl_list_ma info.\n");
         return NULL;
     }
 
@@ -1427,7 +1427,7 @@ static int update_dl_list(const char* table, struct ast_json* j_dlinfo)
     return true;
 }
 
-static struct ast_json* create_campaign_result(rb_dialing* dialing)
+static struct ast_json* create_dl_result(rb_dialing* dialing)
 {
     struct ast_json* j_res;
     char* tmp;

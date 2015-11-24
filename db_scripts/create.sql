@@ -49,13 +49,14 @@ create table plan(
 );
 
 -- dial list original.
-drop table if exists dl_org;
-create table dl_org(
+drop table if exists dl_list;
+create table dl_list(
 -- original dial list info table
 -- all of other dial lists are copy of this table.
 
     -- identity
     uuid        varchar(255)    unique,     -- dl uuid
+    dlma_uuid   varchar(255)    not null,   -- dl_list_ma uuid
     
     -- information
     name            varchar(255),                   -- Can be null
@@ -110,11 +111,11 @@ create table dl_org(
     primary key(uuid)
 );
 
-CREATE TRIGGER init_uuid BEFORE INSERT ON dl_org
+CREATE TRIGGER init_uuid BEFORE INSERT ON dl_list
   FOR EACH ROW SET NEW.uuid = UUID();
 
-drop table if exists dial_list_ma;
-create table dial_list_ma(
+drop table if exists dl_list_ma;
+create table dl_list_ma(
 -- dial list
 -- manage all of dial list tables
 
@@ -124,7 +125,7 @@ create table dial_list_ma(
     
     -- information
     name        varchar(255),                               -- dial list name
-    dl_table    varchar(255),                               -- dial list table name.(dl_e276d8be)
+    dl_table    varchar(255),                               -- dial list table name.(view)
     detail      text,                                       -- description of dialist
     
     -- timestamp. UTC.
@@ -174,14 +175,14 @@ create table campaign(
     tm_update_status    datetime(6),   -- last status updated time.
         
     foreign key(plan)   references plan(uuid)           on delete set null on update cascade,
-    foreign key(dlma)   references dial_list_ma(uuid)   on delete set null on update cascade,
+    foreign key(dlma)   references dl_list_ma(uuid)   on delete set null on update cascade,
 --    foreign key(trunk_group)    references trunk_group_ma(uuid) on delete set null on update cascade,
     
     primary key(uuid)
 );
 
-drop table if exists campaign_result;
-create table campaign_result(
+drop table if exists dl_result;
+create table dl_result(
 -- campaign dial result table.
     -- identity
     seq                 int(10)         unsigned auto_increment,
@@ -241,16 +242,19 @@ create table campaign_result(
 insert into plan(uuid, name, dial_mode, answer_handle, queue_name, trunk_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "TestQueue", "trunk_test_1");
 
 -- create dial list
-drop table if exists dl_e276d8be;
-create table dl_e276d8be like dl_org;
-CREATE TRIGGER init_uuid_dl_e276d8be BEFORE INSERT ON dl_e276d8be FOR EACH ROW SET NEW.uuid = UUID();
-insert into dial_list_ma(uuid, name, dl_table) values ("e276d8be-a558-4546-948a-f99913a7fea2", "sample_dial_list", "dl_e276d8be");
+-- drop table if exists dl_e276d8be;
+-- create table dl_e276d8be like dl_org;
+-- CREATE TRIGGER init_uuid_dl_e276d8be BEFORE INSERT ON dl_e276d8be FOR EACH ROW SET NEW.uuid = UUID();
+insert into dl_list_ma(uuid, name, dl_table) values ("e276d8be-a558-4546-948a-f99913a7fea2", "sample_dial_list", "e276d8bea5584546948af99913a7fea2");
+
+-- create view
+create view e276d8bea5584546948af99913a7fea2 as select * from dl_list where dlma_uuid = "e276d8be-a558-4546-948a-f99913a7fea2";
 
 -- insert dial list
-insert into dl_e276d8be(name, number_1) values ("test1", "111-111-0001");
-insert into dl_e276d8be(name, number_1) values ("test2", "111-111-0002");
-insert into dl_e276d8be(name, number_1) values ("test3", "111-111-0003");
-insert into dl_e276d8be(name, number_1) values ("test4", "111-111-0004");
+insert into dl_list(name, dlma_uuid, number_1) values ("test1", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0001");
+insert into dl_list(name, dlma_uuid, number_1) values ("test2", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0002");
+insert into dl_list(name, dlma_uuid, number_1) values ("test3", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0003");
+insert into dl_list(name, dlma_uuid, number_1) values ("test4", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0004");
 
 
 -- insert campaign
