@@ -160,7 +160,8 @@ static char *out_set_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_a
     return _out_set_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
-/*! \brief CLI for show campaign.
+/*!
+ * \brief CLI for show campaign.
  */
 static char *out_show_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
@@ -175,8 +176,6 @@ static char *out_show_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_
     }
     return _out_show_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
-
-
 
 #define PLAN_FORMAT2 "%-36.36s %-40.40s %-40.40s %-8.8s %-11.11s %-5.5s %-5.5s\n"
 #define PLAN_FORMAT3 "%-36.36s %-40.40s %-40.40s %-8.8s %11ld %-5.5s %-5.5s\n"
@@ -268,7 +267,8 @@ static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const str
     return CLI_SUCCESS;
 }
 
-/*! \brief CLI for show plans.
+/*!
+ * \brief CLI for show DLMAS.
  */
 static char *out_show_dlmas(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
@@ -340,13 +340,86 @@ static char *out_show_dialings(struct ast_cli_entry *e, int cmd, struct ast_cli_
     return _out_show_dialings(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
+#define DL_LIST_FORMAT2 "%-36.36s %-10.10s %-20.20s\n"
+#define DL_LIST_FORMAT3 "%-36.36s %-10.10s %-20.20s\n"
+
+
+static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+    // out show dlma list <dlma-uuid> <count=100>
+    const char* uuid;
+    int count;
+    struct ast_json* j_dlma;
+    struct ast_json* j_dls;
+    struct ast_json* j_tmp;
+    int i;
+    int size;
+
+    uuid = argv[4];
+    if(uuid == NULL) {
+        return NULL;
+    }
+
+    count = 0;
+    if(argv[5] != NULL) {
+        count = atoi(argv[5]);
+    }
+    if(count <= 0) {
+        count = 100;
+    }
+
+    j_dlma = get_dl_master_info(uuid);
+    if(j_dlma == NULL) {
+        return NULL;
+    }
+
+    j_dls = get_dl_list(j_dlma, count);
+    ast_json_unref(j_dlma);
+
+    size = ast_json_array_size(j_dls);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(j_dls, i);
+        if(j_tmp == NULL) {
+            continue;
+        }
+
+        ast_cli(fd, DL_LIST_FORMAT2,
+                ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
+                ast_json_string_get(ast_json_object_get(j_tmp, "name")),
+                ast_json_string_get(ast_json_object_get(j_tmp, "detail"))
+                );
+    }
+
+    ast_json_unref(j_dls);
+
+    return CLI_SUCCESS;
+}
+
+/*! \brief CLI for show plans.
+ */
+static char *out_show_dlma_list(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+
+    if (cmd == CLI_INIT) {
+        e->command = "out show dlma list";
+        e->usage =
+            "Usage: out show dlma list <dlma-uuid> <count=100>\n"
+            "       Lists count of dial list.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_show_dlma_list(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
 struct ast_cli_entry cli_out[] = {
-    AST_CLI_DEFINE(out_show_campaigns, "List defined outbound campaigns"),
-    AST_CLI_DEFINE(out_show_plans, "List defined outbound plans"),
-    AST_CLI_DEFINE(out_show_dlmas, "List defined outbound dlmas"),
-    AST_CLI_DEFINE(out_show_dialings, "List currently on serviced dialings"),
-    AST_CLI_DEFINE(out_show_campaign, "Shows detail campaign info"),
-    AST_CLI_DEFINE(out_set_campaign, "Set campaign parameters")
+    AST_CLI_DEFINE(out_show_campaigns,      "List defined outbound campaigns"),
+    AST_CLI_DEFINE(out_show_plans,          "List defined outbound plans"),
+    AST_CLI_DEFINE(out_show_dlmas,          "List defined outbound dlmas"),
+    AST_CLI_DEFINE(out_show_dlma_list,      "Show list of dlma dial list"),
+    AST_CLI_DEFINE(out_show_dialings,       "List currently on serviced dialings"),
+    AST_CLI_DEFINE(out_show_campaign,       "Shows detail campaign info"),
+    AST_CLI_DEFINE(out_set_campaign,        "Set campaign parameters")
 };
 
 int init_cli_handler(void)
