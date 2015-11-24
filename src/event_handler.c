@@ -37,7 +37,6 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 
 static struct ast_json* get_campaign_info_for_dialing(void);
 static struct ast_json* get_plan_info(const char* uuid);
-static struct ast_json* get_dl_master_info(const char* uuid);
 
 static void dial_desktop(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 static void dial_power(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
@@ -959,6 +958,50 @@ static struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, str
 
     return j_res;
 }
+
+/**
+ * Get dl_list from database.
+ * @param j_dlma
+ * @param j_plan
+ * @return
+ */
+struct ast_json* get_dl_list(struct ast_json* j_dlma, int count)
+{
+    char* sql;
+    db_res_t* db_res;
+    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+
+    if((j_dlma == NULL) || (count <= 0)) {
+        return NULL;
+    }
+
+    ast_asprintf(&sql, "select * from %s limit %d;",
+            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+            count
+            );
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_ERROR, "Could not get dial list info.");
+        return NULL;
+    }
+
+    j_res = ast_json_array_create();
+    while(1) {
+        j_tmp = db_get_record(db_res);
+        if(j_tmp == NULL) {
+            break;
+        }
+
+        ast_json_array_append(j_res, j_tmp);
+    }
+    db_free(db_res);
+
+    return j_res;
+}
+
 
 /**
  * Return dialing availability.

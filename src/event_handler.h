@@ -41,6 +41,10 @@ struct ast_json* get_campaign_info(const char* uuid);
 int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status);
 
 struct ast_json* get_plan_info_all(void);
+
 struct ast_json* get_dl_master_info_all(void);
+struct ast_json* get_dl_master_info(const char* uuid);
+
+struct ast_json* get_dl_list(struct ast_json* j_dlma, int count);
 
 #endif /* SRC_EVENT_HANDLER_H_ */
