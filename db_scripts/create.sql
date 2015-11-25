@@ -66,8 +66,10 @@ create table dl_list(
     status          int default 0,    -- dial list status. ("idle", "dialing", ...)
     
     -- current dialing
-    dialing_camp_uuid       varchar(255),       -- dialing campaign_uuid
-    dialing_chan_unique_id  varchar(255),       -- dialing channel unique id.
+    dialing_uuid            varchar(255),       -- dialing channel unique id.
+    dialing_channel         varchar(255),       -- dialing channel name
+    dialing_camp_uuid       varchar(255),       -- dialing campaign uuid.
+    dialing_plan_uuid       varchar(255),       -- dialing plan uuid.
     
     -- numbers.
     number_1    varchar(255),       -- tel number 1
@@ -93,8 +95,8 @@ create table dl_list(
     trycnt_8    int default 0,      -- try count for tel number 8
 
     -- last dial result
-    res_dial        varchar(255),   -- last dial result.(no answer, answer, busy, ...)
-    res_hangup      varchar(255),   -- last route result after answer.(routed, agent busy, no route place, ...)
+    res_dial        int,   -- last dial result.(no answer, answer, busy, ...)
+    res_hangup      int,   -- last route result after answer.(routed, agent busy, no route place, ...)
 --    call_detail text,               -- more detail info about call result
 
     -- timestamp. UTC.
@@ -190,7 +192,7 @@ create table dl_result(
     camp_uuid           varchar(255)    not null,   -- campaign uuid.
     plan_uuid           varchar(255)    not null,   -- plan uuid.
     dlma_uuid           varchar(255)    not null,   -- dial_list_ma uuid.
-    dl_uuid             varchar(255)    not null,   -- dl uuid
+    dl_list_uuid        varchar(255)    not null,   -- dl_list uuid
 
     -- dial_info
     info_camp   text    not null,   -- campaign info. json format.
@@ -214,6 +216,7 @@ create table dl_result(
     tm_tr_hangup        datetime(6),   -- timestamp for agent hangup.
 
     -- dial info
+    dial_channel        varchar(255),   -- dialing channel.
     dial_index          int,            -- dialing number index.
     dial_addr           varchar(255),   -- dialing address.
     dial_trycnt         int,            -- dialing try count.
@@ -221,14 +224,14 @@ create table dl_result(
     
     -- transfer info
     tr_trycnt          int,             -- transfer try count.
-    tr_agent_uuid        varchar(255),    -- transfered agent.
+    tr_agent_uuid      varchar(255),    -- transfered agent.
     tr_chan_unique_id  varchar(255),    -- trying transfer chan unique id.
     
     -- dial result
-    res_dial                varchar(255),   -- dial result(answer, no_answer, ...)
+    res_dial                int,            -- dial result(answer, no_answer, ...)
     res_answer              varchar(255),   -- AMD result.(AMDSTATUS)
     res_answer_detail       varchar(255),   -- AMD result detail.(AMDCAUSE)
-    res_hangup              varchar(255),   -- hangup code.
+    res_hangup              int,            -- hangup code.
     res_hangup_detail       varchar(255),   -- hangup detail.
     res_tr_dial             varchar(255),   -- transferred dial result(answer, no_answer, ...)
     res_tr_hangup           varchar(255),   -- hangup code.
