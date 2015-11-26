@@ -38,10 +38,11 @@ static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__(
 
 static struct ast_json* get_campaign_info_for_dialing(void);
 static struct ast_json* get_plan_info(const char* uuid);
+static struct ast_json* get_queue_info(const char* uuid);
 
 static void dial_desktop(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 static void dial_power(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
-static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
+static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_queue, struct ast_json* j_plan, struct ast_json* j_dlma);
 static void dial_robo(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 
@@ -63,8 +64,8 @@ static struct ast_json* create_dl_result(rb_dialing* dialing);
 static struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status);
 
 // todo
-static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
-struct ast_json* create_dialing_info(struct ast_json* j_plan, struct ast_json* j_dl_list);
+static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_queue, struct ast_json* j_plan, struct ast_json* j_dlma);
+static struct ast_json* create_dialing_info(struct ast_json* j_queue, struct ast_json* j_plan, struct ast_json* j_dl_list);
 
 int run_outbound(void)
 {
@@ -164,6 +165,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     struct ast_json* j_camp;
     struct ast_json* j_plan;
     struct ast_json* j_dlma;
+    struct ast_json* j_queue;
     const char* dial_mode;
 
     ast_log(LOG_DEBUG, "cb_campagin start\n");
@@ -189,6 +191,19 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
         ast_json_unref(j_camp);
         return;
     }
+
+    // get queue
+    j_queue = get_queue_info(ast_json_string_get(ast_json_object_get(j_camp, "queue")));
+    if(j_plan == NULL) {
+        ast_log(LOG_WARNING, "Could not get queue info. Stopping campaign camp[%s], queue[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                ast_json_string_get(ast_json_object_get(j_camp, "queue"))
+                );
+        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        ast_json_unref(j_camp);
+        return;
+    }
+
 //    ast_log(LOG_DEBUG, "Get plan info. camp_uuid[%s], camp_name[%s]\n",
 //            ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
 //            ast_json_string_get(ast_json_object_get(j_plan, "name"))
@@ -234,7 +249,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
         dial_power(j_camp, j_plan, j_dlma);
     }
     else if(strcmp(dial_mode, "predictive") == 0) {
-        dial_predictive(j_camp, j_plan, j_dlma);
+        dial_predictive(j_camp, j_queue, j_plan, j_dlma);
     }
     else if(strcmp(dial_mode, "robo") == 0) {
         dial_robo(j_camp, j_plan, j_dlma);
@@ -607,6 +622,32 @@ struct ast_json* get_campaign_info(const char* uuid)
     return j_res;
 }
 
+static struct ast_json* get_queue_info(const char* uuid)
+{
+    char* sql;
+    struct ast_json* j_res;
+    db_res_t* db_res;
+
+    if(uuid == NULL) {
+        ast_log(LOG_WARNING, "Invalid input parameters.\n");
+        return NULL;
+    }
+
+    ast_asprintf(&sql, "select * from queue where uuid = \"%s\";", uuid);
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_ERROR, "Could not get queue info. uuid[%s]\n", uuid);
+        return NULL;
+    }
+
+    j_res = db_get_record(db_res);
+    db_free(db_res);
+
+    return j_res;
+}
+
 
 /**
  * Get plan record info.
@@ -804,7 +845,7 @@ static void dial_power(const struct ast_json* j_camp, const struct ast_json* j_p
  * @param j_plan    plan info
  * @param j_dlma    dial list master info
  */
-static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma)
+static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_queue, struct ast_json* j_plan, struct ast_json* j_dlma)
 {
     int ret;
     struct ast_json* j_dl_list;
@@ -831,7 +872,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     }
 
     // check available outgoing call.
-    ret = check_dial_avaiable_predictive(j_camp, j_plan, j_dlma);
+    ret = check_dial_avaiable_predictive(j_camp, j_queue, j_plan, j_dlma);
     if(ret == -1) {
         // something was wrong. stop the campaign.
         update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
@@ -845,7 +886,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     }
 
     // creating dialing info
-    j_dialing = create_dialing_info(j_plan, j_dl_list);
+    j_dialing = create_dialing_info(j_queue, j_plan, j_dl_list);
     ast_json_unref(j_dl_list);
     if(j_dialing == NULL) {
         ast_log(LOG_DEBUG, "Could not create dialing info.");
@@ -1041,34 +1082,39 @@ struct ast_json* get_dl_list(struct ast_json* j_dlma, int count)
  * @param j_plan
  * @return 1:OK, 0:NO, -1:ERROR
  */
-static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma)
+static int check_dial_avaiable_predictive(
+        struct ast_json* j_camp,
+        struct ast_json* j_queue,
+        struct ast_json* j_plan,
+        struct ast_json* j_dlma
+        )
 {
     char* sql;
-    struct ast_json* j_queue;
+    struct ast_json* j_tmp;
     int cnt_avail_chan;
     int cnt_current_dialing;
 
     // get queue summary info.
-    j_queue = get_queue_summary(ast_json_string_get(ast_json_object_get(j_plan, "queue_name")));
-    if(j_queue == NULL) {
+    j_tmp = get_queue_summary(ast_json_string_get(ast_json_object_get(j_queue, "name")));
+    if(j_tmp == NULL) {
         ast_log(LOG_ERROR, "Could not get queue_summary info. plan_uuid[%s], plan_name[%s], queue_name[%s]\n",
                 ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
                 ast_json_string_get(ast_json_object_get(j_plan, "name")),
-                ast_json_string_get(ast_json_object_get(j_plan, "queue_name")));
+                ast_json_string_get(ast_json_object_get(j_queue, "name")));
         return -1;
     }
     // log
     ast_log(LOG_DEBUG, "Queue summary status. queue[%s], loggedin[%s], available[%s], callers[%s], holdtime[%s], talktime[%s], longestholdtime[%s]\n",
-            ast_json_string_get(ast_json_object_get(j_queue, "Queue")),
-            ast_json_string_get(ast_json_object_get(j_queue, "LoggedIn")),
-            ast_json_string_get(ast_json_object_get(j_queue, "Available")),
-            ast_json_string_get(ast_json_object_get(j_queue, "Callers")),
-            ast_json_string_get(ast_json_object_get(j_queue, "HoldTime")),
-            ast_json_string_get(ast_json_object_get(j_queue, "TalkTime")),
-            ast_json_string_get(ast_json_object_get(j_queue, "LongestHoldTime"))
+            ast_json_string_get(ast_json_object_get(j_tmp, "Queue")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "LoggedIn")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "Available")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "Callers")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "HoldTime")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "TalkTime")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "LongestHoldTime"))
             );
-    cnt_avail_chan = atoi(ast_json_string_get(ast_json_object_get(j_queue, "Available")));
-    ast_json_unref(j_queue);
+    cnt_avail_chan = atoi(ast_json_string_get(ast_json_object_get(j_tmp, "Available")));
+    ast_json_unref(j_tmp);
 
     // get current dialing count;
     cnt_current_dialing = get_current_dialing_cnt(
@@ -1153,7 +1199,8 @@ static int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
  * @param j_dl_list
  * @return
  */
-struct ast_json* create_dialing_info(
+static struct ast_json* create_dialing_info(
+        struct ast_json* j_queue,
         struct ast_json* j_plan,
         struct ast_json* j_dl_list
         )
@@ -1205,7 +1252,7 @@ struct ast_json* create_dialing_info(
 
             // channel set
             "dial_addr",    dial_addr,      ///< Destination
-            "data",         ast_json_string_get(ast_json_object_get(j_plan, "queue_name")),        ///< Queue name
+            "data",         ast_json_string_get(ast_json_object_get(j_queue, "name")),        ///< Queue name
             "timeout",      tmp_timeout,
             "channelid",        channel_id, ///< Channel unique ID
             "otherchannelid",   other_channel_id,    ///< Other channel unique id.
