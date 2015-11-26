@@ -267,12 +267,10 @@ struct ast_json* rb_dialing_get_all_for_cli(void)
     return j_res;
 }
 
-int rb_dialing_set_status(const char* uuid, E_DIALING_STATUS_T status)
+int rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status)
 {
-    rb_dialing* dialing;
     struct  timespec timeptr;
 
-    dialing = rb_dialing_find_uuid_chan(uuid);
     if(dialing == NULL) {
         return false;
     }
@@ -283,3 +281,4 @@ int rb_dialing_set_status(const char* uuid, E_DIALING_STATUS_T status)
     dialing->tm_status_update = (time_t)timeptr.tv_sec;
     return true;
 }
+

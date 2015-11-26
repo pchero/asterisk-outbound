@@ -24,11 +24,6 @@ typedef struct _rb_dialing{
 
     struct ast_json* j_res;     ///< result info
 
-//    struct ast_json* j_camp;    ///< campaign
-//    struct ast_json* j_plan;    ///< plan
-//    struct ast_json* j_dlma;    ///< dlma
-//    struct ast_json* j_dl;      ///< dl_list info.
-
     struct ast_json* j_chan;    ///< channel info.
     struct ast_json* j_queues;  ///< queue info.(json array)
     struct ast_json* j_agents;  ///< agents info. Who had a talk with. (json array)
@@ -42,6 +37,6 @@ rb_dialing* rb_dialing_find_uuid_dl(const char* chan);
 rb_dialing* rb_dialing_find_uuid_chan(const char* chan);
 struct ao2_iterator rb_dialing_iter_init(void);
 struct ast_json* rb_dialing_get_all_for_cli(void);
-int rb_dialing_set_status(const char* uuid, E_DIALING_STATUS_T status);
+int rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status);
 
 #endif /* SRC_DIALING_HANDLER_H_ */

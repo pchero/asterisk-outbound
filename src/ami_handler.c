@@ -460,12 +460,20 @@ struct ast_json* ami_cmd_originate_to_queue(struct ast_json* j_dl)
     return j_res;
 }
 
+/**
+ *
+ * @param channel
+ * @param cause
+ * @return
+ */
 struct ast_json* ami_cmd_hangup(const char* channel, int cause)
 {
 //    Action: Hangup
 //    ActionID: <value>
 //    Channel: <value>
 //    Cause: <value>
+//
+//    See the asterisk/cause.h
 
     struct ast_json* j_cmd;
     struct ast_json* j_res;
@@ -1159,7 +1167,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
     ast_free(tmp);
 
     // update status
-    rb_dialing_set_status(uuid, E_DIALING_ORIGINATE_RESPONSE);
+    rb_dialing_update_status(dialing, E_DIALING_ORIGINATE_RESPONSE);
 }
 
 static void ami_evt_Hangup(struct ast_json* j_evt)
@@ -1208,9 +1216,10 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
     ast_json_object_set(dialing->j_res, "tm_hangup", ast_json_string_create(tmp));
     tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "cause"));
     ast_json_object_set(dialing->j_res, "res_hangup", ast_json_integer_create(atoi(tmp_const)));
+    ast_json_object_set(dialing->j_res, "res_hangup_detail", ast_json_ref(ast_json_object_get(j_evt, "cause-txt")));
 
     ast_free(tmp);
 
     // update status
-    rb_dialing_set_status(uuid, E_DIALING_HANGUP);
+    rb_dialing_update_status(dialing, E_DIALING_HANGUP);
 }
