@@ -21,7 +21,7 @@ create table plan(
     answer_handle   varchar(255),       -- answer handling.(all, human_only, human_possible)
     dl_end_handle   varchar(255),       -- stratery when it running out dial list(keep_running, stop)
     retry_delay     varchar(255),       -- retry delaytime(ms)
-    queue_name      varchar(255),       -- queue name
+--    queue_name      varchar(255),       -- queue name
     trunk_name      varchar(255),       -- trunk name
     
     -- retry number
@@ -46,6 +46,14 @@ create table plan(
     tm_update_status    datetime(6),    -- last status updated time.
     
     primary key(uuid)
+);
+
+-- queue
+drop table if exists queue;
+create table queue(
+  -- identity
+  uuid      varchar(255)    unique,     -- queue uuid
+  name      varchar(255)    not null    -- queue name
 );
 
 -- dial list original.
@@ -168,6 +176,7 @@ create table campaign(
 --    agent_group varchar(255),                       -- agent group uuid
     plan    varchar(255),                       -- plan uuid
     dlma    varchar(255),                       -- dial_list_ma uuid
+    queue   varchar(255),                       -- queue name
 --    trunk_group varchar(255),                       -- trunk group uuid -- will be removed.
 
     -- timestamp. UTC.
@@ -242,7 +251,10 @@ create table dl_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle, queue_name, trunk_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "TestQueue", "trunk_test_1");
+insert into plan(uuid, name, dial_mode, answer_handle, trunk_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "trunk_test_1");
+
+-- insert queue
+insert into queue(uuid, name) values ("1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6", "TestQueue");
 
 -- create dial list
 -- drop table if exists dl_e276d8be;
@@ -261,9 +273,9 @@ insert into dl_list(name, dlma_uuid, number_1) values ("test4", "e276d8be-a558-4
 
 
 -- insert campaign
-insert into campaign(uuid, name, status, plan, dlma) 
+insert into campaign(uuid, name, status, plan, dlma, queue) 
 values (
-"8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", 1, "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2"
+"8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", 1, "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2", "1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6"
 );
 
 commit;
