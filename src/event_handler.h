@@ -11,7 +11,7 @@
 int     run_outbound(void);
 void    stop_outbound(void);
 
-typedef enum _CAMP_STATUS_T
+typedef enum _E_CAMP_STATUS_T
 {
     // static status
     E_CAMP_STOP     = 0,
@@ -27,12 +27,13 @@ typedef enum _CAMP_STATUS_T
     E_CAMP_STOPPING_FORCE = 30,
 } E_CAMP_STATUS_T;
 
-typedef enum _DL_STATUS_T
+typedef enum _E_DL_STATUS_T
 {
     E_DL_IDLE       = 0,
-    E_DL_DIALING    = 1,
+    E_DL_QUEUEING   = 1,    ///< not in used.
+    E_DL_DIALING    = 2,
 
-} DL_STATUS_T;
+} E_DL_STATUS_T;
 
 char* get_utc_timestamp(void);
 

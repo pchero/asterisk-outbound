@@ -412,7 +412,7 @@ char* db_get_update_str(const struct ast_json* j_data)
             break;
 
             case AST_JSON_NULL: {
-                ast_asprintf(&res, "%s%s = \"%s\"", tmp, key, "null");
+                ast_asprintf(&res, "%s%s = %s", tmp, key, "null");
             }
             break;
 

@@ -34,6 +34,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
 static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 
 static struct ast_json* get_campaign_info_for_dialing(void);
 static struct ast_json* get_plan_info(const char* uuid);
@@ -44,9 +45,8 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 static void dial_robo(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 
-//static struct ast_json* get_dl_dial_available(const struct ast_json* j_dlma, const char* dial_mode);
 static struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast_json* j_plan);
-
+static int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan);
 
 struct ast_json* get_queue_summary(const char* name);
 int get_current_dialing_cnt(const char* camp_uuid, const char* dl_table);
@@ -56,7 +56,8 @@ static char* create_chan_addr_for_dial(struct ast_json* j_plan, struct ast_json*
 
 static char* gen_uuid(void);
 static int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point);
-static int update_dl_list(const char* table, struct ast_json* j_dlinfo);
+static int update_dl_list(struct ast_json* j_dlinfo);
+static void clear_dl_list_dialing(const char* uuid);
 
 static struct ast_json* create_dl_result(rb_dialing* dialing);
 static struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status);
@@ -69,8 +70,8 @@ int run_outbound(void)
 {
     int ret;
     struct event* ev;
-    struct timeval tm_fast = {0, 2000};    // 20 ms
-//    struct timeval tm_fast = {3, 20000};    // 2 sec
+//    struct timeval tm_fast = {0, 2000};    // 20 ms
+    struct timeval tm_fast = {3, 0};    // 3 sec
 //    struct timeval tm_slow = {0, 500000};   // 500 ms
 
     // init libevent
@@ -96,6 +97,10 @@ int run_outbound(void)
 
     ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_dialing_end, NULL);
     event_add(ev, &tm_fast);
+
+    ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_campaign_end, NULL);
+    event_add(ev, &tm_fast);
+
 
     event_base_loop(g_base, 0);
 
@@ -161,17 +166,17 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     struct ast_json* j_dlma;
     const char* dial_mode;
 
-//    ast_log(LOG_DEBUG, "cb_campagin start\n");
+    ast_log(LOG_DEBUG, "cb_campagin start\n");
 
     j_camp = get_campaign_info_for_dialing();
     if(j_camp == NULL) {
         // Nothing.
         return;
     }
-    ast_log(LOG_DEBUG, "Get campaign info. camp_uuid[%s], camp_name[%s]\n",
-            ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-            ast_json_string_get(ast_json_object_get(j_camp, "name"))
-            );
+//    ast_log(LOG_DEBUG, "Get campaign info. camp_uuid[%s], camp_name[%s]\n",
+//            ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+//            ast_json_string_get(ast_json_object_get(j_camp, "name"))
+//            );
 
     // get plan
     j_plan = get_plan_info(ast_json_string_get(ast_json_object_get(j_camp, "plan")));
@@ -184,10 +189,10 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
         ast_json_unref(j_camp);
         return;
     }
-    ast_log(LOG_DEBUG, "Get plan info. camp_uuid[%s], camp_name[%s]\n",
-            ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
-            ast_json_string_get(ast_json_object_get(j_plan, "name"))
-            );
+//    ast_log(LOG_DEBUG, "Get plan info. camp_uuid[%s], camp_name[%s]\n",
+//            ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
+//            ast_json_string_get(ast_json_object_get(j_plan, "name"))
+//            );
 
     // get dl_master_info
     j_dlma = get_dl_master_info(ast_json_string_get(ast_json_object_get(j_camp, "dlma")));
@@ -266,6 +271,8 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
     int size;
     int flg_dialing;
 
+    ast_log(LOG_DEBUG, "cb_campaign_stopping\n");
+
     j_camps = get_campaigns_info_by_status(E_CAMP_STOPPING);
     if(j_camps == NULL) {
         // Nothing.
@@ -281,7 +288,7 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
         while((dialing = ao2_iterator_next(&iter))) {
             ao2_ref(dialing, -1);
 
-            tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid"));
+            tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_res, "camp_uuid"));
             if(tmp_const == NULL) {
                 continue;
             }
@@ -323,6 +330,8 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
     int i;
     int size;
 
+    ast_log(LOG_DEBUG, "cb_campaign_stopping_force\n");
+
     j_camps = get_campaigns_info_by_status(E_CAMP_STOPPING_FORCE);
     if(j_camps == NULL) {
         // Nothing.
@@ -342,7 +351,7 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
         while((dialing = ao2_iterator_next(&iter))) {
             ao2_ref(dialing, -1);
 
-            tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid"));
+            tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_res, "camp_uuid"));
             if(tmp_const == NULL) {
                 continue;
             }
@@ -370,39 +379,43 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 {
     struct ao2_iterator iter;
     rb_dialing* dialing;
-    const char* tmp_const;
-    char* tmp;
-    struct ast_json* j_res;
+    struct ast_json* j_tmp;
+    int ret;
+
+    ast_log(LOG_DEBUG, "cb_check_dialing_end\n");
 
     iter = rb_dialing_iter_init();
     while((dialing = ao2_iterator_next(&iter))) {
         ao2_ref(dialing, -1);
 
-        tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_chan, "tm_hangup"));
-        if(tmp_const == NULL) {
+        if(dialing->status != E_DIALING_HANGUP) {
+            continue;
+        }
+
+        // create dl_list for update
+        j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O, s:O, s:O}",
+                "uuid",                 ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")),
+                "status",               E_DL_IDLE,
+                "dialing_uuid",         ast_json_null(),
+                "dialing_camp_uuid",    ast_json_null(),
+                "dialing_plan_uuid",    ast_json_null(),
+                "res_hangup",           ast_json_ref(ast_json_object_get(dialing->j_res, "res_hangup")),
+                "res_dial",             ast_json_ref(ast_json_object_get(dialing->j_res, "res_dial"))? : ast_json_integer_create(0)
+                );
+
+        // update dl_list
+        ret = update_dl_list(j_tmp);
+        ast_json_unref(j_tmp);
+        if(ret == false) {
+            ast_log(LOG_WARNING, "Could not update dialing result. dialing_uuid[%s], dl_list_uuid[%s]\n",
+                    dialing->uuid, ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
             continue;
         }
 
         // create result data
-        j_res = create_dl_result(dialing);
-        db_insert("dl_result", j_res);
-        ast_json_unref(j_res);
-
-        tmp = ast_json_dump_string_format(dialing->j_dl, 0);
-        ast_log(LOG_DEBUG, "Result dl. result[%s]\n", tmp);
-        ast_json_free(tmp);
-
-        tmp = ast_json_dump_string_format(dialing->j_chan, 0);
-        ast_log(LOG_DEBUG, "Result chan. result[%s]\n", tmp);
-        ast_json_free(tmp);
-
-        tmp = ast_json_dump_string_format(dialing->j_queues, 0);
-        ast_log(LOG_DEBUG, "Result queues. result[%s]\n", tmp);
-        ast_json_free(tmp);
-
-        tmp = ast_json_dump_string_format(dialing->j_agents, 0);
-        ast_log(LOG_DEBUG, "Result agents. result[%s]\n", tmp);
-        ast_json_free(tmp);
+        j_tmp = create_dl_result(dialing);
+        db_insert("dl_result", j_tmp);
+        ast_json_unref(j_tmp);
 
         rb_dialing_destory(dialing);
         ast_log(LOG_DEBUG, "Destroied!\n");
@@ -412,6 +425,57 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 
     return;
 }
+
+static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
+{
+    struct ast_json* j_camps;
+    struct ast_json* j_camp;
+    struct ast_json* j_plan;
+    struct ast_json* j_dlma;
+    int i;
+    int size;
+    int ret;
+
+    ast_log(LOG_DEBUG, "cb_check_campaign_end\n");
+
+    j_camps = get_campaigns_info_by_status(E_CAMP_START);
+    size = ast_json_array_size(j_camps);
+    for(i = 0; i < size; i++) {
+        j_camp = ast_json_array_get(j_camps, i);
+        if(j_camp == NULL) {
+            continue;
+        }
+
+        j_plan = get_plan_info(ast_json_string_get(ast_json_object_get(j_camp, "plan")));
+        if(j_plan == NULL) {
+            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+            continue;
+        }
+
+        j_dlma = get_dl_master_info(ast_json_string_get(ast_json_object_get(j_camp, "dlma")));
+        if(j_dlma == NULL) {
+            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+            ast_json_unref(j_plan);
+            continue;
+        }
+
+        // check_more_list(j_dlma, j_plan)
+        // check_dial
+        ret = check_more_dl_list(j_dlma, j_plan);
+        if(ret == false) {
+            ast_log(LOG_NOTICE, "No more dial list. Stopping campaign. uuid[%s], name[%s]\n",
+                    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                    ast_json_string_get(ast_json_object_get(j_camp, "name"))
+                    );
+            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        }
+
+        ast_json_unref(j_plan);
+        ast_json_unref(j_dlma);
+    }
+    return;
+}
+
 
 
 /**
@@ -748,6 +812,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     struct ast_json* j_dl_update;
     struct ast_json* j_res;
     rb_dialing* dialing;
+    char* tmp;
 
     // validate plan
     if(ast_json_string_get(ast_json_object_get(j_plan, "trunk_name")) == NULL) {
@@ -760,8 +825,8 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     j_dl_list = get_dl_available_predictive(j_dlma, j_plan);
     if(j_dl_list == NULL) {
         // No available list
-        ast_log(LOG_VERBOSE, "No more dialing list. stopping the campaign.\n");
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+//        ast_log(LOG_VERBOSE, "No more dialing list. stopping the campaign.\n");
+//        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         return;
     }
 
@@ -795,87 +860,51 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
             );
 
     // create rbtree
-    dialing = rb_dialing_create(j_camp, j_plan, j_dlma, j_dialing);
-    ast_json_unref(j_dialing);
+    dialing = rb_dialing_create(ast_json_string_get(ast_json_object_get(j_dialing, "channelid")), j_camp, j_plan, j_dlma, j_dialing);
     if(dialing == NULL) {
         ast_log(LOG_WARNING, "Could not create rbtree object.");
+        ast_json_unref(j_dialing);
         return;
     }
-
-//    if(dialing != NULL) {
-//        ast_log(LOG_DEBUG, "Created dialing. uuid[%s]\n", dialing->uuid);
-//        ao2_find(g_rb_dialings, "021a26ec-1201-4a36-a03a-3795773b236c", OBJ_KEY);
-//        dialing = rb_dialing_find_uuid("021a26ec-1201-4a36-a03a-3795773b236c");
-//        if(dialing != NULL) ast_log(LOG_DEBUG, "RB find. uuid[%s]\n", dialing->uuid);
-//        ao2_ref(dialing, -1);
-//    }
-
-//    struct ast_json* j_tmp = rb_channel_search_chan(ast_json_string_get(ast_json_object_get(j_dialing, "channelid")));
-//    ast_log(LOG_DEBUG, "Found info. dl_uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_tmp, "uuid_dl")));
 
     // dial to customer
-//    j_res = ami_cmd_originate_to_queue(j_dialing);
-    j_res = ami_cmd_originate_to_queue(dialing->j_dl);
+    j_res = ami_cmd_originate_to_queue(j_dialing);
     if(j_res == NULL) {
         ast_log(LOG_WARNING, "Originating has failed.");
-//        ast_json_unref(j_dialing);
+        clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
         ao2_ref(dialing, -1);
+        ast_json_unref(j_dialing);
         return;
     }
-    char* tmp = ast_json_dump_string_format(j_res, 0);
+    tmp = ast_json_dump_string_format(j_res, 0);
     ast_log(LOG_DEBUG, "Check value. tmp[%s]\n", tmp);
     ast_json_free(tmp);
     ast_json_unref(j_res);
 
-    // create update dl_list
-//    j_dl_update = ast_json_pack("{s:i, s:s, s:i, s:s, s:s, s:s}",
-//            "status",                   E_DL_DIALING,
-//            "uuid",                     ast_json_string_get(ast_json_object_get(j_dialing, "uuid_dl")),
-//            ast_json_string_get(ast_json_object_get(j_dialing, "trycount_field")), ast_json_integer_get(ast_json_object_get(j_dialing, "dial_trycnt")) + 1,
-//            "dialing_camp_uuid",        ast_json_string_get(ast_json_object_get(j_dialing, "uuid_camp")),
-//            "dialing_chan_unique_id",   ast_json_string_get(ast_json_object_get(j_dialing, "channelid")),
-//            "tm_last_dial",             ast_json_string_get(ast_json_object_get(j_dialing, "tm_dial"))
-//            );
-//    if(j_dl_update == NULL) {
-//        ast_log(LOG_ERROR, "Could not create dl update info json.");
-//        ast_json_unref(j_dialing);
-//        return;
-//    }
-    j_dl_update = ast_json_pack("{s:i, s:s, s:i, s:s, s:s, s:s}",
-            "status",                   E_DL_DIALING,
-            "uuid",                     ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid")),
-            ast_json_string_get(ast_json_object_get(dialing->j_dl, "trycount_field")), ast_json_integer_get(ast_json_object_get(dialing->j_dl, "dial_trycnt")) + 1,
-            "dialing_camp_uuid",        ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid")),
-            "dialing_chan_unique_id",   ast_json_string_get(ast_json_object_get(dialing->j_dl, "channelid")),
-            "tm_last_dial",             ast_json_string_get(ast_json_object_get(dialing->j_dl, "tm_originate_request"))
-            );
-    if(j_dl_update == NULL) {
-        ast_log(LOG_ERROR, "Could not create dl update info json.\n");
-        rb_dialing_destory(dialing);
-        return;
-    }
+    // update dialing status
+    rb_dialing_update_status(dialing, E_DIALING_ORIGINATE_REQUEST);
 
-    // update dl_list
-    ret = update_dl_list(ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")), j_dl_update);
+    // create update dl_list
+    tmp = get_utc_timestamp();
+    j_dl_update = ast_json_pack("{s:s, s:i, s:i, s:s, s:s, s:s, s:s}",
+            "uuid",                 ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")),
+            ast_json_string_get(ast_json_object_get(j_dialing, "trycount_field")), ast_json_integer_get(ast_json_object_get(j_dialing, "dial_trycnt")) + 1,
+            "status",               E_DL_DIALING,
+            "dialing_uuid",         dialing->uuid,
+            "dialing_camp_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_res, "camp_uuid")),
+            "dialing_plan_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_res, "plan_uuid")),
+            "tm_last_dial",         tmp
+            );
+    ast_json_unref(j_dialing);
+    ast_free(tmp);
+    ret = update_dl_list(j_dl_update);
     ast_json_unref(j_dl_update);
     if(ret == false) {
-//        ast_json_unref(j_dialing);
         ao2_ref(dialing, -1);
+        clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
         ast_log(LOG_ERROR, "Could not update dial list info.");
         return;
     }
-
-    // add bsd tree
-//
-//    // insert dialing
-//    ast_log(LOG_NOTICE, "Insert new dialing. chan_unique_id[%s]", ast_json_string_get(ast_json_object_get(j_dialing, "chan_unique_id")));
-//    ret = memdb_insert("dialing", j_dialing);
-//    ast_json_unref(j_dialing);
-//    if(ret == false)
-//    {
-//        ast_log(LOG_ERROR, "Could not insert dialing info.");
-//        return;
-//    }
 
     return;
 }
@@ -928,6 +957,7 @@ static struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, str
             "having "
             "status = %d "
             "and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
+            "and res_hangup != %d "
             "order by trycnt asc "
             "limit 1"
             ";",
@@ -940,7 +970,8 @@ static struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, str
             (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
             (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
             ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
-            E_DL_IDLE
+            E_DL_IDLE,
+            AST_CAUSE_NORMAL_CLEARING
             );
 
     db_res = db_query(sql);
@@ -1001,7 +1032,6 @@ struct ast_json* get_dl_list(struct ast_json* j_dlma, int count)
 
     return j_res;
 }
-
 
 /**
  * Return dialing availability.
@@ -1065,6 +1095,54 @@ static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_js
         return 0;
     }
     return 1;
+}
+
+static int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
+{
+    struct ast_json* j_res;
+    db_res_t* db_res;
+    char* sql;
+
+    ast_asprintf(&sql, "select *, "
+            "case when number_1 is null then 0 when trycnt_1 < %d then 1 else 0 end as num_1, "
+            "case when number_2 is null then 0 when trycnt_2 < %d then 1 else 0 end as num_2, "
+            "case when number_3 is null then 0 when trycnt_3 < %d then 1 else 0 end as num_3, "
+            "case when number_4 is null then 0 when trycnt_4 < %d then 1 else 0 end as num_4, "
+            "case when number_5 is null then 0 when trycnt_5 < %d then 1 else 0 end as num_5, "
+            "case when number_6 is null then 0 when trycnt_6 < %d then 1 else 0 end as num_6, "
+            "case when number_7 is null then 0 when trycnt_7 < %d then 1 else 0 end as num_7, "
+            "case when number_8 is null then 0 when trycnt_8 < %d then 1 else 0 end as num_8 "
+            "from %s "
+            "having "
+            "res_hangup != %d"
+            ";",
+
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
+            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
+            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+            AST_CAUSE_NORMAL_CLEARING
+            );
+    ast_log(LOG_DEBUG, "Check value. sql[%s]\n", sql);
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        return false;
+    }
+
+    j_res = db_get_record(db_res);
+    db_free(db_res);
+    if(j_res == NULL) {
+        return false;
+    }
+    ast_json_unref(j_res);
+
+    return true;
 }
 
 /**
@@ -1318,7 +1396,6 @@ static int get_dial_num_point(struct ast_json* j_dl_list, struct ast_json* j_pla
     dial_num_point = -1;
     for(i = 1; i < 9; i++) {
         ast_asprintf(&tmp, "number_%d", i);
-
         tmp_const = ast_json_string_get(ast_json_object_get(j_dl_list, tmp));
         ast_free(tmp);
         if(tmp_const == NULL) {
@@ -1400,7 +1477,7 @@ static char* gen_uuid(void)
  * @param j_dlinfo
  * @return
  */
-static int update_dl_list(const char* table, struct ast_json* j_dlinfo)
+static int update_dl_list(struct ast_json* j_dlinfo)
 {
     char* sql;
     int ret;
@@ -1412,8 +1489,8 @@ static int update_dl_list(const char* table, struct ast_json* j_dlinfo)
         return false;
     }
 
-    ast_asprintf(&sql, "update %s set %s where uuid = \"%s\";\n",
-            table, tmp, ast_json_string_get(ast_json_object_get(j_dlinfo, "uuid"))
+    ast_asprintf(&sql, "update dl_list set %s where uuid = \"%s\";\n",
+            tmp, ast_json_string_get(ast_json_object_get(j_dlinfo, "uuid"))
             );
     ast_free(tmp);
 
@@ -1432,40 +1509,15 @@ static struct ast_json* create_dl_result(rb_dialing* dialing)
     struct ast_json* j_res;
     char* tmp;
 
-    ast_log(LOG_DEBUG, "Check value. dialing_uuid[%s], camp_uuid[%s], plan_uuid[%s], dlma_uuid[%s], dl_uuid[%s]\n",
-            dialing->uuid,
-            ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid")),
-            ast_json_string_get(ast_json_object_get(dialing->j_plan, "uuid")),
-            ast_json_string_get(ast_json_object_get(dialing->j_dlma, "uuid")),
-            ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid"))
+    j_res = ast_json_deep_copy(dialing->j_res);
+
+    ast_log(LOG_DEBUG, "Check value. dialing_uuid[%s], camp_uuid[%s], plan_uuid[%s], dlma_uuid[%s], dl_list_uuid[%s]\n",
+            ast_json_string_get(ast_json_object_get(j_res, "dialing_uuid")),
+            ast_json_string_get(ast_json_object_get(j_res, "camp_uuid")),
+            ast_json_string_get(ast_json_object_get(j_res, "plan_uuid")),
+            ast_json_string_get(ast_json_object_get(j_res, "dlma_uuid")),
+            ast_json_string_get(ast_json_object_get(j_res, "dl_list_uuid"))
             );
-    j_res = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
-            "dialing_uuid", dialing->uuid,
-            "camp_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_camp, "uuid")),
-            "plan_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_plan, "uuid")),
-            "dlma_uuid",    ast_json_string_get(ast_json_object_get(dialing->j_dlma, "uuid")),
-            "dl_uuid",      ast_json_string_get(ast_json_object_get(dialing->j_dl, "uuid"))
-            );
-
-    // info_camp
-    tmp = ast_json_dump_string_format(dialing->j_camp, 0);
-    ast_json_object_set(j_res, "info_camp", ast_json_string_create(tmp));
-    ast_json_free(tmp);
-
-    // info_plan
-    tmp = ast_json_dump_string_format(dialing->j_plan, 0);
-    ast_json_object_set(j_res, "info_plan", ast_json_string_create(tmp));
-    ast_json_free(tmp);
-
-    // info_plan
-    tmp = ast_json_dump_string_format(dialing->j_dlma, 0);
-    ast_json_object_set(j_res, "info_dlma", ast_json_string_create(tmp));
-    ast_json_free(tmp);
-
-    // info_dl
-    tmp = ast_json_dump_string_format(dialing->j_dl, 0);
-    ast_json_object_set(j_res, "info_dl", ast_json_string_create(tmp));
-    ast_json_free(tmp);
 
     // info_chan
     tmp = ast_json_dump_string_format(dialing->j_chan, 0);
@@ -1482,7 +1534,31 @@ static struct ast_json* create_dl_result(rb_dialing* dialing)
     ast_json_object_set(j_res, "info_agents", ast_json_string_create(tmp));
     ast_json_free(tmp);
 
-
     return j_res;
+}
+
+/**
+ *
+ * @param uuid
+ */
+static void clear_dl_list_dialing(const char* uuid)
+{
+    struct ast_json* j_tmp;
+
+    if(uuid == NULL) {
+        return;
+    }
+
+    j_tmp = ast_json_pack("{s:i, s:s, s:O, s:O, s:O}",
+            "status",               E_DL_IDLE,
+            "uuid",                 uuid,
+            "dialing_uuid",         ast_json_null(),
+            "dialing_camp_uuid",    ast_json_null(),
+            "dialing_plan_uuid",    ast_json_null()
+            );
+    update_dl_list(j_tmp);
+    ast_json_unref(j_tmp);
+
+    return;
 }
 
