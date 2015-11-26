@@ -422,6 +422,8 @@ struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_set_campaign,        "Set campaign parameters")
 };
 
+//static int manager_out_campaign_create
+
 int init_cli_handler(void)
 {
     ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
