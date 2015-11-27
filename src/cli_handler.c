@@ -7,13 +7,33 @@
 
 #include "asterisk.h"
 #include "asterisk/manager.h"
+#include "asterisk/module.h"
 #include "asterisk/json.h"
+#include "asterisk/xml.h"
 
 #include <stdbool.h>
 
 #include "cli_handler.h"
 #include "event_handler.h"
 #include "dialing_handler.h"
+#include "campaign_handler.h"
+
+/*** DOCUMENTATION
+    <manager name="OutCampaignCreate" language="en_US">
+        <synopsis>
+            Create outbound campaign.
+        </synopsis>
+        <syntax>
+            <xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+            <parameter name="Name" required="true">
+                <para>The name of campaign.</para>
+            </parameter>
+        </syntax>
+        <description>
+            <para>Changes the dtmfmode for a SIP call.</para>
+        </description>
+    </application>
+*/
 
 
 #define CAMP_FORMAT2 "%-36.36s %-40.40s %-6.6s %-36.36s %-36.36s %-40.40s\n"
@@ -422,11 +442,71 @@ struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_set_campaign,        "Set campaign parameters")
 };
 
-//static int manager_out_campaign_create
+static int manager_out_campaign_create(struct mansession *s, const struct message *m)
+{
+    struct ast_json* j_camp;
+    struct ast_json* j_res;
+    const char* tmp_const;
+
+    j_camp = ast_json_object_create();
+
+    if((tmp_const = astman_get_header(m, "Name")) != NULL) {ast_json_object_set(j_camp, "name", ast_json_string_create(tmp_const));}
+    if((tmp_const = astman_get_header(m, "Detail")) != NULL) {ast_json_object_set(j_camp, "detail", ast_json_string_create(tmp_const));}
+    if((tmp_const = astman_get_header(m, "Plan")) != NULL) {ast_json_object_set(j_camp, "plan", ast_json_string_create(tmp_const));}
+    if((tmp_const = astman_get_header(m, "Dlma")) != NULL) {ast_json_object_set(j_camp, "dlma", ast_json_string_create(tmp_const));}
+    if((tmp_const = astman_get_header(m, "Queue")) != NULL) {ast_json_object_set(j_camp, "queue", ast_json_string_create(tmp_const));}
+
+    j_res = create_campaign(j_camp);
+    ast_json_unref(j_camp);
+    if(j_res == NULL) {
+        astman_send_error(s, m, "Error encountered while creating campaign");
+        return 0;
+    }
+    astman_send_ack(s, m, "Campaign created successfully");
+
+    return 0;
+}
+
+void send_manager_campaign_create(struct mansession *s, struct ast_json* j_camp, const char *idText)
+{
+    astman_append(s,
+    "Event: CampaignCreate\r\n"
+    "Privilege: System\r\n"
+    "Uuid: %s\r\n"
+    "Name: %s\r\n"
+    "Detail: %s\r\n"
+    "Status: %d\r\n"
+    "Plan: %s\r\n"
+    "Dlma: %s\r\n"
+    "Queue: %s\r\n"
+    "\r\n",
+    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+    ast_json_string_get(ast_json_object_get(j_camp, "name")),
+    ast_json_string_get(ast_json_object_get(j_camp, "detail")),
+    ast_json_integer_get(ast_json_object_get(j_camp, "status")),
+    ast_json_string_get(ast_json_object_get(j_camp, "plan")),
+    ast_json_string_get(ast_json_object_get(j_camp, "dlma")),
+    ast_json_string_get(ast_json_object_get(j_camp, "queue"))
+    );
+
+}
+
 
 int init_cli_handler(void)
 {
-    ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
+    int err;
+
+    err = 0;
+
+    err |= ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
+    err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_COMMAND, manager_out_campaign_create, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_MESSAGE, send_manager_campaign_create, NULL, NULL, NULL);
+
+    if(err != 0) {
+        term_cli_handler();
+        return false;
+    }
+
     return true;
 }
 

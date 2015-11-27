@@ -22,6 +22,8 @@
 #include "ami_handler.h"
 #include "event_handler.h"
 #include "dialing_handler.h"
+#include "campaign_handler.h"
+
 
 #define TEMP_FILENAME "/tmp/asterisk_outbound_tmp.txt"
 
@@ -55,13 +57,11 @@ static int get_dial_num_point(struct ast_json* j_dl_list, struct ast_json* j_pla
 static char* get_dial_number(struct ast_json* j_dlist, const int cnt);
 static char* create_chan_addr_for_dial(struct ast_json* j_plan, struct ast_json* j_dl_list, int dial_num_point);
 
-static char* gen_uuid(void);
 static int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point);
 static int update_dl_list(struct ast_json* j_dlinfo);
 static void clear_dl_list_dialing(const char* uuid);
 
 static struct ast_json* create_dl_result(rb_dialing* dialing);
-static struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status);
 
 // todo
 static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_queue, struct ast_json* j_plan, struct ast_json* j_dlma);
@@ -521,107 +521,6 @@ static struct ast_json* get_campaign_info_for_dialing(void)
     return j_res;
 }
 
-/**
- * Get campaign for dialing.
- * @return
- */
-static struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status)
-{
-    struct ast_json* j_res;
-    struct ast_json* j_tmp;
-    db_res_t* db_res;
-    char* sql;
-
-    // get "start" status campaign only.
-    ast_asprintf(&sql, "select * from campaign where status = %d;",
-            status
-            );
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_WARNING, "Could not get campaign info.\n");
-        return NULL;
-    }
-
-    j_res = ast_json_array_create();
-    while(1){
-        j_tmp = db_get_record(db_res);
-        if(j_tmp == NULL) {
-            break;
-        }
-        ast_json_array_append(j_res, j_tmp);
-    }
-    db_free(db_res);
-
-    return j_res;
-}
-
-/**
- * Get all campaigns
- * @return
- */
-struct ast_json* get_campaign_info_all(void)
-{
-    struct ast_json* j_res;
-    struct ast_json* j_tmp;
-    db_res_t* db_res;
-    char* sql;
-
-    // get all campaigns
-    ast_asprintf(&sql, "%s", "select * from campaign");
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_WARNING, "Could not get campaign info.\n");
-        return NULL;
-    }
-
-    j_res = ast_json_array_create();
-    while(1) {
-        j_tmp = db_get_record(db_res);
-        if(j_tmp == NULL) {
-            break;
-        }
-
-        ast_json_array_append(j_res, j_tmp);
-    }
-    db_free(db_res);
-
-    return j_res;
-}
-
-/**
- * Get all campaigns
- * @return
- */
-struct ast_json* get_campaign_info(const char* uuid)
-{
-    struct ast_json* j_res;
-    db_res_t* db_res;
-    char* sql;
-
-    if(uuid == NULL) {
-        return NULL;
-    }
-
-    // get all campaigns
-    ast_asprintf(&sql, "select * from campaign where uuid = \"%s\";", uuid);
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_WARNING, "Could not get campaign info.\n");
-        return NULL;
-    }
-
-    j_res = db_get_record(db_res);
-    db_free(db_res);
-
-    return j_res;
-}
-
 static struct ast_json* get_queue_info(const char* uuid)
 {
     char* sql;
@@ -776,46 +675,6 @@ struct ast_json* get_dl_master_info_all(void)
     db_free(db_res);
 
     return j_res;
-}
-
-/**
- * Update campaign status info.
- * @param uuid
- * @param status
- * @return
- */
-int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status)
-{
-    char* sql;
-    int ret;
-    char* tmp_status;
-
-    if(uuid == NULL) {
-        ast_log(LOG_WARNING, "Invalid input parameters.\n");
-        return false;
-    }
-    ast_log(LOG_NOTICE, "Update campaign status. uuid[%s], status[%d]\n", uuid, status);
-
-    if(status == E_CAMP_START) tmp_status = "run";
-    else if(status == E_CAMP_STOP) tmp_status = "stop";
-    else if(status == E_CAMP_PAUSE) tmp_status = "pause";
-    else if(status == E_CAMP_STARTING) tmp_status = "running";
-    else if(status == E_CAMP_STOPPING) tmp_status = "stopping";
-    else if(status == E_CAMP_PAUSING) tmp_status = "pausing";
-    else {
-        ast_log(LOG_WARNING, "Invalid input parameters.\n");
-        return false;
-    }
-
-    ast_asprintf(&sql, "update campaign set status = %d where uuid = \"%s\";", status, uuid );
-    ret = db_exec(sql);
-    ast_free(sql);
-    if(ret == false) {
-        ast_log(LOG_ERROR, "Could not update campaign status info. uuid[%s], status[%s]\n", uuid, tmp_status);
-        return false;
-    }
-
-    return true;
 }
 
 /**
@@ -1174,7 +1033,6 @@ static int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
             ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
             AST_CAUSE_NORMAL_CLEARING
             );
-    ast_log(LOG_DEBUG, "Check value. sql[%s]\n", sql);
     db_res = db_query(sql);
     ast_free(sql);
     if(db_res == NULL) {
@@ -1498,23 +1356,6 @@ static char* get_dial_number(struct ast_json* j_dlist, const int cnt)
 
     ast_asprintf(&res, "%s", ast_json_string_get(ast_json_object_get(j_dlist, tmp)));
     ast_free(tmp);
-
-    return res;
-}
-
-/**
- * Generate uuid.
- * Return value should be free after used.
- * @param prefix
- * @return
- */
-static char* gen_uuid(void)
-{
-    char tmp[AST_UUID_STR_LEN];
-    char* res;
-
-    ast_uuid_generate_str(tmp, sizeof(tmp));
-    res = ast_strdup(tmp);
 
     return res;
 }
