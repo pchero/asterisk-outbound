@@ -130,7 +130,7 @@ create table dl_list_ma(
 -- manage all of dial list tables
 
     -- row identity
-    seq         int(10)         unsigned auto_increment,    -- sequence
+--    seq         int(10)         unsigned auto_increment,    -- sequence
     uuid        varchar(255)    unique,                     -- dial_list_#### reference uuid.
     
     -- information
@@ -148,7 +148,7 @@ create table dl_list_ma(
     delete_agent_uuid           varchar(255),       -- delete agent uuid
     update_property_agent_uuid  varchar(255),       -- last propery update agent uuid
     
-    primary key(seq, uuid)
+    primary key(uuid)
 );
 
 drop table if exists campaign;
@@ -196,7 +196,7 @@ drop table if exists dl_result;
 create table dl_result(
 -- campaign dial result table.
     -- identity
-    seq                 int(10)         unsigned auto_increment,
+--    seq                 int(10)         unsigned auto_increment,
     dialing_uuid        varchar(255)    not null,   -- dialing uuid(channel unique id).
     camp_uuid           varchar(255)    not null,   -- campaign uuid.
     plan_uuid           varchar(255)    not null,   -- plan uuid.
@@ -246,7 +246,7 @@ create table dl_result(
     res_tr_hangup           varchar(255),   -- hangup code.
     res_tr_hangup_detail    varchar(255),   -- hangup detail.
         
-    primary key(seq, dialing_uuid)
+    primary key(dialing_uuid)
     
 );
 
