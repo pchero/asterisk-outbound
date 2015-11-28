@@ -10,6 +10,7 @@
 #include "asterisk/module.h"
 #include "asterisk/json.h"
 #include "asterisk/xml.h"
+#include "asterisk/cli.h"
 
 #include <stdbool.h>
 
@@ -32,9 +33,20 @@
         <description>
             <para>Changes the dtmfmode for a SIP call.</para>
         </description>
-    </application>
-*/
-
+    </manager>
+    <managerEvent language="en_US" name="OutCampaignCreate">
+        <managerEventInstance class="EVENT_FLAG_MESSAGE">
+            <synopsis>Raised when SIPQualifyPeer has finished qualifying the specified peer.</synopsis>
+            <syntax>
+                <parameter name="Name">
+                    <para>The name of the peer.</para>
+                </parameter>
+            </syntax>
+            <see-also>
+            </see-also>
+        </managerEventInstance>
+    </managerEvent>
+***/
 
 #define CAMP_FORMAT2 "%-36.36s %-40.40s %-6.6s %-36.36s %-36.36s %-40.40s\n"
 #define CAMP_FORMAT3 "%-36.36s %-40.40s %6ld %-36.36s %-36.36s %-40.40s\n"
@@ -432,33 +444,23 @@ static char *out_show_dlma_list(struct ast_cli_entry *e, int cmd, struct ast_cli
     return _out_show_dlma_list(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
-struct ast_cli_entry cli_out[] = {
-    AST_CLI_DEFINE(out_show_campaigns,      "List defined outbound campaigns"),
-    AST_CLI_DEFINE(out_show_plans,          "List defined outbound plans"),
-    AST_CLI_DEFINE(out_show_dlmas,          "List defined outbound dlmas"),
-    AST_CLI_DEFINE(out_show_dlma_list,      "Show list of dlma dial list"),
-    AST_CLI_DEFINE(out_show_dialings,       "List currently on serviced dialings"),
-    AST_CLI_DEFINE(out_show_campaign,       "Shows detail campaign info"),
-    AST_CLI_DEFINE(out_set_campaign,        "Set campaign parameters")
-};
-
 static int manager_out_campaign_create(struct mansession *s, const struct message *m)
 {
     struct ast_json* j_camp;
-    struct ast_json* j_res;
     const char* tmp_const;
+    int ret;
+
 
     j_camp = ast_json_object_create();
-
     if((tmp_const = astman_get_header(m, "Name")) != NULL) {ast_json_object_set(j_camp, "name", ast_json_string_create(tmp_const));}
     if((tmp_const = astman_get_header(m, "Detail")) != NULL) {ast_json_object_set(j_camp, "detail", ast_json_string_create(tmp_const));}
     if((tmp_const = astman_get_header(m, "Plan")) != NULL) {ast_json_object_set(j_camp, "plan", ast_json_string_create(tmp_const));}
     if((tmp_const = astman_get_header(m, "Dlma")) != NULL) {ast_json_object_set(j_camp, "dlma", ast_json_string_create(tmp_const));}
     if((tmp_const = astman_get_header(m, "Queue")) != NULL) {ast_json_object_set(j_camp, "queue", ast_json_string_create(tmp_const));}
 
-    j_res = create_campaign(j_camp);
+    ret = create_campaign(j_camp);
     ast_json_unref(j_camp);
-    if(j_res == NULL) {
+    if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating campaign");
         return 0;
     }
@@ -467,30 +469,85 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
     return 0;
 }
 
-void send_manager_campaign_create(struct mansession *s, struct ast_json* j_camp, const char *idText)
+static char* _out_create_campaign(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
-    astman_append(s,
-    "Event: CampaignCreate\r\n"
-    "Privilege: System\r\n"
-    "Uuid: %s\r\n"
-    "Name: %s\r\n"
-    "Detail: %s\r\n"
-    "Status: %d\r\n"
-    "Plan: %s\r\n"
-    "Dlma: %s\r\n"
-    "Queue: %s\r\n"
-    "\r\n",
-    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-    ast_json_string_get(ast_json_object_get(j_camp, "name")),
-    ast_json_string_get(ast_json_object_get(j_camp, "detail")),
-    ast_json_integer_get(ast_json_object_get(j_camp, "status")),
-    ast_json_string_get(ast_json_object_get(j_camp, "plan")),
-    ast_json_string_get(ast_json_object_get(j_camp, "dlma")),
-    ast_json_string_get(ast_json_object_get(j_camp, "queue"))
-    );
+//    out create campaign <name> <plan-uuid> <dlma-uuid> <queue-uuid> [detail]
+    struct ast_json* j_camp;
+    int ret;
 
+    if(argc <= 7) {
+        return CLI_SHOWUSAGE;
+    }
+
+    j_camp = ast_json_object_create();
+    ast_json_object_set(j_camp, "name", ast_json_string_create(argv[3]));
+    ast_json_object_set(j_camp, "plan", ast_json_string_create(argv[4]));
+    ast_json_object_set(j_camp, "dlma", ast_json_string_create(argv[5]));
+    ast_json_object_set(j_camp, "queue", ast_json_string_create(argv[6]));
+    if(argc > 7) {
+        ast_json_object_set(j_camp, "detail", ast_json_string_create(argv[7]));
+    }
+
+    ret = create_campaign(j_camp);
+    ast_json_unref(j_camp);
+    if(ret == false) {
+        return CLI_FAILURE;
+    }
+
+    return CLI_SUCCESS;
 }
 
+/*! \brief CLI for create campaigns.
+ */
+static char *out_create_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+    if (cmd == CLI_INIT) {
+        e->command = "out create campaign";
+        e->usage =
+            "Usage: out create campaign <name> <plan-uuid> <dlma-uuid> <queue-uuid>         [detail] \n"
+            "       Create new campaign.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_create_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
+void send_manager_evt_campaign_create(struct ast_json* j_camp)
+{
+    char* tmp;
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "Name: %s\r\n"
+            "Detail: %s\r\n"
+            "Status: %ld\r\n"
+            "Plan: %s\r\n"
+            "Dlma: %s\r\n"
+            "Queue: %s\r\n",
+            ast_json_string_get(ast_json_object_get(j_camp, "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_camp, "name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_camp, "detail"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_camp, "status")),
+            ast_json_string_get(ast_json_object_get(j_camp, "plan"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_camp, "dlma"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_camp, "queue"))? : "<unknown>"
+            );
+    manager_event(EVENT_FLAG_MESSAGE, "OutCampaignCreate", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+
+struct ast_cli_entry cli_out[] = {
+    AST_CLI_DEFINE(out_show_campaigns,      "List defined outbound campaigns"),
+    AST_CLI_DEFINE(out_show_plans,          "List defined outbound plans"),
+    AST_CLI_DEFINE(out_show_dlmas,          "List defined outbound dlmas"),
+    AST_CLI_DEFINE(out_show_dlma_list,      "Show list of dlma dial list"),
+    AST_CLI_DEFINE(out_show_dialings,       "List currently on serviced dialings"),
+    AST_CLI_DEFINE(out_show_campaign,       "Shows detail campaign info"),
+    AST_CLI_DEFINE(out_set_campaign,        "Set campaign parameters"),
+    AST_CLI_DEFINE(out_create_campaign,     "Create new campaign")
+};
 
 int init_cli_handler(void)
 {
@@ -500,7 +557,6 @@ int init_cli_handler(void)
 
     err |= ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
     err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_COMMAND, manager_out_campaign_create, NULL, NULL, NULL);
-    err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_MESSAGE, send_manager_campaign_create, NULL, NULL, NULL);
 
     if(err != 0) {
         term_cli_handler();
@@ -513,4 +569,7 @@ int init_cli_handler(void)
 void term_cli_handler(void)
 {
     ast_cli_unregister_multiple(cli_out, ARRAY_LEN(cli_out));
+    ast_manager_unregister("OutCampaignCreate");
+
+    return;
 }
