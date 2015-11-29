@@ -585,27 +585,6 @@ static char *out_create_campaign(struct ast_cli_entry *e, int cmd, struct ast_cl
     return _out_create_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
-/**
- * Send event notification of campaign delete.
- * @param j_camp
- */
-void send_manager_evt_campaign_delete(const char* uuid)
-{
-    char* tmp;
-
-    if(uuid == NULL) {
-        // nothing to send.
-        return;
-    }
-
-    ast_asprintf(&tmp,
-            "Uuid: %s\r\n",
-            uuid
-            );
-    manager_event(EVENT_FLAG_MESSAGE, "OutCampaignDelete", "%s\r\n", tmp);
-    ast_free(tmp);
-}
-
 static char* _out_delete_campaign(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
 //    out delete campaign <camp-uuid>
@@ -636,11 +615,7 @@ static char *out_delete_campaign(struct ast_cli_entry *e, int cmd, struct ast_cl
     return _out_delete_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
-/**
- * Send event notification of campaign create.
- * @param j_camp
- */
-void send_manager_evt_campaign_create(struct ast_json* j_camp)
+static char* manager_get_campaign_str(struct ast_json* j_camp)
 {
     char* tmp;
 
@@ -660,8 +635,73 @@ void send_manager_evt_campaign_create(struct ast_json* j_camp)
             ast_json_string_get(ast_json_object_get(j_camp, "dlma"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "queue"))? : "<unknown>"
             );
+    return tmp;
+}
+
+/**
+ * Send event notification of campaign create.
+ * @param j_camp
+ */
+void send_manager_evt_campaign_create(struct ast_json* j_camp)
+{
+    char* tmp;
+
+    if(j_camp == NULL) {
+        return;
+    }
+
+    tmp = manager_get_campaign_str(j_camp);
+    if(tmp == NULL) {
+        return;
+    }
+
     manager_event(EVENT_FLAG_MESSAGE, "OutCampaignCreate", "%s\r\n", tmp);
     ast_free(tmp);
+}
+
+
+/**
+ * Send event notification of campaign delete.
+ * @param j_camp
+ */
+void send_manager_evt_campaign_delete(const char* uuid)
+{
+    char* tmp;
+
+    if(uuid == NULL) {
+        // nothing to send.
+        return;
+    }
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n",
+            uuid
+            );
+    manager_event(EVENT_FLAG_MESSAGE, "OutCampaignDelete", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+/**
+ * Send CampaignUpdate event notify to AMI
+ * @param j_camp
+ */
+void send_manager_evt_campaign_update(struct ast_json* j_camp)
+{
+    char* tmp;
+
+    if(j_camp == NULL) {
+        return;
+    }
+
+    tmp = manager_get_campaign_str(j_camp);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutCampaignUpdate", "%s\r\n", tmp);
+    ast_free(tmp);
+
+    return;
 }
 
 /**
