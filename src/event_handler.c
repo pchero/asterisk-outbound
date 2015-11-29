@@ -23,6 +23,7 @@
 #include "event_handler.h"
 #include "dialing_handler.h"
 #include "campaign_handler.h"
+#include "dl_handler.h"
 
 
 #define TEMP_FILENAME "/tmp/asterisk_outbound_tmp.txt"
