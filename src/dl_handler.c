@@ -83,30 +83,32 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
     char* sql;
 
     ast_asprintf(&sql, "select *, "
-            "case when number_1 is null then 0 when trycnt_1 < %d then 1 else 0 end as num_1, "
-            "case when number_2 is null then 0 when trycnt_2 < %d then 1 else 0 end as num_2, "
-            "case when number_3 is null then 0 when trycnt_3 < %d then 1 else 0 end as num_3, "
-            "case when number_4 is null then 0 when trycnt_4 < %d then 1 else 0 end as num_4, "
-            "case when number_5 is null then 0 when trycnt_5 < %d then 1 else 0 end as num_5, "
-            "case when number_6 is null then 0 when trycnt_6 < %d then 1 else 0 end as num_6, "
-            "case when number_7 is null then 0 when trycnt_7 < %d then 1 else 0 end as num_7, "
-            "case when number_8 is null then 0 when trycnt_8 < %d then 1 else 0 end as num_8 "
+            "case when number_1 is null then 0 when trycnt_1 < %ld then 1 else 0 end as num_1, "
+            "case when number_2 is null then 0 when trycnt_2 < %ld then 1 else 0 end as num_2, "
+            "case when number_3 is null then 0 when trycnt_3 < %ld then 1 else 0 end as num_3, "
+            "case when number_4 is null then 0 when trycnt_4 < %ld then 1 else 0 end as num_4, "
+            "case when number_5 is null then 0 when trycnt_5 < %ld then 1 else 0 end as num_5, "
+            "case when number_6 is null then 0 when trycnt_6 < %ld then 1 else 0 end as num_6, "
+            "case when number_7 is null then 0 when trycnt_7 < %ld then 1 else 0 end as num_7, "
+            "case when number_8 is null then 0 when trycnt_8 < %ld then 1 else 0 end as num_8 "
             "from %s "
             "having "
             "res_hangup != %d"
+            "and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
             ";",
 
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
-            (int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
             ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
             AST_CAUSE_NORMAL_CLEARING
             );
+    ast_log(LOG_DEBUG, "Check sql. sql[%s]\n", sql);
     db_res = db_query(sql);
     ast_free(sql);
     if(db_res == NULL) {
@@ -115,6 +117,7 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
 
     j_res = db_get_record(db_res);
     db_free(db_res);
+//    ast_log(LOG_DEBUG, "Get dial records. uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_res, "uuid")));
     if(j_res == NULL) {
         return false;
     }
