@@ -94,6 +94,11 @@ db_res_t* db_query(char* query)
         return NULL;
     }
 
+    if(g_db == NULL) {
+        ast_log(LOG_WARNING, "Wrong DB context.\n");
+        return NULL;
+    }
+
     ast_mutex_lock(&g_mysql_mutex);
     ret = mysql_query(g_db, query);
     if(ret != 0) {

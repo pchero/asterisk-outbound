@@ -257,3 +257,30 @@ char* gen_uuid(void)
     return res;
 }
 
+/**
+ * Get campaign for dialing.
+ * @return
+ */
+struct ast_json* get_campaign_info_for_dialing(void)
+{
+    struct ast_json* j_res;
+    db_res_t* db_res;
+    char* sql;
+
+    // get "start" status campaign only.
+    ast_asprintf(&sql, "select * from campaign where status = %d and in_use = 1 order by rand() limit 1;",
+            E_CAMP_START
+            );
+
+    db_res = db_query(sql);
+    ast_free(sql);
+    if(db_res == NULL) {
+        ast_log(LOG_WARNING, "Could not get campaign info.\n");
+        return NULL;
+    }
+
+    j_res = db_get_record(db_res);
+    db_free(db_res);
+
+    return j_res;
+}
