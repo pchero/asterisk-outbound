@@ -93,7 +93,7 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
             "case when number_8 is null then 0 when trycnt_8 < %ld then 1 else 0 end as num_8 "
             "from %s "
             "having "
-            "res_hangup != %d"
+            "res_hangup != %d "
             "and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
             ";",
 

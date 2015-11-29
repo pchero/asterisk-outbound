@@ -212,6 +212,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
         update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         ast_json_unref(j_camp);
         ast_json_unref(j_plan);
+        ast_json_unref(j_queue);
         return;
     }
     ast_log(LOG_DEBUG, "Get dlma info. dlma_uuid[%s], dlma_name[%s]\n",
@@ -231,6 +232,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
         ast_json_unref(j_camp);
         ast_json_unref(j_plan);
         ast_json_unref(j_dlma);
+        ast_json_unref(j_queue);
         return;
     }
 
@@ -257,6 +259,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     ast_json_unref(j_camp);
     ast_json_unref(j_plan);
     ast_json_unref(j_dlma);
+    ast_json_unref(j_queue);
 
     return;
 }
@@ -480,6 +483,7 @@ static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__(
         ast_json_unref(j_plan);
         ast_json_unref(j_dlma);
     }
+    ast_json_unref(j_camps);
     return;
 }
 
@@ -745,7 +749,6 @@ static int check_dial_avaiable_predictive(
         struct ast_json* j_dlma
         )
 {
-    char* sql;
     struct ast_json* j_tmp;
     int cnt_avail_chan;
     int cnt_current_dialing;
@@ -784,13 +787,6 @@ static int check_dial_avaiable_predictive(
                 );
         return -1;
     }
-
-    // get count of currently dailings.
-    ast_asprintf(&sql, "select count(*) from %s where dialing_camp_uuid = \"%s\" and status = \"%s\";",
-            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
-            ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-            "dialing"
-            );
 
     // compare
     if(cnt_avail_chan <= cnt_current_dialing) {
