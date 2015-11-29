@@ -18,6 +18,7 @@
 #include "event_handler.h"
 #include "dialing_handler.h"
 #include "campaign_handler.h"
+#include "dl_handler.h"
 
 /*** DOCUMENTATION
     <manager name="OutCampaignCreate" language="en_US">
@@ -405,7 +406,7 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
         return NULL;
     }
 
-    j_dls = get_dl_list(j_dlma, count);
+    j_dls = get_dl_lists(j_dlma, count);
     ast_json_unref(j_dlma);
 
     size = ast_json_array_size(j_dls);
@@ -427,7 +428,8 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
     return CLI_SUCCESS;
 }
 
-/*! \brief CLI for show plans.
+/**
+ * \brief CLI for show plans.
  */
 static char *out_show_dlma_list(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
@@ -443,6 +445,91 @@ static char *out_show_dlma_list(struct ast_cli_entry *e, int cmd, struct ast_cli
     }
     return _out_show_dlma_list(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
+
+#define DL_FORMAT2 "%-36.36s %-36.36s %-10.10s %-10.10s %-10.10s %+6ld %-5.5s %-5.5s %-5.5s %-12.12s %-12.12s %-12.12s %-12.12s %-12.12s %-12.12s %-12.12s %-12.12s %-30.30s %+6ld %+6ld %+6ld %+6ld %+6lds %+6ld %+6ld %+6ld %+6ld %+6ld"
+
+static char* _out_show_dl(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+    // out show dl <dl-uuid>
+    struct ast_json* j_tmp;
+    const char* uuid;
+
+    if(argc != 4) {
+        return NULL;
+    }
+
+    uuid = argv[3];
+    j_tmp = get_dl_list(uuid);
+    if(j_tmp == NULL) {
+        return NULL;
+    }
+
+    ast_cli(fd, DL_FORMAT2,
+            ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "dlma_uuid")),
+
+            ast_json_string_get(ast_json_object_get(j_tmp, "name")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "detail")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "uui")),
+
+            ast_json_integer_get(ast_json_object_get(j_tmp, "status")),
+
+            ast_json_string_get(ast_json_object_get(j_tmp, "dialing_uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "dialing_camp_uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "dialing_plan_uuid")),
+
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_1")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_2")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_3")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_4")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_5")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_6")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_7")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "number_8")),
+
+            ast_json_string_get(ast_json_object_get(j_tmp, "email")),
+
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_1")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_2")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_3")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_4")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_5")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_6")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_7")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "trycnt_8")),
+
+            ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "res_hangup"))
+            );
+
+    ast_json_unref(j_tmp);
+
+    return CLI_SUCCESS;
+
+}
+
+/**
+ *
+ * @param e
+ * @param cmd
+ * @param a
+ * @return
+ */
+static char *out_show_dl(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+
+    if (cmd == CLI_INIT) {
+        e->command = "out show dl";
+        e->usage =
+            "Usage: out show dl <dl-uuid>\n"
+            "       Show detail of dl.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_show_dl(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
 
 static int manager_out_campaign_create(struct mansession *s, const struct message *m)
 {
@@ -627,6 +714,7 @@ struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_dlma_list,      "Show list of dlma dial list"),
     AST_CLI_DEFINE(out_show_dialings,       "List currently on serviced dialings"),
     AST_CLI_DEFINE(out_show_campaign,       "Shows detail campaign info"),
+    AST_CLI_DEFINE(out_show_dl,             "Show detail dl info"),
     AST_CLI_DEFINE(out_set_campaign,        "Set campaign parameters"),
     AST_CLI_DEFINE(out_create_campaign,     "Create new campaign"),
     AST_CLI_DEFINE(out_delete_campaign,     "Delete campaign")
