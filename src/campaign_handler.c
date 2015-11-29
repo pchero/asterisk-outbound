@@ -16,7 +16,13 @@
 #include "db_handler.h"
 #include "campaign_handler.h"
 #include "cli_handler.h"
+#include "event_handler.h"
 
+/**
+ * Create campaign.
+ * @param j_camp
+ * @return
+ */
 int create_campaign(struct ast_json* j_camp)
 {
     int ret;
@@ -51,6 +57,48 @@ int create_campaign(struct ast_json* j_camp)
 }
 
 /**
+ * Delete campaign.
+ * @param uuid
+ * @return
+ */
+int delete_cmapaign(const char* uuid)
+{
+    struct ast_json* j_camp;
+    char* tmp;
+    char* sql;
+    int ret;
+
+    if(uuid == NULL) {
+        // invalid parameter.
+        return false;
+    }
+
+    j_camp = ast_json_object_create();
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_camp, "status", ast_json_integer_create(E_CAMP_STOP));
+    ast_json_object_set(j_camp, "tm_delete", ast_json_string_create(tmp));
+    ast_json_object_set(j_camp, "in_use", ast_json_integer_create(0));
+    ast_free(tmp);
+
+    tmp = db_get_update_str(j_camp);
+    ast_json_unref(j_camp);
+    ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\";", tmp, uuid);
+    ast_free(tmp);
+
+    ret = db_exec(sql);
+    ast_free(sql);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not delete campaign. uuid[%s]\n", uuid);
+        return false;
+    }
+
+    // send notification
+    send_manager_evt_campaign_delete(uuid);
+
+    return true;
+}
+
+/**
  * Get all campaigns
  * @return
  */
@@ -66,7 +114,7 @@ struct ast_json* get_campaign_info(const char* uuid)
     ast_log(LOG_DEBUG, "Get campaign info. uuid[%s]\n", uuid);
 
     // get all campaigns
-    ast_asprintf(&sql, "select * from campaign where uuid = \"%s\";", uuid);
+    ast_asprintf(&sql, "select * from campaign where uuid=\"%s\" and in_use=1;", uuid);
 
     db_res = db_query(sql);
     ast_free(sql);
@@ -85,7 +133,7 @@ struct ast_json* get_campaign_info(const char* uuid)
  * Get all campaigns
  * @return
  */
-struct ast_json* get_campaign_info_all(void)
+struct ast_json* get_campaigns_info_all(void)
 {
     struct ast_json* j_res;
     struct ast_json* j_tmp;
@@ -93,7 +141,7 @@ struct ast_json* get_campaign_info_all(void)
     char* sql;
 
     // get all campaigns
-    ast_asprintf(&sql, "%s", "select * from campaign");
+    ast_asprintf(&sql, "%s", "select * from campaign where in_use=1");
 
     db_res = db_query(sql);
     ast_free(sql);
@@ -168,7 +216,7 @@ struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status)
     char* sql;
 
     // get "start" status campaign only.
-    ast_asprintf(&sql, "select * from campaign where status = %d;",
+    ast_asprintf(&sql, "select * from campaign where status = %d and in_use=1;",
             status
             );
 
