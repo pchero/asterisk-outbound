@@ -16,5 +16,6 @@ void term_cli_handler(void);
 
 void send_manager_evt_campaign_create(struct ast_json* j_camp);
 void send_manager_evt_campaign_delete(const char* uuid);
+void send_manager_evt_campaign_update(struct ast_json* j_camp);
 
 #endif /* CLI_HANDLER_H_ */

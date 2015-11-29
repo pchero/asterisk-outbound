@@ -164,6 +164,40 @@ struct ast_json* get_campaigns_info_all(void)
     return j_res;
 }
 
+int update_campaign_info(struct ast_json* j_camp)
+{
+    char* tmp;
+    char* sql;
+    struct ast_json* j_tmp;
+
+    tmp = db_get_update_str(j_camp);
+    if(tmp == NULL) {
+        ast_log(LOG_WARNING, "Could not get update str.\n");
+        return false;
+    }
+
+    ast_asprintf(&sql, "update Campaign set %s where uuid=\"%s\";",
+            tmp,
+            ast_json_string_get(ast_json_object_get(j_camp, "uuid"))
+            );
+    ast_free(tmp);
+
+    db_exec(sql);
+    ast_free(sql);
+
+    j_tmp = get_campaign_info(ast_json_string_get(ast_json_object_get(j_camp, "uuid")));
+    if(j_tmp == NULL) {
+        ast_log(LOG_WARNING, "Could not get update campaign info. uuid[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_camp, "uuid"))
+                );
+        return false;
+    }
+    send_manager_evt_campaign_update(j_camp);
+    ast_json_unref(j_camp);
+
+    return true;
+}
+
 /**
  * Update campaign status info.
  * @param uuid
@@ -175,6 +209,7 @@ int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status)
     char* sql;
     int ret;
     char* tmp_status;
+    struct ast_json* j_tmp;
 
     if(uuid == NULL) {
         ast_log(LOG_WARNING, "Invalid input parameters.\n");
@@ -200,6 +235,11 @@ int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status)
         ast_log(LOG_ERROR, "Could not update campaign status info. uuid[%s], status[%s]\n", uuid, tmp_status);
         return false;
     }
+
+    // notify update
+    j_tmp = get_campaign_info(uuid);
+    send_manager_evt_campaign_update(j_tmp);
+    ast_json_unref(j_tmp);
 
     return true;
 }
