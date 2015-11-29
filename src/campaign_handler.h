@@ -30,8 +30,9 @@ typedef enum _E_CAMP_STATUS_T
 char* gen_uuid(void);
 
 int create_campaign(struct ast_json* j_camp);
+int delete_cmapaign(const char* uuid);
 int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status);
-struct ast_json* get_campaign_info_all(void);
+struct ast_json* get_campaigns_info_all(void);
 struct ast_json* get_campaign_info(const char* uuid);
 struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status);
 

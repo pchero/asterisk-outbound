@@ -58,7 +58,7 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
     int size;
     int i;
 
-    j_res = get_campaign_info_all();
+    j_res = get_campaigns_info_all();
 
     if (!s) {
         /* Normal list */
@@ -450,7 +450,6 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
     const char* tmp_const;
     int ret;
 
-
     j_camp = ast_json_object_create();
     if((tmp_const = astman_get_header(m, "Name")) != NULL) {ast_json_object_set(j_camp, "name", ast_json_string_create(tmp_const));}
     if((tmp_const = astman_get_header(m, "Detail")) != NULL) {ast_json_object_set(j_camp, "detail", ast_json_string_create(tmp_const));}
@@ -504,7 +503,7 @@ static char *out_create_campaign(struct ast_cli_entry *e, int cmd, struct ast_cl
     if (cmd == CLI_INIT) {
         e->command = "out create campaign";
         e->usage =
-            "Usage: out create campaign <name> <plan-uuid> <dlma-uuid> <queue-uuid>         [detail] \n"
+            "Usage: out create campaign <name> <plan-uuid> <dlma-uuid> <queue-uuid> [detail] \n"
             "       Create new campaign.\n";
         return NULL;
     } else if (cmd == CLI_GENERATE) {
@@ -513,6 +512,10 @@ static char *out_create_campaign(struct ast_cli_entry *e, int cmd, struct ast_cl
     return _out_create_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
+/**
+ * Send event notification of campaign create.
+ * @param j_camp
+ */
 void send_manager_evt_campaign_create(struct ast_json* j_camp)
 {
     char* tmp;
@@ -537,6 +540,85 @@ void send_manager_evt_campaign_create(struct ast_json* j_camp)
     ast_free(tmp);
 }
 
+/**
+ * Send event notification of campaign delete.
+ * @param j_camp
+ */
+void send_manager_evt_campaign_delete(const char* uuid)
+{
+    char* tmp;
+
+    if(uuid == NULL) {
+        // nothing to send.
+        return;
+    }
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n",
+            uuid
+            );
+    manager_event(EVENT_FLAG_MESSAGE, "OutCampaignDelete", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+/**
+ * CampaignDelete AMI message handle.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_campaign_delete(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    int ret;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(tmp_const == NULL) {
+        astman_send_error(s, m, "Error encountered while deleting campaign");
+        return 0;
+    }
+
+    ret = delete_cmapaign(tmp_const);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while creating campaign");
+        return 0;
+    }
+    astman_send_ack(s, m, "Campaign deleted successfully");
+
+    return 0;
+}
+
+
+static char* _out_delete_campaign(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
+{
+//    out delete campaign <camp-uuid>
+    int ret;
+
+    if(argc != 4) {
+        return CLI_SHOWUSAGE;
+    }
+
+    ret = delete_cmapaign(argv[3]);
+    if(ret == false) {
+        return CLI_FAILURE;
+    }
+    return CLI_SUCCESS;
+}
+
+static char *out_delete_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
+{
+    if (cmd == CLI_INIT) {
+        e->command = "out delete campaign";
+        e->usage =
+            "Usage: out delete campaign <camp-uuid>\n"
+            "       Delete the campaign.\n";
+        return NULL;
+    } else if (cmd == CLI_GENERATE) {
+        return NULL;
+    }
+    return _out_delete_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
+}
+
 
 struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_campaigns,      "List defined outbound campaigns"),
@@ -546,7 +628,8 @@ struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_dialings,       "List currently on serviced dialings"),
     AST_CLI_DEFINE(out_show_campaign,       "Shows detail campaign info"),
     AST_CLI_DEFINE(out_set_campaign,        "Set campaign parameters"),
-    AST_CLI_DEFINE(out_create_campaign,     "Create new campaign")
+    AST_CLI_DEFINE(out_create_campaign,     "Create new campaign"),
+    AST_CLI_DEFINE(out_delete_campaign,     "Delete campaign")
 };
 
 int init_cli_handler(void)
@@ -557,6 +640,7 @@ int init_cli_handler(void)
 
     err |= ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
     err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_COMMAND, manager_out_campaign_create, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutCampaignDelete", EVENT_FLAG_COMMAND, manager_out_campaign_delete, NULL, NULL, NULL);
 
     if(err != 0) {
         term_cli_handler();
