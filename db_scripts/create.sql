@@ -186,8 +186,9 @@ create table campaign(
     tm_update_property  datetime(6),   -- last property update time.(Except status)
     tm_update_status    datetime(6),   -- last status updated time.
         
-    foreign key(plan)   references plan(uuid)           on delete set null on update cascade,
-    foreign key(dlma)   references dl_list_ma(uuid)   on delete set null on update cascade,
+    foreign key(plan)   references plan(uuid)       on delete set null on update cascade,
+    foreign key(dlma)   references dl_list_ma(uuid) on delete set null on update cascade,
+    foreign key(queue)  references queue(uuid)      on delete set null on update cascade,
 --    foreign key(trunk_group)    references trunk_group_ma(uuid) on delete set null on update cascade,
     
     primary key(uuid)
