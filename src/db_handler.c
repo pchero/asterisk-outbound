@@ -340,7 +340,7 @@ int db_insert(const char* table, const struct ast_json* j_data)
     ret = db_exec(sql);
     ast_free(sql);
     if(ret == false) {
-        ast_log(LOG_ERROR, "Could not insert dialing info.\n");
+        ast_log(LOG_ERROR, "Could not insert data.\n");
         return false;
     }
 

@@ -24,7 +24,7 @@
 #include "dialing_handler.h"
 #include "campaign_handler.h"
 #include "dl_handler.h"
-
+#include "plan_handler.h"
 
 #define TEMP_FILENAME "/tmp/asterisk_outbound_tmp.txt"
 
@@ -39,7 +39,6 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 
-static struct ast_json* get_plan_info(const char* uuid);
 static struct ast_json* get_queue_info(const char* uuid);
 
 static void dial_desktop(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
@@ -158,7 +157,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     struct ast_json* j_plan;
     struct ast_json* j_dlma;
     struct ast_json* j_queue;
-    const char* dial_mode;
+    int dial_mode;
 
     ast_log(LOG_DEBUG, "cb_campagin start\n");
 
@@ -221,8 +220,8 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
             );
 
     // get dial_mode
-    dial_mode = ast_json_string_get(ast_json_object_get(j_plan, "dial_mode"));
-    if(dial_mode == NULL) {
+    dial_mode = ast_json_integer_get(ast_json_object_get(j_plan, "dial_mode"));
+    if(dial_mode == E_DIAL_MODE_NONE) {
         ast_log(LOG_ERROR, "Plan has no dial_mode. Stopping campaign. camp[%s], plan[%s]",
                 ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
                 ast_json_string_get(ast_json_object_get(j_camp, "plan"))
@@ -236,23 +235,36 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
         return;
     }
 
-    if(strcmp(dial_mode, "desktop") == 0) {
-        dial_desktop(j_camp, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "power") == 0) {
-        dial_power(j_camp, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "predictive") == 0) {
-        dial_predictive(j_camp, j_queue, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "robo") == 0) {
-        dial_robo(j_camp, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "redirect") == 0) {
-        dial_redirect(j_camp, j_plan, j_dlma);
-    }
-    else {
-        ast_log(LOG_ERROR, "No match dial_mode. dial_mode[%s]\n", dial_mode);
+    switch(dial_mode) {
+        case E_DIAL_MODE_PREDICTIVE: {
+            dial_predictive(j_camp, j_queue, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_DESKTOP: {
+            dial_desktop(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_POWER: {
+            dial_power(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_ROBO: {
+            dial_robo(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_REDIRECT: {
+            dial_redirect(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        default: {
+            ast_log(LOG_ERROR, "No match dial_mode. dial_mode[%d]\n", dial_mode);
+        }
+        break;
     }
 
     // release
@@ -508,71 +520,6 @@ static struct ast_json* get_queue_info(const char* uuid)
     }
 
     j_res = db_get_record(db_res);
-    db_free(db_res);
-
-    return j_res;
-}
-
-
-/**
- * Get plan record info.
- * @param uuid
- * @return
- */
-static struct ast_json* get_plan_info(const char* uuid)
-{
-    char* sql;
-    struct ast_json* j_res;
-    db_res_t* db_res;
-
-    if(uuid == NULL) {
-        ast_log(LOG_WARNING, "Invalid input parameters.\n");
-        return NULL;
-    }
-
-    ast_asprintf(&sql, "select * from plan where uuid = \"%s\";", uuid);
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_ERROR, "Could not get plan info. uuid[%s]\n", uuid);
-        return NULL;
-    }
-
-    j_res = db_get_record(db_res);
-    db_free(db_res);
-
-    return j_res;
-}
-
-/**
- * Get all plan info.
- * @return
- */
-struct ast_json* get_plan_info_all(void)
-{
-    char* sql;
-    struct ast_json* j_res;
-    struct ast_json* j_tmp;
-    db_res_t* db_res;
-
-    ast_asprintf(&sql, "%s", "select * from plan;");
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_ERROR, "Could not get plan all info.\n");
-        return NULL;
-    }
-
-    j_res = ast_json_array_create();
-    while(1) {
-        j_tmp = db_get_record(db_res);
-        if(j_tmp == NULL) {
-            break;
-        }
-        ast_json_array_append(j_res, j_tmp);
-    }
     db_free(db_res);
 
     return j_res;

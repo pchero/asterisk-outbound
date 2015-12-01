@@ -13,12 +13,4 @@ void    stop_outbound(void);
 
 char* get_utc_timestamp(void);
 
-// campaign
-
-// plan
-struct ast_json* get_plan_info_all(void);
-
-// dl_list/dl_master
-
-
 #endif /* SRC_EVENT_HANDLER_H_ */
