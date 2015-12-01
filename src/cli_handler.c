@@ -19,6 +19,7 @@
 #include "dialing_handler.h"
 #include "campaign_handler.h"
 #include "dl_handler.h"
+#include "plan_handler.h"
 
 /*** DOCUMENTATION
     <manager name="OutCampaignCreate" language="en_US">
@@ -547,18 +548,12 @@ static char* _out_create_campaign(int fd, int *total, struct mansession *s, cons
     struct ast_json* j_camp;
     int ret;
 
-    if(argc <= 7) {
-        return CLI_SHOWUSAGE;
-    }
-
     j_camp = ast_json_object_create();
-    ast_json_object_set(j_camp, "name", ast_json_string_create(argv[3]));
-    ast_json_object_set(j_camp, "plan", ast_json_string_create(argv[4]));
-    ast_json_object_set(j_camp, "dlma", ast_json_string_create(argv[5]));
-    ast_json_object_set(j_camp, "queue", ast_json_string_create(argv[6]));
-    if(argc > 7) {
-        ast_json_object_set(j_camp, "detail", ast_json_string_create(argv[7]));
-    }
+    if(argc >= 7) { ast_json_object_set(j_camp, "detail", ast_json_string_create(argv[7])); }
+    if(argc >= 6) { ast_json_object_set(j_camp, "queue", ast_json_string_create(argv[6])); }
+    if(argc >= 5) { ast_json_object_set(j_camp, "dlma", ast_json_string_create(argv[5])); }
+    if(argc >= 4) { ast_json_object_set(j_camp, "plan", ast_json_string_create(argv[4])); }
+    if(argc >= 3) { ast_json_object_set(j_camp, "name", ast_json_string_create(argv[3])); }
 
     ret = create_campaign(j_camp);
     ast_json_unref(j_camp);
@@ -638,6 +633,51 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
     return tmp;
 }
 
+static char* manager_get_plan_str(struct ast_json* j_plan)
+{
+    char* tmp;
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "Name: %s\r\n"
+            "Detail: %s\r\n"
+            "DialMode: %ld\r\n"
+            "DialTimeout: %ld\r\n"
+            "CallerId: %s\r\n"
+            "AnswerHandle: %ld\r\n"
+            "DlEndHandle: %ld\r\n"
+            "RetryDelay: %ld\r\n"
+            "TrunkName: %s\r\n"
+            "MaxRetryCnt1: %ld\r\n"
+            "MaxRetryCnt2: %ld\r\n"
+            "MaxRetryCnt3: %ld\r\n"
+            "MaxRetryCnt4: %ld\r\n"
+            "MaxRetryCnt5: %ld\r\n"
+            "MaxRetryCnt6: %ld\r\n"
+            "MaxRetryCnt7: %ld\r\n"
+            "MaxRetryCnt8: %ld\r\n",
+            ast_json_string_get(ast_json_object_get(j_plan, "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_plan, "name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_plan, "detail"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_plan, "dial_mode")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout")),
+            ast_json_string_get(ast_json_object_get(j_plan, "caller_id"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_plan, "answer_handle")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "dl_end_handle")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "retry_delay")),
+            ast_json_string_get(ast_json_object_get(j_plan, "trunk_name"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8"))
+            );
+    return tmp;
+}
+
 /**
  * Send event notification of campaign create.
  * @param j_camp
@@ -699,6 +739,72 @@ void send_manager_evt_campaign_update(struct ast_json* j_camp)
     }
 
     manager_event(EVENT_FLAG_MESSAGE, "OutCampaignUpdate", "%s\r\n", tmp);
+    ast_free(tmp);
+
+    return;
+}
+
+/**
+ * Send event notification of plan create.
+ * @param j_camp
+ */
+void send_manager_evt_plan_create(struct ast_json* j_plan)
+{
+    char* tmp;
+
+    if(j_plan == NULL) {
+        return;
+    }
+
+    tmp = manager_get_plan_str(j_plan);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutPlanCreate", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+
+/**
+ * Send event notification of plan delete.
+ * @param j_camp
+ */
+void send_manager_evt_plan_delete(const char* uuid)
+{
+    char* tmp;
+
+    if(uuid == NULL) {
+        // nothing to send.
+        return;
+    }
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n",
+            uuid
+            );
+    manager_event(EVENT_FLAG_MESSAGE, "OutPlanDelete", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+/**
+ * Send OutPlanUpdate event notify to AMI
+ * @param j_camp
+ */
+void send_manager_evt_plan_update(struct ast_json* j_plan)
+{
+    char* tmp;
+
+    if(j_plan == NULL) {
+        return;
+    }
+
+    tmp = manager_get_plan_str(j_plan);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutPlanUpdate", "%s\r\n", tmp);
     ast_free(tmp);
 
     return;
@@ -830,7 +936,7 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
         astman_send_error(s, m, "Error encountered while creating campaign");
         return 0;
     }
-    astman_send_listack(s, m, "The dl list show follow", "start");
+    astman_send_ack(s, m, "Campaign created successfully");
 
     return 0;
 }
@@ -862,6 +968,215 @@ static int manager_out_campaign_delete(struct mansession *s, const struct messag
     return 0;
 }
 
+/**
+ * OutPlanCreate AMI message handle.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_plan_create(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    int ret;
+    struct ast_json* j_tmp;
+
+    j_tmp = ast_json_object_create();
+
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "DialMode");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "dial_mode", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "CallerId");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "caller_id", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "AnswerHandle");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "answer_handle", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "DlEndHandle");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "dl_end_handle", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "RetryDelay");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "retry_delay", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "TrunkName");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "trunk_name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "MaxRetry1");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_1", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry2");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_2", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry3");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_3", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry4");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_4", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry5");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_5", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry6");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_6", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry7");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_7", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry8");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
+
+    ret = create_plan(j_tmp);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while creating plan");
+        return 0;
+    }
+    astman_send_ack(s, m, "Plan created successfully");
+
+    return 0;
+}
+
+/**
+ * OutPlanDelete AMI message handle.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_plan_delete(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    int ret;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(tmp_const == NULL) {
+        astman_send_error(s, m, "Error encountered while deleting plan");
+        return 0;
+    }
+
+    ret = delete_plan(tmp_const);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while deleting plan");
+        return 0;
+    }
+    astman_send_ack(s, m, "plan deleted successfully");
+
+    return 0;
+}
+
+/**
+ * OutPlanUpdate AMI message handle.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_plan_update(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    int ret;
+    struct ast_json* j_tmp;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") == 0) {
+        astman_send_error(s, m, "Error encountered while creating plan");
+        return 0;
+    }
+
+    j_tmp = ast_json_object_create();
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "DialMode");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "dial_mode", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "CallerId");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "caller_id", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "AnswerHandle");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "answer_handle", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "DlEndHandle");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "dl_end_handle", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "RetryDelay");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "retry_delay", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "TrunkName");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "trunk_name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "MaxRetry1");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_1", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry2");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_2", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry3");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_3", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry4");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_4", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry5");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_5", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry6");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_6", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry7");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_7", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "MaxRetry8");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
+
+    ret = create_plan(j_tmp);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while creating plan");
+        return 0;
+    }
+    astman_send_ack(s, m, "Plan created successfully");
+
+    return 0;
+}
 
 
 struct ast_cli_entry cli_out[] = {
@@ -887,6 +1202,9 @@ int init_cli_handler(void)
     err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_COMMAND, manager_out_campaign_create, NULL, NULL, NULL);
     err |= ast_manager_register2("OutCampaignDelete", EVENT_FLAG_COMMAND, manager_out_campaign_delete, NULL, NULL, NULL);
     err |= ast_manager_register2("OutDlListShow", EVENT_FLAG_COMMAND, manager_out_dl_show, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutPlanCreate", EVENT_FLAG_COMMAND, manager_out_plan_create, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutPlanDelete", EVENT_FLAG_COMMAND, manager_out_plan_delete, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutPlanUpdate", EVENT_FLAG_COMMAND, manager_out_plan_update, NULL, NULL, NULL);
 
 
     if(err != 0) {
@@ -903,6 +1221,9 @@ void term_cli_handler(void)
     ast_manager_unregister("OutCampaignCreate");
     ast_manager_unregister("OutCampaignDelete");
     ast_manager_unregister("OutDlListShow");
+    ast_manager_unregister("OutPlanCreate");
+    ast_manager_unregister("OutPlanDelete");
+    ast_manager_unregister("OutPlanUpdate");
 
     return;
 }

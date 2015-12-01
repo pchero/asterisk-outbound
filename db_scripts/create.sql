@@ -7,22 +7,22 @@ create table plan(
 
     -- identity
     uuid        varchar(255) unique not null, 
-    name        varchar(255),           -- plan name
-    detail      varchar(1023),          -- description
+    name        varchar(255)    default null,   -- plan name
+    detail      varchar(1023)   default null,   -- description
+    in_use      int default 1,                  -- 0:not in use, 1:in use
     
     -- resource
 --    trunk_group     varchar(255),       -- trunk_group_ma uuid.
-    uui_field       varchar(255),       -- x-header name for UUI
+    uui_field   varchar(255)    default null,   -- x-header name for UUI(later)
     
     -- strategy
-    dial_mode       varchar(255),       -- dial mode(desktop, power, predictive, email, fax, sms)
-    dial_timeout    int default 30000,  -- no answer hangup timeout(30000 ms = 30 second)
-    caller_id       varchar(255),       -- caller name(from)
-    answer_handle   varchar(255),       -- answer handling.(all, human_only, human_possible)
-    dl_end_handle   varchar(255),       -- stratery when it running out dial list(keep_running, stop)
-    retry_delay     varchar(255),       -- retry delaytime(ms)
---    queue_name      varchar(255),       -- queue name
-    trunk_name      varchar(255),       -- trunk name
+    dial_mode       int default 1,              -- dial mode(desktop, power, predictive, email, fax, sms)
+    dial_timeout    int default 30000,          -- no answer hangup timeout(30000 ms = 30 second)
+    caller_id       varchar(255) default null,  -- caller name(from)
+    answer_handle   int default 1,              -- answer handling.(all, human_only, human_possible)
+    dl_end_handle   int default 1,              -- stratery when it running out dial list(keep_running, stop)
+    retry_delay     int default 50000,          -- retry delaytime(ms)
+    trunk_name      varchar(255) default null,  -- trunk name
     
     -- retry number
     max_retry_cnt_1     int default 5,  -- max retry count for dial number 1
@@ -253,7 +253,7 @@ create table dl_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle, trunk_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", "predictive", "all", "trunk_test_1");
+insert into plan(uuid, name, dial_mode, answer_handle, trunk_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", 1, 1, "trunk_test_1");
 
 -- insert queue
 insert into queue(uuid, name) values ("1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6", "TestQueue");

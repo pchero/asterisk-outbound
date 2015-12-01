@@ -24,7 +24,7 @@
 #include "dialing_handler.h"
 #include "campaign_handler.h"
 #include "dl_handler.h"
-
+#include "plan_handler.h"
 
 #define TEMP_FILENAME "/tmp/asterisk_outbound_tmp.txt"
 
@@ -39,7 +39,6 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 
-static struct ast_json* get_plan_info(const char* uuid);
 static struct ast_json* get_queue_info(const char* uuid);
 
 static void dial_desktop(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
@@ -508,71 +507,6 @@ static struct ast_json* get_queue_info(const char* uuid)
     }
 
     j_res = db_get_record(db_res);
-    db_free(db_res);
-
-    return j_res;
-}
-
-
-/**
- * Get plan record info.
- * @param uuid
- * @return
- */
-static struct ast_json* get_plan_info(const char* uuid)
-{
-    char* sql;
-    struct ast_json* j_res;
-    db_res_t* db_res;
-
-    if(uuid == NULL) {
-        ast_log(LOG_WARNING, "Invalid input parameters.\n");
-        return NULL;
-    }
-
-    ast_asprintf(&sql, "select * from plan where uuid = \"%s\";", uuid);
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_ERROR, "Could not get plan info. uuid[%s]\n", uuid);
-        return NULL;
-    }
-
-    j_res = db_get_record(db_res);
-    db_free(db_res);
-
-    return j_res;
-}
-
-/**
- * Get all plan info.
- * @return
- */
-struct ast_json* get_plan_info_all(void)
-{
-    char* sql;
-    struct ast_json* j_res;
-    struct ast_json* j_tmp;
-    db_res_t* db_res;
-
-    ast_asprintf(&sql, "%s", "select * from plan;");
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_ERROR, "Could not get plan all info.\n");
-        return NULL;
-    }
-
-    j_res = ast_json_array_create();
-    while(1) {
-        j_tmp = db_get_record(db_res);
-        if(j_tmp == NULL) {
-            break;
-        }
-        ast_json_array_append(j_res, j_tmp);
-    }
     db_free(db_res);
 
     return j_res;
