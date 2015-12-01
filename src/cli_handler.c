@@ -889,6 +889,64 @@ void manager_out_dl_entry(struct mansession *s, const struct message *m, struct 
     ast_free(tmp);
 }
 
+/**
+ * OutPlanList
+ * @param s
+ * @param m
+ * @param j_dl
+ */
+void manager_out_plan_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp)
+{
+    char* tmp;
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "Name: %s\r\n"
+            "Detail: %s\r\n"
+            "DialMode: %ld\r\n"
+            "DialTimeout: %ld\r\n"
+            "CallerId: %s\r\n"
+            "AnswerHandle: %ld\r\n"
+            "DlEndHandle: %ld\r\n"
+            "RetryDelay: %ld\r\n"
+            "TrunkName: %s\r\n"
+            "MaxRetryCnt1: %ld\r\n"
+            "MaxRetryCnt2: %ld\r\n"
+            "MaxRetryCnt3: %ld\r\n"
+            "MaxRetryCnt4: %ld\r\n"
+            "MaxRetryCnt5: %ld\r\n"
+            "MaxRetryCnt6: %ld\r\n"
+            "MaxRetryCnt7: %ld\r\n"
+            "MaxRetryCnt8: %ld\r\n",
+
+            ast_json_string_get(ast_json_object_get(j_tmp, "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_tmp, "detail"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_tmp, "dial_mode")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "dial_timeout")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "caller_id"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_tmp, "answer_handle")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "dl_end_handle")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "retry_delay")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "trunk_name"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_1")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_2")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_3")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_4")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_5")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_6")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_7")),
+            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_8"))
+            );
+
+    if(s != NULL) {
+        astman_append(s, "Event: OutPlanEntry\r\n%s\r\n", tmp);
+    }
+    else {
+        manager_event(EVENT_FLAG_MESSAGE, "OutPlanEntry", "%s\r\n", tmp);
+    }
+    ast_free(tmp);
+}
 
 static int manager_out_dl_show(struct mansession *s, const struct message *m)
 {
@@ -896,7 +954,7 @@ static int manager_out_dl_show(struct mansession *s, const struct message *m)
     const char* tmp_const;
 
     tmp_const = astman_get_header(m, "Uuid");
-    if(tmp_const == NULL) {
+    if(strcmp(tmp_const, "") == 0) {
         astman_send_error(s, m, "Error encountered while creating campaign");
         return 0;
     }
@@ -953,7 +1011,7 @@ static int manager_out_campaign_delete(struct mansession *s, const struct messag
     int ret;
 
     tmp_const = astman_get_header(m, "Uuid");
-    if(tmp_const == NULL) {
+    if(strcmp(tmp_const, "") == 0) {
         astman_send_error(s, m, "Error encountered while deleting campaign");
         return 0;
     }
@@ -1067,7 +1125,7 @@ static int manager_out_plan_delete(struct mansession *s, const struct message *m
     int ret;
 
     tmp_const = astman_get_header(m, "Uuid");
-    if(tmp_const == NULL) {
+    if(strcmp(tmp_const, "") == 0) {
         astman_send_error(s, m, "Error encountered while deleting plan");
         return 0;
     }
@@ -1178,6 +1236,56 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
     return 0;
 }
 
+/**
+ * OutPlanShow AMI message handle.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_plan_show(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    struct ast_json* j_tmp;
+    struct ast_json* j_arr;
+    int i;
+    int size;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") != 0) {
+        j_tmp = get_plan_info(tmp_const);
+        if(j_tmp == false) {
+            astman_send_error(s, m, "Error encountered while show plan");
+            return 0;
+        }
+
+        astman_send_listack(s, m, "Plan List will follow", "start");
+
+        manager_out_plan_entry(s, m, j_tmp);
+
+        astman_send_list_complete_start(s, m, "OutPlanListComplete", 1);
+        astman_send_list_complete_end(s);
+    }
+    else {
+        j_arr = get_plan_info_all();
+        size = ast_json_array_size(j_arr);
+
+        astman_send_listack(s, m, "Plan List will follow", "start");
+        for(i = 0; i < size; i++) {
+            j_tmp = ast_json_array_get(j_arr, i);
+            if(j_tmp == NULL) {
+                continue;
+            }
+            manager_out_plan_entry(s, m, j_tmp);
+        }
+        astman_send_list_complete_start(s, m, "OutPlanListComplete", size);
+        ast_json_unref(j_arr);
+    }
+
+    return 0;
+
+}
+
+
 
 struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_campaigns,      "List defined outbound campaigns"),
@@ -1205,6 +1313,7 @@ int init_cli_handler(void)
     err |= ast_manager_register2("OutPlanCreate", EVENT_FLAG_COMMAND, manager_out_plan_create, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanDelete", EVENT_FLAG_COMMAND, manager_out_plan_delete, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanUpdate", EVENT_FLAG_COMMAND, manager_out_plan_update, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutPlanShow", EVENT_FLAG_COMMAND, manager_out_plan_show, NULL, NULL, NULL);
 
 
     if(err != 0) {
@@ -1224,6 +1333,7 @@ void term_cli_handler(void)
     ast_manager_unregister("OutPlanCreate");
     ast_manager_unregister("OutPlanDelete");
     ast_manager_unregister("OutPlanUpdate");
+    ast_manager_unregister("OutPlanShow");
 
     return;
 }
