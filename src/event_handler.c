@@ -157,7 +157,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
     struct ast_json* j_plan;
     struct ast_json* j_dlma;
     struct ast_json* j_queue;
-    const char* dial_mode;
+    int dial_mode;
 
     ast_log(LOG_DEBUG, "cb_campagin start\n");
 
@@ -220,8 +220,8 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
             );
 
     // get dial_mode
-    dial_mode = ast_json_string_get(ast_json_object_get(j_plan, "dial_mode"));
-    if(dial_mode == NULL) {
+    dial_mode = ast_json_integer_get(ast_json_object_get(j_plan, "dial_mode"));
+    if(dial_mode == E_DIAL_MODE_NONE) {
         ast_log(LOG_ERROR, "Plan has no dial_mode. Stopping campaign. camp[%s], plan[%s]",
                 ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
                 ast_json_string_get(ast_json_object_get(j_camp, "plan"))
@@ -235,23 +235,36 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
         return;
     }
 
-    if(strcmp(dial_mode, "desktop") == 0) {
-        dial_desktop(j_camp, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "power") == 0) {
-        dial_power(j_camp, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "predictive") == 0) {
-        dial_predictive(j_camp, j_queue, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "robo") == 0) {
-        dial_robo(j_camp, j_plan, j_dlma);
-    }
-    else if(strcmp(dial_mode, "redirect") == 0) {
-        dial_redirect(j_camp, j_plan, j_dlma);
-    }
-    else {
-        ast_log(LOG_ERROR, "No match dial_mode. dial_mode[%s]\n", dial_mode);
+    switch(dial_mode) {
+        case E_DIAL_MODE_PREDICTIVE: {
+            dial_predictive(j_camp, j_queue, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_DESKTOP: {
+            dial_desktop(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_POWER: {
+            dial_power(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_ROBO: {
+            dial_robo(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        case E_DIAL_MODE_REDIRECT: {
+            dial_redirect(j_camp, j_plan, j_dlma);
+        }
+        break;
+
+        default: {
+            ast_log(LOG_ERROR, "No match dial_mode. dial_mode[%d]\n", dial_mode);
+        }
+        break;
     }
 
     // release

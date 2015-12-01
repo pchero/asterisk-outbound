@@ -16,7 +16,7 @@ create table plan(
     uui_field   varchar(255)    default null,   -- x-header name for UUI(later)
     
     -- strategy
-    dial_mode       int default 1,              -- dial mode(desktop, power, predictive, email, fax, sms)
+    dial_mode       int default 0,              -- dial mode(desktop, power, predictive, email, fax, sms)
     dial_timeout    int default 30000,          -- no answer hangup timeout(30000 ms = 30 second)
     caller_id       varchar(255) default null,  -- caller name(from)
     answer_handle   int default 1,              -- answer handling.(all, human_only, human_possible)

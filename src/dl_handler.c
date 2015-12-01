@@ -108,7 +108,7 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
             ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
             AST_CAUSE_NORMAL_CLEARING
             );
-    ast_log(LOG_DEBUG, "Check sql. sql[%s]\n", sql);
+//    ast_log(LOG_DEBUG, "Check sql. sql[%s]\n", sql);
     db_res = db_query(sql);
     ast_free(sql);
     if(db_res == NULL) {
