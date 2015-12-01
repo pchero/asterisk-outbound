@@ -12,6 +12,7 @@
 
 #include "db_handler.h"
 #include "dl_handler.h"
+#include "campaign_handler.h"
 
 #include <stdbool.h>
 
@@ -318,6 +319,81 @@ struct ast_json* get_dl_master_info_all(void)
 
     return j_res;
 }
+
+/**
+ * Create dl_list_ma.
+ * @param j_dlma
+ * @return
+ */
+int create_dl_master(struct ast_json* j_dlma)
+{
+    int ret;
+    char* uuid;
+    struct ast_json* j_tmp;
+
+    if(j_dlma == NULL) {
+        return false;
+    }
+
+    j_tmp = ast_json_deep_copy(j_dlma);
+    uuid = gen_uuid();
+    ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
+    ast_log(LOG_NOTICE, "Create plan. uuid[%s], name[%s]\n",
+            ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "name"))
+            );
+
+    ret = db_insert("plan", j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        ast_free(uuid);
+        return false;
+    }
+
+    // send ami event
+    j_tmp = get_dl_master_info(uuid);
+    send_manager_evt_dlma_create(j_tmp);
+    ast_json_unref(j_tmp);
+
+    return true;
+}
+
+int delete_dlma(const char* uuid)
+{
+    struct ast_json* j_tmp;
+    char* tmp;
+    char* sql;
+    int ret;
+
+    if(uuid == NULL) {
+        // invalid parameter.
+        return false;
+    }
+
+    j_tmp = ast_json_object_create();
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
+    ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
+    ast_free(tmp);
+
+    tmp = db_get_update_str(j_tmp);
+    ast_json_unref(j_tmp);
+    ast_asprintf(&sql, "update dl_list_ma set %s where uuid=\"%s\";", tmp, uuid);
+    ast_free(tmp);
+
+    ret = db_exec(sql);
+    ast_free(sql);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not delete dlma. uuid[%s]\n", uuid);
+        return false;
+    }
+
+    // send notification
+    send_manager_evt_dlma_delete(uuid);
+
+    return true;
+}
+
 
 /**
  *

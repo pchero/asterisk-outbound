@@ -678,6 +678,23 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
     return tmp;
 }
 
+static char* manager_get_dlma_str(struct ast_json* j_dlma)
+{
+    char* tmp;
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "Name: %s\r\n"
+            "Detail: %s\r\n"
+            "DlTable: %s\r\n",
+            ast_json_string_get(ast_json_object_get(j_dlma, "uuid")),
+            ast_json_string_get(ast_json_object_get(j_dlma, "name")),
+            ast_json_string_get(ast_json_object_get(j_dlma, "detail")),
+            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))
+            );
+    return tmp;
+}
+
 /**
  * Send event notification of campaign create.
  * @param j_camp
@@ -805,6 +822,72 @@ void send_manager_evt_plan_update(struct ast_json* j_plan)
     }
 
     manager_event(EVENT_FLAG_MESSAGE, "OutPlanUpdate", "%s\r\n", tmp);
+    ast_free(tmp);
+
+    return;
+}
+
+/**
+ * Send event notification of campaign create.
+ * @param j_camp
+ */
+void send_manager_evt_dlma_create(struct ast_json* j_camp)
+{
+    char* tmp;
+
+    if(j_camp == NULL) {
+        return;
+    }
+
+    tmp = manager_get_dlma_str(j_camp);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutDlmaCreate", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+
+/**
+ * Send event notification of campaign delete.
+ * @param j_camp
+ */
+void send_manager_evt_dlma_delete(const char* uuid)
+{
+    char* tmp;
+
+    if(uuid == NULL) {
+        // nothing to send.
+        return;
+    }
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n",
+            uuid
+            );
+    manager_event(EVENT_FLAG_MESSAGE, "OutDlmaDelete", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+/**
+ * Send CampaignUpdate event notify to AMI
+ * @param j_camp
+ */
+void send_manager_evt_dlma_update(struct ast_json* j_dlma)
+{
+    char* tmp;
+
+    if(j_dlma == NULL) {
+        return;
+    }
+
+    tmp = manager_get_dlma_str(j_dlma);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutDlmaUpdate", "%s\r\n", tmp);
     ast_free(tmp);
 
     return;
