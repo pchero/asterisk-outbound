@@ -50,7 +50,7 @@ int create_plan(struct ast_json* j_plan)
     }
 
     // send ami event
-    j_tmp = get_plan_info(uuid);
+    j_tmp = get_plan(uuid);
     send_manager_evt_plan_create(j_tmp);
     ast_json_unref(j_tmp);
 
@@ -104,7 +104,7 @@ int delete_plan(const char* uuid)
  * @param uuid
  * @return
  */
-struct ast_json* get_plan_info(const char* uuid)
+struct ast_json* get_plan(const char* uuid)
 {
     char* sql;
     struct ast_json* j_res;
@@ -114,7 +114,6 @@ struct ast_json* get_plan_info(const char* uuid)
         ast_log(LOG_WARNING, "Invalid input parameters.\n");
         return NULL;
     }
-
     ast_asprintf(&sql, "select * from plan where uuid = \"%s\";", uuid);
 
     db_res = db_query(sql);
@@ -134,7 +133,7 @@ struct ast_json* get_plan_info(const char* uuid)
  * Get all plan info.
  * @return
  */
-struct ast_json* get_plan_info_all(void)
+struct ast_json* get_plans_all(void)
 {
     char* sql;
     struct ast_json* j_res;

@@ -13,6 +13,8 @@
 #include "db_handler.h"
 #include "dl_handler.h"
 #include "campaign_handler.h"
+#include "cli_handler.h"
+#include "event_handler.h"
 
 #include <stdbool.h>
 
@@ -291,7 +293,7 @@ int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point)
  * @param uuid
  * @return
  */
-struct ast_json* get_dl_master_info_all(void)
+struct ast_json* get_dlmas_all(void)
 {
     char* sql;
     struct ast_json* j_res;
@@ -325,7 +327,7 @@ struct ast_json* get_dl_master_info_all(void)
  * @param j_dlma
  * @return
  */
-int create_dl_master(struct ast_json* j_dlma)
+int create_dlma(struct ast_json* j_dlma)
 {
     int ret;
     char* uuid;
@@ -338,12 +340,12 @@ int create_dl_master(struct ast_json* j_dlma)
     j_tmp = ast_json_deep_copy(j_dlma);
     uuid = gen_uuid();
     ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
-    ast_log(LOG_NOTICE, "Create plan. uuid[%s], name[%s]\n",
+    ast_log(LOG_NOTICE, "Create dlma. uuid[%s], name[%s]\n",
             ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
             ast_json_string_get(ast_json_object_get(j_tmp, "name"))
             );
 
-    ret = db_insert("plan", j_tmp);
+    ret = db_insert("dl_list_ma", j_tmp);
     ast_json_unref(j_tmp);
     if(ret == false) {
         ast_free(uuid);
@@ -351,8 +353,55 @@ int create_dl_master(struct ast_json* j_dlma)
     }
 
     // send ami event
-    j_tmp = get_dl_master_info(uuid);
+    j_tmp = get_dlma(uuid);
+    ast_free(uuid);
     send_manager_evt_dlma_create(j_tmp);
+    ast_json_unref(j_tmp);
+
+    return true;
+}
+
+/**
+ * Update dl_list_ma.
+ * @param j_dlma
+ * @return
+ */
+int update_dlma(struct ast_json* j_dlma)
+{
+    char* tmp;
+    char* sql;
+    struct ast_json* j_tmp;
+    const char* uuid;
+    int ret;
+
+    uuid = ast_json_string_get(ast_json_object_get(j_dlma, "uuid"));
+    if(uuid == NULL) {
+        ast_log(LOG_WARNING, "Could not get uuid.\n");
+        return false;
+    }
+
+    tmp = db_get_update_str(j_dlma);
+    if(tmp == NULL) {
+        ast_log(LOG_WARNING, "Could not get update str.\n");
+        return false;
+    }
+
+    ast_asprintf(&sql, "update dl_list_ma set %s where uuid=\"%s\";", tmp, uuid);
+    ast_free(tmp);
+
+    ret = db_exec(sql);
+    ast_free(sql);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not get updated dlma. uuid[%s]\n", uuid);
+        return false;
+    }
+
+    j_tmp = get_dlma(uuid);
+    if(j_tmp == NULL) {
+        ast_log(LOG_WARNING, "Could not get updated dlma info. uuid[%s]\n", uuid);
+        return false;
+    }
+    send_manager_evt_dlma_update(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;
@@ -400,7 +449,7 @@ int delete_dlma(const char* uuid)
  * @param uuid
  * @return
  */
-struct ast_json* get_dl_master_info(const char* uuid)
+struct ast_json* get_dlma(const char* uuid)
 {
     char* sql;
     struct ast_json* j_res;

@@ -161,7 +161,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
 
     ast_log(LOG_DEBUG, "cb_campagin start\n");
 
-    j_camp = get_campaign_info_for_dialing();
+    j_camp = get_campaign_for_dialing();
     if(j_camp == NULL) {
         // Nothing.
         return;
@@ -172,13 +172,13 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
 //            );
 
     // get plan
-    j_plan = get_plan_info(ast_json_string_get(ast_json_object_get(j_camp, "plan")));
+    j_plan = get_plan(ast_json_string_get(ast_json_object_get(j_camp, "plan")));
     if(j_plan == NULL) {
         ast_log(LOG_WARNING, "Could not get plan info. Stopping campaign camp[%s], plan[%s]\n",
                 ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
                 ast_json_string_get(ast_json_object_get(j_camp, "plan"))
                 );
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         ast_json_unref(j_camp);
         return;
     }
@@ -190,7 +190,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
                 ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
                 ast_json_string_get(ast_json_object_get(j_camp, "queue"))
                 );
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         ast_json_unref(j_camp);
         return;
     }
@@ -201,14 +201,14 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
 //            );
 
     // get dl_master_info
-    j_dlma = get_dl_master_info(ast_json_string_get(ast_json_object_get(j_camp, "dlma")));
+    j_dlma = get_dlma(ast_json_string_get(ast_json_object_get(j_camp, "dlma")));
     if(j_dlma == NULL)
     {
         ast_log(LOG_ERROR, "Could not find dial list master info. Stopping campaign. camp[%s], dlma[%s]\n",
                 ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
                 ast_json_string_get(ast_json_object_get(j_camp, "dlma"))
                 );
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         ast_json_unref(j_camp);
         ast_json_unref(j_plan);
         ast_json_unref(j_queue);
@@ -227,7 +227,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
                 ast_json_string_get(ast_json_object_get(j_camp, "plan"))
                 );
 
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         ast_json_unref(j_camp);
         ast_json_unref(j_plan);
         ast_json_unref(j_dlma);
@@ -295,7 +295,7 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
 
     ast_log(LOG_DEBUG, "cb_campaign_stopping\n");
 
-    j_camps = get_campaigns_info_by_status(E_CAMP_STOPPING);
+    j_camps = get_campaigns_by_status(E_CAMP_STOPPING);
     if(j_camps == NULL) {
         // Nothing.
         return;
@@ -328,7 +328,7 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
                     ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
                     ast_json_string_get(ast_json_object_get(j_camp, "name"))
                     );
-            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
+            update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
         }
     }
 
@@ -354,7 +354,7 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
 
     ast_log(LOG_DEBUG, "cb_campaign_stopping_force\n");
 
-    j_camps = get_campaigns_info_by_status(E_CAMP_STOPPING_FORCE);
+    j_camps = get_campaigns_by_status(E_CAMP_STOPPING_FORCE);
     if(j_camps == NULL) {
         // Nothing.
         return;
@@ -392,7 +392,7 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
         ao2_iterator_destroy(&iter);
 
         // update status to stop
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
+        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
     }
     ast_json_unref(j_camps);
 }
@@ -460,7 +460,7 @@ static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__(
 
     ast_log(LOG_DEBUG, "cb_check_campaign_end\n");
 
-    j_camps = get_campaigns_info_by_status(E_CAMP_START);
+    j_camps = get_campaigns_by_status(E_CAMP_START);
     size = ast_json_array_size(j_camps);
     for(i = 0; i < size; i++) {
         j_camp = ast_json_array_get(j_camps, i);
@@ -468,15 +468,15 @@ static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__(
             continue;
         }
 
-        j_plan = get_plan_info(ast_json_string_get(ast_json_object_get(j_camp, "plan")));
+        j_plan = get_plan(ast_json_string_get(ast_json_object_get(j_camp, "plan")));
         if(j_plan == NULL) {
-            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+            update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
             continue;
         }
 
-        j_dlma = get_dl_master_info(ast_json_string_get(ast_json_object_get(j_camp, "dlma")));
+        j_dlma = get_dlma(ast_json_string_get(ast_json_object_get(j_camp, "dlma")));
         if(j_dlma == NULL) {
-            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+            update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
             ast_json_unref(j_plan);
             continue;
         }
@@ -489,7 +489,7 @@ static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__(
                     ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
                     ast_json_string_get(ast_json_object_get(j_camp, "name"))
                     );
-            update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+            update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         }
 
         ast_json_unref(j_plan);
@@ -565,7 +565,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_queue, s
     // validate plan
     if(ast_json_string_get(ast_json_object_get(j_plan, "trunk_name")) == NULL) {
         ast_log(LOG_WARNING, "Could not find trunk name. Stopping campaign.\n");
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         return;
     }
 
@@ -582,7 +582,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_queue, s
     ret = check_dial_avaiable_predictive(j_camp, j_queue, j_plan, j_dlma);
     if(ret == -1) {
         // something was wrong. stop the campaign.
-        update_campaign_info_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
+        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
         ast_json_unref(j_dl_list);
         return;
     }
