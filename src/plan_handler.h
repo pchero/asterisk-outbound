@@ -19,7 +19,7 @@ typedef enum _E_DIAL_MODE {
 
 int create_plan(struct ast_json* j_plan);
 int delete_plan(const char* uuid);
-struct ast_json* get_plan_info(const char* uuid);
-struct ast_json* get_plan_info_all(void);
+struct ast_json* get_plan(const char* uuid);
+struct ast_json* get_plans_all(void);
 
 #endif /* SRC_PLAN_HANDLER_H_ */

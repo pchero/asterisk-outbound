@@ -52,8 +52,11 @@ create table plan(
 drop table if exists queue;
 create table queue(
   -- identity
-  uuid      varchar(255)    unique,     -- queue uuid
-  name      varchar(255)    not null    -- queue name
+  uuid      varchar(255)    unique,         -- queue uuid
+  name      varchar(255)    not null,       -- queue name
+  detail    text            default null,
+  in_use    int             default 1       -- 0:not in use, 1:in use
+
 );
 
 -- dial list original.
@@ -130,13 +133,13 @@ create table dl_list_ma(
 -- manage all of dial list tables
 
     -- row identity
---    seq         int(10)         unsigned auto_increment,    -- sequence
-    uuid        varchar(255)    unique,                     -- dial_list_#### reference uuid.
+    uuid        varchar(255)    unique not null,    -- dial_list_#### reference uuid.
     
     -- information
-    name        varchar(255),                               -- dial list name
-    dl_table    varchar(255),                               -- dial list table name.(view)
-    detail      text,                                       -- description of dialist
+    name        varchar(255),                       -- dial list name
+    detail      text,                               -- description of dialist
+    dl_table    varchar(255),                       -- dial list table name.(view)
+    in_use      int default 1,
     
     -- timestamp. UTC.
     tm_create           datetime(6),    -- create time.

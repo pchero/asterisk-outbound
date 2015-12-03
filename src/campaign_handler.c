@@ -49,7 +49,8 @@ int create_campaign(struct ast_json* j_camp)
     }
 
     // send ami event
-    j_tmp = get_campaign_info(uuid);
+    j_tmp = get_campaign(uuid);
+    ast_free(uuid);
     send_manager_evt_campaign_create(j_tmp);
     ast_json_unref(j_tmp);
 
@@ -102,7 +103,7 @@ int delete_cmapaign(const char* uuid)
  * Get all campaigns
  * @return
  */
-struct ast_json* get_campaign_info(const char* uuid)
+struct ast_json* get_campaign(const char* uuid)
 {
     struct ast_json* j_res;
     db_res_t* db_res;
@@ -133,7 +134,7 @@ struct ast_json* get_campaign_info(const char* uuid)
  * Get all campaigns
  * @return
  */
-struct ast_json* get_campaigns_info_all(void)
+struct ast_json* get_campaigns_all(void)
 {
     struct ast_json* j_res;
     struct ast_json* j_tmp;
@@ -164,7 +165,7 @@ struct ast_json* get_campaigns_info_all(void)
     return j_res;
 }
 
-int update_campaign_info(struct ast_json* j_camp)
+int update_campaign(struct ast_json* j_camp)
 {
     char* tmp;
     char* sql;
@@ -176,7 +177,7 @@ int update_campaign_info(struct ast_json* j_camp)
         return false;
     }
 
-    ast_asprintf(&sql, "update Campaign set %s where uuid=\"%s\";",
+    ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\";",
             tmp,
             ast_json_string_get(ast_json_object_get(j_camp, "uuid"))
             );
@@ -185,7 +186,7 @@ int update_campaign_info(struct ast_json* j_camp)
     db_exec(sql);
     ast_free(sql);
 
-    j_tmp = get_campaign_info(ast_json_string_get(ast_json_object_get(j_camp, "uuid")));
+    j_tmp = get_campaign(ast_json_string_get(ast_json_object_get(j_camp, "uuid")));
     if(j_tmp == NULL) {
         ast_log(LOG_WARNING, "Could not get update campaign info. uuid[%s]\n",
                 ast_json_string_get(ast_json_object_get(j_camp, "uuid"))
@@ -204,7 +205,7 @@ int update_campaign_info(struct ast_json* j_camp)
  * @param status
  * @return
  */
-int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status)
+int update_campaign_status(const char* uuid, E_CAMP_STATUS_T status)
 {
     char* sql;
     int ret;
@@ -237,7 +238,7 @@ int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status)
     }
 
     // notify update
-    j_tmp = get_campaign_info(uuid);
+    j_tmp = get_campaign(uuid);
     send_manager_evt_campaign_update(j_tmp);
     ast_json_unref(j_tmp);
 
@@ -248,7 +249,7 @@ int update_campaign_info_status(const char* uuid, E_CAMP_STATUS_T status)
  * Get campaign for dialing.
  * @return
  */
-struct ast_json* get_campaigns_info_by_status(E_CAMP_STATUS_T status)
+struct ast_json* get_campaigns_by_status(E_CAMP_STATUS_T status)
 {
     struct ast_json* j_res;
     struct ast_json* j_tmp;
@@ -301,7 +302,7 @@ char* gen_uuid(void)
  * Get campaign for dialing.
  * @return
  */
-struct ast_json* get_campaign_info_for_dialing(void)
+struct ast_json* get_campaign_for_dialing(void)
 {
     struct ast_json* j_res;
     db_res_t* db_res;

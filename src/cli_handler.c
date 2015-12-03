@@ -60,7 +60,7 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
     int size;
     int i;
 
-    j_res = get_campaigns_info_all();
+    j_res = get_campaigns_all();
 
     if (!s) {
         /* Normal list */
@@ -109,7 +109,7 @@ static char* _out_show_campaign(int fd, int *total, struct mansession *s, const 
 {
     struct ast_json* j_res;
 
-    j_res = get_campaign_info(argv[3]);
+    j_res = get_campaign(argv[3]);
     if(j_res == NULL) {
         ast_cli(fd, "Could not find campaign info. uuid[%s]\n", argv[3]);
         ast_cli(fd, "\n");
@@ -170,7 +170,7 @@ static char* _out_set_campaign(int fd, int *total, struct mansession *s, const s
         return CLI_SUCCESS;
     }
 
-    ret = update_campaign_info_status(uuid, status);
+    ret = update_campaign_status(uuid, status);
     if(ret == false) {
         ast_cli(fd, "Could not set campaign status. uuid[%s]\n", uuid);
         return CLI_FAILURE;
@@ -221,7 +221,7 @@ static char* _out_show_plans(int fd, int *total, struct mansession *s, const str
     int size;
     int i;
 
-    j_res = get_plan_info_all();
+    j_res = get_plans_all();
 
     if (!s) {
         /* Normal list */
@@ -276,7 +276,7 @@ static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const str
     int size;
     int i;
 
-    j_res = get_dl_master_info_all();
+    j_res = get_dlmas_all();
 
     if (!s) {
         /* Normal list */
@@ -402,7 +402,7 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
         count = 100;
     }
 
-    j_dlma = get_dl_master_info(uuid);
+    j_dlma = get_dlma(uuid);
     if(j_dlma == NULL) {
         return NULL;
     }
@@ -678,6 +678,23 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
     return tmp;
 }
 
+static char* manager_get_dlma_str(struct ast_json* j_dlma)
+{
+    char* tmp;
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "Name: %s\r\n"
+            "Detail: %s\r\n"
+            "DlTable: %s\r\n",
+            ast_json_string_get(ast_json_object_get(j_dlma, "uuid")),
+            ast_json_string_get(ast_json_object_get(j_dlma, "name")),
+            ast_json_string_get(ast_json_object_get(j_dlma, "detail")),
+            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))
+            );
+    return tmp;
+}
+
 /**
  * Send event notification of campaign create.
  * @param j_camp
@@ -811,6 +828,72 @@ void send_manager_evt_plan_update(struct ast_json* j_plan)
 }
 
 /**
+ * Send event notification of campaign create.
+ * @param j_camp
+ */
+void send_manager_evt_dlma_create(struct ast_json* j_tmp)
+{
+    char* tmp;
+
+    if(j_tmp == NULL) {
+        return;
+    }
+
+    tmp = manager_get_dlma_str(j_tmp);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutDlmaCreate", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+
+/**
+ * Send event notification of campaign delete.
+ * @param j_camp
+ */
+void send_manager_evt_dlma_delete(const char* uuid)
+{
+    char* tmp;
+
+    if(uuid == NULL) {
+        // nothing to send.
+        return;
+    }
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n",
+            uuid
+            );
+    manager_event(EVENT_FLAG_MESSAGE, "OutDlmaDelete", "%s\r\n", tmp);
+    ast_free(tmp);
+}
+
+/**
+ * Send CampaignUpdate event notify to AMI
+ * @param j_camp
+ */
+void send_manager_evt_dlma_update(struct ast_json* j_tmp)
+{
+    char* tmp;
+
+    if(j_tmp == NULL) {
+        return;
+    }
+
+    tmp = manager_get_dlma_str(j_tmp);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutDlmaUpdate", "%s\r\n", tmp);
+    ast_free(tmp);
+
+    return;
+}
+
+/**
  * OutDlList
  * @param s
  * @param m
@@ -895,7 +978,7 @@ void manager_out_dl_entry(struct mansession *s, const struct message *m, struct 
  * @param m
  * @param j_dl
  */
-void manager_out_plan_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp)
+void manager_out_plan_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp, char* action_id)
 {
     char* tmp;
 
@@ -940,10 +1023,40 @@ void manager_out_plan_entry(struct mansession *s, const struct message *m, struc
             );
 
     if(s != NULL) {
-        astman_append(s, "Event: OutPlanEntry\r\n%s\r\n", tmp);
+        astman_append(s, "Event: OutPlanEntry\r\n%s%s\r\n", action_id, tmp);
     }
     else {
         manager_event(EVENT_FLAG_MESSAGE, "OutPlanEntry", "%s\r\n", tmp);
+    }
+    ast_free(tmp);
+}
+
+/**
+ * OutPlanList
+ * @param s
+ * @param m
+ * @param j_dl
+ */
+void manager_out_dlma_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp, char* action_id)
+{
+    char* tmp;
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "Name: %s\r\n"
+            "Detail: %s\r\n"
+            "DlTable: %s\r\n",
+            ast_json_string_get(ast_json_object_get(j_tmp, "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_tmp, "detail"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_tmp, "dl_table"))? : "<unknown>"
+            );
+
+    if(s != NULL) {
+        astman_append(s, "Event: OutDlmaEntry\r\n%s%s\r\n", action_id, tmp);
+    }
+    else {
+        manager_event(EVENT_FLAG_MESSAGE, "OutDlmaEntry", "%s\r\n", tmp);
     }
     ast_free(tmp);
 }
@@ -974,22 +1087,46 @@ static int manager_out_dl_show(struct mansession *s, const struct message *m)
     return 0;
 }
 
+void manager_out_campaign_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp, char* action_id)
+{
+    char* tmp;
+
+    tmp = manager_get_campaign_str(j_tmp);
+
+    if(s != NULL) {
+        astman_append(s, "Event: OutCampaignEntry\r\n%s%s\r\n", action_id, tmp);
+    }
+    else {
+        manager_event(EVENT_FLAG_MESSAGE, "OutCampaignEntry", "%s\r\n", tmp);
+    }
+    ast_free(tmp);
+}
 
 static int manager_out_campaign_create(struct mansession *s, const struct message *m)
 {
-    struct ast_json* j_camp;
+    struct ast_json* j_tmp;
     const char* tmp_const;
     int ret;
 
-    j_camp = ast_json_object_create();
-    if((tmp_const = astman_get_header(m, "Name")) != NULL) {ast_json_object_set(j_camp, "name", ast_json_string_create(tmp_const));}
-    if((tmp_const = astman_get_header(m, "Detail")) != NULL) {ast_json_object_set(j_camp, "detail", ast_json_string_create(tmp_const));}
-    if((tmp_const = astman_get_header(m, "Plan")) != NULL) {ast_json_object_set(j_camp, "plan", ast_json_string_create(tmp_const));}
-    if((tmp_const = astman_get_header(m, "Dlma")) != NULL) {ast_json_object_set(j_camp, "dlma", ast_json_string_create(tmp_const));}
-    if((tmp_const = astman_get_header(m, "Queue")) != NULL) {ast_json_object_set(j_camp, "queue", ast_json_string_create(tmp_const));}
+    j_tmp = ast_json_object_create();
 
-    ret = create_campaign(j_camp);
-    ast_json_unref(j_camp);
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Plan");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "plan", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Dlma");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Queue");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "queue", ast_json_string_create(tmp_const));}
+
+    ret = create_campaign(j_tmp);
+    ast_json_unref(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating campaign");
         return 0;
@@ -1018,7 +1155,7 @@ static int manager_out_campaign_delete(struct mansession *s, const struct messag
 
     ret = delete_cmapaign(tmp_const);
     if(ret == false) {
-        astman_send_error(s, m, "Error encountered while creating campaign");
+        astman_send_error(s, m, "Error encountered while deleting campaign");
         return 0;
     }
     astman_send_ack(s, m, "Campaign deleted successfully");
@@ -1026,6 +1163,58 @@ static int manager_out_campaign_delete(struct mansession *s, const struct messag
     return 0;
 }
 
+static int manager_out_campaign_show(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    struct ast_json* j_tmp;
+    struct ast_json* j_arr;
+    int i;
+    int size;
+    char* action_id;
+
+    tmp_const = astman_get_header(m, "ActionID");
+    if(strlen(tmp_const) != 0) {
+        ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
+    }
+    else {
+        ast_asprintf(&action_id, "%s", "");
+    }
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") != 0) {
+        j_tmp = get_campaign(tmp_const);
+        if(j_tmp == NULL) {
+            astman_send_error(s, m, "Error encountered while show campaign");
+            ast_free(action_id);
+            return 0;
+        }
+
+        astman_send_listack(s, m, "Campaign List will follow", "start");
+
+        manager_out_campaign_entry(s, m, j_tmp, action_id);
+
+        astman_send_list_complete_start(s, m, "OutCampaignListComplete", 1);
+        astman_send_list_complete_end(s);
+    }
+    else {
+        j_arr = get_campaigns_all();
+        size = ast_json_array_size(j_arr);
+
+        astman_send_listack(s, m, "Campaign List will follow", "start");
+        for(i = 0; i < size; i++) {
+            j_tmp = ast_json_array_get(j_arr, i);
+            if(j_tmp == NULL) {
+                continue;
+            }
+            manager_out_campaign_entry(s, m, j_tmp, action_id);
+        }
+        astman_send_list_complete_start(s, m, "OutCampaignListComplete", size);
+        ast_json_unref(j_arr);
+    }
+
+    ast_free(action_id);
+    return 0;
+}
 /**
  * OutPlanCreate AMI message handle.
  * @param s
@@ -1135,7 +1324,7 @@ static int manager_out_plan_delete(struct mansession *s, const struct message *m
         astman_send_error(s, m, "Error encountered while deleting plan");
         return 0;
     }
-    astman_send_ack(s, m, "plan deleted successfully");
+    astman_send_ack(s, m, "Plan deleted successfully");
 
     return 0;
 }
@@ -1154,7 +1343,7 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
 
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") == 0) {
-        astman_send_error(s, m, "Error encountered while creating plan");
+        astman_send_error(s, m, "Error encountered while updating plan");
         return 0;
     }
 
@@ -1228,10 +1417,10 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
 
     ret = create_plan(j_tmp);
     if(ret == false) {
-        astman_send_error(s, m, "Error encountered while creating plan");
+        astman_send_error(s, m, "Error encountered while updating plan");
         return 0;
     }
-    astman_send_ack(s, m, "Plan created successfully");
+    astman_send_ack(s, m, "Plan updated successfully");
 
     return 0;
 }
@@ -1249,24 +1438,34 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
     struct ast_json* j_arr;
     int i;
     int size;
+    char* action_id;
+
+    tmp_const = astman_get_header(m, "ActionID");
+    if(strlen(tmp_const) != 0) {
+        ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
+    }
+    else {
+        ast_asprintf(&action_id, "%s", "");
+    }
 
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") != 0) {
-        j_tmp = get_plan_info(tmp_const);
-        if(j_tmp == false) {
+        j_tmp = get_plan(tmp_const);
+        if(j_tmp == NULL) {
             astman_send_error(s, m, "Error encountered while show plan");
+            ast_free(action_id);
             return 0;
         }
 
         astman_send_listack(s, m, "Plan List will follow", "start");
 
-        manager_out_plan_entry(s, m, j_tmp);
+        manager_out_plan_entry(s, m, j_tmp, action_id);
 
         astman_send_list_complete_start(s, m, "OutPlanListComplete", 1);
         astman_send_list_complete_end(s);
     }
     else {
-        j_arr = get_plan_info_all();
+        j_arr = get_plans_all();
         size = ast_json_array_size(j_arr);
 
         astman_send_listack(s, m, "Plan List will follow", "start");
@@ -1275,17 +1474,170 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
             if(j_tmp == NULL) {
                 continue;
             }
-            manager_out_plan_entry(s, m, j_tmp);
+            manager_out_plan_entry(s, m, j_tmp, action_id);
         }
         astman_send_list_complete_start(s, m, "OutPlanListComplete", size);
         ast_json_unref(j_arr);
     }
 
+    ast_free(action_id);
     return 0;
-
 }
 
+/**
+ * OutDlmaCreate AMI message handler.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dlma_create(struct mansession *s, const struct message *m)
+{
+    struct ast_json* j_tmp;
+    const char* tmp_const;
+    int ret;
 
+    j_tmp = ast_json_object_create();
+
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    ret = create_dlma(j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while creating dlma");
+        return 0;
+    }
+    astman_send_ack(s, m, "Dlma created successfully");
+
+    return 0;
+}
+
+/**
+ * OutDlmaUpdate AMI message handler.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dlma_update(struct mansession *s, const struct message *m)
+{
+    struct ast_json* j_tmp;
+    const char* tmp_const;
+    int ret;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") == 0) {
+        astman_send_error(s, m, "Error encountered while updating dlma");
+        return 0;
+    }
+
+    j_tmp = ast_json_object_create();
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    ret = update_dlma(j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while updating dlma");
+        return 0;
+    }
+    astman_send_ack(s, m, "Dlma updated successfully");
+
+    return 0;
+}
+/**
+ * OutDlmaDelete AMI message handler.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dlma_delete(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    int ret;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") == 0) {
+        astman_send_error(s, m, "Error encountered while deleting dlma");
+        return 0;
+    }
+
+    ret = delete_dlma(tmp_const);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while deleting dlma");
+        return 0;
+    }
+    astman_send_ack(s, m, "Dlma deleted successfully");
+
+    return 0;
+}
+
+/**
+ * OutPlanShow AMI message handle.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dlma_show(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    struct ast_json* j_tmp;
+    struct ast_json* j_arr;
+    int i;
+    int size;
+    char* action_id;
+
+    tmp_const = astman_get_header(m, "ActionID");
+    if(strlen(tmp_const) != 0) {
+        ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
+    }
+    else {
+        ast_asprintf(&action_id, "%s", "");
+    }
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") != 0) {
+        j_tmp = get_dlma(tmp_const);
+        if(j_tmp == NULL) {
+            astman_send_error(s, m, "Error encountered while show dlma");
+            ast_free(action_id);
+            return 0;
+        }
+
+        astman_send_listack(s, m, "Dlma List will follow", "start");
+
+        manager_out_dlma_entry(s, m, j_tmp, action_id);
+
+        astman_send_list_complete_start(s, m, "OutDlmaListComplete", 1);
+        astman_send_list_complete_end(s);
+    }
+    else {
+        j_arr = get_dlmas_all();
+        size = ast_json_array_size(j_arr);
+
+        astman_send_listack(s, m, "Dlma List will follow", "start");
+        for(i = 0; i < size; i++) {
+            j_tmp = ast_json_array_get(j_arr, i);
+            if(j_tmp == NULL) {
+                continue;
+            }
+            manager_out_dlma_entry(s, m, j_tmp, action_id);
+        }
+        astman_send_list_complete_start(s, m, "OutDlmaListComplete", size);
+        ast_json_unref(j_arr);
+    }
+    ast_free(action_id);
+    return 0;
+}
 
 struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_campaigns,      "List defined outbound campaigns"),
@@ -1309,11 +1661,16 @@ int init_cli_handler(void)
     err |= ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
     err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_COMMAND, manager_out_campaign_create, NULL, NULL, NULL);
     err |= ast_manager_register2("OutCampaignDelete", EVENT_FLAG_COMMAND, manager_out_campaign_delete, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutCampaignShow", EVENT_FLAG_COMMAND, manager_out_campaign_show, NULL, NULL, NULL);
     err |= ast_manager_register2("OutDlListShow", EVENT_FLAG_COMMAND, manager_out_dl_show, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanCreate", EVENT_FLAG_COMMAND, manager_out_plan_create, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanDelete", EVENT_FLAG_COMMAND, manager_out_plan_delete, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanUpdate", EVENT_FLAG_COMMAND, manager_out_plan_update, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanShow", EVENT_FLAG_COMMAND, manager_out_plan_show, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlmaCreate", EVENT_FLAG_COMMAND, manager_out_dlma_create, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlmaUpdate", EVENT_FLAG_COMMAND, manager_out_dlma_update, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlmaDelete", EVENT_FLAG_COMMAND, manager_out_dlma_delete, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlmaShow", EVENT_FLAG_COMMAND, manager_out_dlma_show, NULL, NULL, NULL);
 
 
     if(err != 0) {
@@ -1329,11 +1686,16 @@ void term_cli_handler(void)
     ast_cli_unregister_multiple(cli_out, ARRAY_LEN(cli_out));
     ast_manager_unregister("OutCampaignCreate");
     ast_manager_unregister("OutCampaignDelete");
+    ast_manager_unregister("OutCampaignShow");
     ast_manager_unregister("OutDlListShow");
     ast_manager_unregister("OutPlanCreate");
     ast_manager_unregister("OutPlanDelete");
     ast_manager_unregister("OutPlanUpdate");
     ast_manager_unregister("OutPlanShow");
+    ast_manager_unregister("OutDlmaCreate");
+    ast_manager_unregister("OutDlmaUpdate");
+    ast_manager_unregister("OutDlmaDelete");
+    ast_manager_unregister("OutDlmaShow");
 
     return;
 }
