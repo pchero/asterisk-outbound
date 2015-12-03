@@ -114,7 +114,7 @@ struct ast_json* get_plan(const char* uuid)
         ast_log(LOG_WARNING, "Invalid input parameters.\n");
         return NULL;
     }
-    ast_asprintf(&sql, "select * from plan where uuid = \"%s\";", uuid);
+    ast_asprintf(&sql, "select * from plan where in_use=1 and uuid=\"%s\";", uuid);
 
     db_res = db_query(sql);
     ast_free(sql);
@@ -140,7 +140,7 @@ struct ast_json* get_plans_all(void)
     struct ast_json* j_tmp;
     db_res_t* db_res;
 
-    ast_asprintf(&sql, "%s", "select * from plan;");
+    ast_asprintf(&sql, "%s", "select * from plan where in_use=1;");
 
     db_res = db_query(sql);
     ast_free(sql);

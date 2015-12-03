@@ -1607,7 +1607,7 @@ static int manager_out_dlma_show(struct mansession *s, const struct message *m)
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") != 0) {
         j_tmp = get_dlma(tmp_const);
-        if(j_tmp == false) {
+        if(j_tmp == NULL) {
             astman_send_error(s, m, "Error encountered while show dlma");
             ast_free(action_id);
             return 0;

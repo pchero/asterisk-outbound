@@ -510,7 +510,7 @@ static struct ast_json* get_queue_info(const char* uuid)
         return NULL;
     }
 
-    ast_asprintf(&sql, "select * from queue where uuid = \"%s\";", uuid);
+    ast_asprintf(&sql, "select * from queue where uuid=\"%s\" and in_use=1;", uuid);
 
     db_res = db_query(sql);
     ast_free(sql);
