@@ -170,6 +170,13 @@ int update_campaign(struct ast_json* j_camp)
     char* tmp;
     char* sql;
     struct ast_json* j_tmp;
+    const char* uuid;
+
+    uuid = ast_json_string_get(ast_json_object_get(j_camp, "uuid"));
+    if(uuid == NULL) {
+        ast_log(LOG_WARNING, "Could not get uuid info.\n");
+        return false;
+    }
 
     tmp = db_get_update_str(j_camp);
     if(tmp == NULL) {
@@ -177,24 +184,19 @@ int update_campaign(struct ast_json* j_camp)
         return false;
     }
 
-    ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\";",
-            tmp,
-            ast_json_string_get(ast_json_object_get(j_camp, "uuid"))
-            );
+    ast_asprintf(&sql, "update campaign set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
     ast_free(tmp);
 
     db_exec(sql);
     ast_free(sql);
 
-    j_tmp = get_campaign(ast_json_string_get(ast_json_object_get(j_camp, "uuid")));
+    j_tmp = get_campaign(uuid);
     if(j_tmp == NULL) {
-        ast_log(LOG_WARNING, "Could not get update campaign info. uuid[%s]\n",
-                ast_json_string_get(ast_json_object_get(j_camp, "uuid"))
-                );
+        ast_log(LOG_WARNING, "Could not get update campaign info. uuid[%s]\n", uuid);
         return false;
     }
-    send_manager_evt_campaign_update(j_camp);
-    ast_json_unref(j_camp);
+    send_manager_evt_campaign_update(j_tmp);
+    ast_json_unref(j_tmp);
 
     return true;
 }

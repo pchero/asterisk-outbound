@@ -55,8 +55,11 @@ create table queue(
   uuid      varchar(255)    unique,         -- queue uuid
   name      varchar(255)    not null,       -- queue name
   detail    text            default null,
-  in_use    int             default 1       -- 0:not in use, 1:in use
+  in_use    int             default 1,      -- 0:not in use, 1:in use
 
+  tm_create           datetime(6),    -- create time.
+  tm_delete           datetime(6)     -- delete time.
+  
 );
 
 -- dial list original.
