@@ -23,6 +23,9 @@ void send_manager_evt_plan_update(struct ast_json* j_plan);
 void send_manager_evt_dlma_create(struct ast_json* j_dlma);
 void send_manager_evt_dlma_delete(const char* uuid);
 void send_manager_evt_dlma_update(struct ast_json* j_dlma);
+void send_manager_evt_queue_create(struct ast_json* j_dlma);
+void send_manager_evt_queue_delete(const char* uuid);
+void send_manager_evt_queue_update(struct ast_json* j_dlma);
 
 
 #endif /* CLI_HANDLER_H_ */
