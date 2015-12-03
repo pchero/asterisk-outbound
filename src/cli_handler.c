@@ -1872,8 +1872,9 @@ static int manager_out_queue_show(struct mansession *s, const struct message *m)
 
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") != 0) {
-        j_tmp = get_dlma(tmp_const);
+        j_tmp = get_queue(tmp_const);
         if(j_tmp == NULL) {
+            ast_log(LOG_WARNING, "Could not find queue. uuid[%s]\n", tmp_const);
             astman_send_error(s, m, "Error encountered while show queue");
             ast_free(action_id);
             return 0;

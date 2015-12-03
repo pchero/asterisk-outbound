@@ -12,5 +12,7 @@ int create_queue(struct ast_json* j_queue);
 int delete_queue(const char* uuid);
 struct ast_json* get_queue(const char* uuid);
 struct ast_json* get_queues_all(void);
+int update_queue(struct ast_json* j_queue);
+
 
 #endif /* QUEUE_HANDLER_H_ */

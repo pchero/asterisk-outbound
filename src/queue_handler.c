@@ -142,3 +142,43 @@ struct ast_json* get_queues_all(void)
     return j_res;
 }
 
+int update_queue(struct ast_json* j_queue)
+{
+    char* tmp;
+    char* sql;
+    struct ast_json* j_tmp;
+    int ret;
+    const char* uuid;
+
+    uuid = ast_json_string_get(ast_json_object_get(j_queue, "uuid"));
+    if(uuid == NULL) {
+        ast_log(LOG_WARNING, "Could not get uuid.\n");
+        return false;
+    }
+
+    tmp = db_get_update_str(j_queue);
+    if(tmp == NULL) {
+        ast_log(LOG_WARNING, "Could not get update str.\n");
+        return false;
+    }
+
+    ast_asprintf(&sql, "update queue set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
+    ast_free(tmp);
+
+    ret = db_exec(sql);
+    ast_free(sql);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not update queue info. uuid[%s]\n", uuid);
+        return false;
+    }
+
+    j_tmp = get_queue(uuid);
+    if(j_tmp == NULL) {
+        ast_log(LOG_WARNING, "Could not get update queue info. uuid[%s]\n", uuid);
+        return false;
+    }
+    send_manager_evt_queue_update(j_tmp);
+    ast_json_unref(j_tmp);
+
+    return true;
+}

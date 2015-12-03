@@ -21,7 +21,6 @@ int create_plan(struct ast_json* j_plan);
 int delete_plan(const char* uuid);
 struct ast_json* get_plan(const char* uuid);
 struct ast_json* get_plans_all(void);
-int update_queue(struct ast_json* j_queue);
 
 
 #endif /* SRC_PLAN_HANDLER_H_ */
