@@ -18,7 +18,9 @@ int ami_is_response_success(struct ast_json* j_ami);
 
 struct ast_json* ami_cmd_queue_summary(const char* name);
 struct ast_json* ami_cmd_originate_to_queue(struct ast_json* j_dial);
+struct ast_json* ami_cmd_originate_to_exten(struct ast_json* j_dl, const char* context, const char* exten);
 struct ast_json* ami_cmd_hangup(const char* channel, int cause);
-
+struct ast_json* ami_cmd_dialplan_extension_add(struct ast_json* j_dialplan);
+struct ast_json* ami_cmd_dialplan_extension_remove(const char* context, const char* extension, const int priority);
 
 #endif /* SRC_AMI_HANDLER_H_ */
