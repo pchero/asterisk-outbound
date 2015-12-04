@@ -18,6 +18,38 @@
 #include "db_handler.h"
 #include "campaign_handler.h"
 #include "cli_handler.h"
+#include "ami_handler.h"
+
+
+/**
+ *
+ * @return
+ */
+bool init_plan(void)
+{
+    struct ast_json* j_plans;
+    struct ast_json* j_plan;
+    int i;
+    int size;
+    int ret;
+
+    j_plans = get_plans_all();
+    size = ast_json_array_size(j_plans);
+    for(i = 0; i < size; i++) {
+        j_plan = ast_json_array_get(j_plans, i);
+        ret = delete_plan_extension(j_plan);
+
+        ret = create_plan_extension(j_plan);
+        if(ret == false) {
+            ast_log(LOG_ERROR, "Could not create outbound dialplan. plan_uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_plan, "uuid")));
+            ast_json_unref(j_plans);
+            return false;
+        }
+    }
+    ast_json_unref(j_plans);
+
+    return true;
+}
 
 /**
  * Create plan.
@@ -199,6 +231,105 @@ int update_plan(struct ast_json* j_plan)
     }
     send_manager_evt_plan_update(j_tmp);
     ast_json_unref(j_tmp);
+
+    return true;
+}
+
+/**
+ *
+ * @param j_plan
+ * @return
+ */
+bool create_plan_extension(struct ast_json* j_plan)
+{
+    int i;
+    char* tmp;
+    E_DIAL_MODE dial_mode;
+    struct ast_json* j_tmp;
+    struct ast_json* j_ret;
+
+    i = 1;
+
+    ast_asprintf(&tmp, "%d", i);
+    j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
+            "context",          PLAN_CONTEXT,
+            "extension",        ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
+            "priority",         tmp,
+            "application",      "NoOp",
+            "application_data", ast_json_string_get(ast_json_object_get(j_plan, "uuid"))
+            );
+    ast_free(tmp);
+    if(j_tmp == NULL) {
+        ast_log(LOG_WARNING, "Could not create plan extension req. plan_uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_plan, "uuid")));
+        return false;
+    }
+
+    j_ret = ami_cmd_dialplan_extension_add(j_tmp);
+    ast_json_unref(j_tmp);
+    if(j_ret == NULL) {
+        delete_plan_extension(j_plan);
+        return false;
+    }
+    ast_json_unref(j_ret);
+
+    i++;
+
+    // Add queue
+    dial_mode = ast_json_integer_get(ast_json_object_get(j_plan, "dial_mode"));
+    switch(dial_mode) {
+        case E_DIAL_MODE_PREDICTIVE: {
+            // add to the queue
+            ast_asprintf(&tmp, "%d", i);
+            j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
+                    "context",          PLAN_CONTEXT,
+                    "extension",        ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
+                    "priority",         tmp,
+                    "application",      "Queue",
+                    "application_data", ast_json_string_get(ast_json_object_get(j_plan, "queue_name"))
+                    );
+            ast_free(tmp);
+            if(j_tmp == NULL) {
+                ast_log(LOG_WARNING, "Could not create plan extension req. plan_uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_plan, "uuid")));
+                return false;
+            }
+
+            j_ret = ami_cmd_dialplan_extension_add(j_tmp);
+            ast_json_unref(j_tmp);
+            if(j_ret == NULL) {
+                delete_plan_extension(j_plan);
+                return false;
+            }
+            ast_json_unref(j_ret);
+        }
+        break;
+
+        default: {
+            ast_log(LOG_WARNING, "Could not find correspond dial_mode. plan_uuid[%s], dial_mode[%d]\n",
+                    ast_json_string_get(ast_json_object_get(j_plan, "uuid")), dial_mode);
+        }
+    }
+
+    return true;
+}
+
+bool delete_plan_extension(struct ast_json* j_plan)
+{
+    struct ast_json* j_ret;
+
+    j_ret = ami_cmd_dialplan_extension_remove(
+            PLAN_CONTEXT,
+            ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
+            -1
+            );
+    if(j_ret == NULL) {
+        ast_log(LOG_WARNING, "Could not delete dialplan extension. context[%s], extension[%s]\n",
+                PLAN_CONTEXT,
+                ast_json_string_get(ast_json_object_get(j_plan, "uuid"))
+                );
+        return false;
+    }
+
+    ast_json_unref(j_ret);
 
     return true;
 }

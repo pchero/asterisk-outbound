@@ -17,10 +17,16 @@ typedef enum _E_DIAL_MODE {
     E_DIAL_MODE_REDIRECT = 5,       ///
 } E_DIAL_MODE;
 
+#define PLAN_CONTEXT    "res_outbound"
+
+bool init_plan(void);
+
 int create_plan(struct ast_json* j_plan);
 int delete_plan(const char* uuid);
 struct ast_json* get_plan(const char* uuid);
 struct ast_json* get_plans_all(void);
 
+bool create_plan_extension(struct ast_json* j_plan);
+bool delete_plan_extension(struct ast_json* j_plan);
 
 #endif /* SRC_PLAN_HANDLER_H_ */
