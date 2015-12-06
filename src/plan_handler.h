@@ -33,7 +33,4 @@ int delete_plan(const char* uuid);
 struct ast_json* get_plan(const char* uuid);
 struct ast_json* get_plans_all(void);
 
-bool create_plan_extension(struct ast_json* j_plan);
-bool delete_plan_extension(struct ast_json* j_plan);
-
 #endif /* SRC_PLAN_HANDLER_H_ */

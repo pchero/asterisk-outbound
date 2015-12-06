@@ -21,6 +21,9 @@
 #include "ami_handler.h"
 
 
+static bool create_plan_extension(struct ast_json* j_plan);
+static bool delete_plan_extension(struct ast_json* j_plan);
+static bool update_plan_extension(struct ast_json* j_plan);
 static bool set_exten(const char* context, const char* exten, int priority, const char* application, const char* application_data);
 static int set_amd_mode(const char* exten, E_AMD_MODE amd_mode, int priority);
 
@@ -234,6 +237,10 @@ int update_plan(struct ast_json* j_plan)
         return false;
     }
     send_manager_evt_plan_update(j_tmp);
+
+    // update plan extension
+    update_plan_extension(j_tmp);
+
     ast_json_unref(j_tmp);
 
     return true;
@@ -244,7 +251,7 @@ int update_plan(struct ast_json* j_plan)
  * @param j_plan
  * @return
  */
-bool create_plan_extension(struct ast_json* j_plan)
+static bool create_plan_extension(struct ast_json* j_plan)
 {
     int priority;
     E_DIAL_MODE dial_mode;
@@ -291,11 +298,10 @@ bool create_plan_extension(struct ast_json* j_plan)
         }
         break;
     }
-
     return true;
 }
 
-bool delete_plan_extension(struct ast_json* j_plan)
+static bool delete_plan_extension(struct ast_json* j_plan)
 {
     struct ast_json* j_ret;
 
@@ -316,6 +322,25 @@ bool delete_plan_extension(struct ast_json* j_plan)
 
     return true;
 }
+
+static bool update_plan_extension(struct ast_json* j_plan)
+{
+    int ret;
+
+    ret = delete_plan_extension(j_plan);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not delete dialplan extension.\n");
+        return false;
+    }
+
+    ret = create_plan_extension(j_plan);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not create dialplan extension.\n");
+        return false;
+    }
+    return true;
+}
+
 
 static bool set_exten(const char* context, const char* exten, int priority, const char* application, const char* application_data)
 {
