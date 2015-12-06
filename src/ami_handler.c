@@ -461,6 +461,76 @@ struct ast_json* ami_cmd_originate_to_queue(struct ast_json* j_dl)
 }
 
 /**
+ * Originate the call and send to extension
+ * @param name
+ * @return
+ */
+struct ast_json* ami_cmd_originate_to_exten(struct ast_json* j_dl, const char* context, const char* exten)
+{
+    struct ast_json* j_cmd;
+    struct ast_json* j_res;
+    int ret;
+    char* tmp;
+
+    if(j_dl == NULL) {
+        return NULL;
+    }
+
+    //    Action: Originate
+    //    ActionID: <value>
+    //    Channel: <value>
+    //    Exten: <value>
+    //    Context: <value>
+    //    Priority: <value>
+    //    Application: <value>
+    //    Data: <value>
+    //    Timeout: <value>
+    //    CallerID: <value>
+    //    Variable: <value>
+    //    Account: <value>
+    //    EarlyMedia: <value>
+    //    Async: <value>
+    //    Codecs: <value>
+    //    ChannelId: <value>
+    //    OtherChannelId: <value>
+    j_cmd = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
+            "Action",       "Originate",
+            "Channel",      ast_json_string_get(ast_json_object_get(j_dl, "dial_addr")),
+            "Async",        "true",
+            "Exten",        exten,
+            "Context",      context
+            );
+    if(ast_json_object_get(j_dl, "timeout") != NULL)        ast_json_object_set(j_cmd, "Timeout", ast_json_ref(ast_json_object_get(j_dl, "timeout")));
+    if(ast_json_object_get(j_dl, "callerid") != NULL)       ast_json_object_set(j_cmd, "CallerID", ast_json_ref(ast_json_object_get(j_dl, "callerid")));
+    if(ast_json_object_get(j_dl, "variable") != NULL)       ast_json_object_set(j_cmd, "Variable", ast_json_ref(ast_json_object_get(j_dl, "variable")));
+    if(ast_json_object_get(j_dl, "account") != NULL)        ast_json_object_set(j_cmd, "Account", ast_json_ref(ast_json_object_get(j_dl, "account")));
+    if(ast_json_object_get(j_dl, "earlymedia") != NULL)     ast_json_object_set(j_cmd, "EarlyMedia", ast_json_ref(ast_json_object_get(j_dl, "earlymedia")));
+    if(ast_json_object_get(j_dl, "codecs") != NULL)         ast_json_object_set(j_cmd, "Codecs", ast_json_ref(ast_json_object_get(j_dl, "codecs")));
+    if(ast_json_object_get(j_dl, "channelid") != NULL)      ast_json_object_set(j_cmd, "ChannelId", ast_json_ref(ast_json_object_get(j_dl, "channelid")));
+    if(ast_json_object_get(j_dl, "otherchannelid") != NULL) ast_json_object_set(j_cmd, "OtherChannelId", ast_json_ref(ast_json_object_get(j_dl, "otherchannelid")));
+
+    if(j_cmd == NULL) {
+        ast_log(LOG_ERROR, "Could not create ami json.\n");
+        return NULL;
+    }
+    tmp = ast_json_dump_string_format(j_cmd, 0);
+    ast_log(LOG_DEBUG, "Dialing. tmp[%s]\n", tmp);
+    ast_json_free(tmp);
+
+    j_res = ami_cmd_handler(j_cmd);
+    ast_json_unref(j_cmd);
+
+    ret = ami_is_response_success(j_res);
+    if(ret == false) {
+        ast_json_unref(j_res);
+        return NULL;
+    }
+
+    return j_res;
+}
+
+
+/**
  *
  * @param channel
  * @param cause
@@ -533,6 +603,99 @@ struct ast_json* ami_cmd_SIPshowregistry(void)
 
     return j_res;
 }
+
+/**
+ * DialplanExtensionAdd
+ * Asterisk-13
+ * @param j_dialplan
+ * @return
+ */
+struct ast_json* ami_cmd_dialplan_extension_add(struct ast_json* j_dialplan)
+{
+//    Action: DialplanExtensionAdd
+//    ActionID: <value>
+//    Context: <value>
+//    Extension: <value>
+//    Priority: <value>
+//    Application: <value>
+//    [ApplicationData:] <value>
+//    [Replace:] <value>
+
+    int ret;
+    struct ast_json* j_cmd;
+    struct ast_json* j_res;
+
+    j_cmd = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
+            "Action",       "DialplanExtensionAdd",
+            "Context",      ast_json_string_get(ast_json_object_get(j_dialplan, "context")),
+            "Extension",    ast_json_string_get(ast_json_object_get(j_dialplan, "extension")),
+            "Priority",     ast_json_string_get(ast_json_object_get(j_dialplan, "priority")),
+            "Application",  ast_json_string_get(ast_json_object_get(j_dialplan, "application"))
+            );
+    if(ast_json_object_get(j_dialplan, "application_data") != NULL) {
+        ast_json_object_set(j_cmd, "ApplicationData", ast_json_ref(ast_json_object_get(j_dialplan, "application_data")));
+    }
+
+    if(ast_json_object_get(j_dialplan, "replace") != NULL) {
+        ast_json_object_set(j_cmd, "Replace", ast_json_ref(ast_json_object_get(j_dialplan, "replace")));
+    }
+
+    j_res = ami_cmd_handler(j_cmd);
+    ast_json_unref(j_cmd);
+
+    // check response
+    ret = ami_is_response_success(j_res);
+    if(ret == false) {
+        ast_json_unref(j_res);
+        return NULL;
+    }
+
+    return j_res;
+}
+
+/**
+ * DialplanExtensionRemove
+ * Asterisk-13
+ * @param j_dialplan
+ * @return
+ */
+struct ast_json* ami_cmd_dialplan_extension_remove(const char* context, const char* extension, const int priority)
+{
+//    Action: DialplanExtensionRemove
+//    ActionID: <value>
+//    Context: <value>
+//    Extension: <value>
+//    [Priority:] <value>
+
+    int ret;
+    struct ast_json* j_cmd;
+    struct ast_json* j_res;
+    char* tmp;
+
+    j_cmd = ast_json_pack("{s:s, s:s, s:s}",
+            "Action",       "DialplanExtensionRemove",
+            "Context",      context,
+            "Extension",    extension
+            );
+    if(priority >= 0) {
+        ast_asprintf(&tmp, "%d", priority);
+        ast_json_object_set(j_cmd, "Priority", ast_json_string_create(tmp));
+        ast_free(tmp);
+    }
+
+    j_res = ami_cmd_handler(j_cmd);
+    ast_json_unref(j_cmd);
+
+    // check response
+    ret = ami_is_response_success(j_res);
+    if(ret == false) {
+        ast_json_unref(j_res);
+        return NULL;
+    }
+
+    return j_res;
+}
+
 
 void ami_evt_process(struct ast_json* j_evt)
 {

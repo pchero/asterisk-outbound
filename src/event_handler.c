@@ -131,6 +131,12 @@ static int init_outbound(void)
     db_free(db_res);
     ast_json_unref(j_res);
 
+    ret = init_plan();
+    if(ret == false) {
+        ast_log(LOG_ERROR, "Could not initiate plan.\n");
+        return false;
+    }
+
     ast_log(LOG_NOTICE, "Initiated outbound.\n");
 
     return true;
@@ -616,7 +622,12 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_queue, s
     }
 
     // dial to customer
-    j_res = ami_cmd_originate_to_queue(j_dialing);
+//    j_res = ami_cmd_originate_to_queue(j_dialing);
+    j_res = ami_cmd_originate_to_exten(
+            j_dialing,
+            PLAN_CONTEXT,
+            ast_json_string_get(ast_json_object_get(dialing->j_res, "plan_uuid"))
+            );
     if(j_res == NULL) {
         ast_log(LOG_WARNING, "Originating has failed.");
         clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
