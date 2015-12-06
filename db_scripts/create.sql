@@ -24,6 +24,7 @@ create table plan(
     retry_delay     int default 50000,          -- retry delaytime(ms)
     trunk_name      varchar(255) default null,  -- trunk name
     queue_name      varchar(255) default null,  -- queue name
+    amd_mode        int default 0,              -- AMD mode
     
     -- retry number
     max_retry_cnt_1     int default 5,  -- max retry count for dial number 1
@@ -260,7 +261,7 @@ create table dl_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle, trunk_name, queue_name) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", 1, 1, "trunk_test_1", "TestQueue");
+insert into plan(uuid, name, dial_mode, answer_handle, trunk_name, queue_name, amd_mode) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", 1, 1, "trunk_test_1", "TestQueue", 7);
 
 -- insert queue
 insert into queue(uuid, name) values ("1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6", "TestQueue");

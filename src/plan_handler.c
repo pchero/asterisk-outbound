@@ -21,6 +21,10 @@
 #include "ami_handler.h"
 
 
+static bool set_exten(const char* context, const char* exten, int priority, const char* application, const char* application_data);
+static int set_amd_mode(const char* exten, E_AMD_MODE amd_mode, int priority);
+
+
 /**
  *
  * @return
@@ -242,71 +246,50 @@ int update_plan(struct ast_json* j_plan)
  */
 bool create_plan_extension(struct ast_json* j_plan)
 {
-    int i;
-    char* tmp;
+    int priority;
     E_DIAL_MODE dial_mode;
-    struct ast_json* j_tmp;
-    struct ast_json* j_ret;
+    int amd_mode;
+    int ret;
+    const char* plan_uuid;
 
-    i = 1;
+    priority = 1;
+    plan_uuid = ast_json_string_get(ast_json_object_get(j_plan, "uuid"));
 
-    ast_asprintf(&tmp, "%d", i);
-    j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
-            "context",          PLAN_CONTEXT,
-            "extension",        ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
-            "priority",         tmp,
-            "application",      "NoOp",
-            "application_data", ast_json_string_get(ast_json_object_get(j_plan, "uuid"))
-            );
-    ast_free(tmp);
-    if(j_tmp == NULL) {
-        ast_log(LOG_WARNING, "Could not create plan extension req. plan_uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_plan, "uuid")));
+    // dialplan start
+    ret = set_exten(PLAN_CONTEXT, plan_uuid, priority, "NoOp", plan_uuid);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not set amd_setting to dialplan. exten[%s]\n", plan_uuid);
+        return -1;
+    }
+    priority++;
+
+    // AMD setting
+    amd_mode = ast_json_integer_get(ast_json_object_get(j_plan, "amd_mode"));
+    ret = set_amd_mode(plan_uuid, amd_mode, priority);
+    if(ret < 0) {
+        ast_log(LOG_WARNING, "Could not set amd setting. plan_uuid[%s]\n", plan_uuid);
         return false;
     }
-
-    j_ret = ami_cmd_dialplan_extension_add(j_tmp);
-    ast_json_unref(j_tmp);
-    if(j_ret == NULL) {
-        delete_plan_extension(j_plan);
-        return false;
-    }
-    ast_json_unref(j_ret);
-
-    i++;
+    priority = ret;
 
     // Add queue
     dial_mode = ast_json_integer_get(ast_json_object_get(j_plan, "dial_mode"));
     switch(dial_mode) {
         case E_DIAL_MODE_PREDICTIVE: {
             // add to the queue
-            ast_asprintf(&tmp, "%d", i);
-            j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
-                    "context",          PLAN_CONTEXT,
-                    "extension",        ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
-                    "priority",         tmp,
-                    "application",      "Queue",
-                    "application_data", ast_json_string_get(ast_json_object_get(j_plan, "queue_name"))
-                    );
-            ast_free(tmp);
-            if(j_tmp == NULL) {
-                ast_log(LOG_WARNING, "Could not create plan extension req. plan_uuid[%s]\n", ast_json_string_get(ast_json_object_get(j_plan, "uuid")));
-                return false;
+            ret = set_exten(PLAN_CONTEXT, plan_uuid, priority, "Queue", ast_json_string_get(ast_json_object_get(j_plan, "queue_name")));
+            if(ret == false) {
+                ast_log(LOG_WARNING, "Could not set amd_setting to dialplan. exten[%s]\n", plan_uuid);
+                return -1;
             }
-
-            j_ret = ami_cmd_dialplan_extension_add(j_tmp);
-            ast_json_unref(j_tmp);
-            if(j_ret == NULL) {
-                delete_plan_extension(j_plan);
-                return false;
-            }
-            ast_json_unref(j_ret);
+            priority++;
         }
         break;
 
         default: {
-            ast_log(LOG_WARNING, "Could not find correspond dial_mode. plan_uuid[%s], dial_mode[%d]\n",
-                    ast_json_string_get(ast_json_object_get(j_plan, "uuid")), dial_mode);
+            ast_log(LOG_WARNING, "Could not find correspond dial_mode. plan_uuid[%s], dial_mode[%d]\n", plan_uuid, dial_mode);
         }
+        break;
     }
 
     return true;
@@ -332,4 +315,107 @@ bool delete_plan_extension(struct ast_json* j_plan)
     ast_json_unref(j_ret);
 
     return true;
+}
+
+static bool set_exten(const char* context, const char* exten, int priority, const char* application, const char* application_data)
+{
+    struct ast_json* j_tmp;
+    struct ast_json* j_ret;
+    char* tmp;
+
+
+    ast_asprintf(&tmp, "%d", priority);
+    j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
+            "context",          context,
+            "extension",        exten,
+            "priority",         tmp,
+            "application",      application,
+            "application_data", application_data
+            );
+    ast_free(tmp);
+    j_ret = ami_cmd_dialplan_extension_add(j_tmp);
+    ast_json_unref(j_tmp);
+    if(j_ret == NULL) {
+        ast_log(LOG_WARNING, "Could not set extension to dialplan. context[%s], exten[%s], priority[%d], applicatioin[%s], application_data[%s]\n",
+                context, exten, priority, application, application_data);
+        return false;
+    }
+    ast_json_unref(j_ret);
+    return true;
+}
+
+/**
+ * Set the dialplan for AMD mode.
+ * @param exten
+ * @param amd_mode
+ * @param priority
+ * @return
+ */
+static int set_amd_mode(const char* exten, E_AMD_MODE amd_mode, int priority)
+{
+    int tmp_priority;
+    int ret;
+
+    tmp_priority = priority;
+
+    if(exten == NULL) {
+        ast_log(LOG_WARNING, "The extension is null.\n");
+        return tmp_priority;
+    }
+
+    if(amd_mode == E_AMD_MODE_NONE) {
+        ast_log(LOG_NOTICE, "No AMD setting.\n");
+        return tmp_priority;
+    }
+
+    // set AMD
+    ret = set_exten(PLAN_CONTEXT, exten, priority, "AMD", "");
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not set amd_setting to dialplan. exten[%s]\n", exten);
+        return -1;
+    }
+    priority++;
+
+    // print AMD
+    ret = set_exten(PLAN_CONTEXT, exten, priority, "NoOp", "AMD result. status[${AMDSTATUS}], cause[${AMDCAUSE}]");
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not set amd_setting to dialplan. exten[%s]\n", exten);
+        return -1;
+    }
+    priority++;
+
+    // HUMAN
+    if((amd_mode & E_AMD_MODE_HUMAN) == 0)
+    {
+        ret = set_exten(PLAN_CONTEXT, exten, priority, "ExecIf", "${AMDSTATUS} == HUMAN?HANGUP():");
+        if(ret == false) {
+            ast_log(LOG_WARNING, "Could not set amd_setting to dialplan. exten[%s]\n", exten);
+            return -1;
+        }
+        priority++;
+    }
+
+    // MACHINE
+    if((amd_mode & E_AMD_MODE_MACHINE) == 0)
+    {
+        ret = set_exten(PLAN_CONTEXT, exten, priority, "ExecIf", "${AMDSTATUS} == MACHINE?HANGUP():");
+        if(ret == false) {
+            ast_log(LOG_WARNING, "Could not set amd_setting to dialplan. exten[%s]\n", exten);
+            return -1;
+        }
+        priority++;
+    }
+
+    // NOTSURE
+    if((amd_mode & E_AMD_MODE_NOTSURE) == 0)
+    {
+        ret = set_exten(PLAN_CONTEXT, exten, priority, "ExecIf", "${AMDSTATUS} == NOTSURE?HANGUP():");
+        if(ret == false) {
+            ast_log(LOG_WARNING, "Could not set amd_setting to dialplan. exten[%s]\n", exten);
+            return -1;
+        }
+        priority++;
+    }
+
+    return priority;
 }
