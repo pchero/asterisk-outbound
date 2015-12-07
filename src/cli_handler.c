@@ -611,6 +611,11 @@ static char *out_delete_campaign(struct ast_cli_entry *e, int cmd, struct ast_cl
     return _out_delete_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
+/**
+ * Create AMI string for campaign
+ * @param j_camp
+ * @return
+ */
 static char* manager_get_campaign_str(struct ast_json* j_camp)
 {
     char* tmp;
@@ -640,6 +645,11 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
     return tmp;
 }
 
+/**
+ * Create AMI string for plan
+ * @param j_plan
+ * @return
+ */
 static char* manager_get_plan_str(struct ast_json* j_plan)
 {
     char* tmp;
@@ -655,6 +665,8 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
             "DlEndHandle: %ld\r\n"
             "RetryDelay: %ld\r\n"
             "TrunkName: %s\r\n"
+            "QueueName: %s\r\n"
+            "AmdMode: %ld\r\n"
             "MaxRetryCnt1: %ld\r\n"
             "MaxRetryCnt2: %ld\r\n"
             "MaxRetryCnt3: %ld\r\n"
@@ -676,6 +688,8 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
             ast_json_integer_get(ast_json_object_get(j_plan, "dl_end_handle")),
             ast_json_integer_get(ast_json_object_get(j_plan, "retry_delay")),
             ast_json_string_get(ast_json_object_get(j_plan, "trunk_name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_plan, "queue_name"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_plan, "amd_mode")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
@@ -691,6 +705,11 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
     return tmp;
 }
 
+/**
+ * Createa AMI string for dlma
+ * @param j_dlma
+ * @return
+ */
 static char* manager_get_dlma_str(struct ast_json* j_dlma)
 {
     char* tmp;
@@ -1479,7 +1498,8 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
     return 0;
 }
 /**
- * OutPlanCreate AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanCreate
  * @param s
  * @param m
  * @return
@@ -1489,6 +1509,8 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
     const char* tmp_const;
     int ret;
     struct ast_json* j_tmp;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanCreate.\n");
 
     j_tmp = ast_json_object_create();
 
@@ -1558,15 +1580,18 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
     ret = create_plan(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating plan");
+        ast_log(LOG_WARNING, "OutPlanCreate failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Plan created successfully");
+    ast_log(LOG_NOTICE, "OutPlanCreate succeed.\n");
 
     return 0;
 }
 
 /**
- * OutPlanDelete AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanDelete
  * @param s
  * @param m
  * @return
@@ -1575,6 +1600,8 @@ static int manager_out_plan_delete(struct mansession *s, const struct message *m
 {
     const char* tmp_const;
     int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanDelete.\n");
 
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") == 0) {
@@ -1585,15 +1612,18 @@ static int manager_out_plan_delete(struct mansession *s, const struct message *m
     ret = delete_plan(tmp_const);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while deleting plan");
+        ast_log(LOG_WARNING, "OutPlanDelete failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Plan deleted successfully");
+    ast_log(LOG_NOTICE, "OutPlanDelete succeed.\n");
 
     return 0;
 }
 
 /**
- * OutPlanUpdate AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanUpdate
  * @param s
  * @param m
  * @return
@@ -1604,9 +1634,12 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
     int ret;
     struct ast_json* j_tmp;
 
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanUpdate.\n");
+
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") == 0) {
         astman_send_error(s, m, "Error encountered while updating plan");
+        ast_log(LOG_WARNING, "OutPlanUpdate failed.\n");
         return 0;
     }
 
@@ -1678,18 +1711,21 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
     if(strcmp(tmp_const, "") != 0)
     {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
 
-    ret = create_plan(j_tmp);
+    ret = update_plan(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while updating plan");
+        ast_log(LOG_WARNING, "OutPlanUpdate failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Plan updated successfully");
+    ast_log(LOG_NOTICE, "OutPlanUpdate succeed.\n");
 
     return 0;
 }
 
 /**
- * OutPlanShow AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanShow
  * @param s
  * @param m
  * @return
@@ -1702,6 +1738,8 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
     int i;
     int size;
     char* action_id;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanShow.\n");
 
     tmp_const = astman_get_header(m, "ActionID");
     if(strlen(tmp_const) != 0) {
@@ -1716,6 +1754,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
         j_tmp = get_plan(tmp_const);
         if(j_tmp == NULL) {
             astman_send_error(s, m, "Error encountered while show plan");
+            ast_log(LOG_WARNING, "OutPlanShow failed.\n");
             ast_free(action_id);
             return 0;
         }
@@ -1744,11 +1783,14 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
     }
 
     ast_free(action_id);
+    ast_log(LOG_NOTICE, "OutPlanShow succeed.\n");
+
     return 0;
 }
 
 /**
- * OutDlmaCreate AMI message handler.
+ * AMI Action handler
+ * Action: OutDlmaCreate
  * @param s
  * @param m
  * @return
@@ -1758,6 +1800,8 @@ static int manager_out_dlma_create(struct mansession *s, const struct message *m
     struct ast_json* j_tmp;
     const char* tmp_const;
     int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutDlmaCreate.\n");
 
     j_tmp = ast_json_object_create();
 
@@ -1771,9 +1815,11 @@ static int manager_out_dlma_create(struct mansession *s, const struct message *m
     ast_json_unref(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating dlma");
+        ast_log(LOG_WARNING, "OutDlmaCreate failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Dlma created successfully");
+    ast_log(LOG_NOTICE, "OutDlmaCreate succeed.\n");
 
     return 0;
 }
