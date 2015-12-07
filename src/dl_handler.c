@@ -327,10 +327,11 @@ struct ast_json* get_dlmas_all(void)
  * @param j_dlma
  * @return
  */
-int create_dlma(struct ast_json* j_dlma)
+bool create_dlma(const struct ast_json* j_dlma)
 {
     int ret;
     char* uuid;
+    char* tmp;
     struct ast_json* j_tmp;
 
     if(j_dlma == NULL) {
@@ -338,8 +339,16 @@ int create_dlma(struct ast_json* j_dlma)
     }
 
     j_tmp = ast_json_deep_copy(j_dlma);
+
+    // uuid
     uuid = gen_uuid();
     ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
+
+    // create timestamp
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_create", ast_json_string_create(tmp));
+    ast_free(tmp);
+
     ast_log(LOG_NOTICE, "Create dlma. uuid[%s], name[%s]\n",
             ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
             ast_json_string_get(ast_json_object_get(j_tmp, "name"))
@@ -366,23 +375,35 @@ int create_dlma(struct ast_json* j_dlma)
  * @param j_dlma
  * @return
  */
-int update_dlma(struct ast_json* j_dlma)
+bool update_dlma(const struct ast_json* j_dlma)
 {
     char* tmp;
+    const char* tmp_const;
     char* sql;
     struct ast_json* j_tmp;
-    const char* uuid;
+    char* uuid;
     int ret;
 
-    uuid = ast_json_string_get(ast_json_object_get(j_dlma, "uuid"));
-    if(uuid == NULL) {
+    j_tmp = ast_json_deep_copy(j_dlma);
+
+    tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
+    if(tmp_const == NULL) {
         ast_log(LOG_WARNING, "Could not get uuid.\n");
+        ast_json_unref(j_tmp);
         return false;
     }
+    uuid = ast_strdup(tmp_const);
 
-    tmp = db_get_update_str(j_dlma);
+    // update timestamp
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_update", ast_json_string_create(tmp));
+    ast_free(tmp);
+
+    tmp = db_get_update_str(j_tmp);
+    ast_json_unref(j_tmp);
     if(tmp == NULL) {
         ast_log(LOG_WARNING, "Could not get update str.\n");
+        ast_free(uuid);
         return false;
     }
 
@@ -393,6 +414,7 @@ int update_dlma(struct ast_json* j_dlma)
     ast_free(sql);
     if(ret == false) {
         ast_log(LOG_WARNING, "Could not get updated dlma. uuid[%s]\n", uuid);
+        ast_free(uuid);
         return false;
     }
 
@@ -407,7 +429,7 @@ int update_dlma(struct ast_json* j_dlma)
     return true;
 }
 
-int delete_dlma(const char* uuid)
+bool delete_dlma(const char* uuid)
 {
     struct ast_json* j_tmp;
     char* tmp;

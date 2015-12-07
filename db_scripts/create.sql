@@ -19,7 +19,7 @@ create table plan(
     dial_mode       int default 0,              -- dial mode(desktop, power, predictive, email, fax, sms)
     dial_timeout    int default 30000,          -- no answer hangup timeout(30000 ms = 30 second)
     caller_id       varchar(255) default null,  -- caller name(from)
-    answer_handle   int default 1,              -- answer handling.(all, human_only, human_possible)
+    answer_handle   int default 0,              -- answer handling.(all, human_only, human_possible)
     dl_end_handle   int default 1,              -- stratery when it running out dial list(keep_running, stop)
     retry_delay     int default 50000,          -- retry delaytime(ms)
     trunk_name      varchar(255) default null,  -- trunk name
@@ -35,17 +35,11 @@ create table plan(
     max_retry_cnt_6     int default 5,  -- max retry count for dial number 6
     max_retry_cnt_7     int default 5,  -- max retry count for dial number 7
     max_retry_cnt_8     int default 5,  -- max retry count for dial number 8
-
-    -- ownership
-    create_agent_uuid           varchar(255),       -- create agent uuid
-    delete_agent_uuid           varchar(255),       -- delete agent uuid
-    update_property_agent_uuid  varchar(255),       -- last propery update agent uuid
     
     -- timestamp. UTC.
     tm_create           datetime(6),    -- create time.
     tm_delete           datetime(6),    -- delete time.
-    tm_update_property  datetime(6),    -- last property update time.(Except status)
-    tm_update_status    datetime(6),    -- last status updated time.
+    tm_update           datetime(6),    -- last update time.
     
     primary key(uuid)
 );
@@ -149,12 +143,7 @@ create table dl_list_ma(
     -- timestamp. UTC.
     tm_create           datetime(6),    -- create time.
     tm_delete           datetime(6),    -- delete time.
-    tm_update_property  datetime(6),    -- last property update time.(Except status)
-    
-    -- ownership
-    create_agent_uuid           varchar(255),       -- create agent uuid
-    delete_agent_uuid           varchar(255),       -- delete agent uuid
-    update_property_agent_uuid  varchar(255),       -- last propery update agent uuid
+    tm_update           datetime(6),    -- last update time.
     
     primary key(uuid)
 );
