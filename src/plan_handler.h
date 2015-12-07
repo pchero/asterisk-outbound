@@ -28,8 +28,9 @@ typedef enum _E_AMD_MODE {
 
 bool init_plan(void);
 
-int create_plan(struct ast_json* j_plan);
-int delete_plan(const char* uuid);
+bool create_plan(const struct ast_json* j_plan);
+bool delete_plan(const char* uuid);
+bool update_plan(const struct ast_json* j_plan);
 struct ast_json* get_plan(const char* uuid);
 struct ast_json* get_plans_all(void);
 

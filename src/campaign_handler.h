@@ -11,6 +11,8 @@
 #include "asterisk.h"
 #include "asterisk/json.h"
 
+#include <stdbool.h>
+
 typedef enum _E_CAMP_STATUS_T
 {
     // static status
@@ -29,9 +31,10 @@ typedef enum _E_CAMP_STATUS_T
 
 char* gen_uuid(void);
 
-int create_campaign(struct ast_json* j_camp);
-int delete_cmapaign(const char* uuid);
-int update_campaign_status(const char* uuid, E_CAMP_STATUS_T status);
+bool create_campaign(const struct ast_json* j_camp);
+bool delete_cmapaign(const char* uuid);
+bool update_campaign(struct ast_json* j_camp);
+bool update_campaign_status(const char* uuid, E_CAMP_STATUS_T status);
 struct ast_json* get_campaigns_all(void);
 struct ast_json* get_campaign(const char* uuid);
 struct ast_json* get_campaigns_by_status(E_CAMP_STATUS_T status);

@@ -12,7 +12,7 @@ def make_dict(lst):
         i = i.strip()
         if i and i[0] is not "#" and i[-1] is not "=":
             try:
-                var,val = i.rsplit(":",1)
+                var,val = i.split(":", 1)
             except:
                 continue
             ret[var.strip()] = val.strip()
@@ -42,10 +42,52 @@ class Ami:
         list = False
         while(c < 5):
             c += 1
+            data = ""
+            while '\r\n\r\n' not in ''.join(data)[-4:]:
+                buf = self.sock.recv(1)
+                data += buf
+            recv = data.split('\r\n')
+            tmp = make_dict(recv)
+            
+            if "ActionID" not in tmp:
+                continue
+            if tmp["ActionID"] != action_id:
+                continue
+            
+            recvs.append(tmp)
+            
+            if list == False:
+                if tmp["Message"].find("follow") > 0:
+                    list = True
+                    continue
+            
+            if list == True:
+                if tmp["Event"].find("Complete") > 0:
+                    break            
+            if list == False:
+                break
+        return recvs
+    
+    def __sendCmd(self, action, **args):
+        # send command.
+        action_id = uuid.uuid4().__str__()
+        self.sock.send("Action: %s\r\n" % action)
+        self.sock.send("ActionID: %s\r\n" % (action_id))
+        if args != None:
+            for key, value in args.items():
+                self.sock.send("%s: %s\r\n" % (key,value))
+        self.sock.send("\r\n")
+        
+        # get result.
+        c = 0
+        recvs = []
+        list = False
+        while(c < 5):
+            c += 1
             data = []
             while '\r\n\r\n' not in ''.join(data)[-4:]:
                 buf = self.sock.recv(1)
-                data.append(buf)                
+                data.append(buf)
             recv = ''.join(data).split('\r\n')
             tmp = make_dict(recv)
             
@@ -57,9 +99,6 @@ class Ami:
             recvs.append(tmp)
             
             if list == False:
-#                 if tmp["Response"] != "Success":
-#                     print tmp
-#                     raise "common error"
                 if tmp["Message"].find("follow") > 0:
                     list = True
                     continue
