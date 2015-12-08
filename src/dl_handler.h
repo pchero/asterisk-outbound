@@ -8,6 +8,8 @@
 #ifndef SRC_DL_HANDLER_H_
 #define SRC_DL_HANDLER_H_
 
+#include <stdbool.h>
+
 typedef enum _E_DL_STATUS_T
 {
     E_DL_IDLE       = 0,
@@ -16,9 +18,9 @@ typedef enum _E_DL_STATUS_T
 
 } E_DL_STATUS_T;
 
-int create_dlma(struct ast_json* j_dlma);
-int update_dlma(struct ast_json* j_dlma);
-int delete_dlma(const char* uuid);
+bool create_dlma(const struct ast_json* j_dlma);
+bool update_dlma(const struct ast_json* j_dlma);
+bool delete_dlma(const char* uuid);
 
 int get_current_dialing_dl_cnt(const char* camp_uuid, const char* dl_table);
 int get_dial_num_point(struct ast_json* j_dl_list, struct ast_json* j_plan);

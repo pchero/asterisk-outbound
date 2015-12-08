@@ -63,11 +63,12 @@ bool init_plan(void)
  * @param j_plan
  * @return
  */
-int create_plan(struct ast_json* j_plan)
+bool create_plan(const struct ast_json* j_plan)
 {
     int ret;
     char* uuid;
     struct ast_json* j_tmp;
+    char* tmp;
 
     if(j_plan == NULL) {
         return false;
@@ -76,6 +77,10 @@ int create_plan(struct ast_json* j_plan)
     j_tmp = ast_json_deep_copy(j_plan);
     uuid = gen_uuid();
     ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
+
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_create", ast_json_string_create(tmp));
+    ast_free(tmp);
 
     ast_log(LOG_NOTICE, "Create plan. uuid[%s], name[%s]\n",
             ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
@@ -101,7 +106,7 @@ int create_plan(struct ast_json* j_plan)
  * @param uuid
  * @return
  */
-int delete_plan(const char* uuid)
+bool delete_plan(const char* uuid)
 {
     struct ast_json* j_tmp;
     char* tmp;
@@ -201,25 +206,49 @@ struct ast_json* get_plans_all(void)
     return j_res;
 }
 
-int update_plan(struct ast_json* j_plan)
+/**
+ * Update plan
+ * @param j_plan
+ * @return
+ */
+bool update_plan(const struct ast_json* j_plan)
 {
     char* tmp;
+    const char* tmp_const;
     char* sql;
     struct ast_json* j_tmp;
     int ret;
-    const char* uuid;
+    char* uuid;
 
-    uuid = ast_json_string_get(ast_json_object_get(j_plan, "uuid"));
-    if(uuid == NULL) {
-        ast_log(LOG_WARNING, "Could not get uuid.\n");
+    if(j_plan == NULL) {
         return false;
     }
 
-    tmp = db_get_update_str(j_plan);
+    j_tmp = ast_json_deep_copy(j_plan);
+    if(j_tmp == NULL) {
+        return false;
+    }
+
+    tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
+    if(tmp_const == NULL) {
+        ast_log(LOG_WARNING, "Could not get uuid.\n");
+        ast_json_unref(j_tmp);
+        return false;
+    }
+    uuid = ast_strdup(tmp_const);
+
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_update", ast_json_string_create(tmp));
+    ast_free(tmp);
+
+    tmp = db_get_update_str(j_tmp);
     if(tmp == NULL) {
         ast_log(LOG_WARNING, "Could not get update str.\n");
+        ast_json_unref(j_tmp);
+        ast_free(uuid);
         return false;
     }
+    ast_json_unref(j_tmp);
 
     ast_asprintf(&sql, "update plan set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
     ast_free(tmp);
@@ -228,19 +257,20 @@ int update_plan(struct ast_json* j_plan)
     ast_free(sql);
     if(ret == false) {
         ast_log(LOG_WARNING, "Could not update plan info. uuid[%s]\n", uuid);
+        ast_free(uuid);
         return false;
     }
 
     j_tmp = get_plan(uuid);
+    ast_free(uuid);
     if(j_tmp == NULL) {
-        ast_log(LOG_WARNING, "Could not get update plan info. uuid[%s]\n", uuid);
+        ast_log(LOG_WARNING, "Could not get updated plan info.\n");
         return false;
     }
     send_manager_evt_plan_update(j_tmp);
 
     // update plan extension
     update_plan_extension(j_tmp);
-
     ast_json_unref(j_tmp);
 
     return true;

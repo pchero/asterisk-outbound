@@ -611,6 +611,11 @@ static char *out_delete_campaign(struct ast_cli_entry *e, int cmd, struct ast_cl
     return _out_delete_campaign(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
+/**
+ * Create AMI string for campaign
+ * @param j_camp
+ * @return
+ */
 static char* manager_get_campaign_str(struct ast_json* j_camp)
 {
     char* tmp;
@@ -622,18 +627,29 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
             "Status: %ld\r\n"
             "Plan: %s\r\n"
             "Dlma: %s\r\n"
-            "Queue: %s\r\n",
+            "Queue: %s\r\n"
+            "TmCreate: %s\r\n"
+            "TmDelete: %s\r\n"
+            "TmUpdate: %s\r\n",
             ast_json_string_get(ast_json_object_get(j_camp, "uuid"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "name"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "detail"))? : "<unknown>",
             ast_json_integer_get(ast_json_object_get(j_camp, "status")),
             ast_json_string_get(ast_json_object_get(j_camp, "plan"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "dlma"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_camp, "queue"))? : "<unknown>"
+            ast_json_string_get(ast_json_object_get(j_camp, "queue"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_camp, "tm_create"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_camp, "tm_delete"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_camp, "tm_update"))? : "<unknown>"
             );
     return tmp;
 }
 
+/**
+ * Create AMI string for plan
+ * @param j_plan
+ * @return
+ */
 static char* manager_get_plan_str(struct ast_json* j_plan)
 {
     char* tmp;
@@ -649,6 +665,8 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
             "DlEndHandle: %ld\r\n"
             "RetryDelay: %ld\r\n"
             "TrunkName: %s\r\n"
+            "QueueName: %s\r\n"
+            "AmdMode: %ld\r\n"
             "MaxRetryCnt1: %ld\r\n"
             "MaxRetryCnt2: %ld\r\n"
             "MaxRetryCnt3: %ld\r\n"
@@ -656,7 +674,10 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
             "MaxRetryCnt5: %ld\r\n"
             "MaxRetryCnt6: %ld\r\n"
             "MaxRetryCnt7: %ld\r\n"
-            "MaxRetryCnt8: %ld\r\n",
+            "MaxRetryCnt8: %ld\r\n"
+            "TmCreate: %s\r\n"
+            "TmDelete: %s\r\n"
+            "TmUpdate: %s\r\n",
             ast_json_string_get(ast_json_object_get(j_plan, "uuid"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_plan, "name"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_plan, "detail"))? : "<unknown>",
@@ -667,6 +688,8 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
             ast_json_integer_get(ast_json_object_get(j_plan, "dl_end_handle")),
             ast_json_integer_get(ast_json_object_get(j_plan, "retry_delay")),
             ast_json_string_get(ast_json_object_get(j_plan, "trunk_name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_plan, "queue_name"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_plan, "amd_mode")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
@@ -674,11 +697,19 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
             ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
-            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8"))
+            ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
+            ast_json_string_get(ast_json_object_get(j_plan, "tm_create"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_plan, "tm_delete"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_plan, "tm_update"))? : "<unknown>"
             );
     return tmp;
 }
 
+/**
+ * Createa AMI string for dlma
+ * @param j_dlma
+ * @return
+ */
 static char* manager_get_dlma_str(struct ast_json* j_dlma)
 {
     char* tmp;
@@ -687,11 +718,17 @@ static char* manager_get_dlma_str(struct ast_json* j_dlma)
             "Uuid: %s\r\n"
             "Name: %s\r\n"
             "Detail: %s\r\n"
-            "DlTable: %s\r\n",
-            ast_json_string_get(ast_json_object_get(j_dlma, "uuid")),
-            ast_json_string_get(ast_json_object_get(j_dlma, "name")),
-            ast_json_string_get(ast_json_object_get(j_dlma, "detail")),
-            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))
+            "DlTable: %s\r\n"
+            "TmCreate: %s\r\n"
+            "TmDelete: %s\r\n"
+            "TmUpdate: %s\r\n",
+            ast_json_string_get(ast_json_object_get(j_dlma, "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dlma, "name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dlma, "detail"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dlma, "tm_create"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dlma, "tm_delete"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dlma, "tm_update"))? : "<unknown>"
             );
     return tmp;
 }
@@ -712,14 +749,18 @@ static char* manager_get_queue_str(struct ast_json* j_queue)
 }
 
 /**
- * Send event notification of campaign create.
+ * AMI Event handler
+ * Event: OutCampaignCreate
  * @param j_camp
  */
 void send_manager_evt_campaign_create(struct ast_json* j_camp)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutCampaignCreate.\n");
+
     if(j_camp == NULL) {
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -730,19 +771,25 @@ void send_manager_evt_campaign_create(struct ast_json* j_camp)
 
     manager_event(EVENT_FLAG_MESSAGE, "OutCampaignCreate", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutCampaignCreate. Succeed.\n");
+
+    return;
 }
 
 
 /**
- * Send event notification of campaign delete.
+ * AMI Event handler
+ * Event: OutCampaignDelete
  * @param j_camp
  */
 void send_manager_evt_campaign_delete(const char* uuid)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutCampaignDelete.\n");
     if(uuid == NULL) {
         // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -752,17 +799,25 @@ void send_manager_evt_campaign_delete(const char* uuid)
             );
     manager_event(EVENT_FLAG_MESSAGE, "OutCampaignDelete", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutCampaignDelete. Succeed.\n");
+
+    return;
 }
 
 /**
- * Send CampaignUpdate event notify to AMI
+ * AMI Event handler
+ * Event: OutCampaignUpdate
  * @param j_camp
  */
 void send_manager_evt_campaign_update(struct ast_json* j_camp)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutCampaignUpdate.\n");
+
     if(j_camp == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -773,19 +828,25 @@ void send_manager_evt_campaign_update(struct ast_json* j_camp)
 
     manager_event(EVENT_FLAG_MESSAGE, "OutCampaignUpdate", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutCampaignUpdate. Succeed.\n");
 
     return;
 }
 
 /**
- * Send event notification of plan create.
+ * AMI Event handler
+ * Event: OutPlanCreate
  * @param j_camp
  */
 void send_manager_evt_plan_create(struct ast_json* j_plan)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutPlanCreate.\n");
+
     if(j_plan == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -796,19 +857,26 @@ void send_manager_evt_plan_create(struct ast_json* j_plan)
 
     manager_event(EVENT_FLAG_MESSAGE, "OutPlanCreate", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutPlanCreate. Succeed.\n");
+
+    return;
 }
 
 
 /**
- * Send event notification of plan delete.
+ * AMI Event handler
+ * Event: OutPlanDelete
  * @param j_camp
  */
 void send_manager_evt_plan_delete(const char* uuid)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutPlanDelete.\n");
+
     if(uuid == NULL) {
         // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -818,17 +886,25 @@ void send_manager_evt_plan_delete(const char* uuid)
             );
     manager_event(EVENT_FLAG_MESSAGE, "OutPlanDelete", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutPlanDelete. Succeed.\n");
+
+    return;
 }
 
 /**
- * Send OutPlanUpdate event notify to AMI
+ * AMI Event handler
+ * Event: OutPlanDelete
  * @param j_camp
  */
 void send_manager_evt_plan_update(struct ast_json* j_plan)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutPlanUpdate.\n");
+
     if(j_plan == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -839,6 +915,7 @@ void send_manager_evt_plan_update(struct ast_json* j_plan)
 
     manager_event(EVENT_FLAG_MESSAGE, "OutPlanUpdate", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutPlanUpdate. Succeed.\n");
 
     return;
 }
@@ -911,14 +988,19 @@ void send_manager_evt_queue_delete(const char* uuid)
 
 
 /**
- * Send event notification of campaign create.
+ * AMI Event handler
+ * Event: OutDlmaCreate
  * @param j_camp
  */
 void send_manager_evt_dlma_create(struct ast_json* j_tmp)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutDlmaCreate.\n");
+
     if(j_tmp == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -929,19 +1011,26 @@ void send_manager_evt_dlma_create(struct ast_json* j_tmp)
 
     manager_event(EVENT_FLAG_MESSAGE, "OutDlmaCreate", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutDlmaCreate. Succeed.\n");
+
+    return;
 }
 
 
 /**
- * Send event notification of campaign delete.
+ * AMI Event handler
+ * Event: OutDlmaDelete
  * @param j_camp
  */
 void send_manager_evt_dlma_delete(const char* uuid)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutDlmaDelete.\n");
+
     if(uuid == NULL) {
         // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -951,17 +1040,25 @@ void send_manager_evt_dlma_delete(const char* uuid)
             );
     manager_event(EVENT_FLAG_MESSAGE, "OutDlmaDelete", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutDlmaDelete. Succeed.\n");
+
+    return;
 }
 
 /**
- * Send CampaignUpdate event notify to AMI
+ * AMI Event handler
+ * Event: OutDlmaUpdate
  * @param j_camp
  */
 void send_manager_evt_dlma_update(struct ast_json* j_tmp)
 {
     char* tmp;
 
+    ast_log(LOG_VERBOSE, "AMI event. OutDlmaUpdate.\n");
+
     if(j_tmp == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "Nothing to send.\n");
         return;
     }
 
@@ -972,6 +1069,7 @@ void send_manager_evt_dlma_update(struct ast_json* j_tmp)
 
     manager_event(EVENT_FLAG_MESSAGE, "OutDlmaUpdate", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutDlmaUpdate. Succeed.\n");
 
     return;
 }
@@ -1213,11 +1311,20 @@ void manager_out_campaign_entry(struct mansession *s, const struct message *m, s
     ast_free(tmp);
 }
 
+/**
+ * AMI Action handler
+ * Action: OutCampaignCreate
+ * @param s
+ * @param m
+ * @return
+ */
 static int manager_out_campaign_create(struct mansession *s, const struct message *m)
 {
     struct ast_json* j_tmp;
     const char* tmp_const;
     int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutCampaignCreate.\n");
 
     j_tmp = ast_json_object_create();
 
@@ -1233,22 +1340,22 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
     tmp_const = astman_get_header(m, "Dlma");
     if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
 
-    tmp_const = astman_get_header(m, "Queue");
-    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "queue", ast_json_string_create(tmp_const));}
-
     ret = create_campaign(j_tmp);
     ast_json_unref(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating campaign");
+        ast_log(LOG_NOTICE, "OutCampaignCreate failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Campaign created successfully");
+    ast_log(LOG_NOTICE, "OutCampaignCreate succeed.\n");
 
     return 0;
 }
 
 /**
- * CampaignDelete AMI message handle.
+ * AMI Action handler
+ * Action: OutCampaignDelete
  * @param s
  * @param m
  * @return
@@ -1258,22 +1365,82 @@ static int manager_out_campaign_delete(struct mansession *s, const struct messag
     const char* tmp_const;
     int ret;
 
+    ast_log(LOG_VERBOSE, "AMI request. OutCampaignDelete.\n");
+
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") == 0) {
         astman_send_error(s, m, "Error encountered while deleting campaign");
+        ast_log(LOG_WARNING, "OutCampaignDelete failed.\n");
         return 0;
     }
 
     ret = delete_cmapaign(tmp_const);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while deleting campaign");
+        ast_log(LOG_WARNING, "OutCampaignDelete failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Campaign deleted successfully");
+    ast_log(LOG_NOTICE, "OutCampaignDelete succeed.\n");
 
     return 0;
 }
 
+/**
+ * AMI Action handler
+ * Action: OutCampaignUpdate
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_campaign_update(struct mansession *s, const struct message *m)
+{
+    struct ast_json* j_tmp;
+    const char* tmp_const;
+    int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutCampaignUpdate.\n");
+
+    j_tmp = ast_json_object_create();
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Plan");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "plan", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Dlma");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Status");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "status", ast_json_integer_create(atoi(tmp_const)));}
+
+    ret = update_campaign(j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while updating campaign");
+        ast_log(LOG_WARNING, "OutCampaignUpdate failed.\n");
+        return 0;
+    }
+    astman_send_ack(s, m, "Campaign updated successfully");
+    ast_log(LOG_NOTICE, "OutCampaignUpdate succeed.\n");
+
+    return 0;
+}
+
+/**
+ * AMI Action handler
+ * Action: OutCampaignShow
+ * @param s
+ * @param m
+ * @return
+ */
 static int manager_out_campaign_show(struct mansession *s, const struct message *m)
 {
     const char* tmp_const;
@@ -1282,6 +1449,8 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
     int i;
     int size;
     char* action_id;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutCampaignShow.\n");
 
     tmp_const = astman_get_header(m, "ActionID");
     if(strlen(tmp_const) != 0) {
@@ -1296,6 +1465,7 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
         j_tmp = get_campaign(tmp_const);
         if(j_tmp == NULL) {
             astman_send_error(s, m, "Error encountered while show campaign");
+            ast_log(LOG_WARNING, "OutCampaignShow failed.\n");
             ast_free(action_id);
             return 0;
         }
@@ -1323,11 +1493,13 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
         ast_json_unref(j_arr);
     }
 
+    ast_log(LOG_NOTICE, "OutCampaignShow succeed.\n");
     ast_free(action_id);
     return 0;
 }
 /**
- * OutPlanCreate AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanCreate
  * @param s
  * @param m
  * @return
@@ -1337,6 +1509,8 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
     const char* tmp_const;
     int ret;
     struct ast_json* j_tmp;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanCreate.\n");
 
     j_tmp = ast_json_object_create();
 
@@ -1406,15 +1580,18 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
     ret = create_plan(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating plan");
+        ast_log(LOG_WARNING, "OutPlanCreate failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Plan created successfully");
+    ast_log(LOG_NOTICE, "OutPlanCreate succeed.\n");
 
     return 0;
 }
 
 /**
- * OutPlanDelete AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanDelete
  * @param s
  * @param m
  * @return
@@ -1423,6 +1600,8 @@ static int manager_out_plan_delete(struct mansession *s, const struct message *m
 {
     const char* tmp_const;
     int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanDelete.\n");
 
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") == 0) {
@@ -1433,15 +1612,18 @@ static int manager_out_plan_delete(struct mansession *s, const struct message *m
     ret = delete_plan(tmp_const);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while deleting plan");
+        ast_log(LOG_WARNING, "OutPlanDelete failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Plan deleted successfully");
+    ast_log(LOG_NOTICE, "OutPlanDelete succeed.\n");
 
     return 0;
 }
 
 /**
- * OutPlanUpdate AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanUpdate
  * @param s
  * @param m
  * @return
@@ -1452,9 +1634,12 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
     int ret;
     struct ast_json* j_tmp;
 
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanUpdate.\n");
+
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") == 0) {
         astman_send_error(s, m, "Error encountered while updating plan");
+        ast_log(LOG_WARNING, "OutPlanUpdate failed.\n");
         return 0;
     }
 
@@ -1526,18 +1711,21 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
     if(strcmp(tmp_const, "") != 0)
     {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
 
-    ret = create_plan(j_tmp);
+    ret = update_plan(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while updating plan");
+        ast_log(LOG_WARNING, "OutPlanUpdate failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Plan updated successfully");
+    ast_log(LOG_NOTICE, "OutPlanUpdate succeed.\n");
 
     return 0;
 }
 
 /**
- * OutPlanShow AMI message handle.
+ * AMI Action handler
+ * Action: OutPlanShow
  * @param s
  * @param m
  * @return
@@ -1550,6 +1738,8 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
     int i;
     int size;
     char* action_id;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanShow.\n");
 
     tmp_const = astman_get_header(m, "ActionID");
     if(strlen(tmp_const) != 0) {
@@ -1564,6 +1754,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
         j_tmp = get_plan(tmp_const);
         if(j_tmp == NULL) {
             astman_send_error(s, m, "Error encountered while show plan");
+            ast_log(LOG_WARNING, "OutPlanShow failed.\n");
             ast_free(action_id);
             return 0;
         }
@@ -1592,11 +1783,14 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
     }
 
     ast_free(action_id);
+    ast_log(LOG_NOTICE, "OutPlanShow succeed.\n");
+
     return 0;
 }
 
 /**
- * OutDlmaCreate AMI message handler.
+ * AMI Action handler
+ * Action: OutDlmaCreate
  * @param s
  * @param m
  * @return
@@ -1606,6 +1800,8 @@ static int manager_out_dlma_create(struct mansession *s, const struct message *m
     struct ast_json* j_tmp;
     const char* tmp_const;
     int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutDlmaCreate.\n");
 
     j_tmp = ast_json_object_create();
 
@@ -1619,9 +1815,11 @@ static int manager_out_dlma_create(struct mansession *s, const struct message *m
     ast_json_unref(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating dlma");
+        ast_log(LOG_WARNING, "OutDlmaCreate failed.\n");
         return 0;
     }
     astman_send_ack(s, m, "Dlma created successfully");
+    ast_log(LOG_NOTICE, "OutDlmaCreate succeed.\n");
 
     return 0;
 }
@@ -1928,6 +2126,7 @@ int init_cli_handler(void)
     err |= ast_cli_register_multiple(cli_out, ARRAY_LEN(cli_out));
     err |= ast_manager_register2("OutCampaignCreate", EVENT_FLAG_COMMAND, manager_out_campaign_create, NULL, NULL, NULL);
     err |= ast_manager_register2("OutCampaignDelete", EVENT_FLAG_COMMAND, manager_out_campaign_delete, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutCampaignUpdate", EVENT_FLAG_COMMAND, manager_out_campaign_update, NULL, NULL, NULL);
     err |= ast_manager_register2("OutCampaignShow", EVENT_FLAG_COMMAND, manager_out_campaign_show, NULL, NULL, NULL);
     err |= ast_manager_register2("OutDlListShow", EVENT_FLAG_COMMAND, manager_out_dl_show, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanCreate", EVENT_FLAG_COMMAND, manager_out_plan_create, NULL, NULL, NULL);
@@ -1957,6 +2156,7 @@ void term_cli_handler(void)
     ast_cli_unregister_multiple(cli_out, ARRAY_LEN(cli_out));
     ast_manager_unregister("OutCampaignCreate");
     ast_manager_unregister("OutCampaignDelete");
+    ast_manager_unregister("OutCampaignUpdate");
     ast_manager_unregister("OutCampaignShow");
     ast_manager_unregister("OutDlListShow");
     ast_manager_unregister("OutPlanCreate");

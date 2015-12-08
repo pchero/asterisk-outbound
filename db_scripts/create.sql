@@ -19,7 +19,7 @@ create table plan(
     dial_mode       int default 0,              -- dial mode(desktop, power, predictive, email, fax, sms)
     dial_timeout    int default 30000,          -- no answer hangup timeout(30000 ms = 30 second)
     caller_id       varchar(255) default null,  -- caller name(from)
-    answer_handle   int default 1,              -- answer handling.(all, human_only, human_possible)
+    answer_handle   int default 0,              -- answer handling.(all, human_only, human_possible)
     dl_end_handle   int default 1,              -- stratery when it running out dial list(keep_running, stop)
     retry_delay     int default 50000,          -- retry delaytime(ms)
     trunk_name      varchar(255) default null,  -- trunk name
@@ -35,17 +35,11 @@ create table plan(
     max_retry_cnt_6     int default 5,  -- max retry count for dial number 6
     max_retry_cnt_7     int default 5,  -- max retry count for dial number 7
     max_retry_cnt_8     int default 5,  -- max retry count for dial number 8
-
-    -- ownership
-    create_agent_uuid           varchar(255),       -- create agent uuid
-    delete_agent_uuid           varchar(255),       -- delete agent uuid
-    update_property_agent_uuid  varchar(255),       -- last propery update agent uuid
     
     -- timestamp. UTC.
     tm_create           datetime(6),    -- create time.
     tm_delete           datetime(6),    -- delete time.
-    tm_update_property  datetime(6),    -- last property update time.(Except status)
-    tm_update_status    datetime(6),    -- last status updated time.
+    tm_update           datetime(6),    -- last update time.
     
     primary key(uuid)
 );
@@ -149,12 +143,7 @@ create table dl_list_ma(
     -- timestamp. UTC.
     tm_create           datetime(6),    -- create time.
     tm_delete           datetime(6),    -- delete time.
-    tm_update_property  datetime(6),    -- last property update time.(Except status)
-    
-    -- ownership
-    create_agent_uuid           varchar(255),       -- create agent uuid
-    delete_agent_uuid           varchar(255),       -- delete agent uuid
-    update_property_agent_uuid  varchar(255),       -- last propery update agent uuid
+    tm_update           datetime(6),    -- last update time.
     
     primary key(uuid)
 );
@@ -174,29 +163,20 @@ create table campaign(
     in_use  int             default 1,              -- in use:1, not in use:0
     
     next_campaign               varchar(255),       -- next campaign uuid
-    
-    -- ownership
-    create_agent_uuid             varchar(255),       -- create agent uuid
-    delete_agent_uuid             varchar(255),       -- delete agent uuid
-    update_property_agent_uuid    varchar(255),       -- last propery update agent uuid
-    update_status_agent_uuid      varchar(255),       -- last status update agent uuid
-    
+        
     -- resources
 --    agent_group varchar(255),                       -- agent group uuid
     plan    varchar(255),                       -- plan uuid
     dlma    varchar(255),                       -- dial_list_ma uuid
-    queue   varchar(255),                       -- queue name
 --    trunk_group varchar(255),                       -- trunk group uuid -- will be removed.
 
     -- timestamp. UTC.
     tm_create           datetime(6),   -- create time.
     tm_delete           datetime(6),   -- delete time.
-    tm_update_property  datetime(6),   -- last property update time.(Except status)
-    tm_update_status    datetime(6),   -- last status updated time.
+    tm_update           datetime(6),   -- update time.
         
     foreign key(plan)   references plan(uuid)       on delete set null on update cascade,
     foreign key(dlma)   references dl_list_ma(uuid) on delete set null on update cascade,
-    foreign key(queue)  references queue(uuid)      on delete set null on update cascade,
 --    foreign key(trunk_group)    references trunk_group_ma(uuid) on delete set null on update cascade,
     
     primary key(uuid)
@@ -283,9 +263,9 @@ insert into dl_list(name, dlma_uuid, number_1) values ("test4", "e276d8be-a558-4
 
 
 -- insert campaign
-insert into campaign(uuid, name, status, plan, dlma, queue) 
+insert into campaign(uuid, name, status, plan, dlma) 
 values (
-"8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", 1, "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2", "1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6"
+"8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", 1, "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2"
 );
 
 commit;
