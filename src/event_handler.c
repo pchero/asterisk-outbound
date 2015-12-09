@@ -313,7 +313,12 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
 
         flg_dialing = false;
         iter = rb_dialing_iter_init();
-        while(((dialing = rb_dialing_iter_next(&iter)))) {
+        while(1) {
+            dialing = rb_dialing_iter_next(&iter);
+            if(dialing == NULL) {
+                break;
+            }
+
             tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_res, "camp_uuid"));
             if(tmp_const == NULL) {
                 continue;
@@ -374,7 +379,12 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
                 );
 
         iter = rb_dialing_iter_init();
-        while((dialing = rb_dialing_iter_next(&iter))) {
+        while(1) {
+            dialing = rb_dialing_iter_next(&iter);
+            if(dialing == NULL) {
+                break;
+            }
+
             tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_res, "camp_uuid"));
             if(tmp_const == NULL) {
                 continue;
@@ -409,7 +419,12 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
     ast_log(LOG_DEBUG, "cb_check_dialing_end\n");
 
     iter = rb_dialing_iter_init();
-    while((dialing = rb_dialing_iter_next(&iter))) {
+    while(1) {
+        dialing = rb_dialing_iter_next(&iter);
+        if(dialing == NULL) {
+            break;
+        }
+
         if(dialing->status != E_DIALING_HANGUP) {
             continue;
         }

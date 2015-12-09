@@ -457,7 +457,12 @@ struct ast_json* rb_dialing_get_all_for_cli(void)
 
     j_res = ast_json_array_create();
     iter = rb_dialing_iter_init();
-    while((dialing = rb_dialing_iter_next(&iter))) {
+    while(1) {
+        dialing = rb_dialing_iter_next(&iter);
+        if(dialing == NULL) {
+            break;
+        }
+
         j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s, s:s}",
                 "uuid",         dialing->uuid,
                 "channelstate", ast_json_string_get(ast_json_object_get(dialing->j_chan, "channelstate")) ? : "",
