@@ -631,7 +631,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     if(j_res == NULL) {
         ast_log(LOG_WARNING, "Originating has failed.");
         clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
-        ao2_ref(dialing, -1);
+        rb_dialing_destory(dialing);
         ast_json_unref(j_dialing);
         return;
     }
@@ -659,7 +659,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     ret = update_dl_list(j_dl_update);
     ast_json_unref(j_dl_update);
     if(ret == false) {
-        ao2_ref(dialing, -1);
+        rb_dialing_destory(dialing);
         clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
         ast_log(LOG_ERROR, "Could not update dial list info.");
         return;
