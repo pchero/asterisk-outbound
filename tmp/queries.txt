@@ -1,0 +1,11 @@
+
+
+== tm check query
+select tm_redirect, tm_bridge, tm_hangup, tm_tr_dial_begin, tm_tr_dial_end, tm_tr_hangup from dl_result;
+
+
+== dial info check query
+select dial_channel, dial_index, dial_addr, dial_trycnt, dial_timeout from dl_result;
+
+== dial result check query
+select res_dial, res_answer, res_answer_detail, res_hangup, res_hangup_detail, res_tr_dial, res_tr_hangup, res_tr_hangup_detail from dl_result;
