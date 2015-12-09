@@ -57,5 +57,6 @@ bool rb_dialing_update_res_update(rb_dialing* dialing, struct ast_json* j_res);
 bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt);
 bool rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status);
 
+int rb_dialing_get_count(void);
 
 #endif /* SRC_DIALING_HANDLER_H_ */

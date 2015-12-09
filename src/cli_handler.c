@@ -804,6 +804,21 @@ static char* manager_get_dialing_str(const rb_dialing* dialing)
     return tmp;
 }
 
+/**
+ * Get string for dialing summary
+ * @param dialing
+ * @return
+ */
+static char* manager_get_dialing_summary_str(void)
+{
+    char* tmp;
+
+    ast_asprintf(&tmp,
+            "Count: %d\r\n",
+            rb_dialing_get_count()
+            );
+    return tmp;
+}
 
 /**
  * AMI Event handler
@@ -1195,6 +1210,52 @@ void send_manager_evt_out_dialing_update(rb_dialing* dialing)
 
 /**
  * AMI Event handler
+ * Event: OutDialingEntry
+ * @param s
+ * @param m
+ * @param j_tmp
+ * @param action_id
+ */
+void manager_evt_out_dialing_entry(struct mansession *s, const struct message *m, const rb_dialing* dialing, char* action_id)
+{
+    char* tmp;
+
+    tmp = manager_get_dialing_str(dialing);
+
+    if(s != NULL) {
+        astman_append(s, "Event: OutDialingEntry\r\n%s%s\r\n", action_id, tmp);
+    }
+    else {
+        manager_event(EVENT_FLAG_MESSAGE, "OutDialingEntry", "%s\r\n", tmp);
+    }
+    ast_free(tmp);
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDialingSummary
+ * @param s
+ * @param m
+ * @param j_tmp
+ * @param action_id
+ */
+void manager_evt_out_dialing_summary(struct mansession *s, const struct message *m, char* action_id)
+{
+    char* tmp;
+
+    tmp = manager_get_dialing_summary_str();
+
+    if(s != NULL) {
+        astman_append(s, "Event: OutDialingSummary\r\n%s%s\r\n", action_id, tmp);
+    }
+    else {
+        manager_event(EVENT_FLAG_MESSAGE, "OutDialingSummary", "%s\r\n", tmp);
+    }
+    ast_free(tmp);
+}
+
+/**
+ * AMI Event handler
  * Event: OutDialingDelete
  * @param j_camp
  */
@@ -1444,6 +1505,14 @@ static int manager_out_dl_show(struct mansession *s, const struct message *m)
     return 0;
 }
 
+/**
+ * AMI Event handler
+ * Event: OutCampaignEntry
+ * @param s
+ * @param m
+ * @param j_tmp
+ * @param action_id
+ */
 void manager_out_campaign_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp, char* action_id)
 {
     char* tmp;
@@ -2262,10 +2331,8 @@ static int manager_out_queue_show(struct mansession *s, const struct message *m)
 static int manager_out_dialing_show(struct mansession *s, const struct message *m)
 {
     const char* tmp_const;
-    struct ast_json* j_tmp;
-    struct ast_json* j_arr;
-    int i;
-    int size;
+    rb_dialing* dialing;
+    struct ao2_iterator iter;
     char* action_id;
 
     ast_log(LOG_VERBOSE, "AMI request. OutDialingShow.\n");
@@ -2280,35 +2347,31 @@ static int manager_out_dialing_show(struct mansession *s, const struct message *
 
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") != 0) {
-        j_tmp = get_campaign(tmp_const);
-        if(j_tmp == NULL) {
+        dialing = rb_dialing_find_chan_uuid(tmp_const);
+        if(dialing == NULL) {
             astman_send_error(s, m, "Error encountered while show dialing");
             ast_log(LOG_WARNING, "OutDialingShow failed.\n");
             ast_free(action_id);
             return 0;
         }
 
-        astman_send_listack(s, m, "Dialing List will follow", "start");
-
-        manager_out_campaign_entry(s, m, j_tmp, action_id);
-
+        manager_evt_out_dialing_entry(s, m, dialing, action_id);
         astman_send_list_complete_start(s, m, "OutDialingListComplete", 1);
         astman_send_list_complete_end(s);
     }
     else {
-        j_arr = get_campaigns_all();
-        size = ast_json_array_size(j_arr);
-
         astman_send_listack(s, m, "Dialing List will follow", "start");
-        for(i = 0; i < size; i++) {
-            j_tmp = ast_json_array_get(j_arr, i);
-            if(j_tmp == NULL) {
-                continue;
+        iter = rb_dialing_iter_init();
+        while(1) {
+            dialing = rb_dialing_iter_next(&iter);
+            if(dialing == NULL) {
+                break;
             }
-            manager_out_campaign_entry(s, m, j_tmp, action_id);
+            manager_evt_out_dialing_entry(s, m, dialing, action_id);
         }
-        astman_send_list_complete_start(s, m, "OutDialingListComplete", size);
-        ast_json_unref(j_arr);
+        astman_send_list_complete_start(s, m, "OutDialingListComplete", 1);
+        astman_send_list_complete_end(s);
+        rb_dialing_iter_destroy(&iter);
     }
 
     ast_log(LOG_NOTICE, "OutDialingShow succeed.\n");
@@ -2326,10 +2389,6 @@ static int manager_out_dialing_show(struct mansession *s, const struct message *
 static int manager_out_dialing_summary(struct mansession *s, const struct message *m)
 {
    const char* tmp_const;
-   struct ast_json* j_tmp;
-   struct ast_json* j_arr;
-   int i;
-   int size;
    char* action_id;
 
    ast_log(LOG_VERBOSE, "AMI request. OutDialingSummary.\n");
@@ -2342,38 +2401,12 @@ static int manager_out_dialing_summary(struct mansession *s, const struct messag
        ast_asprintf(&action_id, "%s", "");
    }
 
-   tmp_const = astman_get_header(m, "Uuid");
-   if(strcmp(tmp_const, "") != 0) {
-       j_tmp = get_campaign(tmp_const);
-       if(j_tmp == NULL) {
-           astman_send_error(s, m, "Error encountered while show summary");
-           ast_log(LOG_WARNING, "OutDialingSummary failed.\n");
-           ast_free(action_id);
-           return 0;
-       }
+   astman_send_listack(s, m, "Summary List will follow", "start");
 
-       astman_send_listack(s, m, "Summary List will follow", "start");
+   manager_evt_out_dialing_summary(s, m, action_id);
 
-       manager_out_campaign_entry(s, m, j_tmp, action_id);
-
-       astman_send_list_complete_start(s, m, "OutSummaryListComplete", 1);
-       astman_send_list_complete_end(s);
-   }
-   else {
-       j_arr = get_campaigns_all();
-       size = ast_json_array_size(j_arr);
-
-       astman_send_listack(s, m, "Summary List will follow", "start");
-       for(i = 0; i < size; i++) {
-           j_tmp = ast_json_array_get(j_arr, i);
-           if(j_tmp == NULL) {
-               continue;
-           }
-           manager_out_campaign_entry(s, m, j_tmp, action_id);
-       }
-       astman_send_list_complete_start(s, m, "OutSummaryListComplete", size);
-       ast_json_unref(j_arr);
-   }
+   astman_send_list_complete_start(s, m, "OutSummaryListComplete", 1);
+   astman_send_list_complete_end(s);
 
    ast_log(LOG_NOTICE, "OutDialingSummary succeed.\n");
    ast_free(action_id);

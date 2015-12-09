@@ -15,6 +15,8 @@
 #include "event_handler.h"
 #include "cli_handler.h"
 
+AST_MUTEX_DEFINE_STATIC(g_rb_dialing_mutex);
+
 static int rb_dialing_cmp_cb(void* obj, void* arg, int flags);
 static int rb_dialing_sort_cb(const void* o_left, const void* o_right, int flags);
 static void rb_dialing_destructor(void* obj);
@@ -84,7 +86,6 @@ static int rb_dialing_cmp_cb(void* obj, void* arg, int flags)
 
     dialing = (rb_dialing*)obj;
 
-//    ast_log(LOG_DEBUG, "Find. uuid[%s], flag[%d]s\n", uuid, flags);
     if(flags & OBJ_SEARCH_KEY) {
         uuid = (const char*)arg;
 
@@ -187,23 +188,33 @@ rb_dialing* rb_dialing_create(
     clock_gettime(CLOCK_REALTIME, &dialing->timeptr_update);
 
     // insert into rb
+    ast_mutex_lock(&g_rb_dialing_mutex);
     if(ao2_link(g_rb_dialings, dialing) == 0) {
         ast_log(LOG_DEBUG, "Could not register the dialing. uuid[%s]\n", dialing->uuid);
         rb_dialing_destructor(dialing);
+        ast_mutex_unlock(&g_rb_dialing_mutex);
         return NULL;
     }
 
     // send event to all
     send_manager_evt_out_dialing_create(dialing);
 
+    ast_mutex_unlock(&g_rb_dialing_mutex);
+
     return dialing;
 }
 
 void rb_dialing_destory(rb_dialing* dialing)
 {
+    ast_mutex_lock(&g_rb_dialing_mutex);
+
     ast_log(LOG_DEBUG, "Destroying dialing.\n");
     ao2_unlink(g_rb_dialings, dialing);
     ao2_ref(dialing, -1);
+
+    ast_mutex_unlock(&g_rb_dialing_mutex);
+
+    return;
 }
 
 static void rb_dialing_destructor(void* obj)
@@ -227,6 +238,12 @@ static void rb_dialing_destructor(void* obj)
     ast_log(LOG_DEBUG, "Called destroyer.\n");
 }
 
+/**
+ * There's no mutex lock here.
+ * locking is caller's responsibility.
+ * @param dialing
+ * @return
+ */
 static bool rb_dialing_update(rb_dialing* dialing)
 {
     if(dialing == NULL) {
@@ -241,6 +258,7 @@ static bool rb_dialing_update(rb_dialing* dialing)
     clock_gettime(CLOCK_REALTIME, &dialing->timeptr_update);
 
     send_manager_evt_out_dialing_update(dialing);
+
     return true;
 }
 
@@ -252,9 +270,12 @@ bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt)
         return false;
     }
 
+    ast_mutex_lock(&g_rb_dialing_mutex);
+
     ast_json_object_update(dialing->j_chan, j_evt);
 
     ret = rb_dialing_update(dialing);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;
     }
@@ -270,8 +291,11 @@ bool rb_dialing_update_agent_append(rb_dialing* dialing, struct ast_json* j_evt)
         return false;
     }
 
+    ast_mutex_lock(&g_rb_dialing_mutex);
+
     ast_json_array_append(dialing->j_agents, ast_json_ref(j_evt));
     ret = rb_dialing_update(dialing);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;
     }
@@ -290,6 +314,8 @@ bool rb_dialing_update_agent_update(rb_dialing* dialing, struct ast_json* j_evt)
     if((dialing == NULL) || (j_evt == NULL)) {
         return false;
     }
+
+    ast_mutex_lock(&g_rb_dialing_mutex);
 
     size = ast_json_array_size(dialing->j_agents);
     for(i = 0; i < size; i++) {
@@ -314,6 +340,7 @@ bool rb_dialing_update_agent_update(rb_dialing* dialing, struct ast_json* j_evt)
     }
 
     ret = rb_dialing_update(dialing);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;
     }
@@ -329,8 +356,10 @@ bool rb_dialing_update_queue_append(rb_dialing* dialing, struct ast_json* j_evt)
         return false;
     }
 
+    ast_mutex_lock(&g_rb_dialing_mutex);
     ast_json_array_append(dialing->j_queues, ast_json_ref(j_evt));
     ret = rb_dialing_update(dialing);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;
     }
@@ -352,8 +381,10 @@ bool rb_dialing_update_res_update(rb_dialing* dialing, struct ast_json* j_res)
         return false;
     }
 
+    ast_mutex_lock(&g_rb_dialing_mutex);
     ast_json_array_append(dialing->j_res, ast_json_ref(j_res));
     ret = rb_dialing_update(dialing);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;
     }
@@ -369,8 +400,10 @@ bool rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status)
         return false;
     }
 
+    ast_mutex_lock(&g_rb_dialing_mutex);
     dialing->status = status;
     ret = rb_dialing_update(dialing);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;
     }
@@ -381,11 +414,14 @@ bool rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status)
 rb_dialing* rb_dialing_find_dl_uuid(const char* chan)
 {
     rb_dialing* dialing;
+    ast_mutex_lock(&g_rb_dialing_mutex);
     dialing = ao2_find(g_rb_dialings, chan, OBJ_SEARCH_PARTIAL_KEY);
     if(dialing == NULL) {
+        ast_mutex_unlock(&g_rb_dialing_mutex);
         return NULL;
     }
     ao2_ref(dialing, -1);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
 
     return dialing;
 }
@@ -399,11 +435,14 @@ rb_dialing* rb_dialing_find_chan_uuid(const char* uuid)
     }
 
     ast_log(LOG_DEBUG, "rb_dialing_find_uuid. uuid[%s]\n", uuid);
+    ast_mutex_lock(&g_rb_dialing_mutex);
     dialing = ao2_find(g_rb_dialings, uuid, OBJ_SEARCH_KEY);
     if(dialing == NULL) {
+        ast_mutex_unlock(&g_rb_dialing_mutex);
         return NULL;
     }
     ao2_ref(dialing, -1);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
 
     return dialing;
 }
@@ -426,7 +465,13 @@ bool rb_dialing_is_exist_uuid(const char* uuid)
 
 struct ao2_iterator rb_dialing_iter_init(void)
 {
-    return ao2_iterator_init(g_rb_dialings, 0);
+    struct ao2_iterator iter;
+
+    ast_mutex_lock(&g_rb_dialing_mutex);
+    iter = ao2_iterator_init(g_rb_dialings, 0);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
+
+    return iter;
 }
 
 void rb_dialing_iter_destroy(struct ao2_iterator* iter)
@@ -439,11 +484,14 @@ rb_dialing* rb_dialing_iter_next(struct ao2_iterator *iter)
 {
     rb_dialing* dialing;
 
+    ast_mutex_lock(&g_rb_dialing_mutex);
     dialing = ao2_iterator_next(iter);
     if(dialing == NULL) {
+        ast_mutex_unlock(&g_rb_dialing_mutex);
         return NULL;
     }
     ao2_ref(dialing, -1);
+    ast_mutex_unlock(&g_rb_dialing_mutex);
 
     return dialing;
 }
@@ -479,3 +527,19 @@ struct ast_json* rb_dialing_get_all_for_cli(void)
     return j_res;
 }
 
+/**
+ * Get count of dialings
+ * @return
+ */
+int rb_dialing_get_count(void)
+{
+    int ret;
+
+    if(g_rb_dialings == NULL) {
+        return 0;
+    }
+
+    ret = ao2_container_count(g_rb_dialings);
+
+    return ret;
+}
