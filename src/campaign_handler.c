@@ -175,7 +175,7 @@ struct ast_json* get_campaigns_all(void)
  * @param j_camp
  * @return
  */
-bool update_campaign(struct ast_json* j_camp)
+bool update_campaign(const struct ast_json* j_camp)
 {
     char* tmp;
     const char* tmp_const;
@@ -192,7 +192,7 @@ bool update_campaign(struct ast_json* j_camp)
         return false;
     }
 
-    tmp_const = ast_json_string_get(ast_json_object_get(j_camp, "uuid"));
+    tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
     if(tmp_const == NULL) {
         ast_log(LOG_WARNING, "Could not get uuid info.\n");
         ast_json_unref(j_tmp);

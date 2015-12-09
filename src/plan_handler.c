@@ -95,6 +95,7 @@ bool create_plan(const struct ast_json* j_plan)
 
     // send ami event
     j_tmp = get_plan(uuid);
+    ast_free(uuid);
     send_manager_evt_out_plan_create(j_tmp);
     ast_json_unref(j_tmp);
 

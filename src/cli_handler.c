@@ -1690,6 +1690,7 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
         astman_send_listack(s, m, "Campaign List will follow", "start");
 
         manager_out_campaign_entry(s, m, j_tmp, action_id);
+        ast_json_unref(j_tmp);
 
         astman_send_list_complete_start(s, m, "OutCampaignListComplete", 1);
         astman_send_list_complete_end(s);
@@ -1795,11 +1796,13 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
     {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
 
     ret = create_plan(j_tmp);
+    ast_json_unref(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while creating plan");
         ast_log(LOG_WARNING, "OutPlanCreate failed.\n");
         return 0;
     }
+
     astman_send_ack(s, m, "Plan created successfully");
     ast_log(LOG_NOTICE, "OutPlanCreate succeed.\n");
 
@@ -1929,11 +1932,13 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
     {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
 
     ret = update_plan(j_tmp);
+    ast_json_unref(j_tmp);
     if(ret == false) {
         astman_send_error(s, m, "Error encountered while updating plan");
         ast_log(LOG_WARNING, "OutPlanUpdate failed.\n");
         return 0;
     }
+
     astman_send_ack(s, m, "Plan updated successfully");
     ast_log(LOG_NOTICE, "OutPlanUpdate succeed.\n");
 
@@ -1979,6 +1984,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
         astman_send_listack(s, m, "Plan List will follow", "start");
 
         manager_out_plan_entry(s, m, j_tmp, action_id);
+        ast_json_unref(j_tmp);
 
         astman_send_list_complete_start(s, m, "OutPlanListComplete", 1);
         astman_send_list_complete_end(s);
@@ -2142,6 +2148,7 @@ static int manager_out_dlma_show(struct mansession *s, const struct message *m)
         astman_send_listack(s, m, "Dlma List will follow", "start");
 
         manager_out_dlma_entry(s, m, j_tmp, action_id);
+        ast_json_unref(j_tmp);
 
         astman_send_list_complete_start(s, m, "OutDlmaListComplete", 1);
         astman_send_list_complete_end(s);

@@ -419,8 +419,9 @@ bool update_dlma(const struct ast_json* j_dlma)
     }
 
     j_tmp = get_dlma(uuid);
+    ast_free(uuid);
     if(j_tmp == NULL) {
-        ast_log(LOG_WARNING, "Could not get updated dlma info. uuid[%s]\n", uuid);
+        ast_log(LOG_WARNING, "Could not get updated dlma info\n");
         return false;
     }
     send_manager_evt_out_dlma_update(j_tmp);
