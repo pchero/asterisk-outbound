@@ -56,7 +56,7 @@ bool create_campaign(const struct ast_json* j_camp)
     // send ami event
     j_tmp = get_campaign(uuid);
     ast_free(uuid);
-    send_manager_evt_campaign_create(j_tmp);
+    send_manager_evt_out_campaign_create(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;
@@ -99,7 +99,7 @@ bool delete_cmapaign(const char* uuid)
     }
 
     // send notification
-    send_manager_evt_campaign_delete(uuid);
+    send_manager_evt_out_campaign_delete(uuid);
 
     return true;
 }
@@ -225,7 +225,7 @@ bool update_campaign(struct ast_json* j_camp)
         ast_log(LOG_WARNING, "Could not get updated campaign info.\n");
         return false;
     }
-    send_manager_evt_campaign_update(j_tmp);
+    send_manager_evt_out_campaign_update(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;

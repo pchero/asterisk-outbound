@@ -620,6 +620,10 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
 {
     char* tmp;
 
+    if(j_camp == NULL) {
+        return NULL;
+    }
+
     ast_asprintf(&tmp,
             "Uuid: %s\r\n"
             "Name: %s\r\n"
@@ -653,6 +657,10 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
 static char* manager_get_plan_str(struct ast_json* j_plan)
 {
     char* tmp;
+
+    if(j_plan == NULL) {
+        return NULL;
+    }
 
     ast_asprintf(&tmp,
             "Uuid: %s\r\n"
@@ -706,13 +714,17 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
 }
 
 /**
- * Createa AMI string for dlma
+ * Create AMI string for dlma
  * @param j_dlma
  * @return
  */
 static char* manager_get_dlma_str(struct ast_json* j_dlma)
 {
     char* tmp;
+
+    if(j_dlma == NULL) {
+        return NULL;
+    }
 
     ast_asprintf(&tmp,
             "Uuid: %s\r\n"
@@ -737,6 +749,10 @@ static char* manager_get_queue_str(struct ast_json* j_queue)
 {
     char* tmp;
 
+    if(j_queue == NULL) {
+        return NULL;
+    }
+
     ast_asprintf(&tmp,
             "Uuid: %s\r\n"
             "Name: %s\r\n"
@@ -749,18 +765,59 @@ static char* manager_get_queue_str(struct ast_json* j_queue)
 }
 
 /**
+ * Get string for dialing
+ * @param dialing
+ * @return
+ */
+static char* manager_get_dialing_str(const rb_dialing* dialing)
+{
+    char* tmp;
+
+    if(dialing == NULL) {
+        return NULL;
+    }
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "Status: %d\r\n"
+            "TmCreate: %s\r\n"
+            "TmUpdate: %s\r\n"
+            "TmDelete: %s\r\n"
+
+            // dialing res info
+            "CampUuid: %s\r\n"
+            "PlanUuid: %s\r\n"
+            "DlmaUuid: %s\r\n"
+            "DlListUuid: %s\r\n",   // todo: need to do more...
+
+            dialing->uuid? : "<unknown>",
+            dialing->status,
+            dialing->tm_create? : "<unknown>",
+            dialing->tm_update? : "<unknown>",
+            dialing->tm_delete? : "<unknown>",
+
+            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_camp"), "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_plan"), "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_dlma"), "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_dl"), "uuid"))? : "<unknown>"
+            );
+    return tmp;
+}
+
+
+/**
  * AMI Event handler
  * Event: OutCampaignCreate
  * @param j_camp
  */
-void send_manager_evt_campaign_create(struct ast_json* j_camp)
+void send_manager_evt_out_campaign_create(struct ast_json* j_camp)
 {
     char* tmp;
 
     ast_log(LOG_VERBOSE, "AMI event. OutCampaignCreate.\n");
 
     if(j_camp == NULL) {
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutCampaignCreate. Failed.\n");
         return;
     }
 
@@ -782,14 +839,14 @@ void send_manager_evt_campaign_create(struct ast_json* j_camp)
  * Event: OutCampaignDelete
  * @param j_camp
  */
-void send_manager_evt_campaign_delete(const char* uuid)
+void send_manager_evt_out_campaign_delete(const char* uuid)
 {
     char* tmp;
 
     ast_log(LOG_VERBOSE, "AMI event. OutCampaignDelete.\n");
     if(uuid == NULL) {
         // nothing to send.
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutCampaignDelete. Failed.\n");
         return;
     }
 
@@ -809,7 +866,7 @@ void send_manager_evt_campaign_delete(const char* uuid)
  * Event: OutCampaignUpdate
  * @param j_camp
  */
-void send_manager_evt_campaign_update(struct ast_json* j_camp)
+void send_manager_evt_out_campaign_update(struct ast_json* j_camp)
 {
     char* tmp;
 
@@ -817,7 +874,7 @@ void send_manager_evt_campaign_update(struct ast_json* j_camp)
 
     if(j_camp == NULL) {
         // nothing to send.
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutCampaignUpdate. Failed.\n");
         return;
     }
 
@@ -838,7 +895,7 @@ void send_manager_evt_campaign_update(struct ast_json* j_camp)
  * Event: OutPlanCreate
  * @param j_camp
  */
-void send_manager_evt_plan_create(struct ast_json* j_plan)
+void send_manager_evt_out_plan_create(struct ast_json* j_plan)
 {
     char* tmp;
 
@@ -846,7 +903,7 @@ void send_manager_evt_plan_create(struct ast_json* j_plan)
 
     if(j_plan == NULL) {
         // nothing to send.
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutPlanCreate. Failed.\n");
         return;
     }
 
@@ -868,7 +925,7 @@ void send_manager_evt_plan_create(struct ast_json* j_plan)
  * Event: OutPlanDelete
  * @param j_camp
  */
-void send_manager_evt_plan_delete(const char* uuid)
+void send_manager_evt_out_plan_delete(const char* uuid)
 {
     char* tmp;
 
@@ -876,7 +933,7 @@ void send_manager_evt_plan_delete(const char* uuid)
 
     if(uuid == NULL) {
         // nothing to send.
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutPlanDelete. Failed.\n");
         return;
     }
 
@@ -896,7 +953,7 @@ void send_manager_evt_plan_delete(const char* uuid)
  * Event: OutPlanDelete
  * @param j_camp
  */
-void send_manager_evt_plan_update(struct ast_json* j_plan)
+void send_manager_evt_out_plan_update(struct ast_json* j_plan)
 {
     char* tmp;
 
@@ -904,7 +961,7 @@ void send_manager_evt_plan_update(struct ast_json* j_plan)
 
     if(j_plan == NULL) {
         // nothing to send.
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutPlanUpdate. Failed.\n");
         return;
     }
 
@@ -924,7 +981,7 @@ void send_manager_evt_plan_update(struct ast_json* j_plan)
  * Send OutQueueCreate event notify to AMI.
  * @param j_camp
  */
-void send_manager_evt_queue_create(struct ast_json* j_queue)
+void send_manager_evt_out_queue_create(struct ast_json* j_queue)
 {
     char* tmp;
 
@@ -945,7 +1002,7 @@ void send_manager_evt_queue_create(struct ast_json* j_queue)
  * Send OutQueueUpdate event notify to AMI
  * @param j_camp
  */
-void send_manager_evt_queue_update(struct ast_json* j_queue)
+void send_manager_evt_out_queue_update(struct ast_json* j_queue)
 {
     char* tmp;
 
@@ -969,12 +1026,12 @@ void send_manager_evt_queue_update(struct ast_json* j_queue)
  * OutQueueDelete
  * @param j_camp
  */
-void send_manager_evt_queue_delete(const char* uuid)
+void send_manager_evt_out_queue_delete(const char* uuid)
 {
     char* tmp;
 
     if(uuid == NULL) {
-        // nothing to send.
+        ast_log(LOG_WARNING, "AMI event. OutQueueDelete. Failed.\n");
         return;
     }
 
@@ -984,6 +1041,9 @@ void send_manager_evt_queue_delete(const char* uuid)
             );
     manager_event(EVENT_FLAG_MESSAGE, "OutQueueDelete", "%s\r\n", tmp);
     ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutQueueDelete. Succeed.\n");
+
+    return;
 }
 
 
@@ -992,7 +1052,7 @@ void send_manager_evt_queue_delete(const char* uuid)
  * Event: OutDlmaCreate
  * @param j_camp
  */
-void send_manager_evt_dlma_create(struct ast_json* j_tmp)
+void send_manager_evt_out_dlma_create(struct ast_json* j_tmp)
 {
     char* tmp;
 
@@ -1000,7 +1060,7 @@ void send_manager_evt_dlma_create(struct ast_json* j_tmp)
 
     if(j_tmp == NULL) {
         // nothing to send.
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutDlmaCreate. Failed.\n");
         return;
     }
 
@@ -1022,7 +1082,7 @@ void send_manager_evt_dlma_create(struct ast_json* j_tmp)
  * Event: OutDlmaDelete
  * @param j_camp
  */
-void send_manager_evt_dlma_delete(const char* uuid)
+void send_manager_evt_out_dlma_delete(const char* uuid)
 {
     char* tmp;
 
@@ -1030,7 +1090,7 @@ void send_manager_evt_dlma_delete(const char* uuid)
 
     if(uuid == NULL) {
         // nothing to send.
-        ast_log(LOG_WARNING, "Nothing to send.\n");
+        ast_log(LOG_WARNING, "AMI event. OutDlmaDelete. Failed.\n");
         return;
     }
 
@@ -1050,7 +1110,7 @@ void send_manager_evt_dlma_delete(const char* uuid)
  * Event: OutDlmaUpdate
  * @param j_camp
  */
-void send_manager_evt_dlma_update(struct ast_json* j_tmp)
+void send_manager_evt_out_dlma_update(struct ast_json* j_tmp)
 {
     char* tmp;
 
@@ -1070,6 +1130,94 @@ void send_manager_evt_dlma_update(struct ast_json* j_tmp)
     manager_event(EVENT_FLAG_MESSAGE, "OutDlmaUpdate", "%s\r\n", tmp);
     ast_free(tmp);
     ast_log(LOG_VERBOSE, "AMI event. OutDlmaUpdate. Succeed.\n");
+
+    return;
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDialingCreate
+ * @param j_camp
+ */
+void send_manager_evt_out_dialing_create(rb_dialing* dialing)
+{
+    char* tmp;
+
+    ast_log(LOG_VERBOSE, "AMI event. OutDialingCreate.\n");
+
+    if(dialing == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "OutDialingCreate. Nothing to send.\n");
+        return;
+    }
+
+    tmp = manager_get_dialing_str(dialing);
+    if(tmp == NULL) {
+        ast_log(LOG_WARNING, "AMI event. OutDialingCreate. Failed.\n");
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutDialingCreate", "%s\r\n", tmp);
+    ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutDialingCreate. Succeed.\n");
+
+    return;
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDialingUpdate
+ * @param j_camp
+ */
+void send_manager_evt_out_dialing_update(rb_dialing* dialing)
+{
+    char* tmp;
+
+    ast_log(LOG_VERBOSE, "AMI event. OutDialingUpdate.\n");
+
+    if(dialing == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "AMI event. OutDialingUpdate. Failed.\n");
+        return;
+    }
+
+    tmp = manager_get_dialing_str(dialing);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutDialingUpdate", "%s\r\n", tmp);
+    ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutDialingUpdate. Succeed.\n");
+
+    return;
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDialingDelete
+ * @param j_camp
+ */
+void send_manager_evt_out_dialing_delete(rb_dialing* dialing)
+{
+    char* tmp;
+
+    ast_log(LOG_VERBOSE, "AMI event. OutDialingDelete.\n");
+
+    if(dialing == NULL) {
+        // nothing to send.
+        ast_log(LOG_WARNING, "AMI event. OutDialingDelete. Failed.\n");
+        return;
+    }
+
+    tmp = manager_get_dialing_str(dialing);
+    if(tmp == NULL) {
+        return;
+    }
+
+    manager_event(EVENT_FLAG_MESSAGE, "OutDialingDelete", "%s\r\n", tmp);
+    ast_free(tmp);
+    ast_log(LOG_VERBOSE, "AMI event. OutDialingDelete. Succeed.\n");
 
     return;
 }
@@ -2104,6 +2252,134 @@ static int manager_out_queue_show(struct mansession *s, const struct message *m)
     return 0;
 }
 
+/**
+ * AMI Action handler
+ * Action: OutDialingShow
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dialing_show(struct mansession *s, const struct message *m)
+{
+    const char* tmp_const;
+    struct ast_json* j_tmp;
+    struct ast_json* j_arr;
+    int i;
+    int size;
+    char* action_id;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutDialingShow.\n");
+
+    tmp_const = astman_get_header(m, "ActionID");
+    if(strlen(tmp_const) != 0) {
+        ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
+    }
+    else {
+        ast_asprintf(&action_id, "%s", "");
+    }
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") != 0) {
+        j_tmp = get_campaign(tmp_const);
+        if(j_tmp == NULL) {
+            astman_send_error(s, m, "Error encountered while show dialing");
+            ast_log(LOG_WARNING, "OutDialingShow failed.\n");
+            ast_free(action_id);
+            return 0;
+        }
+
+        astman_send_listack(s, m, "Dialing List will follow", "start");
+
+        manager_out_campaign_entry(s, m, j_tmp, action_id);
+
+        astman_send_list_complete_start(s, m, "OutDialingListComplete", 1);
+        astman_send_list_complete_end(s);
+    }
+    else {
+        j_arr = get_campaigns_all();
+        size = ast_json_array_size(j_arr);
+
+        astman_send_listack(s, m, "Dialing List will follow", "start");
+        for(i = 0; i < size; i++) {
+            j_tmp = ast_json_array_get(j_arr, i);
+            if(j_tmp == NULL) {
+                continue;
+            }
+            manager_out_campaign_entry(s, m, j_tmp, action_id);
+        }
+        astman_send_list_complete_start(s, m, "OutDialingListComplete", size);
+        ast_json_unref(j_arr);
+    }
+
+    ast_log(LOG_NOTICE, "OutDialingShow succeed.\n");
+    ast_free(action_id);
+    return 0;
+}
+
+/**
+* AMI Action handler
+* Action: OutDialingSummary
+* @param s
+* @param m
+* @return
+*/
+static int manager_out_dialing_summary(struct mansession *s, const struct message *m)
+{
+   const char* tmp_const;
+   struct ast_json* j_tmp;
+   struct ast_json* j_arr;
+   int i;
+   int size;
+   char* action_id;
+
+   ast_log(LOG_VERBOSE, "AMI request. OutDialingSummary.\n");
+
+   tmp_const = astman_get_header(m, "ActionID");
+   if(strlen(tmp_const) != 0) {
+       ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
+   }
+   else {
+       ast_asprintf(&action_id, "%s", "");
+   }
+
+   tmp_const = astman_get_header(m, "Uuid");
+   if(strcmp(tmp_const, "") != 0) {
+       j_tmp = get_campaign(tmp_const);
+       if(j_tmp == NULL) {
+           astman_send_error(s, m, "Error encountered while show summary");
+           ast_log(LOG_WARNING, "OutDialingSummary failed.\n");
+           ast_free(action_id);
+           return 0;
+       }
+
+       astman_send_listack(s, m, "Summary List will follow", "start");
+
+       manager_out_campaign_entry(s, m, j_tmp, action_id);
+
+       astman_send_list_complete_start(s, m, "OutSummaryListComplete", 1);
+       astman_send_list_complete_end(s);
+   }
+   else {
+       j_arr = get_campaigns_all();
+       size = ast_json_array_size(j_arr);
+
+       astman_send_listack(s, m, "Summary List will follow", "start");
+       for(i = 0; i < size; i++) {
+           j_tmp = ast_json_array_get(j_arr, i);
+           if(j_tmp == NULL) {
+               continue;
+           }
+           manager_out_campaign_entry(s, m, j_tmp, action_id);
+       }
+       astman_send_list_complete_start(s, m, "OutSummaryListComplete", size);
+       ast_json_unref(j_arr);
+   }
+
+   ast_log(LOG_NOTICE, "OutDialingSummary succeed.\n");
+   ast_free(action_id);
+   return 0;
+}
+
 struct ast_cli_entry cli_out[] = {
     AST_CLI_DEFINE(out_show_campaigns,      "List defined outbound campaigns"),
     AST_CLI_DEFINE(out_show_plans,          "List defined outbound plans"),
@@ -2141,6 +2417,8 @@ int init_cli_handler(void)
     err |= ast_manager_register2("OutQueueUpdate", EVENT_FLAG_COMMAND, manager_out_queue_update, NULL, NULL, NULL);
     err |= ast_manager_register2("OutQueueDelete", EVENT_FLAG_COMMAND, manager_out_queue_delete, NULL, NULL, NULL);
     err |= ast_manager_register2("OutQueueShow", EVENT_FLAG_COMMAND, manager_out_queue_show, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDialingShow", EVENT_FLAG_COMMAND, manager_out_dialing_show, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDialingSummary", EVENT_FLAG_COMMAND, manager_out_dialing_summary, NULL, NULL, NULL);
 
 
     if(err != 0) {
@@ -2171,6 +2449,8 @@ void term_cli_handler(void)
     ast_manager_unregister("OutQueueUpdate");
     ast_manager_unregister("OutQueueDelete");
     ast_manager_unregister("OutQueueShow");
+    ast_manager_unregister("OutDialingShow");
+    ast_manager_unregister("OutDialingSummary");
 
 
     return;

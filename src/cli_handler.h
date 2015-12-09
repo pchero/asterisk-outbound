@@ -11,21 +11,26 @@
 #include "asterisk.h"
 #include "asterisk/cli.h"
 
+#include "dialing_handler.h"
+
 int init_cli_handler(void);
 void term_cli_handler(void);
 
-void send_manager_evt_campaign_create(struct ast_json* j_camp);
-void send_manager_evt_campaign_delete(const char* uuid);
-void send_manager_evt_campaign_update(struct ast_json* j_camp);
-void send_manager_evt_plan_create(struct ast_json* j_plan);
-void send_manager_evt_plan_delete(const char* uuid);
-void send_manager_evt_plan_update(struct ast_json* j_plan);
-void send_manager_evt_dlma_create(struct ast_json* j_dlma);
-void send_manager_evt_dlma_delete(const char* uuid);
-void send_manager_evt_dlma_update(struct ast_json* j_dlma);
-void send_manager_evt_queue_create(struct ast_json* j_dlma);
-void send_manager_evt_queue_delete(const char* uuid);
-void send_manager_evt_queue_update(struct ast_json* j_dlma);
+void send_manager_evt_out_campaign_create(struct ast_json* j_camp);
+void send_manager_evt_out_campaign_delete(const char* uuid);
+void send_manager_evt_out_campaign_update(struct ast_json* j_camp);
+void send_manager_evt_out_plan_create(struct ast_json* j_plan);
+void send_manager_evt_out_plan_delete(const char* uuid);
+void send_manager_evt_out_plan_update(struct ast_json* j_plan);
+void send_manager_evt_out_dlma_create(struct ast_json* j_dlma);
+void send_manager_evt_out_dlma_delete(const char* uuid);
+void send_manager_evt_out_dlma_update(struct ast_json* j_dlma);
+void send_manager_evt_out_queue_create(struct ast_json* j_dlma);
+void send_manager_evt_out_queue_delete(const char* uuid);
+void send_manager_evt_out_queue_update(struct ast_json* j_dlma);
+void send_manager_evt_out_dialing_create(rb_dialing* dialing);
+void send_manager_evt_out_dialing_update(rb_dialing* dialing);
+void send_manager_evt_out_dialing_delete(rb_dialing* dialing);
 
 
 #endif /* CLI_HANDLER_H_ */

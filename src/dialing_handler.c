@@ -12,10 +12,13 @@
 #include <stdbool.h>
 
 #include "dialing_handler.h"
+#include "event_handler.h"
+#include "cli_handler.h"
 
 static int rb_dialing_cmp_cb(void* obj, void* arg, int flags);
 static int rb_dialing_sort_cb(const void* o_left, const void* o_right, int flags);
 static void rb_dialing_destructor(void* obj);
+static bool rb_dialing_update(rb_dialing* dialing);
 
 static struct ao2_container* g_rb_dialings = NULL;  ///< dialing container
 
@@ -139,6 +142,11 @@ rb_dialing* rb_dialing_create(
 
     // create rb object
     dialing = ao2_alloc(sizeof(rb_dialing), rb_dialing_destructor);
+
+    // init status
+    dialing->status = E_DIALING_NONE;
+
+    // init json info
     dialing->uuid = ast_strdup(dialing_uuid);
     dialing->j_chan = ast_json_object_create();
     dialing->j_queues = ast_json_array_create();
@@ -172,12 +180,22 @@ rb_dialing* rb_dialing_create(
     ast_json_object_set(dialing->j_res, "info_dl", ast_json_string_create(tmp));
     ast_json_free(tmp);
 
+    // timestamp
+    dialing->tm_create = get_utc_timestamp();
+    dialing->tm_update = NULL;
+    dialing->tm_delete = NULL;
+    clock_gettime(CLOCK_REALTIME, &dialing->timeptr_update);
+
     // insert into rb
     if(ao2_link(g_rb_dialings, dialing) == 0) {
         ast_log(LOG_DEBUG, "Could not register the dialing. uuid[%s]\n", dialing->uuid);
         rb_dialing_destructor(dialing);
         return NULL;
     }
+
+    // send event to all
+    send_manager_evt_out_dialing_create(dialing);
+
     return dialing;
 }
 
@@ -194,16 +212,173 @@ static void rb_dialing_destructor(void* obj)
 
     dialing = (rb_dialing*)obj;
 
+    // send destroy
+    send_manager_evt_out_dialing_delete(dialing);
+
     if(dialing->uuid != NULL)       ast_free(dialing->uuid);
     if(dialing->j_res != NULL)      ast_json_unref(dialing->j_res);
     if(dialing->j_chan != NULL)     ast_json_unref(dialing->j_chan);
     if(dialing->j_queues != NULL)   ast_json_unref(dialing->j_queues);
     if(dialing->j_agents != NULL)   ast_json_unref(dialing->j_agents);
+    if(dialing->tm_create != NULL)  ast_free(dialing->tm_create);
+    if(dialing->tm_update != NULL)  ast_free(dialing->tm_update);
+    if(dialing->tm_delete != NULL)  ast_free(dialing->tm_delete);
 
     ast_log(LOG_DEBUG, "Called destroyer.\n");
 }
 
-rb_dialing* rb_dialing_find_uuid_dl(const char* chan)
+static bool rb_dialing_update(rb_dialing* dialing)
+{
+    if(dialing == NULL) {
+        return false;
+    }
+
+    if(dialing->tm_update != NULL) {
+        ast_free(dialing->tm_update);
+    }
+    dialing->tm_update = get_utc_timestamp();
+
+    clock_gettime(CLOCK_REALTIME, &dialing->timeptr_update);
+
+    send_manager_evt_out_dialing_update(dialing);
+    return true;
+}
+
+bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt)
+{
+    int ret;
+
+    if((dialing == NULL) || (j_evt == NULL)) {
+        return false;
+    }
+
+    ast_json_object_update(dialing->j_chan, j_evt);
+
+    ret = rb_dialing_update(dialing);
+    if(ret != true) {
+        return false;
+    }
+
+    return true;
+}
+
+bool rb_dialing_update_agent_append(rb_dialing* dialing, struct ast_json* j_evt)
+{
+    int ret;
+
+    if((dialing == NULL) || (j_evt == NULL)) {
+        return false;
+    }
+
+    ast_json_array_append(dialing->j_agents, ast_json_ref(j_evt));
+    ret = rb_dialing_update(dialing);
+    if(ret != true) {
+        return false;
+    }
+
+    return true;
+}
+
+bool rb_dialing_update_agent_update(rb_dialing* dialing, struct ast_json* j_evt)
+{
+    int ret;
+    int i;
+    const char* tmp_const;
+    unsigned int size;
+    struct ast_json* j_tmp;
+
+    if((dialing == NULL) || (j_evt == NULL)) {
+        return false;
+    }
+
+    size = ast_json_array_size(dialing->j_agents);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(dialing->j_agents, i);
+        if(j_tmp == NULL) {
+            continue;
+        }
+
+        tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "destuniqueid"));
+        if(tmp_const == NULL) {
+            continue;
+        }
+
+        if(strcmp(tmp_const, ast_json_string_get(ast_json_object_get(j_evt, "destuniqueid"))) != 0) {
+            continue;
+        }
+
+        // update
+        ast_json_object_update(j_tmp, j_evt);
+
+        break;
+    }
+
+    ret = rb_dialing_update(dialing);
+    if(ret != true) {
+        return false;
+    }
+
+    return true;
+}
+
+bool rb_dialing_update_queue_append(rb_dialing* dialing, struct ast_json* j_evt)
+{
+    int ret;
+
+    if((dialing == NULL) || (j_evt == NULL)) {
+        return false;
+    }
+
+    ast_json_array_append(dialing->j_queues, ast_json_ref(j_evt));
+    ret = rb_dialing_update(dialing);
+    if(ret != true) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Update dialing res
+ * @param dialing
+ * @param j_res
+ * @return
+ */
+bool rb_dialing_update_res_update(rb_dialing* dialing, struct ast_json* j_res)
+{
+    int ret;
+
+    if((dialing == NULL) || (j_res == NULL)) {
+        return false;
+    }
+
+    ast_json_array_append(dialing->j_res, ast_json_ref(j_res));
+    ret = rb_dialing_update(dialing);
+    if(ret != true) {
+        return false;
+    }
+
+    return true;
+}
+
+bool rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status)
+{
+    int ret;
+
+    if(dialing == NULL) {
+        return false;
+    }
+
+    dialing->status = status;
+    ret = rb_dialing_update(dialing);
+    if(ret != true) {
+        return false;
+    }
+
+    return true;
+}
+
+rb_dialing* rb_dialing_find_dl_uuid(const char* chan)
 {
     rb_dialing* dialing;
     dialing = ao2_find(g_rb_dialings, chan, OBJ_SEARCH_PARTIAL_KEY);
@@ -215,7 +390,7 @@ rb_dialing* rb_dialing_find_uuid_dl(const char* chan)
     return dialing;
 }
 
-rb_dialing* rb_dialing_find_uuid_chan(const char* uuid)
+rb_dialing* rb_dialing_find_chan_uuid(const char* uuid)
 {
     rb_dialing* dialing;
 
@@ -231,6 +406,22 @@ rb_dialing* rb_dialing_find_uuid_chan(const char* uuid)
     ao2_ref(dialing, -1);
 
     return dialing;
+}
+
+bool rb_dialing_is_exist_uuid(const char* uuid)
+{
+    rb_dialing* dialing;
+
+    if(uuid == NULL) {
+        return false;
+    }
+
+    dialing = rb_dialing_find_chan_uuid(uuid);
+    if(dialing == NULL) {
+        return false;
+    }
+
+    return true;
 }
 
 struct ao2_iterator rb_dialing_iter_init(void)
@@ -265,20 +456,5 @@ struct ast_json* rb_dialing_get_all_for_cli(void)
     ao2_iterator_destroy(&iter);
 
     return j_res;
-}
-
-int rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status)
-{
-    struct  timespec timeptr;
-
-    if(dialing == NULL) {
-        return false;
-    }
-
-    dialing->status = status;
-
-    clock_gettime(CLOCK_REALTIME, &timeptr);
-    dialing->tm_status_update = (time_t)timeptr.tv_sec;
-    return true;
 }
 

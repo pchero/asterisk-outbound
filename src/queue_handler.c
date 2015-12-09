@@ -45,7 +45,7 @@ int create_queue(struct ast_json* j_queue)
 
     // send ami event
     j_tmp = get_queue(uuid);
-    send_manager_evt_queue_create(j_tmp);
+    send_manager_evt_out_queue_create(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;
@@ -83,7 +83,7 @@ int delete_queue(const char* uuid)
     }
 
     // send notification
-    send_manager_evt_queue_delete(uuid);
+    send_manager_evt_out_queue_delete(uuid);
 
     return true;
 }
@@ -177,7 +177,7 @@ int update_queue(struct ast_json* j_queue)
         ast_log(LOG_WARNING, "Could not get update queue info. uuid[%s]\n", uuid);
         return false;
     }
-    send_manager_evt_queue_update(j_tmp);
+    send_manager_evt_out_queue_update(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;

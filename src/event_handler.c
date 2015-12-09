@@ -860,6 +860,27 @@ char* get_utc_timestamp(void)
     return res;
 }
 
+/**
+ * return utc time.
+ * YYYY-MM-DDTHH:mm:ssZ
+ * @return
+ */
+char* get_utc_timestamp_using_timespec(struct timespec timeptr)
+{
+    char    timestr[128];
+    char*   res;
+    time_t  tt;
+    struct tm *t;
+
+    tt = (time_t)timeptr.tv_sec;
+    t = gmtime(&tt);
+
+    strftime(timestr, sizeof(timestr), "%Y-%m-%dT%H:%M:%S", t);
+    ast_asprintf(&res, "%s.%ldZ", timestr, timeptr.tv_nsec);
+
+    return res;
+}
+
 struct ast_json* get_queue_summary(const char* name)
 {
     struct ast_json* j_ami_res;

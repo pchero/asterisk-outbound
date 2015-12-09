@@ -95,7 +95,7 @@ bool create_plan(const struct ast_json* j_plan)
 
     // send ami event
     j_tmp = get_plan(uuid);
-    send_manager_evt_plan_create(j_tmp);
+    send_manager_evt_out_plan_create(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;
@@ -137,7 +137,7 @@ bool delete_plan(const char* uuid)
     }
 
     // send notification
-    send_manager_evt_plan_delete(uuid);
+    send_manager_evt_out_plan_delete(uuid);
 
     return true;
 }
@@ -267,7 +267,7 @@ bool update_plan(const struct ast_json* j_plan)
         ast_log(LOG_WARNING, "Could not get updated plan info.\n");
         return false;
     }
-    send_manager_evt_plan_update(j_tmp);
+    send_manager_evt_out_plan_update(j_tmp);
 
     // update plan extension
     update_plan_extension(j_tmp);
