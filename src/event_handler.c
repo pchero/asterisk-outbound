@@ -313,9 +313,7 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
 
         flg_dialing = false;
         iter = rb_dialing_iter_init();
-        while((dialing = ao2_iterator_next(&iter))) {
-            ao2_ref(dialing, -1);
-
+        while(((dialing = rb_dialing_iter_next(&iter)))) {
             tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_res, "camp_uuid"));
             if(tmp_const == NULL) {
                 continue;
@@ -326,7 +324,7 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
                 continue;
             }
         }
-        ao2_iterator_destroy(&iter);
+        rb_dialing_iter_destroy(&iter);
 
         if(flg_dialing == false) {
             // update status to stop
@@ -376,9 +374,7 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
                 );
 
         iter = rb_dialing_iter_init();
-        while((dialing = ao2_iterator_next(&iter))) {
-            ao2_ref(dialing, -1);
-
+        while((dialing = rb_dialing_iter_next(&iter))) {
             tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_res, "camp_uuid"));
             if(tmp_const == NULL) {
                 continue;
@@ -395,7 +391,7 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
                     );
             ami_cmd_hangup(ast_json_string_get(ast_json_object_get(dialing->j_chan, "channel")), AST_CAUSE_NORMAL_CLEARING);
         }
-        ao2_iterator_destroy(&iter);
+        rb_dialing_iter_destroy(&iter);
 
         // update status to stop
         update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
@@ -413,23 +409,28 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
     ast_log(LOG_DEBUG, "cb_check_dialing_end\n");
 
     iter = rb_dialing_iter_init();
-    while((dialing = ao2_iterator_next(&iter))) {
-        ao2_ref(dialing, -1);
-
+    while((dialing = rb_dialing_iter_next(&iter))) {
         if(dialing->status != E_DIALING_HANGUP) {
             continue;
         }
 
         // create dl_list for update
-        j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O, s:O, s:O}",
+        j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O}",
                 "uuid",                 ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")),
                 "status",               E_DL_IDLE,
                 "dialing_uuid",         ast_json_null(),
                 "dialing_camp_uuid",    ast_json_null(),
-                "dialing_plan_uuid",    ast_json_null(),
-                "res_hangup",           ast_json_ref(ast_json_object_get(dialing->j_res, "res_hangup")),
-                "res_dial",             ast_json_ref(ast_json_object_get(dialing->j_res, "res_dial"))? : ast_json_integer_create(0)
+                "dialing_plan_uuid",    ast_json_null()
                 );
+        ast_json_object_set(j_tmp, "res_hangup", ast_json_ref(ast_json_object_get(dialing->j_res, "res_hangup")));
+        ast_json_object_set(j_tmp, "res_dial", ast_json_ref(ast_json_object_get(dialing->j_res, "res_dial")));
+        if(j_tmp == NULL) {
+            ast_log(LOG_ERROR, "Could not create update dl_list json. dl_list_uuid[%s], res_hangup[%ld], res_dial[%ld]\n",
+                    ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")),
+                    ast_json_integer_get(ast_json_object_get(dialing->j_res, "res_hangup")),
+                    ast_json_integer_get(ast_json_object_get(dialing->j_res, "res_dial"))
+                    );
+        }
 
         // update dl_list
         ret = update_dl_list(j_tmp);
@@ -631,7 +632,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     if(j_res == NULL) {
         ast_log(LOG_WARNING, "Originating has failed.");
         clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
-        ao2_ref(dialing, -1);
+        rb_dialing_destory(dialing);
         ast_json_unref(j_dialing);
         return;
     }
@@ -659,7 +660,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     ret = update_dl_list(j_dl_update);
     ast_json_unref(j_dl_update);
     if(ret == false) {
-        ao2_ref(dialing, -1);
+        rb_dialing_destory(dialing);
         clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")));
         ast_log(LOG_ERROR, "Could not update dial list info.");
         return;

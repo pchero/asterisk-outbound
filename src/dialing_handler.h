@@ -43,7 +43,11 @@ void rb_dialing_destory(rb_dialing* dialing);
 rb_dialing* rb_dialing_find_dl_uuid(const char* chan);
 rb_dialing* rb_dialing_find_chan_uuid(const char* chan);
 bool rb_dialing_is_exist_uuid(const char* uuid);
+
 struct ao2_iterator rb_dialing_iter_init(void);
+void rb_dialing_iter_destroy(struct ao2_iterator* iter);
+rb_dialing* rb_dialing_iter_next(struct ao2_iterator *iter);
+
 struct ast_json* rb_dialing_get_all_for_cli(void);
 
 bool rb_dialing_update_agent_append(rb_dialing* dialing, struct ast_json* j_evt);

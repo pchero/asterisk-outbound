@@ -426,8 +426,26 @@ bool rb_dialing_is_exist_uuid(const char* uuid)
 
 struct ao2_iterator rb_dialing_iter_init(void)
 {
-//    ast_log(LOG_DEBUG, "rd_dialing count. count[%d]\n", ao2_container_count(g_rb_dialings));
     return ao2_iterator_init(g_rb_dialings, 0);
+}
+
+void rb_dialing_iter_destroy(struct ao2_iterator* iter)
+{
+    ao2_iterator_destroy(iter);
+    return;
+}
+
+rb_dialing* rb_dialing_iter_next(struct ao2_iterator *iter)
+{
+    rb_dialing* dialing;
+
+    dialing = ao2_iterator_next(iter);
+    if(dialing == NULL) {
+        return NULL;
+    }
+    ao2_ref(dialing, -1);
+
+    return dialing;
 }
 
 struct ast_json* rb_dialing_get_all_for_cli(void)
@@ -439,9 +457,7 @@ struct ast_json* rb_dialing_get_all_for_cli(void)
 
     j_res = ast_json_array_create();
     iter = rb_dialing_iter_init();
-    while((dialing = ao2_iterator_next(&iter))) {
-        ao2_ref(dialing, -1);
-
+    while((dialing = rb_dialing_iter_next(&iter))) {
         j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s, s:s}",
                 "uuid",         dialing->uuid,
                 "channelstate", ast_json_string_get(ast_json_object_get(dialing->j_chan, "channelstate")) ? : "",
@@ -453,7 +469,7 @@ struct ast_json* rb_dialing_get_all_for_cli(void)
 
         ast_json_array_append(j_res, j_tmp);
     }
-    ao2_iterator_destroy(&iter);
+    rb_dialing_iter_destroy(&iter);
 
     return j_res;
 }
