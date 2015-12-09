@@ -364,7 +364,7 @@ bool create_dlma(const struct ast_json* j_dlma)
     // send ami event
     j_tmp = get_dlma(uuid);
     ast_free(uuid);
-    send_manager_evt_dlma_create(j_tmp);
+    send_manager_evt_out_dlma_create(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;
@@ -419,11 +419,12 @@ bool update_dlma(const struct ast_json* j_dlma)
     }
 
     j_tmp = get_dlma(uuid);
+    ast_free(uuid);
     if(j_tmp == NULL) {
-        ast_log(LOG_WARNING, "Could not get updated dlma info. uuid[%s]\n", uuid);
+        ast_log(LOG_WARNING, "Could not get updated dlma info\n");
         return false;
     }
-    send_manager_evt_dlma_update(j_tmp);
+    send_manager_evt_out_dlma_update(j_tmp);
     ast_json_unref(j_tmp);
 
     return true;
@@ -460,7 +461,7 @@ bool delete_dlma(const char* uuid)
     }
 
     // send notification
-    send_manager_evt_dlma_delete(uuid);
+    send_manager_evt_out_dlma_delete(uuid);
 
     return true;
 }

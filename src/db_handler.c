@@ -25,8 +25,6 @@
 static MYSQL* g_db = NULL;
 AST_MUTEX_DEFINE_STATIC(g_mysql_mutex);
 
-
-
 #define MAX_BIND_BUF 4096
 #define DELIMITER   0x02
 

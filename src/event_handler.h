@@ -12,5 +12,6 @@ int     run_outbound(void);
 void    stop_outbound(void);
 
 char* get_utc_timestamp(void);
+char* get_utc_timestamp_using_timespec(struct timespec timeptr);
 
 #endif /* SRC_EVENT_HANDLER_H_ */

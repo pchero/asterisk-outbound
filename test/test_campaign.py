@@ -6,6 +6,7 @@ import test_common
 
 import os
 import sys
+import uuid
 
 def main():
     ast = test_common.Ami()
@@ -16,14 +17,19 @@ def main():
         return 1
     
     # create campaign
-    ret = ast.sendCmd("OutCampaignCreate", Name="TestCamp", Detail="TestDetail", Plan="5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", Dlma="e276d8be-a558-4546-948a-f99913a7fea2")
+    print "CampaignCreate"
+    camp_name = uuid.uuid4().__str__()
+    ret = ast.sendCmd("OutCampaignCreate", Name=camp_name, Detail="TestDetail", Plan="5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", Dlma="e276d8be-a558-4546-948a-f99913a7fea2")
     if ret[0]["Response"] != "Success":
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
-        raise "test_campaign"
-    for i in range(10):
+        raise "test_campaign"    
+    for i in range(100):
         ret = ast.recvEvt()
-        if ret["Event"] == "OutCampaignCreate":
+        if ret["Event"] != "OutCampaignCreate":
+            continue
+        if ret["Name"] == camp_name:
             break
+    
     if "Uuid" not in ret \
         or "Detail" not in ret \
         or "Name" not in ret \
@@ -33,12 +39,13 @@ def main():
         or "TmUpdate" not in ret:
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
-    if ret["Name"] != "TestCamp" or ret["Detail"] != "TestDetail" or ret["Plan"] != "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56":
+    if ret["Name"] != camp_name or ret["Detail"] != "TestDetail" or ret["Plan"] != "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56":
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
     camp_uuid = ret["Uuid"]
     
     # get campaign
+    print("CampaignCreateCheck")
     ret = ast.sendCmd("OutCampaignShow", Uuid=camp_uuid)
     flg = False
     for i in range(len(ret)):
@@ -53,14 +60,22 @@ def main():
         raise "test_campaign"
     
     # update campaign
+    print("CampaignUpdate")
     ret = ast.sendCmd("OutCampaignUpdate", Uuid=camp_uuid, Detail="Change")
     if ret[0]["Response"] != "Success":
         print("Could not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
-    for i in range(10):
+    flg = False
+    for i in range(100):
         ret = ast.recvEvt()
-        if ret["Event"] == "OutCampaignUpdate":
+        if ret["Event"] != "OutCampaignUpdate":
+            continue
+        if ret["Name"] == camp_name:
+            flg = True
             break
+    if flg == False:
+        print("Could not pass the test_campaign. ret[%s]" % ret)
+        raise "test_campaign"
     if ret["Uuid"] != camp_uuid or ret["Detail"] != "Change":
         print("Could not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
@@ -70,11 +85,15 @@ def main():
     if ret[0]["Response"] != "Success":
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
-    for i in range(10):
+    flg = False
+    for i in range(100):
         ret = ast.recvEvt()
-        if ret["Event"] == "OutCampaignDelete":
+        if ret["Event"] != "OutCampaignDelete":
+            continue
+        if ret["Uuid"] == camp_uuid:
+            flg = True
             break
-    if ret["Uuid"] != camp_uuid:
+    if flg == False:
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
     
