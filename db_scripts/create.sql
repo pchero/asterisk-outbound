@@ -206,20 +206,28 @@ create table dl_result(
     tm_dial_begin       datetime(6),   -- timestamp for dialing requested.
     tm_dial_end         datetime(6),   -- timestamp for dialing ended.
     
+    tm_pickup           datetime(6),   -- timestamp for call tried.
     tm_redirect         datetime(6),   -- timestamp for call redirected.
     tm_bridge           datetime(6),   -- timestamp for call bridged.
-    tm_hangup           datetime(6),   -- timestamp for call hanguped.
+    tm_hangup           datetime(6),   -- timestamp for call hungup.
     
     tm_tr_dial_begin    datetime(6),   -- timestamp for dialing to agent.
     tm_tr_dial_end      datetime(6),   -- timestamp for transfer to agent.
     tm_tr_hangup        datetime(6),   -- timestamp for agent hangup.
 
     -- dial info
-    dial_channel        varchar(255),   -- dialing channel.
     dial_index          int,            -- dialing number index.
     dial_addr           varchar(255),   -- dialing address.
     dial_trycnt         int,            -- dialing try count.
     dial_timeout        int,            -- dialing timeout.
+    dial_type           int,
+    dial_exten          varchar(255),
+    dial_context        varchar(255),
+    dial_application    varchar(255),
+    dial_data           varchar(255),
+
+    -- channel info
+    channel_name        varchar(255),   -- channel name
     
     -- transfer info
     tr_trycnt          int,             -- transfer try count.
@@ -241,7 +249,7 @@ create table dl_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle, trunk_name, queue_name, amd_mode) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", 1, 1, "trunk_test_1", "TestQueue", 7);
+insert into plan(uuid, name, dial_mode, answer_handle, trunk_name, queue_name, amd_mode, max_retry_cnt_1) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", 1, 1, "trunk_test_1", "TestQueue", 7, 1);
 
 -- insert queue
 insert into queue(uuid, name) values ("1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6", "TestQueue");
@@ -257,9 +265,9 @@ create view e276d8bea5584546948af99913a7fea2 as select * from dl_list where dlma
 
 -- insert dial list
 insert into dl_list(name, dlma_uuid, number_1) values ("test1", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0001");
-insert into dl_list(name, dlma_uuid, number_1) values ("test2", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0002");
-insert into dl_list(name, dlma_uuid, number_1) values ("test3", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0003");
-insert into dl_list(name, dlma_uuid, number_1) values ("test4", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0004");
+-- insert into dl_list(name, dlma_uuid, number_1) values ("test2", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0002");
+-- insert into dl_list(name, dlma_uuid, number_1) values ("test3", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0003");
+-- insert into dl_list(name, dlma_uuid, number_1) values ("test4", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0004");
 
 
 -- insert campaign

@@ -796,10 +796,10 @@ static char* manager_get_dialing_str(const rb_dialing* dialing)
             dialing->tm_update? : "<unknown>",
             dialing->tm_delete? : "<unknown>",
 
-            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_camp"), "uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_plan"), "uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_dlma"), "uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(ast_json_object_get(dialing->j_res, "info_dl"), "uuid"))? : "<unknown>"
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "plan_uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dlma_uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid"))? : "<unknown>"
             );
     return tmp;
 }

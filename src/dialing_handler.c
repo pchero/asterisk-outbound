@@ -62,7 +62,7 @@ static int rb_dialing_sort_cb(const void* o_left, const void* o_right, int flags
     else if(flags & OBJ_SEARCH_PARTIAL_KEY) {
         key = (char*)o_right;
 
-        return strcmp(ast_json_string_get(ast_json_object_get(dialing_left->j_res, "dl_list_uuid")), key);
+        return strcmp(ast_json_string_get(ast_json_object_get(dialing_left->j_dialing, "dl_list_uuid")), key);
     }
     else {
         const rb_dialing* dialing_right;
@@ -102,7 +102,7 @@ static int rb_dialing_cmp_cb(void* obj, void* arg, int flags)
         uuid = (const char*)arg;
 
         // uuid_dl
-        if(strcmp(ast_json_string_get(ast_json_object_get(dialing->j_res, "dl_list_uuid")), uuid) == 0) {
+        if(strcmp(ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")), uuid) == 0) {
             return CMP_MATCH;
         }
         return 0;
@@ -131,13 +131,14 @@ rb_dialing* rb_dialing_create(
         struct ast_json* j_camp,
         struct ast_json* j_plan,
         struct ast_json* j_dlma,
-        struct ast_json* j_dl
+        struct ast_json* j_dial
         )
 {
     rb_dialing* dialing;
     char* tmp;
+    const char* tmp_const;
 
-    if((dialing_uuid == NULL) || (j_camp == NULL) || (j_plan == NULL) || (j_dl == NULL)) {
+    if((dialing_uuid == NULL) || (j_camp == NULL) || (j_plan == NULL) || (j_dial == NULL)) {
         return NULL;
     }
 
@@ -152,39 +153,75 @@ rb_dialing* rb_dialing_create(
     dialing->j_chan = ast_json_object_create();
     dialing->j_queues = ast_json_array_create();
     dialing->j_agents = ast_json_array_create();
-    dialing->j_res = ast_json_object_create();
+    dialing->j_dialing = ast_json_object_create();
 
     // result configure
-    ast_json_object_set(dialing->j_res, "dialing_uuid", ast_json_string_create(dialing_uuid));
-    ast_json_object_set(dialing->j_res, "camp_uuid",    ast_json_ref(ast_json_object_get(j_camp, "uuid")));
-    ast_json_object_set(dialing->j_res, "plan_uuid",    ast_json_ref(ast_json_object_get(j_plan, "uuid")));
-    ast_json_object_set(dialing->j_res, "dlma_uuid",    ast_json_ref(ast_json_object_get(j_dlma, "uuid")));
-    ast_json_object_set(dialing->j_res, "dl_list_uuid", ast_json_ref(ast_json_object_get(j_dl, "uuid")));
+    ast_json_object_set(dialing->j_dialing, "dialing_uuid", ast_json_string_create(dialing_uuid));
+    ast_json_object_set(dialing->j_dialing, "camp_uuid",    ast_json_ref(ast_json_object_get(j_camp, "uuid")));
+    ast_json_object_set(dialing->j_dialing, "plan_uuid",    ast_json_ref(ast_json_object_get(j_plan, "uuid")));
+    ast_json_object_set(dialing->j_dialing, "dlma_uuid",    ast_json_ref(ast_json_object_get(j_dlma, "uuid")));
+    ast_json_object_set(dialing->j_dialing, "dl_list_uuid", ast_json_ref(ast_json_object_get(j_dial, "uuid")));
 
     // info_camp
     tmp = ast_json_dump_string_format(j_camp, 0);
-    ast_json_object_set(dialing->j_res, "info_camp", ast_json_string_create(tmp));
+    ast_json_object_set(dialing->j_dialing, "info_camp", ast_json_string_create(tmp));
     ast_json_free(tmp);
 
     // info_plan
     tmp = ast_json_dump_string_format(j_plan, 0);
-    ast_json_object_set(dialing->j_res, "info_plan", ast_json_string_create(tmp));
+    ast_json_object_set(dialing->j_dialing, "info_plan", ast_json_string_create(tmp));
     ast_json_free(tmp);
 
     // info_plan
     tmp = ast_json_dump_string_format(j_dlma, 0);
-    ast_json_object_set(dialing->j_res, "info_dlma", ast_json_string_create(tmp));
+    ast_json_object_set(dialing->j_dialing, "info_dlma", ast_json_string_create(tmp));
     ast_json_free(tmp);
 
     // info_dl
-    tmp = ast_json_dump_string_format(j_dl, 0);
-    ast_json_object_set(dialing->j_res, "info_dl", ast_json_string_create(tmp));
+    tmp = ast_json_dump_string_format(j_dial, 0);
+    ast_json_object_set(dialing->j_dialing, "info_dl", ast_json_string_create(tmp));
     ast_json_free(tmp);
 
+    // dial info
+    // dial_channel
+    ast_json_object_set(dialing->j_dialing, "dial_addr", ast_json_ref(ast_json_object_get(j_dial, "dial_addr")));
+    ast_json_object_set(dialing->j_dialing, "dial_index", ast_json_ref(ast_json_object_get(j_dial, "dial_index")));
+    ast_json_object_set(dialing->j_dialing, "dial_trycnt", ast_json_ref(ast_json_object_get(j_dial, "dial_trycnt")));
+    tmp_const = ast_json_string_get(ast_json_object_get(j_dial, "timeout"));
+    ast_log(LOG_DEBUG, "Check value. timeout[%s]\n", tmp_const);
+    if(tmp_const != NULL) {
+        ast_json_object_set(dialing->j_dialing, "dial_timeout", ast_json_integer_create(atoi(tmp_const)));
+    }
+    ast_json_object_set(dialing->j_dialing, "dial_type", ast_json_ref(ast_json_object_get(j_dial, "dial_type")));
+    if(ast_json_object_get(j_dial, "dial_exten") != NULL) {
+        ast_json_object_set(dialing->j_dialing, "dial_exten", ast_json_ref(ast_json_object_get(j_dial, "dial_exten")));
+    }
+    if(ast_json_object_get(j_dial, "dial_context") != NULL) {
+            ast_json_object_set(dialing->j_dialing, "dial_context", ast_json_ref(ast_json_object_get(j_dial, "dial_context")));
+    }
+    if(ast_json_object_get(j_dial, "dial_application") != NULL) {
+            ast_json_object_set(dialing->j_dialing, "dial_application", ast_json_ref(ast_json_object_get(j_dial, "dial_application")));
+    }
+    if(ast_json_object_get(j_dial, "dial_data") != NULL) {
+            ast_json_object_set(dialing->j_dialing, "dial_data", ast_json_ref(ast_json_object_get(j_dial, "dial_data")));
+    }
+    ast_log(LOG_DEBUG, "Check value. dial_addr[%s], dial_index[%ld], dial_trycnt[%ld], dial_timeout[%ld], dial_type[%ld], dial_exten[%s]\n",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_addr")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_trycnt")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_timeout")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_type")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_exten"))
+            );
+
     // timestamp
-    dialing->tm_create = get_utc_timestamp();
+    tmp = get_utc_timestamp();
+    dialing->tm_create = ast_strdup(tmp);
     dialing->tm_update = NULL;
     dialing->tm_delete = NULL;
+    ast_json_object_set(dialing->j_dialing, "tm_pickup", ast_json_string_create(tmp));
+    ast_free(tmp);
+
     clock_gettime(CLOCK_REALTIME, &dialing->timeptr_update);
 
     // insert into rb
@@ -227,7 +264,7 @@ static void rb_dialing_destructor(void* obj)
     send_manager_evt_out_dialing_delete(dialing);
 
     if(dialing->uuid != NULL)       ast_free(dialing->uuid);
-    if(dialing->j_res != NULL)      ast_json_unref(dialing->j_res);
+    if(dialing->j_dialing != NULL)      ast_json_unref(dialing->j_dialing);
     if(dialing->j_chan != NULL)     ast_json_unref(dialing->j_chan);
     if(dialing->j_queues != NULL)   ast_json_unref(dialing->j_queues);
     if(dialing->j_agents != NULL)   ast_json_unref(dialing->j_agents);
@@ -262,7 +299,7 @@ static bool rb_dialing_update(rb_dialing* dialing)
     return true;
 }
 
-bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt)
+bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt, bool notice)
 {
     int ret;
 
@@ -274,7 +311,10 @@ bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt)
 
     ast_json_object_update(dialing->j_chan, j_evt);
 
-    ret = rb_dialing_update(dialing);
+    ret = true;
+    if(notice == true) {
+        ret = rb_dialing_update(dialing);
+    }
     ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;
@@ -373,7 +413,7 @@ bool rb_dialing_update_queue_append(rb_dialing* dialing, struct ast_json* j_evt)
  * @param j_res
  * @return
  */
-bool rb_dialing_update_res_update(rb_dialing* dialing, struct ast_json* j_res)
+bool rb_dialing_update_dialing_update(rb_dialing* dialing, struct ast_json* j_res, bool notice)
 {
     int ret;
 
@@ -382,8 +422,12 @@ bool rb_dialing_update_res_update(rb_dialing* dialing, struct ast_json* j_res)
     }
 
     ast_mutex_lock(&g_rb_dialing_mutex);
-    ast_json_array_append(dialing->j_res, ast_json_ref(j_res));
-    ret = rb_dialing_update(dialing);
+    ast_json_object_update(dialing->j_dialing, j_res);
+
+    ret = true;
+    if(notice == true) {
+        ret = rb_dialing_update(dialing);
+    }
     ast_mutex_unlock(&g_rb_dialing_mutex);
     if(ret != true) {
         return false;

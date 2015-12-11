@@ -286,7 +286,11 @@ int db_insert(const char* table, const struct ast_json* j_data)
             break;
 
             // numbers
-            case AST_JSON_INTEGER:
+            case AST_JSON_INTEGER: {
+                ret = ast_asprintf(&tmp, "%s%ld", tmp_sub, ast_json_integer_get(j_val));
+            }
+            break;
+
             case AST_JSON_REAL: {
                 ret = ast_asprintf(&tmp, "%s%f", tmp_sub, ast_json_real_get(j_val));
             }
