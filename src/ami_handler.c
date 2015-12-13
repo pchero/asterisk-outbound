@@ -36,6 +36,7 @@ static void ami_evt_QueueCallerLeave(struct ast_json* j_evt);
 static void ami_evt_OriginateResponse(struct ast_json* j_evt);
 static void ami_evt_AgentCalled(struct ast_json* j_evt);
 static void ami_evt_AgentConnect(struct ast_json* j_evt);
+static void ami_evt_AgentComplete(struct ast_json* j_evt);
 static void ami_evt_DialBegin(struct ast_json* j_evt);
 static void ami_evt_DialEnd(struct ast_json* j_evt);
 static void ami_evt_Hangup(struct ast_json* j_evt);
@@ -331,9 +332,9 @@ static int ami_evt_helper(int category, const char *event, char *content)
 /**
  * Check that the ami response is Success or not.
  * @param j_ami
- * @return
+ * @return true:Success, false:failure
  */
-int ami_is_response_success(struct ast_json* j_ami)
+bool ami_is_response_success(struct ast_json* j_ami)
 {
     int ret;
     int i;
@@ -426,7 +427,7 @@ struct ast_json* ami_cmd_originate_to_application(struct ast_json* j_dial)
     //    OtherChannelId: <value>
     j_cmd = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
             "Action",       "Originate",
-            "Channel",      ast_json_string_get(ast_json_object_get(j_dial, "dial_addr")),
+            "Channel",      ast_json_string_get(ast_json_object_get(j_dial, "dial_channel")),
             "Async",        "true",
             "Application",  ast_json_string_get(ast_json_object_get(j_dial, "dial_application")),
             "Data",         ast_json_string_get(ast_json_object_get(j_dial, "dial_data"))
@@ -495,7 +496,7 @@ struct ast_json* ami_cmd_originate_to_exten(struct ast_json* j_dial)
     //    OtherChannelId: <value>
     j_cmd = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
             "Action",       "Originate",
-            "Channel",      ast_json_string_get(ast_json_object_get(j_dial, "dial_addr")),
+            "Channel",      ast_json_string_get(ast_json_object_get(j_dial, "dial_channel")),
             "Async",        "true",
             "Exten",        ast_json_string_get(ast_json_object_get(j_dial, "dial_exten")),
             "Context",      ast_json_string_get(ast_json_object_get(j_dial, "dial_context"))
@@ -713,7 +714,6 @@ void ami_evt_process(struct ast_json* j_evt)
     ast_log(LOG_DEBUG, "Received event. tmp[%s]\n", tmp);
     ast_json_free(tmp);
 
-
     if(strcmp(event, "Newchannel") == 0) {
         ami_evt_Newchannel(j_evt);
     }
@@ -737,6 +737,9 @@ void ami_evt_process(struct ast_json* j_evt)
     }
     else if(strcmp(event, "AgentConnect") == 0) {
         ami_evt_AgentConnect(j_evt);
+    }
+    else if(strcmp(event, "AgentComplete") == 0) {
+        ami_evt_AgentComplete(j_evt);
     }
     else if(strcmp(event, "DialBegin") == 0) {
         ami_evt_DialBegin(j_evt);
@@ -794,13 +797,16 @@ static void ami_evt_Newchannel(struct ast_json* j_evt)
     ast_free(tmp);
 
     // update channel
-    rb_dialing_update_chan_update(dialing, j_tmp, false);
+    rb_dialing_update_chan_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
-    // update result
+    // update name
+    rb_dialing_update_name(dialing, ast_json_string_get(ast_json_object_get(j_evt, "channel")));
+
+    // update dialing
     j_tmp = ast_json_object_create();
     ast_json_object_set(j_tmp, "channel_name", ast_json_ref(ast_json_object_get(j_evt, "channel")));
-    rb_dialing_update_dialing_update(dialing, j_tmp, true);
+    rb_dialing_update_dialing_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
 
@@ -886,7 +892,7 @@ static void ami_evt_Newstate(struct ast_json* j_evt)
     ast_json_object_del(j_tmp, "event");
 
     // update
-    rb_dialing_update_chan_update(dialing, j_tmp, true);
+    rb_dialing_update_chan_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
     return;
@@ -940,6 +946,12 @@ static void ami_evt_QueueCallerJoin(struct ast_json* j_evt)
     rb_dialing_update_queue_append(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
+    // update current queue
+    j_tmp = ast_json_object_create();
+    ast_json_object_set(j_tmp, "current_queue", ast_json_ref(ast_json_object_get(j_evt, "queue")));
+    rb_dialing_update_dialing_update(dialing, j_tmp);
+    ast_json_unref(j_tmp);
+
     return;
 }
 
@@ -989,6 +1001,12 @@ static void ami_evt_QueueCallerLeave(struct ast_json* j_evt)
 
     // append
     rb_dialing_update_queue_append(dialing, j_tmp);
+    ast_json_unref(j_tmp);
+
+    // update dialing
+    j_tmp = ast_json_object_create();
+    ast_json_object_set(j_tmp, "current_queue", ast_json_string_create(""));
+    rb_dialing_update_dialing_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
     return;
@@ -1055,6 +1073,13 @@ static void ami_evt_AgentCalled(struct ast_json* j_evt)
     // append
     rb_dialing_update_agent_append(dialing, j_tmp);
     ast_json_unref(j_tmp);
+
+    j_tmp = ast_json_object_create();
+    ast_json_object_set(j_tmp, "current_agent", ast_json_ref(ast_json_object_get(j_evt, "membername")));
+    rb_dialing_update_dialing_update(dialing, j_tmp);
+    ast_json_unref(j_tmp);
+
+    return;
 }
 
 static void ami_evt_AgentConnect(struct ast_json* j_evt)
@@ -1119,6 +1144,79 @@ static void ami_evt_AgentConnect(struct ast_json* j_evt)
 
     // append
     rb_dialing_update_agent_update(dialing, j_tmp);
+    ast_json_unref(j_tmp);
+
+    return;
+}
+
+static void ami_evt_AgentComplete(struct ast_json* j_evt)
+{
+//    {
+//        "event": "AgentComplete",
+//        "calleridname": "<unknown>",
+//        "destlanguage": "en",
+//        "calleridnum": "<unknown>",
+//        "privilege": "agent,all",
+//        "context": "from_provider",
+//        "connectedlinename": "<unknown>",
+//        "channel": "SIP/trunk_test_1-00000005",
+//        "channelstate": "6",
+//        "channelstatedesc": "Up",
+//        "connectedlinenum": "<unknown>",
+//        "language": "en",
+//        "accountcode": "",
+//        "exten": "",
+//        "priority": "1",
+//        "uniqueid": "4aef9f0a-68ca-46a2-8e69-3b88531596d7",
+//        "destaccountcode": "",
+//        "destcalleridname": "<unknown>",
+//        "linkedid": "4aef9f0a-68ca-46a2-8e69-3b88531596d7",
+//        "destchannelstatedesc": "Up",
+//        "destchannel": "SIP/test-03-00000009",
+//        "destpriority": "1",
+//        "destchannelstate": "6",
+//        "destcontext": "common-incoming",
+//        "destcalleridnum": "test-03",
+//        "destconnectedlinenum": "<unknown>",
+//        "destconnectedlinename": "<unknown>",
+//        "destuniqueid": "1448254749.18",
+//        "destexten": "",
+//        "destlinkedid": "4aef9f0a-68ca-46a2-8e69-3b88531596d7",
+//        "queue": "TestQueue",
+//        "holdtime": "3",
+//        "interface": "Local/test-03@common-incoming",
+//        "membername": "test 03",
+//        "reason": "agent",
+//        "talktime": "13"
+//    }
+
+    const char* tmp_const;
+    rb_dialing* dialing;
+    struct ast_json* j_tmp;
+    char* tmp;
+
+    // get rb_dialing
+    tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
+    dialing = rb_dialing_find_chan_uuid(tmp_const);
+    if(dialing == NULL) {
+        return;
+    }
+
+    j_tmp = ast_json_deep_copy(j_evt);
+
+    ast_json_object_del(j_tmp, "event");
+
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_agent_complete", ast_json_string_create(tmp));
+    ast_free(tmp);
+
+    // append
+    rb_dialing_update_agent_update(dialing, j_tmp);
+    ast_json_unref(j_tmp);
+
+    j_tmp = ast_json_object_create();
+    ast_json_object_set(j_tmp, "current_agent", ast_json_string_create(""));
+    rb_dialing_update_dialing_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
     return;
@@ -1199,11 +1297,11 @@ static void ami_evt_DialBegin(struct ast_json* j_evt)
         ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(tmp));
         ast_free(tmp);
 
-        // update
-        rb_dialing_update_dialing_update(dialing, j_tmp, false);
-        ast_json_unref(j_tmp);
-
+        // update status
         rb_dialing_update_status(dialing, E_DIALING_DIAL_BEGIN);
+
+        rb_dialing_update_dialing_update(dialing, j_tmp);
+        ast_json_unref(j_tmp);
     }
 
     return;
@@ -1286,18 +1384,24 @@ static void ami_evt_DialEnd(struct ast_json* j_evt)
         ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
         ast_free(tmp);
 
-        rb_dialing_update_dialing_update(dialing, j_tmp, false);
+        rb_dialing_update_status(dialing, E_DIALING_DIAL_END);
+
+        rb_dialing_update_dialing_update(dialing, j_tmp);
         ast_json_unref(j_tmp);
 
-        rb_dialing_update_status(dialing, E_DIALING_DIAL_END);
     }
 
     return;
 }
 
-
+/**
+ * AMI event handler
+ * Event: OriginateResponse
+ * @param j_evt
+ */
 static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 {
+//    success
 //    {
 //        "calleridname": "<unknown>",
 //        "event": "OriginateResponse",
@@ -1310,7 +1414,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 //        "exten": "",
 //        "reason": "4"
 //    }
-
+//
     const char* uuid;
     rb_dialing* dialing;
     char* tmp;
@@ -1332,7 +1436,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
     ast_json_object_set(dialing->j_chan, "tm_originte_response", ast_json_string_create(tmp));
 
     // update channel
-    rb_dialing_update_chan_update(dialing, j_tmp, false);
+    rb_dialing_update_chan_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
     // update result
@@ -1342,11 +1446,13 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
     ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
     ast_free(tmp);
 
-    rb_dialing_update_dialing_update(dialing, j_tmp, true);
-    ast_json_unref(j_tmp);
+    ast_log(LOG_DEBUG, "Check value. res_dial[%ld]\n", ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial")));
 
     // update status
     rb_dialing_update_status(dialing, E_DIALING_ORIGINATE_RESPONSE);
+
+    rb_dialing_update_dialing_update(dialing, j_tmp);
+    ast_json_unref(j_tmp);
 
     return;
 }
@@ -1395,7 +1501,7 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
     ast_json_object_set(j_tmp, "tm_hangup", ast_json_string_create(tmp));
 
     // update
-    rb_dialing_update_chan_update(dialing, j_tmp, false);
+    rb_dialing_update_chan_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
     // update result json
@@ -1406,11 +1512,11 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
     ast_json_object_set(j_tmp, "res_hangup_detail", ast_json_ref(ast_json_object_get(j_evt, "cause-txt")));
     ast_free(tmp);
 
-    rb_dialing_update_dialing_update(dialing, j_tmp, false);
-    ast_json_unref(j_tmp);
-
     // update dialing status
     rb_dialing_update_status(dialing, E_DIALING_HANGUP);
+
+    rb_dialing_update_dialing_update(dialing, j_tmp);
+    ast_json_unref(j_tmp);
 
     return;
 }

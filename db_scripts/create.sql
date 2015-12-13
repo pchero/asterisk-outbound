@@ -217,10 +217,11 @@ create table dl_result(
 
     -- dial info
     dial_index          int,            -- dialing number index.
-    dial_addr           varchar(255),   -- dialing address.
+    dial_addr           varchar(255),   -- dialing address(number).
+    dial_channel        varchar(255),   -- dialing channel
     dial_trycnt         int,            -- dialing try count.
     dial_timeout        int,            -- dialing timeout.
-    dial_type           int,
+    dial_type           int,            -- dialing type. 
     dial_exten          varchar(255),
     dial_context        varchar(255),
     dial_application    varchar(255),
@@ -235,14 +236,14 @@ create table dl_result(
     tr_chan_unique_id  varchar(255),    -- trying transfer chan unique id.
     
     -- dial result
-    res_dial                int default 0 not null,            -- dial result(answer, no_answer, ...)
-    res_answer              varchar(255),   -- AMD result.(AMDSTATUS)
-    res_answer_detail       varchar(255),   -- AMD result detail.(AMDCAUSE)
-    res_hangup              int default 0 not null,            -- hangup code.
-    res_hangup_detail       varchar(255),   -- hangup detail.
-    res_tr_dial             varchar(255),   -- transferred dial result(answer, no_answer, ...)
-    res_tr_hangup           varchar(255),   -- hangup code.
-    res_tr_hangup_detail    varchar(255),   -- hangup detail.
+    res_dial                int default 0 not null,     -- dial result(answer, no_answer, ...)
+    res_amd                 varchar(255),               -- AMD result.(AMDSTATUS)
+    res_amd_detail          varchar(255),               -- AMD result detail.(AMDCAUSE)
+    res_hangup              int default 0 not null,     -- hangup code.
+    res_hangup_detail       varchar(255),               -- hangup detail.
+    res_tr_dial             varchar(255),               -- transferred dial result(answer, no_answer, ...)
+    res_tr_hangup           varchar(255),               -- hangup code.
+    res_tr_hangup_detail    varchar(255),               -- hangup detail.
         
     primary key(dialing_uuid)
     

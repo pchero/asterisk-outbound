@@ -10,11 +10,13 @@
 
 #include "asterisk/causes.h"
 
+#include <stdbool.h>
+
 int init_ami_handle(void);
 void term_ami_handle(void);
 
 struct ast_json* ami_cmd_handler(struct ast_json* j_cmd);
-int ami_is_response_success(struct ast_json* j_ami);
+bool ami_is_response_success(struct ast_json* j_ami);
 
 struct ast_json* ami_cmd_queue_summary(const char* name);
 struct ast_json* ami_cmd_originate_to_application(struct ast_json* j_dial);
