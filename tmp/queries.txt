@@ -1,11 +1,45 @@
 
 
-== tm check query
-select tm_redirect, tm_bridge, tm_hangup, tm_tr_dial_begin, tm_tr_dial_end, tm_tr_hangup from dl_result;
+== uuid check
+select dialing_uuid, camp_uuid, plan_uuid, dlma_uuid, dl_list_uuid from dl_result;
+select tm_pickup, tm_dial_begin, tm_dial_end, tm_redirect, tm_bridge, tm_hangup, tm_tr_dial_begin, tm_tr_dial_end, tm_tr_hangup from dl_result;
+select dial_index, dial_addr, dial_channel, dial_trycnt, dial_timeout, dial_type, dial_exten, dial_context, dial_application, dial_data from dl_result;
+select res_dial, res_amd, res_amd_detail, res_hangup, res_hangup_detail, res_tr_dial, res_tr_hangup, res_tr_hangup_detail from dl_result;
+
+== reset test
+drop database ast_outbound;
+create database ast_outbound;
+use ast_outbound
+source ./create.sql
+
+== Originate
+channel Originate SIP/111-111-0001@trunk_test_1 extension 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56@res_outbound
+
+Action: Login
+Username: pchero
+Secret: 1234
+
+Action: Originate
+Channel: SIP/111-111-0001@trunk_test_1
+ChannelId: c92f5417-fb62-471e-bd39-fa789e8ab78c
+Async: true
+Timeout: 30000
+Exten: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
+OtherChannelId: 17111007-52a2-45ea-84ab-d1ee3ec396d5
+Context: res_outbound
+ActionId: a3ee82a3-49fa-48bc-bc37-a69c6c53a098
 
 
-== dial info check query
-select dial_channel, dial_index, dial_addr, dial_trycnt, dial_timeout from dl_result;
+Action: Originate
+Channel: SIP/111-111-0001@trunk_test_1
+ChannelId: c92f5417-fb62-471e-bd39-fa789e8ab78c
+Async: true
+Timeout: 30000
+Application: Queue
+OtherChannelId: 17111007-52a2-45ea-84ab-d1ee3ec396d5
+Data: test 00
+ActionId: a3ee82a3-49fa-48bc-bc37-a69c6c53a098
 
-== dial result check query
-select res_dial, res_answer, res_answer_detail, res_hangup, res_hangup_detail, res_tr_dial, res_tr_hangup, res_tr_hangup_detail from dl_result;
+
+
+c92f5417-fb62-471e-bd39-fa789e8ab78c
