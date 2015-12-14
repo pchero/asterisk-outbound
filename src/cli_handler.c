@@ -776,28 +776,87 @@ static char* manager_get_dialing_str(const rb_dialing* dialing)
     }
 
     ast_asprintf(&tmp,
+            // identity
             "Uuid: %s\r\n"
             "Status: %d\r\n"
-            "TmCreate: %s\r\n"
-            "TmUpdate: %s\r\n"
-            "TmDelete: %s\r\n"
 
-            // dialing res info
+            // uuid info
             "CampUuid: %s\r\n"
             "PlanUuid: %s\r\n"
             "DlmaUuid: %s\r\n"
-            "DlListUuid: %s\r\n",   // todo: need to do more...
+            "DlListUuid: %s\r\n"    // todo: need to do more...
 
+            // current info
+            "CurrentQueue: %s\r\n"
+            "CurrentAgent: %s\r\n"
+
+            // dial info
+            "DialIndex: %ld\r\n"
+            "DialAddr: %s\r\n"
+            "DialChannel: %s\r\n"
+            "DialTryCnt: %ld\r\n"
+            "DialTimeout: %ld\r\n"
+            "DialType: %ld\r\n"
+            "DialExten: %s\r\n"
+            "DialContext: %s\r\n"
+            "DialApplication: %s\r\n"
+            "DialData: %s\r\n"
+
+            // channel info
+            "ChannelName: %s\r\n"
+
+            // dial result
+            "ResDial: %ld\r\n"
+            "ResAmd: %s\r\n"
+            "ResAmdDetail: %s\r\n"
+            "ResHangup: %ld\r\n"
+            "ResHangupDetail: %s\r\n"
+
+            // tm info
+            "TmCreate: %s\r\n"
+            "TmUpdate: %s\r\n"
+            "TmDelete: %s\r\n",
+
+            // identity
             dialing->uuid? : "<unknown>",
             dialing->status,
-            dialing->tm_create? : "<unknown>",
-            dialing->tm_update? : "<unknown>",
-            dialing->tm_delete? : "<unknown>",
 
+            // uuid info
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "plan_uuid"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dlma_uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid"))? : "<unknown>"
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid"))? : "<unknown>",
+
+            // current info
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_queue"))? : "<null>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_agent"))? : "<null>",
+
+            // dial info
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_addr"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_channel"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_trycnt")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_timeout")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_type")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_exten"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_context"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_application"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_data"))? : "<unknown>",
+
+            // channel info
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "channel_name"))? : "<unknown>",
+
+            // result info
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_dial")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_amd"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_amd_detail"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_hangup")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_hangup_detail"))? : "<unknown>",
+
+            // tm info
+            dialing->tm_create? : "<unknown>",
+            dialing->tm_update? : "<unknown>",
+            dialing->tm_delete? : "<unknown>"
             );
     return tmp;
 }
@@ -1269,11 +1328,10 @@ void send_manager_evt_out_dialing_delete(rb_dialing* dialing)
         return;
     }
 
-    tmp = manager_get_dialing_str(dialing);
-    if(tmp == NULL) {
-        return;
-    }
-
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n",
+            dialing->uuid
+            );
     manager_event(EVENT_FLAG_MESSAGE, "OutDialingDelete", "%s\r\n", tmp);
     ast_free(tmp);
     ast_log(LOG_VERBOSE, "AMI event. OutDialingDelete. Succeed.\n");
