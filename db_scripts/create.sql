@@ -69,15 +69,16 @@ create table dl_list(
     dlma_uuid   varchar(255)    not null,   -- dl_list_ma uuid
     
     -- information
-    name            varchar(255),                   -- Can be null
+    name            varchar(255),
     detail          varchar(255),
-    uui             text,                           -- user-user information
---    status          varchar(255) default "idle",    -- dial list status. ("idle", "dialing", ...)
-    status          int default 0,    -- dial list status. ("idle", "dialing", ...)
+    status          int default 0, -- dial list status. ("idle", "dialing", ...)
+
+    -- custom define data
+    ukey            text,   -- user define key
+    uui             text,   -- user define data
     
     -- current dialing
     dialing_uuid            varchar(255),       -- dialing channel unique id.
---    dialing_channel         varchar(255),       -- dialing channel name
     dialing_camp_uuid       varchar(255),       -- dialing campaign uuid.
     dialing_plan_uuid       varchar(255),       -- dialing plan uuid.
     
@@ -104,10 +105,11 @@ create table dl_list(
     trycnt_7    int default 0,      -- try count for tel number 7
     trycnt_8    int default 0,      -- try count for tel number 8
 
-    -- last dial result
-    res_dial        int default 0 not null,   -- last dial result.(no answer, answer, busy, ...)
-    res_hangup      int default 0 not null,   -- last route result after answer.(routed, agent busy, no route place, ...)
---    call_detail text,               -- more detail info about call result
+    -- result info
+    res_dial            int default 0 not null,   -- last dial result.(no answer, answer, busy, ...)
+    res_dial_detail     text,
+    res_hangup          int default 0 not null,   -- last route result after answer.(routed, agent busy, no route place, ...)
+    res_hangup_detail   text,
 
     -- timestamp. UTC.
     tm_create       datetime(6),   -- create time
