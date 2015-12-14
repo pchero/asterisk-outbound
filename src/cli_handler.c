@@ -1391,16 +1391,7 @@ void manager_out_dlma_entry(struct mansession *s, const struct message *m, struc
 {
     char* tmp;
 
-    ast_asprintf(&tmp,
-            "Uuid: %s\r\n"
-            "Name: %s\r\n"
-            "Detail: %s\r\n"
-            "DlTable: %s\r\n",
-            ast_json_string_get(ast_json_object_get(j_tmp, "uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "detail"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "dl_table"))? : "<unknown>"
-            );
+    tmp = manager_get_dlma_str(j_tmp);
 
     if(s != NULL) {
         astman_append(s, "Event: OutDlmaEntry\r\n%s%s\r\n", action_id, tmp);
