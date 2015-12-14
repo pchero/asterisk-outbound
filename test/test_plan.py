@@ -2,13 +2,14 @@
 #  Created on: Nov 27, 2015
 #      Author: pchero
 
-import test_common
+import common
 
 import os
 import sys
+import uuid
 
 def main():
-    ast = test_common.Ami()
+    ast = common.Ami()
     ast.username = sys.argv[1]
     ast.password = sys.argv[2]
     if ast.conn() == False:
@@ -17,14 +18,18 @@ def main():
     
     # create plan
     print("Create plan")
-    ret = ast.sendCmd("OutPlanCreate", Name="TestPlan", Detail="TestDetail")
+    plan_name = uuid.uuid4().__str__()
+    ret = ast.sendCmd("OutPlanCreate", Name=plan_name, Detail="TestDetail")
     if ret[0]["Response"] != "Success":
         print("Couldn not pass the test_plan. ret[%s]" % ret)
         raise "test_plan"
-    for i in range(10):
+    for i in range(100):
         ret = ast.recvEvt()
-        if ret["Event"] == "OutPlanCreate":
-            break
+        if ret["Event"] != "OutPlanCreate":
+            continue
+        if ret["Name"] != plan_name:
+            continue
+        break
         
     # item check
     if "Uuid" not in ret \
@@ -53,7 +58,7 @@ def main():
         
             print("Couldn not pass the test_plan. ret[%s]" % ret)
             raise "test_plan"
-    if ret["Name"] != "TestPlan" or ret["Detail"] != "TestDetail":
+    if ret["Name"] != plan_name or ret["Detail"] != "TestDetail":
         print("Couldn not pass the test_plan. ret[%s]" % ret)
         raise "test_plan"
     plan_uuid = ret["Uuid"]
@@ -79,7 +84,7 @@ def main():
     if ret[0]["Response"] != "Success":
         print("Could not pass the test_plan. ret[%s]" % ret)
         raise "test_plan"
-    for i in range(10):
+    for i in range(100):
         ret = ast.recvEvt()
         if ret["Event"] == "OutPlanUpdate":
             break
@@ -93,7 +98,7 @@ def main():
     if ret[0]["Response"] != "Success":
         print("Couldn not pass the test_plan. ret[%s]" % ret)
         raise "test_plan"
-    for i in range(10):
+    for i in range(100):
         ret = ast.recvEvt()
         if ret["Event"] == "OutPlanDelete":
             break
@@ -104,6 +109,21 @@ def main():
     # get plan
     print("Get plan")
     ret = ast.sendCmd("OutPlanShow", Uuid=plan_uuid)
+    flg = True
+    for i in range(len(ret)):
+        msg = ret[i]
+        if "Uuid" not in msg:
+            continue
+        if msg["Uuid"] == plan_uuid:
+            flg = False
+            break
+    if flg == False:        
+        print("Couldn not pass the test_plan. ret[%s]" % ret)
+        raise "test_plan"
+    
+    print("Get plan all")
+    ret = ast.sendCmd("OutPlanShow")
+#     print ret
     flg = True
     for i in range(len(ret)):
         msg = ret[i]

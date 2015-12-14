@@ -45,6 +45,7 @@ class Ami:
             while '\r\n\r\n' not in ''.join(data)[-4:]:
                 buf = self.sock.recv(1)
                 data += buf
+#             print data
             recv = data.split('\r\n')
             tmp = make_dict(recv)
             
