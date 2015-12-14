@@ -631,7 +631,6 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
             "Status: %ld\r\n"
             "Plan: %s\r\n"
             "Dlma: %s\r\n"
-            "Queue: %s\r\n"
             "TmCreate: %s\r\n"
             "TmDelete: %s\r\n"
             "TmUpdate: %s\r\n",
@@ -641,7 +640,6 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
             ast_json_integer_get(ast_json_object_get(j_camp, "status")),
             ast_json_string_get(ast_json_object_get(j_camp, "plan"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "dlma"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_camp, "queue"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "tm_create"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "tm_delete"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_camp, "tm_update"))? : "<unknown>"
@@ -778,28 +776,87 @@ static char* manager_get_dialing_str(const rb_dialing* dialing)
     }
 
     ast_asprintf(&tmp,
+            // identity
             "Uuid: %s\r\n"
             "Status: %d\r\n"
-            "TmCreate: %s\r\n"
-            "TmUpdate: %s\r\n"
-            "TmDelete: %s\r\n"
 
-            // dialing res info
+            // uuid info
             "CampUuid: %s\r\n"
             "PlanUuid: %s\r\n"
             "DlmaUuid: %s\r\n"
-            "DlListUuid: %s\r\n",   // todo: need to do more...
+            "DlListUuid: %s\r\n"    // todo: need to do more...
 
+            // current info
+            "CurrentQueue: %s\r\n"
+            "CurrentAgent: %s\r\n"
+
+            // dial info
+            "DialIndex: %ld\r\n"
+            "DialAddr: %s\r\n"
+            "DialChannel: %s\r\n"
+            "DialTryCnt: %ld\r\n"
+            "DialTimeout: %ld\r\n"
+            "DialType: %ld\r\n"
+            "DialExten: %s\r\n"
+            "DialContext: %s\r\n"
+            "DialApplication: %s\r\n"
+            "DialData: %s\r\n"
+
+            // channel info
+            "ChannelName: %s\r\n"
+
+            // dial result
+            "ResDial: %ld\r\n"
+            "ResAmd: %s\r\n"
+            "ResAmdDetail: %s\r\n"
+            "ResHangup: %ld\r\n"
+            "ResHangupDetail: %s\r\n"
+
+            // tm info
+            "TmCreate: %s\r\n"
+            "TmUpdate: %s\r\n"
+            "TmDelete: %s\r\n",
+
+            // identity
             dialing->uuid? : "<unknown>",
             dialing->status,
-            dialing->tm_create? : "<unknown>",
-            dialing->tm_update? : "<unknown>",
-            dialing->tm_delete? : "<unknown>",
 
+            // uuid info
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "plan_uuid"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dlma_uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid"))? : "<unknown>"
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid"))? : "<unknown>",
+
+            // current info
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_queue"))? : "<null>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_agent"))? : "<null>",
+
+            // dial info
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_addr"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_channel"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_trycnt")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_timeout")),
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_type")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_exten"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_context"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_application"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_data"))? : "<unknown>",
+
+            // channel info
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "channel_name"))? : "<unknown>",
+
+            // result info
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_dial")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_amd"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_amd_detail"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_hangup")),
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_hangup_detail"))? : "<unknown>",
+
+            // tm info
+            dialing->tm_create? : "<unknown>",
+            dialing->tm_update? : "<unknown>",
+            dialing->tm_delete? : "<unknown>"
             );
     return tmp;
 }
@@ -1271,11 +1328,10 @@ void send_manager_evt_out_dialing_delete(rb_dialing* dialing)
         return;
     }
 
-    tmp = manager_get_dialing_str(dialing);
-    if(tmp == NULL) {
-        return;
-    }
-
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n",
+            dialing->uuid
+            );
     manager_event(EVENT_FLAG_MESSAGE, "OutDialingDelete", "%s\r\n", tmp);
     ast_free(tmp);
     ast_log(LOG_VERBOSE, "AMI event. OutDialingDelete. Succeed.\n");
@@ -1372,45 +1428,7 @@ void manager_out_plan_entry(struct mansession *s, const struct message *m, struc
 {
     char* tmp;
 
-    ast_asprintf(&tmp,
-            "Uuid: %s\r\n"
-            "Name: %s\r\n"
-            "Detail: %s\r\n"
-            "DialMode: %ld\r\n"
-            "DialTimeout: %ld\r\n"
-            "CallerId: %s\r\n"
-            "AnswerHandle: %ld\r\n"
-            "DlEndHandle: %ld\r\n"
-            "RetryDelay: %ld\r\n"
-            "TrunkName: %s\r\n"
-            "MaxRetryCnt1: %ld\r\n"
-            "MaxRetryCnt2: %ld\r\n"
-            "MaxRetryCnt3: %ld\r\n"
-            "MaxRetryCnt4: %ld\r\n"
-            "MaxRetryCnt5: %ld\r\n"
-            "MaxRetryCnt6: %ld\r\n"
-            "MaxRetryCnt7: %ld\r\n"
-            "MaxRetryCnt8: %ld\r\n",
-
-            ast_json_string_get(ast_json_object_get(j_tmp, "uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "detail"))? : "<unknown>",
-            ast_json_integer_get(ast_json_object_get(j_tmp, "dial_mode")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "dial_timeout")),
-            ast_json_string_get(ast_json_object_get(j_tmp, "caller_id"))? : "<unknown>",
-            ast_json_integer_get(ast_json_object_get(j_tmp, "answer_handle")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "dl_end_handle")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "retry_delay")),
-            ast_json_string_get(ast_json_object_get(j_tmp, "trunk_name"))? : "<unknown>",
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_1")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_2")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_3")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_4")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_5")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_6")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_7")),
-            ast_json_integer_get(ast_json_object_get(j_tmp, "max_retry_cnt_8"))
-            );
+    tmp = manager_get_plan_str(j_tmp);
 
     if(s != NULL) {
         astman_append(s, "Event: OutPlanEntry\r\n%s%s\r\n", action_id, tmp);
@@ -1431,16 +1449,7 @@ void manager_out_dlma_entry(struct mansession *s, const struct message *m, struc
 {
     char* tmp;
 
-    ast_asprintf(&tmp,
-            "Uuid: %s\r\n"
-            "Name: %s\r\n"
-            "Detail: %s\r\n"
-            "DlTable: %s\r\n",
-            ast_json_string_get(ast_json_object_get(j_tmp, "uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "detail"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_tmp, "dl_table"))? : "<unknown>"
-            );
+    tmp = manager_get_dlma_str(j_tmp);
 
     if(s != NULL) {
         astman_append(s, "Event: OutDlmaEntry\r\n%s%s\r\n", action_id, tmp);
@@ -1708,6 +1717,7 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
             manager_out_campaign_entry(s, m, j_tmp, action_id);
         }
         astman_send_list_complete_start(s, m, "OutCampaignListComplete", size);
+        astman_send_list_complete_end(s);
         ast_json_unref(j_arr);
     }
 
@@ -1715,20 +1725,15 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
     ast_free(action_id);
     return 0;
 }
-/**
- * AMI Action handler
- * Action: OutPlanCreate
- * @param s
- * @param m
- * @return
- */
-static int manager_out_plan_create(struct mansession *s, const struct message *m)
+
+static struct ast_json* parse_ami_message_plan(const struct message* m)
 {
     const char* tmp_const;
-    int ret;
     struct ast_json* j_tmp;
 
-    ast_log(LOG_VERBOSE, "AMI request. OutPlanCreate.\n");
+    if(m == NULL) {
+        return NULL;
+    }
 
     j_tmp = ast_json_object_create();
 
@@ -1763,6 +1768,14 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
     if(strcmp(tmp_const, "") != 0)
     {ast_json_object_set(j_tmp, "trunk_name", ast_json_string_create(tmp_const));}
 
+    tmp_const = astman_get_header(m, "QueueName");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "queue_name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "AmdMode");
+    if(strcmp(tmp_const, "") != 0)
+    {ast_json_object_set(j_tmp, "amd_mode", ast_json_string_create(tmp_const));}
+
     tmp_const = astman_get_header(m, "MaxRetry1");
     if(strcmp(tmp_const, "") != 0)
     {ast_json_object_set(j_tmp, "max_retry_cnt_1", ast_json_integer_create(atoi(tmp_const)));}
@@ -1795,6 +1808,24 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
     if(strcmp(tmp_const, "") != 0)
     {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
 
+    return j_tmp;
+}
+
+/**
+ * AMI Action handler
+ * Action: OutPlanCreate
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_plan_create(struct mansession *s, const struct message *m)
+{
+    int ret;
+    struct ast_json* j_tmp;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutPlanCreate.\n");
+
+    j_tmp = parse_ami_message_plan(m);
     ret = create_plan(j_tmp);
     ast_json_unref(j_tmp);
     if(ret == false) {
@@ -1863,73 +1894,10 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
         return 0;
     }
 
-    j_tmp = ast_json_object_create();
+    j_tmp = parse_ami_message_plan(m);
 
     tmp_const = astman_get_header(m, "Uuid");
     if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
-
-    tmp_const = astman_get_header(m, "Name");
-    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
-
-    tmp_const = astman_get_header(m, "Detail");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
-
-    tmp_const = astman_get_header(m, "DialMode");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "dial_mode", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "CallerId");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "caller_id", ast_json_string_create(tmp_const));}
-
-    tmp_const = astman_get_header(m, "AnswerHandle");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "answer_handle", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "DlEndHandle");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "dl_end_handle", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "RetryDelay");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "retry_delay", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "TrunkName");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "trunk_name", ast_json_string_create(tmp_const));}
-
-    tmp_const = astman_get_header(m, "MaxRetry1");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_1", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "MaxRetry2");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_2", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "MaxRetry3");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_3", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "MaxRetry4");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_4", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "MaxRetry5");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_5", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "MaxRetry6");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_6", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "MaxRetry7");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_7", ast_json_integer_create(atoi(tmp_const)));}
-
-    tmp_const = astman_get_header(m, "MaxRetry8");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
 
     ret = update_plan(j_tmp);
     ast_json_unref(j_tmp);
@@ -2002,6 +1970,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
             manager_out_plan_entry(s, m, j_tmp, action_id);
         }
         astman_send_list_complete_start(s, m, "OutPlanListComplete", size);
+        astman_send_list_complete_end(s);
         ast_json_unref(j_arr);
     }
 
@@ -2166,6 +2135,7 @@ static int manager_out_dlma_show(struct mansession *s, const struct message *m)
             manager_out_dlma_entry(s, m, j_tmp, action_id);
         }
         astman_send_list_complete_start(s, m, "OutDlmaListComplete", size);
+        astman_send_list_complete_end(s);
         ast_json_unref(j_arr);
     }
     ast_free(action_id);
@@ -2322,6 +2292,7 @@ static int manager_out_queue_show(struct mansession *s, const struct message *m)
             manager_out_queue_entry(s, m, j_tmp, action_id);
         }
         astman_send_list_complete_start(s, m, "OutQueueListComplete", size);
+        astman_send_list_complete_end(s);
         ast_json_unref(j_arr);
     }
     ast_free(action_id);

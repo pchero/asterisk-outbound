@@ -2,14 +2,14 @@
 #  Created on: Nov 27, 2015
 #      Author: pchero
 
-import test_common
+import common
 
 import os
 import sys
 import uuid
 
 def main():
-    ast = test_common.Ami()
+    ast = common.Ami()
     ast.username = sys.argv[1]
     ast.password = sys.argv[2]
     if ast.conn() == False:

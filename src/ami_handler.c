@@ -1005,7 +1005,7 @@ static void ami_evt_QueueCallerLeave(struct ast_json* j_evt)
 
     // update dialing
     j_tmp = ast_json_object_create();
-    ast_json_object_set(j_tmp, "current_queue", ast_json_string_create(""));
+    ast_json_object_set(j_tmp, "current_queue", ast_json_string_create("<null>"));
     rb_dialing_update_dialing_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 
@@ -1215,7 +1215,7 @@ static void ami_evt_AgentComplete(struct ast_json* j_evt)
     ast_json_unref(j_tmp);
 
     j_tmp = ast_json_object_create();
-    ast_json_object_set(j_tmp, "current_agent", ast_json_string_create(""));
+    ast_json_object_set(j_tmp, "current_agent", ast_json_string_create("<null>"));
     rb_dialing_update_dialing_update(dialing, j_tmp);
     ast_json_unref(j_tmp);
 

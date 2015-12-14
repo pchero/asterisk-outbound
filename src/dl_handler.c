@@ -20,6 +20,8 @@
 
 static char* create_chan_addr_for_dial(struct ast_json* j_plan, struct ast_json* j_dl_list, int dial_num_point);
 static char* get_dial_number(struct ast_json* j_dlist, const int cnt);
+static char* create_view_name(const char* uuid);
+static bool create_dlma_view(const char* uuid, const char* view_name);
 
 
 /**
@@ -341,6 +343,7 @@ bool create_dlma(const struct ast_json* j_dlma)
 {
     int ret;
     char* uuid;
+    char* view_name;
     char* tmp;
     struct ast_json* j_tmp;
 
@@ -353,6 +356,12 @@ bool create_dlma(const struct ast_json* j_dlma)
     // uuid
     uuid = gen_uuid();
     ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
+
+    // create view_table
+    view_name = create_view_name(uuid);
+    create_dlma_view(uuid, view_name);
+    ast_json_object_set(j_tmp, "dl_table", ast_json_string_create(view_name));
+    ast_free(view_name);
 
     // create timestamp
     tmp = get_utc_timestamp();
@@ -764,4 +773,52 @@ struct ast_json* create_dl_result(rb_dialing* dialing)
     return j_res;
 }
 
+/**
+ * Create view name using uuid.
+ * @param uuid
+ * @return
+ */
+static char* create_view_name(const char* uuid)
+{
+    char* tmp;
+    int len;
+    int i;
+    int j;
 
+    if(uuid == NULL) {
+        return NULL;
+    }
+
+    j = 0;
+    len = strlen(uuid);
+    tmp = ast_malloc(len);
+    for(i = 0; i < len; i++) {
+        if(uuid[i] == '-') {
+            continue;
+        }
+        tmp[j] = uuid[i];
+        j++;
+    }
+    return tmp;
+}
+
+static bool create_dlma_view(const char* uuid, const char* view_name)
+{
+    char* sql;
+    int ret;
+
+    if((uuid == NULL) || (view_name == NULL)) {
+        return false;
+    }
+
+    ast_asprintf(&sql, "create view %s as select * from dl_list where dlma_uuid=\"%s\";", view_name, uuid);
+
+    ret = db_exec(sql);
+    ast_free(sql);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not create view. uuid[%s], view_name[%s]\n", uuid, view_name);
+        return false;
+    }
+
+    return true;
+}

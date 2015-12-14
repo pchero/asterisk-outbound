@@ -2,20 +2,14 @@
 #  Created on: Dec 2, 2015
 #      Author: pchero
 
- 
-import os
-import sys
-
-import test_common    
-
-
-import test_common
+import common
 
 import os
 import sys
+import uuid
 
 def main():
-    ast = test_common.Ami()
+    ast = common.Ami()
     ast.username = sys.argv[1]
     ast.password = sys.argv[2]
     if ast.conn() == False:
@@ -24,14 +18,18 @@ def main():
     
     # create dlma
     print("Create dlma")
-    ret = ast.sendCmd("OutDlmaCreate", Name="TestDlma", Detail="TestDetail")
+    dlma_name = uuid.uuid4().__str__()
+    ret = ast.sendCmd("OutDlmaCreate", Name=dlma_name, Detail="TestDetail")
     if ret[0]["Response"] != "Success":
         print("Couldn not pass the test_dlma. ret[%s]" % ret)
         raise "test_dlma"
-    for i in range(10):
+    for i in range(100):
         ret = ast.recvEvt()
-        if ret["Event"] == "OutDlmaCreate":
-            break
+        if ret["Event"] != "OutDlmaCreate":
+            continue
+        if ret["Name"] != dlma_name:
+            continue
+        break
         
     # item check
     if "Uuid" not in ret \
@@ -44,9 +42,13 @@ def main():
         
             print("Couldn not pass the test_plan. ret[%s]" % ret)
             raise "test_dlma"
-    if ret["Name"] != "TestDlma" or ret["Detail"] != "TestDetail":
+    if ret["Name"] != dlma_name or ret["Detail"] != "TestDetail":
         print("Couldn not pass the test_dlma. ret[%s]" % ret)
         raise "test_dlma"
+    if ret["DlTable"] == "<unknown>":
+        print("Couldn not pass the test_dlma. ret[%s]" % ret)
+        raise "test_dlma"
+    
     dlma_uuid = ret["Uuid"]
     
     # get dlma
@@ -70,7 +72,7 @@ def main():
     if ret[0]["Response"] != "Success":
         print("Could not pass the test_dlma. ret[%s]" % ret)
         raise "test_dlma"
-    for i in range(10):
+    for i in range(100):
         ret = ast.recvEvt()
         if ret["Event"] == "OutDlmaUpdate":
             break
@@ -84,7 +86,7 @@ def main():
     if ret[0]["Response"] != "Success":
         print("Couldn not pass the test_plan. ret[%s]" % ret)
         raise "test_plan"
-    for i in range(10):
+    for i in range(100):
         ret = ast.recvEvt()
         if ret["Event"] == "OutDlmaDelete":
             break
@@ -95,6 +97,20 @@ def main():
     # get dlma
     print("Get dlma")
     ret = ast.sendCmd("OutDlmaShow", Uuid=dlma_uuid)
+    flg = True
+    for i in range(len(ret)):
+        msg = ret[i]
+        if "Uuid" not in msg:
+            continue
+        if msg["Uuid"] == dlma_uuid:
+            flg = False
+            break
+    if flg == False:        
+        print("Couldn not pass the test_dlma. ret[%s]" % ret)
+        raise "test_dlma"
+
+    print("Get dlma all")
+    ret = ast.sendCmd("OutDlmaShow")
     flg = True
     for i in range(len(ret)):
         msg = ret[i]
