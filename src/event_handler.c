@@ -452,7 +452,7 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
         }
 
         // create result data
-        j_tmp = create_dl_result(dialing);
+        j_tmp = create_json_for_dl_result(dialing);
         ast_log(LOG_DEBUG, "Check result value. dial_channel[%s], dial_addr[%s], dial_index[%ld], dial_trycnt[%ld], dial_timeout[%ld], dial_type[%ld], dial_exten[%s], res_dial[%ld], res_amd[%ld], res_amd_detail[%s], res_hangup[%ld], res_hangup_detail[%s]\n",
 
                 // dial

@@ -67,6 +67,7 @@ create table dl_list(
     -- identity
     uuid        varchar(255)    unique,     -- dl uuid
     dlma_uuid   varchar(255)    not null,   -- dl_list_ma uuid
+    in_use      int default 1,              -- 0:not in use, 1:in use
     
     -- information
     name            varchar(255),
@@ -75,7 +76,7 @@ create table dl_list(
 
     -- custom define data
     ukey            text,   -- user define key
-    uui             text,   -- user define data
+    udata           text,   -- user define data
     
     -- current dialing
     dialing_uuid            varchar(255),       -- dialing channel unique id.
@@ -125,8 +126,8 @@ create table dl_list(
     primary key(uuid)
 );
 
-CREATE TRIGGER init_uuid BEFORE INSERT ON dl_list
-  FOR EACH ROW SET NEW.uuid = UUID();
+-- CREATE TRIGGER init_uuid BEFORE INSERT ON dl_list
+--   FOR EACH ROW SET NEW.uuid = UUID();
 
 drop table if exists dl_list_ma;
 create table dl_list_ma(

@@ -1340,12 +1340,105 @@ void send_manager_evt_out_dialing_delete(rb_dialing* dialing)
 }
 
 /**
- * OutDlList
+ * AMI Action handler
+ * Action: OutDlListCreate
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dl_list_create(struct mansession *s, const struct message *m)
+{
+    struct ast_json* j_tmp;
+    const char* tmp_const;
+    int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutDlListCreate.\n");
+
+    j_tmp = ast_json_object_create();
+
+    tmp_const = astman_get_header(m, "DlmaUuid");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma_uuid", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "UKey");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "ukey", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "UData");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "udata", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number1");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_1", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number2");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_2", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number3");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_3", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number4");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_4", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number5");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_5", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number6");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_6", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number7");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_7", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number8");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_8", ast_json_string_create(tmp_const));}
+
+    ret = create_dl_list(j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while creating dl list.");
+        ast_log(LOG_NOTICE, "OutDlListCreate failed.\n");
+        return 0;
+    }
+    astman_send_ack(s, m, "Dl list created successfully");
+    ast_log(LOG_NOTICE, "OutDlListCreate succeed.\n");
+
+    return 0;
+}
+
+/**
+ * AMI Action handler
+ * Action: OutDlListUpdate
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dl_list_update(struct mansession *s, const struct message *m)
+{
+    return 0;
+}
+
+/**
+ * AMI Action handler
+ * Action: OutDlListDelete
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dl_list_delete(struct mansession *s, const struct message *m)
+{
+    return 0;
+}
+
+/**
+ * OutDlListEntry
  * @param s
  * @param m
  * @param j_dl
  */
-void manager_out_dl_entry(struct mansession *s, const struct message *m, struct ast_json* j_dl)
+void manager_out_dl_list_entry(struct mansession *s, const struct message *m, struct ast_json* j_dl)
 {
     char* tmp;
 
@@ -1419,6 +1512,39 @@ void manager_out_dl_entry(struct mansession *s, const struct message *m, struct 
 }
 
 /**
+ * AMI Action handler
+ * Action: OutDlListShow
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_dl_list_show(struct mansession *s, const struct message *m)
+{
+    struct ast_json* j_tmp;
+    const char* tmp_const;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") == 0) {
+        astman_send_error(s, m, "Error encountered while creating campaign");
+        return 0;
+    }
+
+    j_tmp = get_dl_list(tmp_const);
+    if(j_tmp == NULL) {
+        astman_send_error(s, m, "Error encountered while creating campaign");
+        return 0;
+    }
+
+    astman_send_listack(s, m, "Dl List will follow", "start");
+
+    manager_out_dl_list_entry(s, m, j_tmp);
+
+    astman_send_list_complete_start(s, m, "OutDlListComplete", 1);
+    astman_send_list_complete_end(s);
+    return 0;
+}
+
+/**
  * OutPlanList
  * @param s
  * @param m
@@ -1486,32 +1612,6 @@ void manager_out_queue_entry(struct mansession *s, const struct message *m, stru
         manager_event(EVENT_FLAG_MESSAGE, "OutQueueEntry", "%s\r\n", tmp);
     }
     ast_free(tmp);
-}
-
-static int manager_out_dl_show(struct mansession *s, const struct message *m)
-{
-    struct ast_json* j_tmp;
-    const char* tmp_const;
-
-    tmp_const = astman_get_header(m, "Uuid");
-    if(strcmp(tmp_const, "") == 0) {
-        astman_send_error(s, m, "Error encountered while creating campaign");
-        return 0;
-    }
-
-    j_tmp = get_dl_list(tmp_const);
-    if(j_tmp == NULL) {
-        astman_send_error(s, m, "Error encountered while creating campaign");
-        return 0;
-    }
-
-    astman_send_listack(s, m, "Dl List will follow", "start");
-
-    manager_out_dl_entry(s, m, j_tmp);
-
-    astman_send_list_complete_start(s, m, "OutDlListComplete", 1);
-    astman_send_list_complete_end(s);
-    return 0;
 }
 
 /**
@@ -2415,7 +2515,6 @@ int init_cli_handler(void)
     err |= ast_manager_register2("OutCampaignDelete", EVENT_FLAG_COMMAND, manager_out_campaign_delete, NULL, NULL, NULL);
     err |= ast_manager_register2("OutCampaignUpdate", EVENT_FLAG_COMMAND, manager_out_campaign_update, NULL, NULL, NULL);
     err |= ast_manager_register2("OutCampaignShow", EVENT_FLAG_COMMAND, manager_out_campaign_show, NULL, NULL, NULL);
-    err |= ast_manager_register2("OutDlListShow", EVENT_FLAG_COMMAND, manager_out_dl_show, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanCreate", EVENT_FLAG_COMMAND, manager_out_plan_create, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanDelete", EVENT_FLAG_COMMAND, manager_out_plan_delete, NULL, NULL, NULL);
     err |= ast_manager_register2("OutPlanUpdate", EVENT_FLAG_COMMAND, manager_out_plan_update, NULL, NULL, NULL);
@@ -2424,6 +2523,10 @@ int init_cli_handler(void)
     err |= ast_manager_register2("OutDlmaUpdate", EVENT_FLAG_COMMAND, manager_out_dlma_update, NULL, NULL, NULL);
     err |= ast_manager_register2("OutDlmaDelete", EVENT_FLAG_COMMAND, manager_out_dlma_delete, NULL, NULL, NULL);
     err |= ast_manager_register2("OutDlmaShow", EVENT_FLAG_COMMAND, manager_out_dlma_show, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlListCreate", EVENT_FLAG_COMMAND, manager_out_dl_list_create, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlListUpdate", EVENT_FLAG_COMMAND, manager_out_dl_list_update, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlListDelete", EVENT_FLAG_COMMAND, manager_out_dl_list_delete, NULL, NULL, NULL);
+    err |= ast_manager_register2("OutDlListShow", EVENT_FLAG_COMMAND, manager_out_dl_list_show, NULL, NULL, NULL);
     err |= ast_manager_register2("OutQueueCreate", EVENT_FLAG_COMMAND, manager_out_queue_create, NULL, NULL, NULL);
     err |= ast_manager_register2("OutQueueUpdate", EVENT_FLAG_COMMAND, manager_out_queue_update, NULL, NULL, NULL);
     err |= ast_manager_register2("OutQueueDelete", EVENT_FLAG_COMMAND, manager_out_queue_delete, NULL, NULL, NULL);
@@ -2456,6 +2559,10 @@ void term_cli_handler(void)
     ast_manager_unregister("OutDlmaUpdate");
     ast_manager_unregister("OutDlmaDelete");
     ast_manager_unregister("OutDlmaShow");
+    ast_manager_unregister("OutDlListCreate");
+    ast_manager_unregister("OutDlListUpdate");
+    ast_manager_unregister("OutDlListDelete");
+    ast_manager_unregister("OutDlListShow");
     ast_manager_unregister("OutQueueCreate");
     ast_manager_unregister("OutQueueUpdate");
     ast_manager_unregister("OutQueueDelete");

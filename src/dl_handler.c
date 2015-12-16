@@ -164,20 +164,20 @@ void clear_dl_list_dialing(const char* uuid)
  * @param j_dlinfo
  * @return
  */
-int update_dl_list(struct ast_json* j_dlinfo)
+bool update_dl_list(struct ast_json* j_dl)
 {
     char* sql;
     int ret;
     char* tmp;
 
-    tmp = db_get_update_str(j_dlinfo);
+    tmp = db_get_update_str(j_dl);
     if(tmp == NULL) {
         ast_log(LOG_ERROR, "Could not get update sql.\n");
         return false;
     }
 
     ast_asprintf(&sql, "update dl_list set %s where uuid = \"%s\";\n",
-            tmp, ast_json_string_get(ast_json_object_get(j_dlinfo, "uuid"))
+            tmp, ast_json_string_get(ast_json_object_get(j_dl, "uuid"))
             );
     ast_free(tmp);
 
@@ -570,7 +570,7 @@ struct ast_json* get_dl_list(const char* uuid)
         return NULL;
     }
 
-    ast_asprintf(&sql, "select * from dl_list where uuid=\"%s\"", uuid);
+    ast_asprintf(&sql, "select * from dl_list where in_use=1 and uuid=\"%s\"", uuid);
     db_res = db_query(sql);
     ast_free(sql);
 
@@ -735,7 +735,12 @@ static char* get_dial_number(struct ast_json* j_dlist, const int cnt)
     return res;
 }
 
-struct ast_json* create_dl_result(rb_dialing* dialing)
+/**
+ * Create dl_result
+ * @param dialing
+ * @return
+ */
+struct ast_json* create_json_for_dl_result(rb_dialing* dialing)
 {
     struct ast_json* j_res;
     char* tmp;
@@ -800,6 +805,51 @@ static char* create_view_name(const char* uuid)
         j++;
     }
     return tmp;
+}
+
+/**
+ * Create dl_list
+ * @param j_dl
+ * @return
+ */
+bool create_dl_list(struct ast_json* j_dl)
+{
+    int ret;
+    char* uuid;
+    char* tmp;
+    struct ast_json* j_tmp;
+
+    if(j_dl == NULL) {
+        return false;
+    }
+
+    j_tmp = ast_json_deep_copy(j_dl);
+
+    // uuid
+    uuid = gen_uuid();
+    ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
+    ast_free(uuid);
+
+    // create timestamp
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_create", ast_json_string_create(tmp));
+    ast_free(tmp);
+
+    ast_log(LOG_NOTICE, "Create dl_list. dl_uuid[%s], dlma_uuid[%s], name[%s]\n",
+            ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "dlma_uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "name"))
+            );
+
+    ret = db_insert("dl_list", j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        ast_free(uuid);
+        return false;
+    }
+
+    // do not send any create event for dl_list.
+    return true;
 }
 
 static bool create_dlma_view(const char* uuid, const char* view_name)
