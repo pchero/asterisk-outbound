@@ -118,11 +118,6 @@ create table dl_list(
     tm_update       datetime(6),   -- last update time
     tm_last_dial    datetime(6),   -- last tried dial time
     
-    -- ownership
-    create_agent_uuid           varchar(255),       -- create agent uuid
-    delete_agent_uuid           varchar(255),       -- delete agent uuid
-    update_property_agent_uuid  varchar(255),       -- last propery update agent uuid
-
     primary key(uuid)
 );
 

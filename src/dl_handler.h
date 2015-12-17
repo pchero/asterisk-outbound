@@ -40,8 +40,9 @@ int get_dial_try_cnt(struct ast_json* j_dl_list, int dial_num_point);
 
 struct ast_json* get_dlmas_all(void);
 struct ast_json* get_dlma(const char* uuid);
-struct ast_json* get_dl_lists(struct ast_json* j_dlma, int count);
+struct ast_json* get_dl_lists_(struct ast_json* j_dlma, int count);
 struct ast_json* get_dl_list(const char* uuid);
+struct ast_json* get_dl_lists(const char* dlma_uuid, int count);
 struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast_json* j_plan);
 int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan);
 void clear_dl_list_dialing(const char* uuid);

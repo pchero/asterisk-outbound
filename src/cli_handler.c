@@ -384,7 +384,6 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
     // out show dlma list <dlma-uuid> <count=100>
     const char* uuid;
     int count;
-    struct ast_json* j_dlma;
     struct ast_json* j_dls;
     struct ast_json* j_tmp;
     int i;
@@ -403,13 +402,7 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
         count = 100;
     }
 
-    j_dlma = get_dlma(uuid);
-    if(j_dlma == NULL) {
-        return NULL;
-    }
-
-    j_dls = get_dl_lists(j_dlma, count);
-    ast_json_unref(j_dlma);
+    j_dls = get_dl_lists(uuid, count);
 
     size = ast_json_array_size(j_dls);
     for(i = 0; i < size; i++) {
@@ -616,7 +609,7 @@ static char *out_delete_campaign(struct ast_cli_entry *e, int cmd, struct ast_cl
  * @param j_camp
  * @return
  */
-static char* manager_get_campaign_str(struct ast_json* j_camp)
+static char* get_campaign_str(struct ast_json* j_camp)
 {
     char* tmp;
 
@@ -652,7 +645,7 @@ static char* manager_get_campaign_str(struct ast_json* j_camp)
  * @param j_plan
  * @return
  */
-static char* manager_get_plan_str(struct ast_json* j_plan)
+static char* get_plan_str(struct ast_json* j_plan)
 {
     char* tmp;
 
@@ -716,7 +709,7 @@ static char* manager_get_plan_str(struct ast_json* j_plan)
  * @param j_dlma
  * @return
  */
-static char* manager_get_dlma_str(struct ast_json* j_dlma)
+static char* get_dlma_str(struct ast_json* j_dlma)
 {
     char* tmp;
 
@@ -743,7 +736,7 @@ static char* manager_get_dlma_str(struct ast_json* j_dlma)
     return tmp;
 }
 
-static char* manager_get_queue_str(struct ast_json* j_queue)
+static char* get_queue_str(struct ast_json* j_queue)
 {
     char* tmp;
 
@@ -767,7 +760,7 @@ static char* manager_get_queue_str(struct ast_json* j_queue)
  * @param dialing
  * @return
  */
-static char* manager_get_dialing_str(const rb_dialing* dialing)
+static char* get_dialing_str(const rb_dialing* dialing)
 {
     char* tmp;
 
@@ -866,13 +859,108 @@ static char* manager_get_dialing_str(const rb_dialing* dialing)
  * @param dialing
  * @return
  */
-static char* manager_get_dialing_summary_str(void)
+static char* get_dialing_summary_str(void)
 {
     char* tmp;
 
     ast_asprintf(&tmp,
             "Count: %d\r\n",
             rb_dialing_get_count()
+            );
+    return tmp;
+}
+
+static char* get_dl_list_str(struct ast_json* j_dl)
+{
+    char* tmp;
+
+    if(j_dl == NULL) {
+        return NULL;
+    }
+
+    ast_asprintf(&tmp,
+            "Uuid: %s\r\n"
+            "DlmaUuid: %s\r\n"
+            "Name: %s\r\n"
+            "Detail: %s\r\n"
+            "Status: %ld\r\n"
+
+            "UKey: %s\r\n"
+            "UData: %s\r\n"
+
+            "DialingUuid: %s\r\n"
+            "DialingCampUuid: %s\r\n"
+            "DialingPlanUuid: %s\r\n"
+
+            "Number1: %s\r\n"
+            "Number2: %s\r\n"
+            "Number3: %s\r\n"
+            "Number4: %s\r\n"
+            "Number5: %s\r\n"
+            "Number6: %s\r\n"
+            "Number7: %s\r\n"
+            "Number8: %s\r\n"
+
+            "Email: %s\r\n"
+
+            "TryCnt1: %ld\r\n"
+            "TryCnt2: %ld\r\n"
+            "TryCnt3: %ld\r\n"
+            "TryCnt4: %ld\r\n"
+            "TryCnt5: %ld\r\n"
+            "TryCnt6: %ld\r\n"
+            "TryCnt7: %ld\r\n"
+            "TryCnt8: %ld\r\n"
+
+            "ResDial: %ld\r\n"
+            "ResDialDetail: %s\r\n"
+            "ResHangup: %ld\r\n"
+            "ResHangupDetail: %s\r\n"
+
+            "TmCreate: %s\r\n"
+            "TmDelete: %s\r\n"
+            "TmUpdate: %s\r\n",
+            ast_json_string_get(ast_json_object_get(j_dl, "uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "dlma_uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "name"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "detail"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_dl, "status")),
+
+            ast_json_string_get(ast_json_object_get(j_dl, "ukey"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "udata"))? : "<unknown>",
+
+            ast_json_string_get(ast_json_object_get(j_dl, "dialing_uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "dialing_camp_uuid"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "dialing_plan_uuid"))? : "<unknown>",
+
+            ast_json_string_get(ast_json_object_get(j_dl, "number_1"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "number_2"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "number_3"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "number_4"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "number_5"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "number_6"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "number_7"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "number_8"))? : "<unknown>",
+
+            ast_json_string_get(ast_json_object_get(j_dl, "email"))? : "<unknown>",
+
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_1")),
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_2")),
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_3")),
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_4")),
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_5")),
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_6")),
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_7")),
+            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_8")),
+
+            ast_json_integer_get(ast_json_object_get(j_dl, "res_dial")),
+            ast_json_string_get(ast_json_object_get(j_dl, "res_dial_detail"))? : "<unknown>",
+            ast_json_integer_get(ast_json_object_get(j_dl, "res_hangup")),
+            ast_json_string_get(ast_json_object_get(j_dl, "res_hangup_detail"))? : "<unknown>",
+
+            ast_json_string_get(ast_json_object_get(j_dl, "tm_create"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "tm_delete"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(j_dl, "tm_update"))? : "<unknown>"
             );
     return tmp;
 }
@@ -893,7 +981,7 @@ void send_manager_evt_out_campaign_create(struct ast_json* j_camp)
         return;
     }
 
-    tmp = manager_get_campaign_str(j_camp);
+    tmp = get_campaign_str(j_camp);
     if(tmp == NULL) {
         return;
     }
@@ -950,7 +1038,7 @@ void send_manager_evt_out_campaign_update(struct ast_json* j_camp)
         return;
     }
 
-    tmp = manager_get_campaign_str(j_camp);
+    tmp = get_campaign_str(j_camp);
     if(tmp == NULL) {
         return;
     }
@@ -979,7 +1067,7 @@ void send_manager_evt_out_plan_create(struct ast_json* j_plan)
         return;
     }
 
-    tmp = manager_get_plan_str(j_plan);
+    tmp = get_plan_str(j_plan);
     if(tmp == NULL) {
         return;
     }
@@ -1037,7 +1125,7 @@ void send_manager_evt_out_plan_update(struct ast_json* j_plan)
         return;
     }
 
-    tmp = manager_get_plan_str(j_plan);
+    tmp = get_plan_str(j_plan);
     if(tmp == NULL) {
         return;
     }
@@ -1061,7 +1149,7 @@ void send_manager_evt_out_queue_create(struct ast_json* j_queue)
         return;
     }
 
-    tmp = manager_get_queue_str(j_queue);
+    tmp = get_queue_str(j_queue);
     if(tmp == NULL) {
         return;
     }
@@ -1082,7 +1170,7 @@ void send_manager_evt_out_queue_update(struct ast_json* j_queue)
         return;
     }
 
-    tmp = manager_get_queue_str(j_queue);
+    tmp = get_queue_str(j_queue);
     if(tmp == NULL) {
         return;
     }
@@ -1136,7 +1224,7 @@ void send_manager_evt_out_dlma_create(struct ast_json* j_tmp)
         return;
     }
 
-    tmp = manager_get_dlma_str(j_tmp);
+    tmp = get_dlma_str(j_tmp);
     if(tmp == NULL) {
         return;
     }
@@ -1194,7 +1282,7 @@ void send_manager_evt_out_dlma_update(struct ast_json* j_tmp)
         return;
     }
 
-    tmp = manager_get_dlma_str(j_tmp);
+    tmp = get_dlma_str(j_tmp);
     if(tmp == NULL) {
         return;
     }
@@ -1223,7 +1311,7 @@ void send_manager_evt_out_dialing_create(rb_dialing* dialing)
         return;
     }
 
-    tmp = manager_get_dialing_str(dialing);
+    tmp = get_dialing_str(dialing);
     if(tmp == NULL) {
         ast_log(LOG_WARNING, "AMI event. OutDialingCreate. Failed.\n");
         return;
@@ -1253,7 +1341,7 @@ void send_manager_evt_out_dialing_update(rb_dialing* dialing)
         return;
     }
 
-    tmp = manager_get_dialing_str(dialing);
+    tmp = get_dialing_str(dialing);
     if(tmp == NULL) {
         return;
     }
@@ -1277,7 +1365,7 @@ void manager_evt_out_dialing_entry(struct mansession *s, const struct message *m
 {
     char* tmp;
 
-    tmp = manager_get_dialing_str(dialing);
+    tmp = get_dialing_str(dialing);
 
     if(s != NULL) {
         astman_append(s, "Event: OutDialingEntry\r\n%s%s\r\n", action_id, tmp);
@@ -1300,7 +1388,7 @@ void manager_evt_out_dialing_summary(struct mansession *s, const struct message 
 {
     char* tmp;
 
-    tmp = manager_get_dialing_summary_str();
+    tmp = get_dialing_summary_str();
 
     if(s != NULL) {
         astman_append(s, "Event: OutDialingSummary\r\n%s%s\r\n", action_id, tmp);
@@ -1417,6 +1505,81 @@ static int manager_out_dl_list_create(struct mansession *s, const struct message
  */
 static int manager_out_dl_list_update(struct mansession *s, const struct message *m)
 {
+    struct ast_json* j_tmp;
+    const char* tmp_const;
+    int ret;
+
+    ast_log(LOG_VERBOSE, "AMI request. OutDlListCreate.\n");
+
+    j_tmp = ast_json_object_create();
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") == 0) {
+        astman_send_error(s, m, "Error encountered while deleting dl_list");
+        return 0;
+    }
+
+    tmp_const = astman_get_header(m, "DlmaUuid");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma_uuid", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Name");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "UKey");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "ukey", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "UData");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "udata", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number1");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_1", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number2");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_2", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number3");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_3", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number4");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_4", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number5");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_5", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number6");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_6", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number7");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_7", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "Number8");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_8", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "res_dial");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "res_dial", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "res_dial_detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "res_dial_detail", ast_json_string_create(tmp_const));}
+
+    tmp_const = astman_get_header(m, "res_hangup");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "res_hangup", ast_json_integer_create(atoi(tmp_const)));}
+
+    tmp_const = astman_get_header(m, "res_hangup_detail");
+    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "res_hangup_detail", ast_json_string_create(tmp_const));}
+
+    ret = update_dl_list(j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while updating dl list.");
+        ast_log(LOG_NOTICE, "OutDlListUpdate failed.\n");
+        return 0;
+    }
+    astman_send_ack(s, m, "Dl list updated successfully");
+    ast_log(LOG_NOTICE, "OutDlListUpdate succeed.\n");
+
     return 0;
 }
 
@@ -1429,6 +1592,22 @@ static int manager_out_dl_list_update(struct mansession *s, const struct message
  */
 static int manager_out_dl_list_delete(struct mansession *s, const struct message *m)
 {
+    const char* tmp_const;
+    int ret;
+
+    tmp_const = astman_get_header(m, "Uuid");
+    if(strcmp(tmp_const, "") == 0) {
+        astman_send_error(s, m, "Error encountered while deleting dl_list");
+        return 0;
+    }
+
+    ret = delete_dl_list(tmp_const);
+    if(ret == false) {
+        astman_send_error(s, m, "Error encountered while deleting dl_list");
+        return 0;
+    }
+    astman_send_ack(s, m, "Dl list deleted successfully");
+
     return 0;
 }
 
@@ -1442,65 +1621,14 @@ void manager_out_dl_list_entry(struct mansession *s, const struct message *m, st
 {
     char* tmp;
 
-    ast_asprintf(&tmp,
-            "Uuid: %s\r\n"
-            "DlmaUUID: %s\r\n"
-            "Name: %s\r\n"
-            "Detail: %s\r\n"
-            "UUI: %s\r\n"
-            "Status: %ld\r\n"
-            "DialingUUID: %s\r\n"
-            "DialingCampUUID: %s\r\n"
-            "DialingPlanUUID: %s\r\n"
-            "Email: %s\r\n"
-            "Number1: %s\r\n"
-            "Number2: %s\r\n"
-            "Number3: %s\r\n"
-            "Number4: %s\r\n"
-            "Number5: %s\r\n"
-            "Number6: %s\r\n"
-            "Number7: %s\r\n"
-            "Number8: %s\r\n"
-            "Trycnt1: %ld\r\n"
-            "Trycnt2: %ld\r\n"
-            "Trycnt3: %ld\r\n"
-            "Trycnt4: %ld\r\n"
-            "Trycnt5: %ld\r\n"
-            "Trycnt6: %ld\r\n"
-            "Trycnt7: %ld\r\n"
-            "Trycnt8: %ld\r\n"
-            "ResDial: %ld\r\n"
-            "ResHangup: %ld\r\n",
+    if(j_dl == NULL) {
+        return;
+    }
 
-            ast_json_string_get(ast_json_object_get(j_dl, "uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "dlma_uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "name"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "detail"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "uui"))? : "<unknown>",
-            ast_json_integer_get(ast_json_object_get(j_dl, "status")),
-            ast_json_string_get(ast_json_object_get(j_dl, "dialing_uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "dialing_camp_uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "dialing_plan_uuid"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "email"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_1"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_2"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_3"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_4"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_5"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_6"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_7"))? : "<unknown>",
-            ast_json_string_get(ast_json_object_get(j_dl, "number_8"))? : "<unknown>",
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_1")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_2")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_3")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_4")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_5")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_6")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_7")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "trycnt_8")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "res_dial")),
-            ast_json_integer_get(ast_json_object_get(j_dl, "res_hangup"))
-            );
+    tmp = get_dl_list_str(j_dl);
+    if(tmp == NULL) {
+        return;
+    }
 
     if(s != NULL) {
         astman_append(s, "Event: OutDlListEntry\r\n%s\r\n", tmp);
@@ -1521,26 +1649,64 @@ void manager_out_dl_list_entry(struct mansession *s, const struct message *m, st
 static int manager_out_dl_list_show(struct mansession *s, const struct message *m)
 {
     struct ast_json* j_tmp;
+    struct ast_json* j_arr;
     const char* tmp_const;
+    const char* tmp_count;
+    int count;
+    int size;
+    int i;
 
+    // uuid
     tmp_const = astman_get_header(m, "Uuid");
-    if(strcmp(tmp_const, "") == 0) {
-        astman_send_error(s, m, "Error encountered while creating campaign");
+    if(strcmp(tmp_const, "") != 0) {
+
+        j_tmp = get_dl_list(tmp_const);
+        if(j_tmp == NULL) {
+            astman_send_error(s, m, "Error encountered while show dl_list");
+            return 0;
+        }
+
+        astman_send_listack(s, m, "Dl List will follow", "start");
+
+        manager_out_dl_list_entry(s, m, j_tmp);
+        ast_json_unref(j_tmp);
+
+        astman_send_list_complete_start(s, m, "OutDlListComplete", 1);
+        astman_send_list_complete_end(s);
         return 0;
     }
 
-    j_tmp = get_dl_list(tmp_const);
-    if(j_tmp == NULL) {
-        astman_send_error(s, m, "Error encountered while creating campaign");
+    tmp_const = astman_get_header(m, "DlmaUuid");
+    if(strcmp(tmp_const, "") != 0) {
+        tmp_count = astman_get_header(m, "Count");
+        count = 100;    // default
+        if(strcmp(tmp_count, "") != 0) {
+            count = atoi(tmp_count);
+        }
+
+        j_arr = get_dl_lists(tmp_const, count);
+        if(j_arr == NULL) {
+            astman_send_error(s, m, "Error encountered while show dl_list");
+            return 0;
+        }
+
+        astman_send_listack(s, m, "Dl List will follow", "start");
+        size = ast_json_array_size(j_arr);
+        for(i = 0; i < size; i++) {
+            j_tmp = ast_json_array_get(j_arr, i);
+            if(j_tmp == NULL) {
+                ast_log(LOG_WARNING, "Could not get correct object. idx[%i]\n", i);
+                continue;
+            }
+            manager_out_dl_list_entry(s, m, j_tmp);
+        }
+        ast_json_unref(j_arr);
+        astman_send_list_complete_start(s, m, "OutDlListComplete", size);
+        astman_send_list_complete_end(s);
         return 0;
     }
 
-    astman_send_listack(s, m, "Dl List will follow", "start");
-
-    manager_out_dl_list_entry(s, m, j_tmp);
-
-    astman_send_list_complete_start(s, m, "OutDlListComplete", 1);
-    astman_send_list_complete_end(s);
+    astman_send_error(s, m, "Error encountered while show dl_list");
     return 0;
 }
 
@@ -1554,7 +1720,7 @@ void manager_out_plan_entry(struct mansession *s, const struct message *m, struc
 {
     char* tmp;
 
-    tmp = manager_get_plan_str(j_tmp);
+    tmp = get_plan_str(j_tmp);
 
     if(s != NULL) {
         astman_append(s, "Event: OutPlanEntry\r\n%s%s\r\n", action_id, tmp);
@@ -1575,7 +1741,7 @@ void manager_out_dlma_entry(struct mansession *s, const struct message *m, struc
 {
     char* tmp;
 
-    tmp = manager_get_dlma_str(j_tmp);
+    tmp = get_dlma_str(j_tmp);
 
     if(s != NULL) {
         astman_append(s, "Event: OutDlmaEntry\r\n%s%s\r\n", action_id, tmp);
@@ -1626,7 +1792,7 @@ void manager_out_campaign_entry(struct mansession *s, const struct message *m, s
 {
     char* tmp;
 
-    tmp = manager_get_campaign_str(j_tmp);
+    tmp = get_campaign_str(j_tmp);
 
     if(s != NULL) {
         astman_append(s, "Event: OutCampaignEntry\r\n%s%s\r\n", action_id, tmp);
