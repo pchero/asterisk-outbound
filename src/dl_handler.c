@@ -47,7 +47,7 @@ struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast
             "case when number_6 is null then 0 when trycnt_6 < %d then 1 else 0 end as num_6, "
             "case when number_7 is null then 0 when trycnt_7 < %d then 1 else 0 end as num_7, "
             "case when number_8 is null then 0 when trycnt_8 < %d then 1 else 0 end as num_8 "
-            "from %s "
+            "from `%s` "
             "having "
             "status = %d "
             "and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
@@ -99,7 +99,7 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
             "case when number_6 is null then 0 when trycnt_6 < %ld then 1 else 0 end as num_6, "
             "case when number_7 is null then 0 when trycnt_7 < %ld then 1 else 0 end as num_7, "
             "case when number_8 is null then 0 when trycnt_8 < %ld then 1 else 0 end as num_8 "
-            "from %s "
+            "from `%s` "
             "having "
             "res_hangup != %d "
             "and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
@@ -209,7 +209,7 @@ int get_current_dialing_dl_cnt(const char* camp_uuid, const char* dl_table)
         return -1;
     }
 
-    ast_asprintf(&sql, "select count(*) from %s where dialing_camp_uuid = \"%s\" and status = \"%s\";",
+    ast_asprintf(&sql, "select count(*) from `%s` where dialing_camp_uuid = \"%s\" and status = \"%s\";",
             dl_table, camp_uuid, "dialing"
             );
 
@@ -537,56 +537,15 @@ struct ast_json* get_dl_lists(const char* dlma_uuid, int count)
 
     j_dlma = get_dlma(dlma_uuid);
     if(j_dlma == NULL) {
+        ast_log(LOG_WARNING, "Could not find dlma info. dlma_uuid[%s]\n", dlma_uuid);
         return NULL;
     }
 
-    ast_asprintf(&sql, "select * from %s where in_use=1 limit %d;",
+    ast_asprintf(&sql, "select * from `%s` where in_use=1 limit %d;",
             ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
             count
             );
-
-    db_res = db_query(sql);
-    ast_free(sql);
-    if(db_res == NULL) {
-        ast_log(LOG_ERROR, "Could not get dial list info.");
-        return NULL;
-    }
-
-    j_res = ast_json_array_create();
-    while(1) {
-        j_tmp = db_get_record(db_res);
-        if(j_tmp == NULL) {
-            break;
-        }
-
-        ast_json_array_append(j_res, j_tmp);
-    }
-    db_free(db_res);
-
-    return j_res;
-}
-
-/**
- * Get dl_list from database.
- * @param j_dlma
- * @param j_plan
- * @return
- */
-struct ast_json* get_dl_lists_(struct ast_json* j_dlma, int count)
-{
-    char* sql;
-    db_res_t* db_res;
-    struct ast_json* j_res;
-    struct ast_json* j_tmp;
-
-    if((j_dlma == NULL) || (count <= 0)) {
-        return NULL;
-    }
-
-    ast_asprintf(&sql, "select * from %s limit %d;",
-            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
-            count
-            );
+    ast_json_unref(j_dlma);
 
     db_res = db_query(sql);
     ast_free(sql);
@@ -843,16 +802,19 @@ static char* create_view_name(const char* uuid)
         return NULL;
     }
 
-    j = 0;
     len = strlen(uuid);
-    tmp = ast_malloc(len);
+    tmp = ast_calloc(len + 1, sizeof(char));
+    j = 0;
     for(i = 0; i < len; i++) {
         if(uuid[i] == '-') {
-            continue;
+            tmp[j] = '_';
         }
-        tmp[j] = uuid[i];
+        else {
+            tmp[j] = uuid[i];
+        }
         j++;
     }
+    tmp[j] = '\0';
     return tmp;
 }
 
@@ -950,7 +912,7 @@ static bool create_dlma_view(const char* uuid, const char* view_name)
         return false;
     }
 
-    ast_asprintf(&sql, "create view %s as select * from dl_list where dlma_uuid=\"%s\";", view_name, uuid);
+    ast_asprintf(&sql, "create view `%s` as select * from dl_list where dlma_uuid=\"%s\";", view_name, uuid);
 
     ret = db_exec(sql);
     ast_free(sql);
