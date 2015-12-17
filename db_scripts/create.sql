@@ -67,17 +67,19 @@ create table dl_list(
     -- identity
     uuid        varchar(255)    unique,     -- dl uuid
     dlma_uuid   varchar(255)    not null,   -- dl_list_ma uuid
+    in_use      int default 1,              -- 0:not in use, 1:in use
     
     -- information
-    name            varchar(255),                   -- Can be null
+    name            varchar(255),
     detail          varchar(255),
-    uui             text,                           -- user-user information
---    status          varchar(255) default "idle",    -- dial list status. ("idle", "dialing", ...)
-    status          int default 0,    -- dial list status. ("idle", "dialing", ...)
+    status          int default 0, -- dial list status. ("idle", "dialing", ...)
+
+    -- custom define data
+    ukey            text,   -- user define key
+    udata           text,   -- user define data
     
     -- current dialing
     dialing_uuid            varchar(255),       -- dialing channel unique id.
---    dialing_channel         varchar(255),       -- dialing channel name
     dialing_camp_uuid       varchar(255),       -- dialing campaign uuid.
     dialing_plan_uuid       varchar(255),       -- dialing plan uuid.
     
@@ -104,10 +106,11 @@ create table dl_list(
     trycnt_7    int default 0,      -- try count for tel number 7
     trycnt_8    int default 0,      -- try count for tel number 8
 
-    -- last dial result
-    res_dial        int default 0 not null,   -- last dial result.(no answer, answer, busy, ...)
-    res_hangup      int default 0 not null,   -- last route result after answer.(routed, agent busy, no route place, ...)
---    call_detail text,               -- more detail info about call result
+    -- result info
+    res_dial            int default 0 not null,   -- last dial result.(no answer, answer, busy, ...)
+    res_dial_detail     text,
+    res_hangup          int default 0 not null,   -- last route result after answer.(routed, agent busy, no route place, ...)
+    res_hangup_detail   text,
 
     -- timestamp. UTC.
     tm_create       datetime(6),   -- create time
@@ -115,16 +118,11 @@ create table dl_list(
     tm_update       datetime(6),   -- last update time
     tm_last_dial    datetime(6),   -- last tried dial time
     
-    -- ownership
-    create_agent_uuid           varchar(255),       -- create agent uuid
-    delete_agent_uuid           varchar(255),       -- delete agent uuid
-    update_property_agent_uuid  varchar(255),       -- last propery update agent uuid
-
     primary key(uuid)
 );
 
-CREATE TRIGGER init_uuid BEFORE INSERT ON dl_list
-  FOR EACH ROW SET NEW.uuid = UUID();
+-- CREATE TRIGGER init_uuid BEFORE INSERT ON dl_list
+--   FOR EACH ROW SET NEW.uuid = UUID();
 
 drop table if exists dl_list_ma;
 create table dl_list_ma(
@@ -250,33 +248,32 @@ create table dl_result(
 );
 
 -- insert plan
-insert into plan(uuid, name, dial_mode, answer_handle, trunk_name, queue_name, amd_mode, max_retry_cnt_1) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", 1, 1, "trunk_test_1", "TestQueue", 7, 1);
+-- insert into plan(uuid, name, dial_mode, answer_handle, trunk_name, queue_name, amd_mode, max_retry_cnt_1) values ("5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "sample_plan", 1, 1, "trunk_test_1", "TestQueue", 7, 1);
 
 -- insert queue
-insert into queue(uuid, name) values ("1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6", "TestQueue");
+-- insert into queue(uuid, name) values ("1c8eeabb-1dbc-4b75-a688-dd5b79b5afc6", "TestQueue");
 
 -- create dial list
 -- drop table if exists dl_e276d8be;
 -- create table dl_e276d8be like dl_org;
 -- CREATE TRIGGER init_uuid_dl_e276d8be BEFORE INSERT ON dl_e276d8be FOR EACH ROW SET NEW.uuid = UUID();
-insert into dl_list_ma(uuid, name, dl_table) values ("e276d8be-a558-4546-948a-f99913a7fea2", "sample_dial_list", "e276d8bea5584546948af99913a7fea2");
+-- insert into dl_list_ma(uuid, name, dl_table) values ("e276d8be-a558-4546-948a-f99913a7fea2", "sample_dial_list", "e276d8bea5584546948af99913a7fea2");
 
 -- create view
-create view e276d8bea5584546948af99913a7fea2 as select * from dl_list where dlma_uuid = "e276d8be-a558-4546-948a-f99913a7fea2";
+-- create view e276d8bea5584546948af99913a7fea2 as select * from dl_list where dlma_uuid = "e276d8be-a558-4546-948a-f99913a7fea2";
 
 -- insert dial list
-insert into dl_list(name, dlma_uuid, number_1) values ("test1", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0001");
+-- insert into dl_list(name, dlma_uuid, number_1) values ("test1", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0001");
 -- insert into dl_list(name, dlma_uuid, number_1) values ("test2", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0002");
 -- insert into dl_list(name, dlma_uuid, number_1) values ("test3", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0003");
 -- insert into dl_list(name, dlma_uuid, number_1) values ("test4", "e276d8be-a558-4546-948a-f99913a7fea2", "111-111-0004");
 
 
 -- insert campaign
-insert into campaign(uuid, name, status, plan, dlma) 
-values (
-"8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", 1, "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2"
-);
+-- insert into campaign(uuid, name, status, plan, dlma) 
+-- values (
+-- "8cd1d05b-ad45-434f-9fde-4de801dee1c7", "sample_campaign", 1, "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", "e276d8be-a558-4546-948a-f99913a7fea2"
+-- );
 
 commit;
 -- SET @s := CONCAT('SELECT * FROM ', (SELECT  `dl_list` FROM `dial_list_ma` WHERE `uuid` = 'dl-e276d8be-a558-4546-948a-f99913a7fea2'));  PREPARE stmt FROM @s;  EXECUTE stmt;  DEALLOCATE PREPARE stmt; //;
-

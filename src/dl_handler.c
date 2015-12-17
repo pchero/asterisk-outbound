@@ -47,7 +47,7 @@ struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast
             "case when number_6 is null then 0 when trycnt_6 < %d then 1 else 0 end as num_6, "
             "case when number_7 is null then 0 when trycnt_7 < %d then 1 else 0 end as num_7, "
             "case when number_8 is null then 0 when trycnt_8 < %d then 1 else 0 end as num_8 "
-            "from %s "
+            "from `%s` "
             "having "
             "status = %d "
             "and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
@@ -99,7 +99,7 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
             "case when number_6 is null then 0 when trycnt_6 < %ld then 1 else 0 end as num_6, "
             "case when number_7 is null then 0 when trycnt_7 < %ld then 1 else 0 end as num_7, "
             "case when number_8 is null then 0 when trycnt_8 < %ld then 1 else 0 end as num_8 "
-            "from %s "
+            "from `%s` "
             "having "
             "res_hangup != %d "
             "and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
@@ -164,20 +164,20 @@ void clear_dl_list_dialing(const char* uuid)
  * @param j_dlinfo
  * @return
  */
-int update_dl_list(struct ast_json* j_dlinfo)
+bool update_dl_list(struct ast_json* j_dl)
 {
     char* sql;
     int ret;
     char* tmp;
 
-    tmp = db_get_update_str(j_dlinfo);
+    tmp = db_get_update_str(j_dl);
     if(tmp == NULL) {
         ast_log(LOG_ERROR, "Could not get update sql.\n");
         return false;
     }
 
     ast_asprintf(&sql, "update dl_list set %s where uuid = \"%s\";\n",
-            tmp, ast_json_string_get(ast_json_object_get(j_dlinfo, "uuid"))
+            tmp, ast_json_string_get(ast_json_object_get(j_dl, "uuid"))
             );
     ast_free(tmp);
 
@@ -209,7 +209,7 @@ int get_current_dialing_dl_cnt(const char* camp_uuid, const char* dl_table)
         return -1;
     }
 
-    ast_asprintf(&sql, "select count(*) from %s where dialing_camp_uuid = \"%s\" and status = \"%s\";",
+    ast_asprintf(&sql, "select count(*) from `%s` where dialing_camp_uuid = \"%s\" and status = \"%s\";",
             dl_table, camp_uuid, "dialing"
             );
 
@@ -523,21 +523,29 @@ struct ast_json* get_dlma(const char* uuid)
  * @param j_plan
  * @return
  */
-struct ast_json* get_dl_lists(struct ast_json* j_dlma, int count)
+struct ast_json* get_dl_lists(const char* dlma_uuid, int count)
 {
     char* sql;
     db_res_t* db_res;
     struct ast_json* j_res;
     struct ast_json* j_tmp;
+    struct ast_json* j_dlma;
 
-    if((j_dlma == NULL) || (count <= 0)) {
+    if((dlma_uuid == NULL) || (count <= 0)) {
         return NULL;
     }
 
-    ast_asprintf(&sql, "select * from %s limit %d;",
+    j_dlma = get_dlma(dlma_uuid);
+    if(j_dlma == NULL) {
+        ast_log(LOG_WARNING, "Could not find dlma info. dlma_uuid[%s]\n", dlma_uuid);
+        return NULL;
+    }
+
+    ast_asprintf(&sql, "select * from `%s` where in_use=1 limit %d;",
             ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
             count
             );
+    ast_json_unref(j_dlma);
 
     db_res = db_query(sql);
     ast_free(sql);
@@ -570,7 +578,7 @@ struct ast_json* get_dl_list(const char* uuid)
         return NULL;
     }
 
-    ast_asprintf(&sql, "select * from dl_list where uuid=\"%s\"", uuid);
+    ast_asprintf(&sql, "select * from dl_list where in_use=1 and uuid=\"%s\"", uuid);
     db_res = db_query(sql);
     ast_free(sql);
 
@@ -735,7 +743,12 @@ static char* get_dial_number(struct ast_json* j_dlist, const int cnt)
     return res;
 }
 
-struct ast_json* create_dl_result(rb_dialing* dialing)
+/**
+ * Create dl_result
+ * @param dialing
+ * @return
+ */
+struct ast_json* create_json_for_dl_result(rb_dialing* dialing)
 {
     struct ast_json* j_res;
     char* tmp;
@@ -789,17 +802,105 @@ static char* create_view_name(const char* uuid)
         return NULL;
     }
 
-    j = 0;
     len = strlen(uuid);
-    tmp = ast_malloc(len);
+    tmp = ast_calloc(len + 1, sizeof(char));
+    j = 0;
     for(i = 0; i < len; i++) {
         if(uuid[i] == '-') {
-            continue;
+            tmp[j] = '_';
         }
-        tmp[j] = uuid[i];
+        else {
+            tmp[j] = uuid[i];
+        }
         j++;
     }
+    tmp[j] = '\0';
     return tmp;
+}
+
+/**
+ * Create dl_list
+ * @param j_dl
+ * @return
+ */
+bool create_dl_list(struct ast_json* j_dl)
+{
+    int ret;
+    char* uuid;
+    char* tmp;
+    struct ast_json* j_tmp;
+
+    if(j_dl == NULL) {
+        return false;
+    }
+
+    j_tmp = ast_json_deep_copy(j_dl);
+
+    // uuid
+    uuid = gen_uuid();
+    ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
+    ast_free(uuid);
+
+    // create timestamp
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_create", ast_json_string_create(tmp));
+    ast_free(tmp);
+
+    ast_log(LOG_NOTICE, "Create dl_list. dl_uuid[%s], dlma_uuid[%s], name[%s]\n",
+            ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "dlma_uuid")),
+            ast_json_string_get(ast_json_object_get(j_tmp, "name"))
+            );
+
+    ret = db_insert("dl_list", j_tmp);
+    ast_json_unref(j_tmp);
+    if(ret == false) {
+        ast_free(uuid);
+        return false;
+    }
+
+    // do not send any create event for dl_list.
+    return true;
+}
+
+/**
+ * delete dl_list
+ * @param uuid
+ * @return
+ */
+bool delete_dl_list(const char* uuid)
+{
+    struct ast_json* j_tmp;
+    char* tmp;
+    char* sql;
+    int ret;
+
+    if(uuid == NULL) {
+        // invalid parameter.
+        return false;
+    }
+
+    j_tmp = ast_json_object_create();
+    tmp = get_utc_timestamp();
+    ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
+    ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
+    ast_free(tmp);
+
+    tmp = db_get_update_str(j_tmp);
+    ast_json_unref(j_tmp);
+    ast_asprintf(&sql, "update dl_list set %s where uuid=\"%s\";", tmp, uuid);
+    ast_free(tmp);
+
+    ret = db_exec(sql);
+    ast_free(sql);
+    if(ret == false) {
+        ast_log(LOG_WARNING, "Could not delete dl_list. uuid[%s]\n", uuid);
+        return false;
+    }
+
+    // No notifications for dl list.
+
+    return true;
 }
 
 static bool create_dlma_view(const char* uuid, const char* view_name)
@@ -811,7 +912,7 @@ static bool create_dlma_view(const char* uuid, const char* view_name)
         return false;
     }
 
-    ast_asprintf(&sql, "create view %s as select * from dl_list where dlma_uuid=\"%s\";", view_name, uuid);
+    ast_asprintf(&sql, "create view `%s` as select * from dl_list where dlma_uuid=\"%s\";", view_name, uuid);
 
     ret = db_exec(sql);
     ast_free(sql);
