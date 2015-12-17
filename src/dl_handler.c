@@ -843,16 +843,19 @@ static char* create_view_name(const char* uuid)
         return NULL;
     }
 
-    j = 0;
     len = strlen(uuid);
-    tmp = ast_malloc(len);
+    tmp = ast_calloc(len + 1, sizeof(char));
+    j = 0;
     for(i = 0; i < len; i++) {
         if(uuid[i] == '-') {
-            continue;
+            tmp[j] = '_';
         }
-        tmp[j] = uuid[i];
+        else {
+            tmp[j] = uuid[i];
+        }
         j++;
     }
+    tmp[j] = '\0';
     return tmp;
 }
 
