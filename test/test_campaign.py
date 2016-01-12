@@ -19,7 +19,7 @@ def main():
     # create campaign
     print "CampaignCreate"
     camp_name = uuid.uuid4().__str__()
-    ret = ast.sendCmd("OutCampaignCreate", Name=camp_name, Detail="TestDetail", Plan="5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56", Dlma="e276d8be-a558-4546-948a-f99913a7fea2")
+    ret = ast.sendCmd("OutCampaignCreate", Name=camp_name, Detail="TestDetail")
     if ret[0]["Response"] != "Success":
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"    
@@ -39,7 +39,7 @@ def main():
         or "TmUpdate" not in ret:
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
-    if ret["Name"] != camp_name or ret["Detail"] != "TestDetail" or ret["Plan"] != "5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56":
+    if ret["Name"] != camp_name or ret["Detail"] != "TestDetail":
         print("Couldn not pass the test_campaign. ret[%s]" % ret)
         raise "test_campaign"
     camp_uuid = ret["Uuid"]
