@@ -47,8 +47,8 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 static void dial_robo(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 
-
 struct ast_json* get_queue_summary(const char* name);
+struct ast_json* get_queue_param(const char* name);
 
 // todo
 static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
@@ -768,6 +768,21 @@ static int check_dial_avaiable_predictive(
     struct ast_json* j_tmp;
     int cnt_avail_chan;
     int cnt_current_dialing;
+    double service_perf;
+    int plan_service_level;
+    double ret_double;
+
+    // get queue param info
+    j_tmp = get_queue_param(ast_json_string_get(ast_json_object_get(j_plan, "queue_name")));
+    if(j_tmp == NULL) {
+        ast_log(LOG_ERROR, "Could not get queue_param info. plan_uuid[%s], plan_name[%s], queue_name[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_plan, "uuid")),
+                ast_json_string_get(ast_json_object_get(j_plan, "name")),
+                ast_json_string_get(ast_json_object_get(j_plan, "queue_name")));
+        return -1;
+    }
+    service_perf = atof(ast_json_string_get(ast_json_object_get(j_tmp, "ServicelevelPerf")));
+    ast_json_unref(j_tmp);
 
     // get queue summary info.
     j_tmp = get_queue_summary(ast_json_string_get(ast_json_object_get(j_plan, "queue_name")));
@@ -792,20 +807,34 @@ static int check_dial_avaiable_predictive(
     ast_json_unref(j_tmp);
 
     // get current dialing count;
-    cnt_current_dialing = get_current_dialing_dl_cnt(
-            ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))
-            );
+    cnt_current_dialing = rb_dialing_get_count_by_camp_uuid(ast_json_string_get(ast_json_object_get(j_camp, "uuid")));
     if(cnt_current_dialing == -1) {
-        ast_log(LOG_ERROR, "Could not get current dialing count info. camp_uuid[%s], dl_table[%s]\n",
-                ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-                ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))
+        ast_log(LOG_ERROR, "Could not get current dialing count info. camp_uuid[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_camp, "uuid"))
                 );
         return -1;
     }
+//    cnt_current_dialing = get_current_dialing_dl_cnt(
+//            ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+//            ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))
+//            );
+//    if(cnt_current_dialing == -1) {
+//        ast_log(LOG_ERROR, "Could not get current dialing count info. camp_uuid[%s], dl_table[%s]\n",
+//                ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+//                ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))
+//                );
+//        return -1;
+//    }
+
+    // get service level
+    plan_service_level = ast_json_integer_get(ast_json_object_get(j_plan, "service_level"));
+
+    // calculate call
+    // wait_agents * ((queue.performance + plan.performance) / 100) > dialing_calls
+    ret_double = cnt_avail_chan * ((service_perf + plan_service_level) / 100);
 
     // compare
-    if(cnt_avail_chan <= cnt_current_dialing) {
+    if(ret_double <= cnt_current_dialing) {
         return 0;
     }
     return 1;
@@ -896,4 +925,52 @@ struct ast_json* get_queue_summary(const char* name)
     }
 
     return j_queue;
+}
+
+/**
+ * Get Queue param only.
+ * @param name
+ * @return
+ */
+struct ast_json* get_queue_param(const char* name)
+{
+    struct ast_json* j_ami_res;
+    struct ast_json* j_param;
+    struct ast_json* j_tmp;
+    size_t size;
+    int i;
+    const char* tmp_const;
+
+    if(name == NULL) {
+        return NULL;
+    }
+
+    j_ami_res = ami_cmd_queue_status(name);
+    if(j_ami_res == NULL) {
+        ast_log(LOG_NOTICE, "Could not get queue status. name[%s]\n", name);
+        return NULL;
+    }
+
+    // get result.
+    i = 0;
+    j_param = NULL;
+    size = ast_json_array_size(j_ami_res);
+    for(i = 0; i < size; i++) {
+        j_tmp = ast_json_array_get(j_ami_res, i);
+        tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "QueueParams"));
+        if(tmp_const == NULL) {
+            continue;
+        }
+        if(strcmp(tmp_const, name) == 0) {
+            j_param = ast_json_deep_copy(j_tmp);
+            break;
+        }
+    }
+    ast_json_unref(j_ami_res);
+    if(j_param == NULL) {
+        ast_log(LOG_NOTICE, "Could not get queue param. name[%s]\n", name);
+        return NULL;
+    }
+
+    return j_param;
 }

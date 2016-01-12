@@ -192,7 +192,7 @@ bool update_dl_list(struct ast_json* j_dl)
 }
 
 /**
- * Return dialing count currently.
+ * Return the current dialing count.
  * @param camp_uuid
  * @param dl_table
  * @return

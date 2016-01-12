@@ -63,5 +63,7 @@ bool rb_dialing_update_dialing_update(rb_dialing* dialing, struct ast_json* j_di
 bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt);
 
 int rb_dialing_get_count(void);
+int rb_dialing_get_count_by_camp_uuid(const char* camp_uuid);
+
 
 #endif /* SRC_DIALING_HANDLER_H_ */

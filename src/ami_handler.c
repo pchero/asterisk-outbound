@@ -393,6 +393,33 @@ struct ast_json* ami_cmd_queue_summary(const char* name)
 }
 
 /**
+ * Send/Get QueueStatus AMI.
+ * @param name
+ * @return
+ */
+struct ast_json* ami_cmd_queue_status(const char* name)
+{
+    struct ast_json* j_cmd;
+    struct ast_json* j_res;
+
+    j_cmd = ast_json_pack("{s:s}", "Action", "QueueStatus");
+    if(name != NULL) {
+        ast_json_object_set(j_cmd, "Queue", ast_json_string_create("name"));
+    }
+
+    if(j_cmd == NULL) {
+        ast_log(LOG_ERROR, "Could not create ami json. name[%s]\n", name);
+        return NULL;
+    }
+
+    j_res = ami_cmd_handler(j_cmd);
+    ast_json_unref(j_cmd);
+
+    return j_res;
+}
+
+
+/**
  * Send/Get QueueSummary AMI.
  * @param name
  * @return

@@ -19,6 +19,7 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd);
 bool ami_is_response_success(struct ast_json* j_ami);
 
 struct ast_json* ami_cmd_queue_summary(const char* name);
+struct ast_json* ami_cmd_queue_status(const char* name);
 struct ast_json* ami_cmd_originate_to_application(struct ast_json* j_dial);
 struct ast_json* ami_cmd_originate_to_exten(struct ast_json* j_dial);
 struct ast_json* ami_cmd_hangup(const char* channel, int cause);

@@ -157,7 +157,7 @@ rb_dialing* rb_dialing_create(
 
     // init json info
     dialing->uuid = ast_strdup(dialing_uuid);
-    dialing->name = NULL;   // not set here. see AMI NewChannel handler.
+    dialing->name = NULL;   // not set here. Will be set when receiving the AMI NewChannel message.
     dialing->j_chan = ast_json_object_create();
     dialing->j_queues = ast_json_array_create();
     dialing->j_agents = ast_json_array_create();
@@ -600,4 +600,44 @@ int rb_dialing_get_count(void)
     ret = ao2_container_count(g_rb_dialings);
 
     return ret;
+}
+
+/**
+ * Return the count of the dialings of the campaign.
+ * @param camp_uuid
+ * @return
+ */
+int rb_dialing_get_count_by_camp_uuid(const char* camp_uuid)
+{
+    struct ao2_iterator iter;
+    rb_dialing* dialing;
+    const char* tmp_const;
+    int count;
+
+    if(camp_uuid == NULL) {
+        ast_log(LOG_WARNING, "Invalid parameter.");
+        return -1;
+    }
+
+    count = 0;
+    iter = rb_dialing_iter_init();
+    while(1) {
+        dialing = rb_dialing_iter_next(&iter);
+        if(dialing == NULL) {
+            break;
+        }
+
+        tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid"));
+        if(tmp_const == NULL) {
+            continue;
+        }
+
+        if(strcmp(tmp_const, camp_uuid) != 0) {
+            continue;
+        }
+        count++;
+    }
+    rb_dialing_iter_destroy(&iter);
+
+    return count;
 }
