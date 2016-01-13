@@ -25,7 +25,7 @@ create table plan(
     trunk_name      varchar(255) default null,  -- trunk name
     queue_name      varchar(255) default null,  -- queue name
     amd_mode        int default 0,              -- AMD mode
-    service_level   int default 0,              -- service level. determine how many calls can going out campare to available agents. 
+    service_level   int unsigned default 0,     -- service level. determine how many calls can going out campare to available agents. 
     
     -- retry number
     max_retry_cnt_1     int default 5,  -- max retry count for dial number 1
