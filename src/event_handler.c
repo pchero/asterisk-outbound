@@ -770,7 +770,7 @@ static int check_dial_avaiable_predictive(
     int cnt_current_dialing;
     double service_perf;
     int plan_service_level;
-    double ret_double;
+    int available;
 
     // get queue param info
     j_tmp = get_queue_param(ast_json_string_get(ast_json_object_get(j_plan, "queue_name")));
@@ -782,6 +782,9 @@ static int check_dial_avaiable_predictive(
         return -1;
     }
     service_perf = atof(ast_json_string_get(ast_json_object_get(j_tmp, "ServicelevelPerf")));
+    if(service_perf == 0) {
+        service_perf = 100;
+    }
     ast_json_unref(j_tmp);
 
     // get queue summary info.
@@ -828,13 +831,17 @@ static int check_dial_avaiable_predictive(
 
     // get service level
     plan_service_level = ast_json_integer_get(ast_json_object_get(j_plan, "service_level"));
+    if(plan_service_level < 0) {
+        plan_service_level = 0;
+    }
 
     // calculate call
     // wait_agents * ((queue.performance + plan.performance) / 100) > dialing_calls
-    ret_double = cnt_avail_chan * ((service_perf + plan_service_level) / 100);
+    // (service_perf + plan_service_level) shouldn't be 0.
+    available = cnt_avail_chan * ((service_perf + plan_service_level) / 100);
 
     // compare
-    if(ret_double <= cnt_current_dialing) {
+    if(available <= cnt_current_dialing) {
         return 0;
     }
     return 1;
