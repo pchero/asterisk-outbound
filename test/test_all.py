@@ -26,6 +26,11 @@ def main():
         if ret != 0:
             print("Could not pass the test.")
             return
+        
+        ret = os.system("python ./test_dl_list.py %s %s" % (sys.argv[1], sys.argv[2]))
+        if ret != 0:
+            print("Could not pass the test.")
+            return
 
     except Exception as e:
         print e
