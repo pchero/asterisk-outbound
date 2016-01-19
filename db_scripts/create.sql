@@ -71,9 +71,12 @@ create table dl_list(
     in_use      int default 1,              -- 0:not in use, 1:in use
     
     -- information
-    name            varchar(255),
-    detail          varchar(255),
-    status          int default 0, -- dial list status. ("idle", "dialing", ...)
+    name            varchar(255),   -- customer name
+    detail          varchar(255),   -- customer detail info
+    status          int default 0,  -- dial list status. (0:idle, 1:dialing, 2:reserved)
+    
+    -- desktop dialing
+    resv_target     varchar(255),   -- reserved target address
 
     -- custom define data
     ukey            text,   -- user define key
