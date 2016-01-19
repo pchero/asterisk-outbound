@@ -12,12 +12,15 @@
 
 #include <stdbool.h>
 
+/**
+ * dl_list.status
+ */
 typedef enum _E_DL_STATUS_T
 {
-    E_DL_IDLE       = 0,
-    E_DL_DIALING    = 1,
+    E_DL_IDLE       = 0,    //!< idle
+    E_DL_DIALING    = 1,    //!< dialing
+    E_DL_RESERVED   = 2,    //!< resered for desktop dialing
 //    E_DL_QUEUEING   = 2,    ///< not in used.
-
 } E_DL_STATUS_T;
 
 typedef enum _E_DIAL_TYPE
