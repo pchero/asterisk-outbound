@@ -20,6 +20,15 @@ Download at here.
 ::
 
    https://github.com/pchero/asterisk-zmq/releases
+   
+Library
+-------
+Ubuntu/Debian
+
+::
+
+   $ sudo apt-get install 
+
 
 Install
 =======
