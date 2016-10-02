@@ -20,14 +20,20 @@ Download at here.
 ::
 
    https://github.com/pchero/asterisk-zmq/releases
-   
+
+database
+--------
+mariadb-10.0.1 or later
+mysql-5.6 or later
+
+
 Library
 -------
 Ubuntu/Debian
 
 ::
 
-   $ sudo apt-get install 
+   $ sudo apt-get install libevent2
 
 
 Install
