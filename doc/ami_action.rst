@@ -381,11 +381,26 @@ Returns
 -------
 ::
     
+   Response: Success
+   ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+   Message: Plan deleted successfully
 
 Example
 -------
 ::
 
+   Action: OutPlanDelete
+   ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+   Uuid: fca7a70d-fefe-4264-b967-76e7784b0d92
+   
+   Response: Success
+   ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+   Message: Plan deleted successfully
+   
+   Event: OutPlanDelete
+   Privilege: message,all
+   Uuid: fca7a70d-fefe-4264-b967-76e7784b0d92
+   
 
 OutPlanShow
 ===========
