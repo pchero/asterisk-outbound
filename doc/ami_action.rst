@@ -229,7 +229,7 @@ Example
     ListItems: 1
 
 OutPlanCreate
-===============
+=============
 Description
 -----------
 Create a new plan.
@@ -267,15 +267,48 @@ Parameters
 Returns
 -------
 ::
-    
+   
+   Response: Success
+   Message: Plan created successfully
 
 Example
 -------
 ::
 
+   Action: OutPlanCreate
+
+   Response: Success
+   Message: Plan created successfully
+   
+   Event: OutPlanCreate
+   Privilege: message,all
+   Uuid: b9a6f7b6-e3ea-4e08-839c-c51e0ad196d6
+   Name: <unknown>
+   Detail: <unknown>
+   DialMode: 0
+   DialTimeout: 30000
+   CallerId: <unknown>
+   AnswerHandle: 0
+   DlEndHandle: 1
+   RetryDelay: 50000
+   TrunkName: <unknown>
+   QueueName: <unknown>
+   AmdMode: 0
+   MaxRetryCnt1: 5
+   MaxRetryCnt2: 5
+   MaxRetryCnt3: 5
+   MaxRetryCnt4: 5
+   MaxRetryCnt5: 5
+   MaxRetryCnt6: 5
+   MaxRetryCnt7: 5
+   MaxRetryCnt8: 5
+   TmCreate: 2016-10-02 21:46:38.651717
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
 
 OutPlanUpdate
-===============
+=============
 
 Description
 -----------
@@ -325,7 +358,7 @@ Example
     
 
 OutPlanDelete
-===============
+=============
 
 Description
 -----------
@@ -355,7 +388,7 @@ Example
 
 
 OutPlanShow
-===============
+===========
 
 Description
 -----------
@@ -377,15 +410,64 @@ Parameters
 Returns
 -------
 ::
-    
+
+   Response: Success
+   EventList: start
+   Message: Plan List will follow
+   
+   ...
+   
+   Event: OutPlanListComplete
+   EventList: Complete
+   ListItems: 31
+   
 
 Example
 -------
 ::
 
+   Action: OutPlanShow
+
+   Response: Success
+   EventList: start
+   Message: Plan List will follow
+   
+   Event: OutPlanEntry
+   Uuid: 015280bf-8d46-4e42-8f16-72a22cda42d3
+   Name: <unknown>
+   Detail: <unknown>
+   DialMode: 0
+   DialTimeout: 30000
+   CallerId: <unknown>
+   AnswerHandle: 0
+   DlEndHandle: 1
+   RetryDelay: 50000
+   TrunkName: <unknown>
+   QueueName: <unknown>
+   AmdMode: 0
+   MaxRetryCnt1: 5
+   MaxRetryCnt2: 5
+   MaxRetryCnt3: 5
+   MaxRetryCnt4: 5
+   MaxRetryCnt5: 5
+   MaxRetryCnt6: 5
+   MaxRetryCnt7: 5
+   MaxRetryCnt8: 5
+   TmCreate: 2016-10-02 20:19:08.478190
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+   
+   ...
+   
+   Event: OutPlanListComplete
+   EventList: Complete
+   ListItems: 31
+   
+   
+
 
 OutDlmaCreate
-===============
+=============
 
 Description
 -----------
@@ -433,7 +515,7 @@ Example
 
     
 OutDlmaUpdate
-===============
+=============
 
 Description
 -----------
@@ -485,7 +567,7 @@ Example
 
     
 OutDlmaDelete
-===============
+=============
 
 Description
 -----------
@@ -527,7 +609,7 @@ Example
 
 
 OutDlmaShow
-===============
+===========
 
 Description
 -----------

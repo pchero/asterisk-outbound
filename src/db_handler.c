@@ -147,6 +147,7 @@ int db_exec(char* query)
 struct ast_json* db_get_record(db_res_t* ctx)
 {
     struct ast_json* j_res;
+    struct ast_json* j_tmp;
     MYSQL_RES* res;
     MYSQL_ROW row;
     MYSQL_FIELD* field;
@@ -165,6 +166,7 @@ struct ast_json* db_get_record(db_res_t* ctx)
 
     j_res = ast_json_object_create();
     for(i = 0; i < field_cnt; i++) {
+        ast_log(LOG_VERBOSE, "Check value. type[%d], name[%s]\n", field[i].type, field[i].name);
         if(row[i] == NULL) {
             ast_json_object_set(j_res, field[i].name, ast_json_null());
             continue;
@@ -176,26 +178,33 @@ struct ast_json* db_get_record(db_res_t* ctx)
             case MYSQL_TYPE_SHORT:
             case MYSQL_TYPE_LONG:
             case MYSQL_TYPE_LONGLONG: {
-                ast_json_object_set(j_res, field[i].name, ast_json_integer_create(atoi(row[i])));
+            	j_tmp = ast_json_integer_create(atoi(row[i]));
             }
             break;
 
             case MYSQL_TYPE_FLOAT:
             case MYSQL_TYPE_DOUBLE: {
-                ast_json_object_set(j_res, field[i].name, ast_json_real_create(atof(row[i])));
+            	j_tmp = ast_json_real_create(atof(row[i]));
             }
             break;
 
             case MYSQL_TYPE_NULL: {
-                ast_json_object_set(j_res, field[i].name, ast_json_null());
+            	j_tmp = ast_json_null();
             }
             break;
 
             default: {
-                ast_json_object_set(j_res, field[i].name, ast_json_string_create(row[i]));
+            	j_tmp = ast_json_string_create(row[i]);
             }
             break;
         }
+
+        if(j_tmp == NULL) {
+			ast_log(LOG_WARNING, "Could not parse result column. name[%s], type[%d]",
+					field[i].name, field[i].type);
+			j_tmp = ast_json_null();
+        }
+        ast_json_object_set(j_res, field[i].name, j_tmp);
     }
     return j_res;
 }
@@ -236,6 +245,11 @@ int db_insert(const char* table, const struct ast_json* j_data)
     char*               tmp_sub;
     struct ast_json_iter    *iter;
 
+    ast_log(LOG_VERBOSE, "db_insert.\n");
+    if((table == NULL) || (j_data == NULL)) {
+    	ast_log(LOG_WARNING, "Wrong input parameter.\n");
+    	return false;
+    }
 
     // copy original.
     j_data_cp = ast_json_deep_copy(j_data);
@@ -248,6 +262,7 @@ int db_insert(const char* table, const struct ast_json* j_data)
     iter = ast_json_object_iter(j_data_cp);
     while(iter) {
         key = ast_json_object_iter_key(iter);
+        ast_log(LOG_VERBOSE, "Check value. key[%s]\n", key);
         if(is_first == true) {
             is_first = false;
             ret = ast_asprintf(&tmp, "%s", key);
@@ -274,6 +289,7 @@ int db_insert(const char* table, const struct ast_json* j_data)
         else {
             ret = ast_asprintf(&tmp_sub, "%s, ", sql_values);
         }
+        ast_log(LOG_VERBOSE, "Value check. tmp_sub[%s]\n", tmp_sub);
 
         // get type.
         j_val = ast_json_object_iter_value(iter);
@@ -287,7 +303,7 @@ int db_insert(const char* table, const struct ast_json* j_data)
 
             // numbers
             case AST_JSON_INTEGER: {
-                ret = ast_asprintf(&tmp, "%s%ld", tmp_sub, ast_json_integer_get(j_val));
+                ret = ast_asprintf(&tmp, "%s%lld", tmp_sub, ast_json_integer_get(j_val));
             }
             break;
 
@@ -324,6 +340,7 @@ int db_insert(const char* table, const struct ast_json* j_data)
             }
             break;
         }
+        ast_log(LOG_VERBOSE, "Value check. type[%d], tmp[%s]\n", type, tmp);
 
         ast_free(tmp_sub);
         ast_free(sql_values);
@@ -339,6 +356,7 @@ int db_insert(const char* table, const struct ast_json* j_data)
     ast_free(sql_keys);
     ast_free(sql_values);
 
+    ast_log(LOG_VERBOSE, "Value check. sql[%s]\n", sql);
     ret = db_exec(sql);
     ast_free(sql);
     if(ret == false) {
@@ -397,7 +415,7 @@ char* db_get_update_str(const struct ast_json* j_data)
 
             // numbers
             case AST_JSON_INTEGER: {
-                ast_asprintf(&res, "%s%s = %ld", tmp, key, ast_json_integer_get(j_val));
+                ast_asprintf(&res, "%s%s = %lld", tmp, key, ast_json_integer_get(j_val));
             }
             break;
 

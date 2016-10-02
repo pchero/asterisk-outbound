@@ -1473,7 +1473,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
     ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
     ast_free(tmp);
 
-    ast_log(LOG_DEBUG, "Check value. res_dial[%ld]\n", ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial")));
+    ast_log(LOG_DEBUG, "Check value. res_dial[%lld]\n", ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial")));
 
     // update status
     rb_dialing_update_status(dialing, E_DIALING_ORIGINATE_RESPONSE);

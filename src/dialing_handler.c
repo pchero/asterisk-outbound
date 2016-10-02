@@ -214,7 +214,7 @@ rb_dialing* rb_dialing_create(
     if(ast_json_object_get(j_dial, "dial_data") != NULL) {
             ast_json_object_set(dialing->j_dialing, "dial_data", ast_json_ref(ast_json_object_get(j_dial, "dial_data")));
     }
-    ast_log(LOG_DEBUG, "Check value. dial_channel[%s], dial_addr[%s], dial_index[%ld], dial_trycnt[%ld], dial_timeout[%ld], dial_type[%ld], dial_exten[%s]\n",
+    ast_log(LOG_DEBUG, "Check value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s]\n",
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_channel")),
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_addr")),
             ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")),

@@ -84,7 +84,7 @@ bool create_plan(const struct ast_json* j_plan)
 
     ast_log(LOG_NOTICE, "Create plan. uuid[%s], name[%s]\n",
             ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
-            ast_json_string_get(ast_json_object_get(j_tmp, "name"))
+            ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "<unknown>"
             );
     ret = db_insert("plan", j_tmp);
     ast_json_unref(j_tmp);
@@ -92,10 +92,18 @@ bool create_plan(const struct ast_json* j_plan)
         ast_free(uuid);
         return false;
     }
+	ast_log(LOG_VERBOSE, "Finished insert.\n");
 
     // send ami event
     j_tmp = get_plan(uuid);
+	ast_log(LOG_VERBOSE, "Check plan info. uuid[%s]\n",
+			ast_json_string_get(ast_json_object_get(j_tmp, "uuid"))
+			);
     ast_free(uuid);
+    if(j_tmp == NULL) {
+    	ast_log(LOG_ERROR, "Could not get created plan info.");
+    	return false;
+    }
     send_manager_evt_out_plan_create(j_tmp);
     ast_json_unref(j_tmp);
 

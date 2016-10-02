@@ -91,14 +91,14 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
     char* sql;
 
     ast_asprintf(&sql, "select *, "
-            "case when number_1 is null then 0 when trycnt_1 < %ld then 1 else 0 end as num_1, "
-            "case when number_2 is null then 0 when trycnt_2 < %ld then 1 else 0 end as num_2, "
-            "case when number_3 is null then 0 when trycnt_3 < %ld then 1 else 0 end as num_3, "
-            "case when number_4 is null then 0 when trycnt_4 < %ld then 1 else 0 end as num_4, "
-            "case when number_5 is null then 0 when trycnt_5 < %ld then 1 else 0 end as num_5, "
-            "case when number_6 is null then 0 when trycnt_6 < %ld then 1 else 0 end as num_6, "
-            "case when number_7 is null then 0 when trycnt_7 < %ld then 1 else 0 end as num_7, "
-            "case when number_8 is null then 0 when trycnt_8 < %ld then 1 else 0 end as num_8 "
+            "case when number_1 is null then 0 when trycnt_1 < %lld then 1 else 0 end as num_1, "
+            "case when number_2 is null then 0 when trycnt_2 < %lld then 1 else 0 end as num_2, "
+            "case when number_3 is null then 0 when trycnt_3 < %lld then 1 else 0 end as num_3, "
+            "case when number_4 is null then 0 when trycnt_4 < %lld then 1 else 0 end as num_4, "
+            "case when number_5 is null then 0 when trycnt_5 < %lld then 1 else 0 end as num_5, "
+            "case when number_6 is null then 0 when trycnt_6 < %lld then 1 else 0 end as num_6, "
+            "case when number_7 is null then 0 when trycnt_7 < %lld then 1 else 0 end as num_7, "
+            "case when number_8 is null then 0 when trycnt_8 < %lld then 1 else 0 end as num_8 "
             "from `%s` "
             "having "
             "res_hangup != %d "
@@ -641,7 +641,7 @@ struct ast_json* create_dial_info(
         return NULL;
     }
 
-    sprintf(tmp_timeout, "%ld", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout")));
+    sprintf(tmp_timeout, "%lld", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout")));
     channel_id = gen_uuid();
     other_channel_id = gen_uuid();
 
