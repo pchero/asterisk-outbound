@@ -213,10 +213,10 @@ Example
     Name: test campaign 02
     Detail: The test campaign 02
     Status: 0
-    Plan: (null)
+    Plan: <unknown>
     Dlma: <unknown>
-    TmCreate: <unknown>
-    TmDelete: 2016-10-02 14:43:33.858693
+    TmCreate: 2016-10-02 14:43:33.858693
+    TmDelete: <unknown>
     TmUpdate: <unknown>
 
     Event: OutCampaignListComplete
