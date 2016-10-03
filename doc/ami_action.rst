@@ -44,22 +44,22 @@ Example
 -------
 ::
 
-    Action: OutCampaignCreate
-    
-    Response: Success
-    Message: Campaign created successfully
-    
-    Event: OutCampaignCreate
-    Privilege: message,all
-    Uuid: 5686822c-f596-483c-acaa-e96c12294e68
-    Name: <unknown>
-    Detail: <unknown>
-    Status: 0
-    Plan: (null)
-    Dlma: <unknown>
-    TmCreate: <unknown>
-    TmDelete: 2016-10-02 14:28:45.812672
-    TmUpdate: <unknown>
+   Action: OutCampaignCreate
+   
+   Response: Success
+   Message: Campaign created successfully
+   
+   Event: OutCampaignCreate
+   Privilege: message,all
+   Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+   Name: <unknown>
+   Detail: <unknown>
+   Status: 0
+   Plan: <unknown>
+   Dlma: <unknown>
+   TmCreate: 2016-10-03 20:05:49.429024
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
 
 
 OutCampaignUpdate
@@ -103,27 +103,24 @@ Example
 -------
 ::
 
-    Action: OutCampaignUpdate
-    ActionID: 4eebd84c-fff8-4562-9d61-7889dcb57ab4
-    Uuid: 5686822c-f596-483c-acaa-e96c12294e68
-    Name: test campaign 01
-    Detail: The test campaign 01
-
-    Response: Success
-    ActionID: 4eebd84c-fff8-4562-9d61-7889dcb57ab4
-    Message: Campaign updated successfully
-
-    Event: OutCampaignUpdate
-    Privilege: message,all
-    Uuid: 5686822c-f596-483c-acaa-e96c12294e68
-    Name: test campaign 01
-    Detail: The test campaign 01
-    Status: 0
-    Plan: (null)
-    Dlma: <unknown>
-    TmCreate: <unknown>
-    TmDelete: 2016-10-02 14:28:45.812672
-    TmUpdate: <unknown>
+   Action: OutCampaignUpdate
+   Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+   Name: Test campaign 03
+   
+   Response: Success
+   Message: Campaign updated successfully
+   
+   Event: OutCampaignUpdate
+   Privilege: message,all
+   Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+   Name: Test campaign 03
+   Detail: <unknown>
+   Status: 0
+   Plan: <unknown>
+   Dlma: <unknown>
+   TmCreate: 2016-10-03 20:05:49.429024
+   TmDelete: <unknown>
+   TmUpdate: 2016-10-03 20:07:05.932267
 
     
 OutCampaignDelete
@@ -157,17 +154,15 @@ Example
 -------
 ::
 
-    Action: OutCampaignDelete
-    ActionID: 3c827c64-88ae-11e6-b5fd-938a04bec737
-    Uuid: 5686822c-f596-483c-acaa-e96c12294e68
-
-    Response: Success
-    ActionID: 3c827c64-88ae-11e6-b5fd-938a04bec737
-    Message: Campaign deleted successfully
-
-    Event: OutCampaignDelete
-    Privilege: message,all
-    Uuid: 5686822c-f596-483c-acaa-e96c12294e68
+   Action: OutCampaignDelete
+   Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+   
+   Response: Success
+   Message: Campaign deleted successfully
+   
+   Event: OutCampaignDelete
+   Privilege: message,all
+   Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
 
 
 OutCampaignShow
