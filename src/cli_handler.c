@@ -666,6 +666,7 @@ static char* get_plan_str(struct ast_json* j_plan)
             "RetryDelay: %lld\r\n"
             "TrunkName: %s\r\n"
 
+            "TechName: %s\r\n"
             "QueueName: %s\r\n"
             "AmdMode: %lld\r\n"
 
@@ -693,6 +694,7 @@ static char* get_plan_str(struct ast_json* j_plan)
             ast_json_integer_get(ast_json_object_get(j_plan, "retry_delay")),
             ast_json_string_get(ast_json_object_get(j_plan, "trunk_name"))? : "<unknown>",
 
+            ast_json_string_get(ast_json_object_get(j_plan, "tech_name"))? : "<unknown>",
             ast_json_string_get(ast_json_object_get(j_plan, "queue_name"))? : "<unknown>",
             ast_json_integer_get(ast_json_object_get(j_plan, "amd_mode")),
 
@@ -986,75 +988,99 @@ static struct ast_json* create_json_plan(const struct message* m)
     j_tmp = ast_json_object_create();
 
     tmp_const = astman_get_header(m, "Name");
-    if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));
+    }
 
     tmp_const = astman_get_header(m, "Detail");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));
+    }
 
     tmp_const = astman_get_header(m, "DialMode");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "dial_mode", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "dial_mode", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "CallerId");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "caller_id", ast_json_string_create(tmp_const));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "caller_id", ast_json_string_create(tmp_const));
+    }
 
     tmp_const = astman_get_header(m, "AnswerHandle");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "answer_handle", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "answer_handle", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "DlEndHandle");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "dl_end_handle", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "dl_end_handle", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "RetryDelay");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "retry_delay", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "retry_delay", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "TrunkName");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "trunk_name", ast_json_string_create(tmp_const));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "trunk_name", ast_json_string_create(tmp_const));
+    }
+
+    tmp_const = astman_get_header(m, "TechName");
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "tech_name", ast_json_string_create(tmp_const));
+    }
 
     tmp_const = astman_get_header(m, "QueueName");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "queue_name", ast_json_string_create(tmp_const));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "queue_name", ast_json_string_create(tmp_const));
+    }
 
     tmp_const = astman_get_header(m, "AmdMode");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "amd_mode", ast_json_string_create(tmp_const));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "amd_mode", ast_json_string_create(tmp_const));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry1");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_1", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_1", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry2");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_2", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_2", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry3");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_3", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_3", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry4");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_4", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_4", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry5");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_5", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_5", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry6");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_6", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_6", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry7");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_7", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_7", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     tmp_const = astman_get_header(m, "MaxRetry8");
-    if(strcmp(tmp_const, "") != 0)
-    {ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));}
+    if(strcmp(tmp_const, "") != 0) {
+        ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));
+    }
 
     return j_tmp;
 }

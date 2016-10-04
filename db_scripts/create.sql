@@ -23,6 +23,7 @@ create table plan(
     dl_end_handle   int default 1,              -- stratery when it running out dial list(keep_running, stop)
     retry_delay     int default 50000,          -- retry delaytime(ms)
     trunk_name      varchar(255) default null,  -- trunk name
+    tech_name       varchar(255) default null,  -- tech name
     queue_name      varchar(255) default null,  -- queue name
     amd_mode        int default 0,              -- AMD mode
     service_level   int unsigned default 0,     -- service level. determine how many calls can going out campare to available agents. 

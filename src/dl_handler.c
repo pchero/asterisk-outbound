@@ -698,15 +698,22 @@ static char* create_chan_addr_for_dial(struct ast_json* j_plan, struct ast_json*
 {
     char* dest_addr;
     char* chan_addr;
+    const char* trunk_name;
+    const char* tech_name;
 
     if(dial_num_point < 0) {
         ast_log(LOG_WARNING, "Wrong dial number point.\n");
         return NULL;
     }
 
-    if(ast_json_string_get(ast_json_object_get(j_plan, "trunk_name")) == NULL) {
-        ast_log(LOG_WARNING, "Could not get trunk_name info.\n");
-        return NULL;
+    trunk_name = ast_json_string_get(ast_json_object_get(j_plan, "trunk_name"));
+    if(trunk_name == NULL) {
+        trunk_name = "";
+    }
+
+    tech_name = ast_json_string_get(ast_json_object_get(j_plan, "tech_name"));
+    if(tech_name == NULL) {
+        tech_name = "";
     }
 
     // get dial number
@@ -717,7 +724,12 @@ static char* create_chan_addr_for_dial(struct ast_json* j_plan, struct ast_json*
     }
 
     // create dial addr
-    ast_asprintf(&chan_addr, "SIP/%s@%s", dest_addr, ast_json_string_get(ast_json_object_get(j_plan, "trunk_name")));
+    if(strlen(trunk_name) > 0) {
+        ast_asprintf(&chan_addr, "%s%s@%s", tech_name, dest_addr, trunk_name);
+    }
+    else {
+        ast_asprintf(&chan_addr, "%s%s", tech_name, dest_addr);
+    }
     ast_log(LOG_DEBUG, "Created dialing channel address. chan_addr[%s].\n", chan_addr);
     ast_free(dest_addr);
 
