@@ -244,6 +244,7 @@ Syntax
     [DlEndHandle:] <value>
     [RetryDelay:] <value>
     [TrunkName:] <value>
+    [TechName:] <value>
     [QueueName:] <value>
     [AmdMode:] <value>
     [MaxRetry1:] <value>
@@ -325,6 +326,7 @@ Syntax
     [DlEndHandle:] <value>
     [RetryDelay:] <value>
     [TrunkName:] <value>
+    [TechName:] <value>
     [QueueName:] <value>
     [AmdMode:] <value>
     [MaxRetry1:] <value>

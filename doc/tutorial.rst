@@ -102,13 +102,14 @@ Create Plan
    Detail: simple sales plan
    DialMode: 1
    QueueName: sales_1
+   TechName: sip/
    
    Response: Success
    Message: Plan created successfully
    
    Event: OutPlanCreate
    Privilege: message,all
-   Uuid: 025e7f4a-540c-47fe-bd4d-de8ace44e11c
+   Uuid: 9c62202a-b9b1-4408-a868-3e9a6a60a94f
    Name: sales_plan
    Detail: simple sales plan
    DialMode: 1
@@ -118,6 +119,7 @@ Create Plan
    DlEndHandle: 1
    RetryDelay: 50000
    TrunkName: <unknown>
+   TechName: <unknown>
    QueueName: sales_1
    AmdMode: 0
    MaxRetryCnt1: 5
@@ -128,7 +130,7 @@ Create Plan
    MaxRetryCnt6: 5
    MaxRetryCnt7: 5
    MaxRetryCnt8: 5
-   TmCreate: 2016-10-03 22:49:28.390516
+   TmCreate: 2016-10-04 22:29:13.898189
    TmDelete: <unknown>
    TmUpdate: <unknown>
    
@@ -147,11 +149,11 @@ Create Dlma
    
    Event: OutDlmaCreate
    Privilege: message,all
-   Uuid: 6c1e916a-608e-494c-9350-5a7095d6f640
+   Uuid: 6d6714c2-907e-4240-aab8-0865c2c53f38
    Name: DialListMaster_Sales
    Detail: Test Dlma description
-   DlTable: 6c1e916a_608e_494c_9350_5a7095d6f640
-   TmCreate: 2016-10-04 18:43:14.564009
+   DlTable: 6d6714c2_907e_4240_aab8_0865c2c53f38
+   TmCreate: 2016-10-04 22:29:42.896220
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
