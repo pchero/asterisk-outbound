@@ -166,7 +166,6 @@ struct ast_json* db_get_record(db_res_t* ctx)
 
     j_res = ast_json_object_create();
     for(i = 0; i < field_cnt; i++) {
-        ast_log(LOG_VERBOSE, "Check value. type[%d], name[%s]\n", field[i].type, field[i].name);
         if(row[i] == NULL) {
             ast_json_object_set(j_res, field[i].name, ast_json_null());
             continue;

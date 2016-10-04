@@ -404,7 +404,7 @@ struct ast_json* ami_cmd_queue_status(const char* name)
 
     j_cmd = ast_json_pack("{s:s}", "Action", "QueueStatus");
     if(name != NULL) {
-        ast_json_object_set(j_cmd, "Queue", ast_json_string_create("name"));
+        ast_json_object_set(j_cmd, "Queue", ast_json_string_create(name));
     }
 
     if(j_cmd == NULL) {

@@ -13,6 +13,9 @@ Contents:
    
    intro
    installation
+   structure
+   ami_action
+   tutorial
 
 
 Indices and tables
