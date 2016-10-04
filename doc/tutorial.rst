@@ -109,7 +109,7 @@ Create Plan
    
    Event: OutPlanCreate
    Privilege: message,all
-   Uuid: 9c62202a-b9b1-4408-a868-3e9a6a60a94f
+   Uuid: d1306a32-0ec6-4389-a5f1-118153b6266e
    Name: sales_plan
    Detail: simple sales plan
    DialMode: 1
@@ -119,7 +119,7 @@ Create Plan
    DlEndHandle: 1
    RetryDelay: 50000
    TrunkName: <unknown>
-   TechName: <unknown>
+   TechName: sip/
    QueueName: sales_1
    AmdMode: 0
    MaxRetryCnt1: 5
@@ -130,7 +130,7 @@ Create Plan
    MaxRetryCnt6: 5
    MaxRetryCnt7: 5
    MaxRetryCnt8: 5
-   TmCreate: 2016-10-04 22:29:13.898189
+   TmCreate: 2016-10-04 22:40:41.573445
    TmDelete: <unknown>
    TmUpdate: <unknown>
    
@@ -149,11 +149,11 @@ Create Dlma
    
    Event: OutDlmaCreate
    Privilege: message,all
-   Uuid: 6d6714c2-907e-4240-aab8-0865c2c53f38
+   Uuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
    Name: DialListMaster_Sales
    Detail: Test Dlma description
-   DlTable: 6d6714c2_907e_4240_aab8_0865c2c53f38
-   TmCreate: 2016-10-04 22:29:42.896220
+   DlTable: 9155a63e_6577_4abc_96e4_2c7811b5f639
+   TmCreate: 2016-10-04 22:41:07.528126
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
@@ -163,10 +163,10 @@ Create Dl list
 ::
 
    Action: OutDlListCreate
-   DlmaUuid: 6c1e916a-608e-494c-9350-5a7095d6f640
+   DlmaUuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
    Name: client 01
    Detail: Dial to client 01
-   Number1: sip:client-01@localhost
+   Number1: 300
    
    Response: Success
    Message: Dl list created successfully
@@ -178,21 +178,22 @@ Create campaign
    Action: OutCampaignCreate
    Name: Sales campaign
    Detail: test campaign
-   Plan: 025e7f4a-540c-47fe-bd4d-de8ace44e11c
-   Dlma: 6c1e916a-608e-494c-9350-5a7095d6f640
+   Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
+   Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
    
    Response: Success
    Message: Campaign created successfully
    
    Event: OutCampaignCreate
    Privilege: message,all
-   Uuid: 1466a88c-85e6-4dee-a8c7-8cb3a8f28ab0
+   Uuid: a3e95af9-5ffa-4f53-8908-6095ff24945c
    Name: Sales campaign
    Detail: test campaign
    Status: 0
-   Plan: 025e7f4a-540c-47fe-bd4d-de8ace44e11c
-   Dlma: 6c1e916a-608e-494c-9350-5a7095d6f640
-   TmCreate: 2016-10-04 19:13:59.477578
+   Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
+   Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
+   TmCreate: 2016-10-04 22:43:22.899115
    TmDelete: <unknown>
    TmUpdate: <unknown>
+
    

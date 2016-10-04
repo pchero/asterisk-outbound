@@ -944,6 +944,7 @@ struct ast_json* get_queue_param(const char* name)
     if(name == NULL) {
         return NULL;
     }
+    ast_log(LOG_DEBUG, "Getting queue param info. queue_name[%s]\n", name);
 
     j_ami_res = ami_cmd_queue_status(name);
     if(j_ami_res == NULL) {
@@ -957,7 +958,18 @@ struct ast_json* get_queue_param(const char* name)
     size = ast_json_array_size(j_ami_res);
     for(i = 0; i < size; i++) {
         j_tmp = ast_json_array_get(j_ami_res, i);
-        tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "QueueParams"));
+
+        // Event check
+        tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "Event"));
+        if(tmp_const == NULL) {
+            continue;
+        }
+        if(strcmp(tmp_const, "QueueParams") != 0) {
+            continue;
+        }
+
+        // compare the queue name
+        tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "Queue"));
         if(tmp_const == NULL) {
             continue;
         }
