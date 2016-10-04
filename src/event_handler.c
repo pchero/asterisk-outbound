@@ -601,13 +601,6 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     char* try_count_field;
     E_DIAL_TYPE dial_type;
 
-    // validate plan
-    if(ast_json_string_get(ast_json_object_get(j_plan, "trunk_name")) == NULL) {
-        ast_log(LOG_WARNING, "Could not find trunk name. Stopping campaign.\n");
-        update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
-        return;
-    }
-
     // get dl_list info to dial.
     j_dl_list = get_dl_available_predictive(j_dlma, j_plan);
     if(j_dl_list == NULL) {
