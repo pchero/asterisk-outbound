@@ -132,3 +132,65 @@ Create Plan
    TmDelete: <unknown>
    TmUpdate: <unknown>
    
+
+Create Dlma
+-----------
+
+::
+
+   Action: OutDlmaCreate
+   Name: DialListMaster_Sales
+   Detail: Test Dlma description
+   
+   Response: Success
+   Message: Dlma created successfully
+   
+   Event: OutDlmaCreate
+   Privilege: message,all
+   Uuid: 6c1e916a-608e-494c-9350-5a7095d6f640
+   Name: DialListMaster_Sales
+   Detail: Test Dlma description
+   DlTable: 6c1e916a_608e_494c_9350_5a7095d6f640
+   TmCreate: 2016-10-04 18:43:14.564009
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+
+Create Dl list
+--------------
+::
+
+   Action: OutDlListCreate
+   DlmaUuid: 6c1e916a-608e-494c-9350-5a7095d6f640
+   Name: client 01
+   Detail: Dial to client 01
+   Number1: sip:client-01@localhost
+   
+   Response: Success
+   Message: Dl list created successfully
+
+Create campaign
+---------------
+::
+
+   Action: OutCampaignCreate
+   Name: Sales campaign
+   Detail: test campaign
+   Plan: 025e7f4a-540c-47fe-bd4d-de8ace44e11c
+   Dlma: 6c1e916a-608e-494c-9350-5a7095d6f640
+   
+   Response: Success
+   Message: Campaign created successfully
+   
+   Event: OutCampaignCreate
+   Privilege: message,all
+   Uuid: 1466a88c-85e6-4dee-a8c7-8cb3a8f28ab0
+   Name: Sales campaign
+   Detail: test campaign
+   Status: 0
+   Plan: 025e7f4a-540c-47fe-bd4d-de8ace44e11c
+   Dlma: 6c1e916a-608e-494c-9350-5a7095d6f640
+   TmCreate: 2016-10-04 19:13:59.477578
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+   

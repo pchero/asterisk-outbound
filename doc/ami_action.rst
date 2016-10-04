@@ -674,3 +674,68 @@ Example
     Event: OutDlmaListComplete
     EventList: Complete
     ListItems: 1
+
+    
+OutDlListCreate
+===============
+
+Description
+-----------
+Create Dial list for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDlListCreate
+   ActionID: <value>
+   DlmaUuid: <dlma-uuid>
+   Name: <customer-name>
+   Detail: <customer-detail info>
+   UKey: <customer-unique key>
+   UData: <customer-UUI data>
+   Number1: <customer-destination 1>
+   Number2: <customer-destination 2>
+   Number3: <customer-destination 3>
+   Number4: <customer-destination 4>
+   Number5: <customer-destination 5>
+   Number6: <customer-destination 6>
+   Number7: <customer-destination 7>
+   Number8: <customer-destination 8>
+   res_dial: <dial-result>
+   res_dial_detail: <dial-result-detail>
+   res_hangup: <dial-hangup>
+   res_hangup_detail: <dial-hangup-detail>
+
+
+Parameters
+
+
+Returns
+-------
+::
+        
+    Response: Success
+    EventList: start
+    Message: Dlma List will follow
+
+    ...
+    
+    Event: OutDlmaListComplete
+    EventList: Complete
+    ListItems: 1
+
+Example
+-------
+::
+
+   Action: OutDlListCreate
+   DlmaUuid: 6c1e916a-608e-494c-9350-5a7095d6f640
+   Name: client 01
+   Detail: Dial to client 01
+   Number1: sip:client-01@example.com
+   
+   Response: Success
+   Message: Dl list created successfully
+   
