@@ -695,7 +695,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     tmp = get_utc_timestamp();
     ast_asprintf(&try_count_field, "trycnt_%lld", ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")));
 
-    j_dl_update = ast_json_pack("{s:s, s:i, s:i, s:s, s:s, s:s, s:s}",
+    j_dl_update = ast_json_pack("{s:s, s:I, s:i, s:s, s:s, s:s, s:s}",
             "uuid",                 ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
             try_count_field,        ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_trycnt")),
             "status",               E_DL_DIALING,
@@ -713,7 +713,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
     if(ret == false) {
         rb_dialing_destory(dialing);
         clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")));
-        ast_log(LOG_ERROR, "Could not update dial list info.");
+        ast_log(LOG_ERROR, "Could not update dial list info.\n");
         return;
     }
 

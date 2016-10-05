@@ -170,6 +170,11 @@ bool update_dl_list(struct ast_json* j_dl)
     int ret;
     char* tmp;
 
+    if(j_dl == NULL) {
+        ast_log(LOG_WARNING, "Wrong input parameter.\n");
+        return false;
+    }
+
     tmp = db_get_update_str(j_dl);
     if(tmp == NULL) {
         ast_log(LOG_ERROR, "Could not get update sql.\n");
