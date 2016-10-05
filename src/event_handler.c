@@ -34,6 +34,7 @@ struct event_base*  g_base = NULL;
 static int init_outbound(void);
 
 static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+static void cb_campaign_starting(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
@@ -70,6 +71,10 @@ int run_outbound(void)
 
     // check start.
     ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_start, NULL);
+    event_add(ev, &tm_fast);
+
+    // check starting
+    ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_starting, NULL);
     event_add(ev, &tm_fast);
 
     // check stopping.
@@ -278,6 +283,52 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
 }
 
 /**
+ *  @brief  Check starting status campaign and update status to stopping or start.
+ */
+static void cb_campaign_starting(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
+{
+    struct ast_json* j_camps;
+    struct ast_json* j_camp;
+    int size;
+    int i;
+    int ret;
+
+    ast_log(LOG_DEBUG, "cb_campaign_starting.\n");
+
+    j_camps = get_campaigns_by_status(E_CAMP_STARTING);
+    if(j_camps == NULL) {
+        // Nothing.
+        return;
+    }
+
+    size = ast_json_array_size(j_camps);
+    for(i = 0; i < size; i++) {
+        j_camp = ast_json_array_get(j_camps, i);
+
+        // check startable
+        ret = is_startable_campgain(j_camp);
+        if(ret == false) {
+            continue;
+        }
+
+        // update campaign status
+        ast_log(LOG_NOTICE, "Update campaign status to start. camp_uuid[%s], camp_name[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                ast_json_string_get(ast_json_object_get(j_camp, "name"))
+                );
+        ret = update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_START);
+        if(ret == false) {
+            ast_log(LOG_ERROR, "Could not update campaign status to start. camp_uuid[%s], camp_name[%s]\n",
+                    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                    ast_json_string_get(ast_json_object_get(j_camp, "name"))
+                    );
+        }
+    }
+    ast_json_unref(j_camps);
+    return;
+}
+
+/**
  * Check Stopping status campaign, and update to stop.
  * @param fd
  * @param event
@@ -287,14 +338,11 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
 {
     struct ast_json* j_camps;
     struct ast_json* j_camp;
-    struct ao2_iterator iter;
-    rb_dialing* dialing;
-    const char* tmp_const;
     int i;
     int size;
-    int flg_dialing;
+    int ret;
 
-    ast_log(LOG_DEBUG, "cb_campaign_stopping\n");
+    ast_log(LOG_DEBUG, "cb_campaign_stopping.\n");
 
     j_camps = get_campaigns_by_status(E_CAMP_STOPPING);
     if(j_camps == NULL) {
@@ -306,33 +354,23 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
     for(i = 0; i < size; i++) {
         j_camp = ast_json_array_get(j_camps, i);
 
-        flg_dialing = false;
-        iter = rb_dialing_iter_init();
-        while(1) {
-            dialing = rb_dialing_iter_next(&iter);
-            if(dialing == NULL) {
-                break;
-            }
-
-            tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid"));
-            if(tmp_const == NULL) {
-                continue;
-            }
-
-            if(strcmp(tmp_const, ast_json_string_get(ast_json_object_get(j_camp, "uuid"))) == 0) {
-                flg_dialing = true;
-                continue;
-            }
+        // check stoppable
+        ret = is_stoppable_campgain(j_camp);
+        if(ret == false) {
+            continue;
         }
-        rb_dialing_iter_destroy(&iter);
 
-        if(flg_dialing == false) {
-            // update status to stop
-            ast_log(LOG_DEBUG, "Stop campaign info. camp_uuid[%s], camp_name[%s]\n",
-                    ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-                    ast_json_string_get(ast_json_object_get(j_camp, "name"))
-                    );
-            update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
+        // update status to stop
+        ast_log(LOG_NOTICE, "Update campaign status to stop. camp_uuid[%s], camp_name[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                ast_json_string_get(ast_json_object_get(j_camp, "name"))
+                );
+        ret = update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOP);
+        if(ret == false) {
+            ast_log(LOG_ERROR, "Could not update campaign status to stop. camp_uuid[%s], camp_name[%s]\n",
+                ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+                ast_json_string_get(ast_json_object_get(j_camp, "name"))
+                );
         }
     }
 
