@@ -361,3 +361,66 @@ struct ast_json* get_campaign_for_dialing(void)
 
     return j_res;
 }
+
+/**
+ * return the possibility of status change to start
+ */
+bool is_startable_campgain(struct ast_json* j_camp)
+{
+    if(j_camp == NULL) {
+        ast_log(LOG_WARNING, "Wrong input parameter.\n");
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * return the possibility of status change to stop
+ */
+bool is_stoppable_campgain(struct ast_json* j_camp)
+{
+    struct ao2_iterator iter;
+    rb_dialing* dialing;
+    const char* tmp_const;
+    bool flg_dialing;
+    int ret;
+
+    if(j_camp == NULL) {
+        ast_log(LOG_WARNING, "Wrong input parameter.\n");
+        return false;
+    }
+    ast_log(LOG_VERBOSE, "is_stoppable_campgain.\n");
+
+    flg_dialing = false;
+    iter = rb_dialing_iter_init();
+    while(1) {
+        dialing = rb_dialing_iter_next(&iter);
+        if(dialing == NULL) {
+            break;
+        }
+
+        tmp_const = ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid"));
+        if(tmp_const == NULL) {
+            continue;
+        }
+
+        ret = strcmp(tmp_const, ast_json_string_get(ast_json_object_get(j_camp, "uuid")));
+        if(ret == 0) {
+            ast_log(LOG_NOTICE, "Found active call. dialing-uuid[%s], dialing-name[%s]\n",
+                    dialing->uuid, dialing->name
+                    );
+            flg_dialing = true;
+            break;
+        }
+    }
+    rb_dialing_iter_destroy(&iter);
+
+    if(flg_dialing == true) {
+        return false;
+    }
+
+    return true;
+}
+
+
