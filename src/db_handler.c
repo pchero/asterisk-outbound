@@ -261,7 +261,6 @@ int db_insert(const char* table, const struct ast_json* j_data)
     iter = ast_json_object_iter(j_data_cp);
     while(iter) {
         key = ast_json_object_iter_key(iter);
-        ast_log(LOG_VERBOSE, "Check value. key[%s]\n", key);
         if(is_first == true) {
             is_first = false;
             ret = ast_asprintf(&tmp, "%s", key);
@@ -288,7 +287,6 @@ int db_insert(const char* table, const struct ast_json* j_data)
         else {
             ret = ast_asprintf(&tmp_sub, "%s, ", sql_values);
         }
-        ast_log(LOG_VERBOSE, "Value check. tmp_sub[%s]\n", tmp_sub);
 
         // get type.
         j_val = ast_json_object_iter_value(iter);
@@ -339,7 +337,6 @@ int db_insert(const char* table, const struct ast_json* j_data)
             }
             break;
         }
-        ast_log(LOG_VERBOSE, "Value check. type[%d], tmp[%s]\n", type, tmp);
 
         ast_free(tmp_sub);
         ast_free(sql_values);
@@ -355,7 +352,6 @@ int db_insert(const char* table, const struct ast_json* j_data)
     ast_free(sql_keys);
     ast_free(sql_values);
 
-    ast_log(LOG_VERBOSE, "Value check. sql[%s]\n", sql);
     ret = db_exec(sql);
     ast_free(sql);
     if(ret == false) {

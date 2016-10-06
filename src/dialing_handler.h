@@ -14,13 +14,15 @@
 
 typedef enum _E_DIALING_STATUS_T
 {
-    E_DIALING_NONE = 0,                     ///< None state
+    E_DIALING_NONE                  = 0,    ///< None state
     E_DIALING_ORIGINATE_REQUEST     = 1,
     E_DIALING_DIAL_BEGIN,
     E_DIALING_CHANNEL_CREATE,
     E_DIALING_DIAL_END,
-    E_DIALING_ORIGINATE_RESPONSE,
+    E_DIALING_ORIGINATE_RESPONSE    = 5,
     E_DIALING_HANGUP,
+
+    E_DIALING_ERROR                 = 10,   ///< error
 } E_DIALING_STATUS_T;
 
 typedef struct _rb_dialing{
