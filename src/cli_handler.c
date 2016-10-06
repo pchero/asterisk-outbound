@@ -832,8 +832,8 @@ static char* get_dialing_str(const rb_dialing* dialing)
             ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid"))? : "<unknown>",
 
             // current info
-            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_queue"))? : "<null>",
-            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_agent"))? : "<null>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_queue"))? : "<unknown>",
+            ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_agent"))? : "<unknown>",
 
             // dial info
             ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")),

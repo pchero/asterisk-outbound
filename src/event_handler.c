@@ -38,6 +38,7 @@ static void cb_campaign_starting(__attribute__((unused)) int fd, __attribute__((
 static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 
 //static struct ast_json* get_queue_info(const char* uuid);
@@ -88,6 +89,9 @@ int run_outbound(void)
 
 
     ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_dialing_end, NULL);
+    event_add(ev, &tm_fast);
+
+    ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_dialing_error, NULL);
     event_add(ev, &tm_fast);
 
     ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_campaign_end, NULL);
@@ -521,6 +525,87 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 
     return;
 }
+
+static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
+{
+    struct ao2_iterator iter;
+    rb_dialing* dialing;
+    struct ast_json* j_tmp;
+    int ret;
+
+    ast_log(LOG_DEBUG, "cb_check_dialing_error.\n");
+
+    iter = rb_dialing_iter_init();
+    while(1) {
+        dialing = rb_dialing_iter_next(&iter);
+        if(dialing == NULL) {
+            break;
+        }
+
+        if(dialing->status != E_DIALING_ERROR) {
+            continue;
+        }
+
+        // create dl_list for update
+        j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O}",
+                "uuid",                 ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
+                "status",               E_DL_IDLE,
+                "dialing_uuid",         ast_json_null(),
+                "dialing_camp_uuid",    ast_json_null(),
+                "dialing_plan_uuid",    ast_json_null()
+                );
+        ast_json_object_set(j_tmp, "res_hangup", ast_json_ref(ast_json_object_get(dialing->j_dialing, "res_hangup")));
+        ast_json_object_set(j_tmp, "res_dial", ast_json_ref(ast_json_object_get(dialing->j_dialing, "res_dial")));
+        if(j_tmp == NULL) {
+            ast_log(LOG_ERROR, "Could not create update dl_list json. dl_list_uuid[%s], res_hangup[%lld], res_dial[%lld]\n",
+                    ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
+                    ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_hangup")),
+                    ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_dial"))
+                    );
+        }
+
+        // update dl_list
+        ret = update_dl_list(j_tmp);
+        ast_json_unref(j_tmp);
+        if(ret == false) {
+            ast_log(LOG_WARNING, "Could not update dialing result. dialing_uuid[%s], dl_list_uuid[%s]\n",
+                    dialing->uuid, ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")));
+            continue;
+        }
+
+        // create result data
+        j_tmp = create_json_for_dl_result(dialing);
+        ast_log(LOG_DEBUG, "Check result value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s], res_dial[%lld], res_amd[%lld], res_amd_detail[%s], res_hangup[%lld], res_hangup_detail[%s]\n",
+
+                // dial
+                ast_json_string_get(ast_json_object_get(j_tmp, "dial_channel")),
+                ast_json_string_get(ast_json_object_get(j_tmp, "dial_addr")),
+                ast_json_integer_get(ast_json_object_get(j_tmp, "dial_index")),
+                ast_json_integer_get(ast_json_object_get(j_tmp, "dial_trycnt")),
+                ast_json_integer_get(ast_json_object_get(j_tmp, "dial_timeout")),
+                ast_json_integer_get(ast_json_object_get(j_tmp, "dial_type")),
+                ast_json_string_get(ast_json_object_get(j_tmp, "dial_exten")),
+
+                // result
+                ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial")),
+                ast_json_integer_get(ast_json_object_get(j_tmp, "res_amd")),
+                ast_json_string_get(ast_json_object_get(j_tmp, "res_amd_detail")),
+                ast_json_integer_get(ast_json_object_get(j_tmp, "res_hangup")),
+                ast_json_string_get(ast_json_object_get(j_tmp, "res_hangup_detail"))
+                );
+
+        db_insert("dl_result", j_tmp);
+        ast_json_unref(j_tmp);
+
+        rb_dialing_destory(dialing);
+        ast_log(LOG_DEBUG, "Destroied!\n");
+
+    }
+    ao2_iterator_destroy(&iter);
+
+    return;
+}
+
 
 static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
 {
