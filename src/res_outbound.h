@@ -2,7 +2,7 @@
  * res_outbound.h
  *
  *  Created on: Nov 7, 2015
- *      Author: pchero
+ *	  Author: pchero
  */
 
 #ifndef SRC_RES_OUTBOUND_H_
@@ -12,7 +12,7 @@
 #include "asterisk/json.h"
 
 struct _app {
-    struct ast_json*   j_cfg;
+	struct ast_json*   j_cfg;
 } g_app;
 
 #endif /* SRC_RES_OUTBOUND_H_ */

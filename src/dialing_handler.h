@@ -2,7 +2,7 @@
  * dialing_handler.h
  *
  *  Created on: Nov 21, 2015
- *      Author: pchero
+ *	  Author: pchero
  */
 
 #ifndef SRC_DIALING_HANDLER_H_
@@ -14,32 +14,32 @@
 
 typedef enum _E_DIALING_STATUS_T
 {
-    E_DIALING_NONE                  = 0,    ///< None state
-    E_DIALING_ORIGINATE_REQUEST     = 1,
-    E_DIALING_DIAL_BEGIN,
-    E_DIALING_CHANNEL_CREATE,
-    E_DIALING_DIAL_END,
-    E_DIALING_ORIGINATE_RESPONSE    = 5,
-    E_DIALING_HANGUP,
+	E_DIALING_NONE				  = 0,	///< None state
+	E_DIALING_ORIGINATE_REQUEST	 = 1,
+	E_DIALING_DIAL_BEGIN,
+	E_DIALING_CHANNEL_CREATE,
+	E_DIALING_DIAL_END,
+	E_DIALING_ORIGINATE_RESPONSE	= 5,
+	E_DIALING_HANGUP,
 
-    E_DIALING_ERROR                 = 10,   ///< error
+	E_DIALING_ERROR				 = 10,   ///< error
 } E_DIALING_STATUS_T;
 
 typedef struct _rb_dialing{
-    char* uuid;                 ///< dialing uuid(channel's unique id)
-    char* name;                 ///< dialing name(channel's name)
-    E_DIALING_STATUS_T status;  ///< dialing status
+	char* uuid;				 ///< dialing uuid(channel's unique id)
+	char* name;				 ///< dialing name(channel's name)
+	E_DIALING_STATUS_T status;  ///< dialing status
 
-    char* tm_create;
-    char* tm_update;
-    char* tm_delete;
-    struct timespec timeptr_update; ///< timestamp for timeout
+	char* tm_create;
+	char* tm_update;
+	char* tm_delete;
+	struct timespec timeptr_update; ///< timestamp for timeout
 
-    struct ast_json* j_dialing;     ///< dialing info
+	struct ast_json* j_dialing;	 ///< dialing info
 
-    struct ast_json* j_chan;    ///< channel info.
-    struct ast_json* j_queues;  ///< queue info.(json array)
-    struct ast_json* j_agents;  ///< agents info. Who had a talk with. (json array)
+	struct ast_json* j_chan;	///< channel info.
+	struct ast_json* j_queues;  ///< queue info.(json array)
+	struct ast_json* j_agents;  ///< agents info. Who had a talk with. (json array)
 } rb_dialing;
 
 int init_rb_dialing(void);
