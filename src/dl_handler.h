@@ -2,7 +2,7 @@
  * dl_handler.h
  *
  *  Created on: Nov 29, 2015
- *      Author: pchero
+ *	  Author: pchero
  */
 
 #ifndef SRC_DL_HANDLER_H_
@@ -17,16 +17,16 @@
  */
 typedef enum _E_DL_STATUS_T
 {
-    E_DL_IDLE       = 0,    //!< idle
-    E_DL_DIALING    = 1,    //!< dialing
-    E_DL_RESERVED   = 2,    //!< resered for desktop dialing
-//    E_DL_QUEUEING   = 2,    ///< not in used.
+	E_DL_IDLE	   = 0,	//!< idle
+	E_DL_DIALING	= 1,	//!< dialing
+	E_DL_RESERVED   = 2,	//!< resered for desktop dialing
+//	E_DL_QUEUEING   = 2,	///< not in used.
 } E_DL_STATUS_T;
 
 typedef enum _E_DIAL_TYPE
 {
-    E_DIAL_EXTEN    = 0,    ///< dialing and connect to extension
-    E_DIAL_APPL     = 1,    ///< dialing and connect to application
+	E_DIAL_EXTEN	= 0,	///< dialing and connect to extension
+	E_DIAL_APPL	 = 1,	///< dialing and connect to application
 } E_DIAL_TYPE;
 
 bool create_dlma(const struct ast_json* j_dlma);

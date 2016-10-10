@@ -2,7 +2,7 @@
  * campaign_handler.h
  *
  *  Created on: Nov 26, 2015
- *      Author: pchero
+ *	  Author: pchero
  */
 
 #ifndef SRC_CAMPAIGN_HANDLER_H_
@@ -15,18 +15,18 @@
 
 typedef enum _E_CAMP_STATUS_T
 {
-    // static status
-    E_CAMP_STOP     = 0,
-    E_CAMP_START    = 1,
-    E_CAMP_PAUSE    = 2,
+	// static status
+	E_CAMP_STOP	 = 0,
+	E_CAMP_START	= 1,
+	E_CAMP_PAUSE	= 2,
 
-    // on going status
-    E_CAMP_STOPPING = 10,
-    E_CAMP_STARTING = 11,
-    E_CAMP_PAUSING  = 12,
+	// on going status
+	E_CAMP_STOPPING = 10,
+	E_CAMP_STARTING = 11,
+	E_CAMP_PAUSING  = 12,
 
-    // force status
-    E_CAMP_STOPPING_FORCE = 30,
+	// force status
+	E_CAMP_STOPPING_FORCE = 30,
 } E_CAMP_STATUS_T;
 
 char* gen_uuid(void);
