@@ -375,8 +375,8 @@ static char *out_show_dialings(struct ast_cli_entry *e, int cmd, struct ast_cli_
     return _out_show_dialings(a->fd, NULL, NULL, NULL, a->argc, (const char**)a->argv);
 }
 
-#define DL_LIST_FORMAT2 "%-36.36s %-10.10s %-20.20s\n"
-#define DL_LIST_FORMAT3 "%-36.36s %-10.10s %-20.20s\n"
+#define DL_LIST_FORMAT2 "%-36.36s %-10.10s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s\n"
+#define DL_LIST_FORMAT3 "%-36.36s %-10.10s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s %-20.20s\n"
 
 
 static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
@@ -404,6 +404,11 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
 
     j_dls = get_dl_lists(uuid, count);
 
+    if(!s) {
+    	/* Normal list */
+      ast_cli(fd, DL_LIST_FORMAT2, "UUID", "Name", "Detail", "Num1", "Num2", "Num3", "Num4", "Num5", "Num6", "Num7", "Num8");
+    }
+
     size = ast_json_array_size(j_dls);
     for(i = 0; i < size; i++) {
         j_tmp = ast_json_array_get(j_dls, i);
@@ -411,10 +416,18 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
             continue;
         }
 
-        ast_cli(fd, DL_LIST_FORMAT2,
-                ast_json_string_get(ast_json_object_get(j_tmp, "uuid")),
-                ast_json_string_get(ast_json_object_get(j_tmp, "name")),
-                ast_json_string_get(ast_json_object_get(j_tmp, "detail"))
+        ast_cli(fd, DL_LIST_FORMAT3,
+                ast_json_string_get(ast_json_object_get(j_tmp, "uuid"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "detail"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_1"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_2"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_3"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_4"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_5"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_6"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_7"))? : "",
+                ast_json_string_get(ast_json_object_get(j_tmp, "number_8"))? : ""
                 );
     }
 
