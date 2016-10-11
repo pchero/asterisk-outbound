@@ -20,7 +20,7 @@ Syntax
 ------
 
 ::
-  
+
   Event: OutCampaignCreate
   Privilege: message,all
   Uuid: <value>
