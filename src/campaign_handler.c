@@ -345,8 +345,9 @@ struct ast_json* get_campaign_for_dialing(void)
 	char* sql;
 
 	// get "start" status campaign only.
-	ast_asprintf(&sql, "select * from campaign where status = %d and in_use = 1 order by rand() limit 1;",
-			E_CAMP_START
+	ast_asprintf(&sql, "select * from campaign where status = %d and in_use = 1 order by %s limit 1;",
+			E_CAMP_START,
+			db_translate_function(E_FUNC_RANDOM)
 			);
 
 	db_res = db_query(sql);

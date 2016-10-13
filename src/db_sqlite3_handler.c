@@ -174,7 +174,7 @@ db_res_t* db_sqlite3_query(const char* query)
 
 	ret = sqlite3_prepare_v2(g_db, query, -1, &result, NULL);
 	if(ret != SQLITE_OK) {
-		ast_log(LOG_ERROR, "Could not prepare query. query[%s], err[%s]", query, sqlite3_errmsg(g_db));
+		ast_log(LOG_ERROR, "Could not prepare query. query[%s], err[%s]\n", query, sqlite3_errmsg(g_db));
 		return NULL;
 	}
 

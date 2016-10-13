@@ -32,12 +32,27 @@ extern struct ast_json* g_cfg;
  */
 typedef enum _E_DB_TYPE
 {
-	E_DB_NONE,
-	E_DB_SQLITE3,		///< sqlite3
-	E_DB_MYSQL,  		///< mysql, maria
+	E_DB_NONE			= 0,
+	E_DB_SQLITE3,				///< sqlite3
+	E_DB_MYSQL,  				///< mysql, maria
 } E_DB_TYPE;
 
 E_DB_TYPE g_db_type = E_DB_NONE;
+
+
+
+const char* g_db_func[3][1] =
+{
+		{""},
+
+		// E_DB_SQLITE3
+		{"random()"},
+
+		// E_DB_MYSQL
+		{"rand()"}
+};
+
+
 
 static void set_db_type(E_DB_TYPE type) {
 	g_db_type = type;
@@ -329,4 +344,22 @@ char* db_get_update_str(const struct ast_json* j_data)
 	ast_log(LOG_ERROR, "Could not call the correct database handler.\n");
 
 	return NULL;
+}
+
+const char* db_translate_function(E_DB_FUNC e_func) {
+	E_DB_TYPE type;
+
+	type = get_db_type();
+
+	if(e_func < 0) {
+		ast_log(LOG_ERROR, "Wrong input parameter.\n");
+		return NULL;
+	}
+
+	if(e_func >= sizeof(g_db_func[type])) {
+		ast_log(LOG_ERROR, "Could not find correct function translate. e_func[%d]\n", e_func);
+		return NULL;
+	}
+
+	return g_db_func[type][e_func];
 }
