@@ -6,7 +6,6 @@
  */
 
 
-
 #include "asterisk.h"
 
 #include <stdio.h>
@@ -20,25 +19,108 @@
 #include "asterisk/json.h"
 #include "asterisk/lock.h"
 
-#include "sqlite3_handler.h"
-
+#include "db_sqlite3_handler.h"
+#include "db_sql_create.h"
 
 static sqlite3* g_db = NULL;
 
 #define MAX_BIND_BUF 4096
 #define DELIMITER   0x02
 
+extern struct ast_json* g_cfg;
+
+static bool db_sqlite3_connect(const char* filename);
+
+bool db_sqlite3_init(void)
+{
+	int ret;
+	struct ast_json* j_database;
+	struct ast_json* j_res;
+	char* query;
+	db_res_t* db_res;
+
+	// get [database]
+	j_database = ast_json_object_get(g_cfg, "database");
+	if(j_database == NULL) {
+		ast_log(LOG_ERROR, "Could not get database configuration.\n");
+		return false;
+	}
+
+	// db connect
+	ret = db_sqlite3_connect(ast_json_string_get(ast_json_object_get(j_database, "db_sqlite3_data")));
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not initiate sqlite3 database.\n");
+		return false;
+	}
+
+	// check table exist(campaign)
+	ast_asprintf(&query, "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';", "campaign");
+	db_res = db_sqlite3_query(query);
+	j_res = db_sqlite3_get_record(db_res);
+	if(j_res != NULL) {
+		ast_json_free(j_res);
+		return true;
+	}
+
+	// create new
+	ast_log(LOG_NOTICE, "Could not find correct table info. Create tables.\n");
+
+	// plan
+	ret = db_sqlite3_exec(g_sql_plan);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "plan");
+		return false;
+	}
+
+	// queue
+	ret = db_sqlite3_exec(g_db_sql_queue);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "queue");
+		return false;
+	}
+
+	// dial_list
+	ret = db_sqlite3_exec(g_db_sql_dial_list);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "dial_list");
+		return false;
+	}
+
+	// dial_list_ma
+	ret = db_sqlite3_exec(g_sql_dl_list_ma);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "dl_list_ma");
+		return false;
+	}
+
+	// campaign
+	ret = db_sqlite3_exec(g_sql_campaign);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "campaign");
+		return false;
+	}
+
+	// dl_result
+	ret = db_sqlite3_exec(g_sql_dl_result);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "dl_result");
+		return false;
+	}
+
+	return true;
+}
+
 /**
  Connect to db.
 
  @return Success:TRUE, Fail:FALSE
  */
-int db_connect(const char* filename)
+static bool db_sqlite3_connect(const char* filename)
 {
 	int ret;
 
 	if(g_db != NULL) {
-		ast_log(LOG_NOTICE, "Database already connected.\n");
+		ast_log(LOG_NOTICE, "Database is already connected.\n");
 		return true;
 	}
 
@@ -55,7 +137,7 @@ int db_connect(const char* filename)
 /**
  Disconnect to db.
  */
-void db_exit(void)
+void db_sqlite3_exit(void)
 {
 	int ret;
 
@@ -79,7 +161,7 @@ void db_exit(void)
  @param query
  @return Success:, Fail:NULL
  */
-db_res_t* db_query(const char* query)
+db_res_t* db_sqlite3_query(const char* query)
 {
 	int ret;
 	sqlite3_stmt* result;
@@ -107,7 +189,7 @@ db_res_t* db_query(const char* query)
  * @param query
  * @return  success:true, fail:false
  */
-int db_exec(const char* query)
+bool db_sqlite3_exec(const char* query)
 {
 	int ret;
 	char* err;
@@ -134,7 +216,7 @@ int db_exec(const char* query)
  * @param res
  * @return  success:json_t*, fail:NULL
  */
-struct ast_json* db_get_record(db_res_t* ctx)
+struct ast_json* db_sqlite3_get_record(db_res_t* ctx)
 {
 	int ret;
 	int cols;
@@ -203,7 +285,7 @@ struct ast_json* db_get_record(db_res_t* ctx)
  *
  * @param ctx
  */
-void db_free(db_res_t* ctx)
+void db_sqlite3_free(db_res_t* ctx)
 {
 	if(ctx == NULL) {
 		return;
@@ -221,7 +303,7 @@ void db_free(db_res_t* ctx)
  * @param j_data
  * @return
  */
-int db_insert(const char* table, const struct ast_json* j_data)
+bool db_sqlite3_insert(const char* table, const struct ast_json* j_data)
 {
 	char*			   sql;
 	char*			   tmp;
@@ -359,7 +441,7 @@ int db_insert(const char* table, const struct ast_json* j_data)
  * @param j_data
  * @return
  */
-char* db_get_update_str(const struct ast_json* j_data)
+char* db_sqlite3_get_update_str(const struct ast_json* j_data)
 {
 	char*	   res;
 	char*	   tmp;
