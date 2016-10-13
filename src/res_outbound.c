@@ -56,7 +56,7 @@ static int load_config(void)
 
 	cfg = ast_config_load("res_outbound.conf", config_flags);
 	if (cfg == CONFIG_STATUS_FILEMISSING || cfg == CONFIG_STATUS_FILEINVALID) {
-		ast_log(LOG_WARNING, "Could not load res_snmp.conf\n");
+		ast_log(LOG_WARNING, "Could not load res_outbound.conf.\n");
 		return false;
 	}
 
@@ -64,40 +64,14 @@ static int load_config(void)
 	while (cat) {
 		var = ast_variable_browse(cfg, cat);
 
-		if (strcasecmp(cat, "general") == 0) {
-			if(ast_json_object_get(g_cfg, "general") == NULL) {
-				ast_json_object_set(g_cfg, "general", ast_json_object_create());
-			}
-			j_tmp = ast_json_object_get(g_cfg, "general");
+		if(ast_json_object_get(g_cfg, cat) == NULL) {
+			ast_json_object_set(g_cfg, cat, ast_json_object_create());
+		}
+		j_tmp = ast_json_object_get(g_cfg, cat);
 
-			while (var) {
-				if (strcasecmp(var->name, "db_host") == 0) {
-					ast_json_object_set(j_tmp, "db_host", ast_json_string_create(var->value));
-				}
-				else if (strcasecmp(var->name, "db_port") == 0) {
-					ast_json_object_set(j_tmp, "db_port", ast_json_string_create(var->value));
-				}
-				else if (strcasecmp(var->name, "db_user") == 0) {
-					ast_json_object_set(j_tmp, "db_user", ast_json_string_create(var->value));
-				}
-				else if (strcasecmp(var->name, "db_pass") == 0) {
-					ast_json_object_set(j_tmp, "db_pass", ast_json_string_create(var->value));
-				}
-				else if (strcasecmp(var->name, "db_name") == 0) {
-					ast_json_object_set(j_tmp, "db_name", ast_json_string_create(var->value));
-				}
-				else {
-					ast_log(LOG_ERROR, "Unrecognized variable. category[%s], name[%s], value[%s]\n",
-							cat, var->name, var->value);
-					ast_config_destroy(cfg);
-					return 1;
-				}
-				var = var->next;
-			}
-		} else {
-			ast_log(LOG_ERROR, "Unrecognized category. category[%s]\n", cat);
-			ast_config_destroy(cfg);
-			return false;
+		while(var) {
+			ast_json_object_set(j_tmp, var->name, ast_json_string_create(var->value));
+			var = var->next;
 		}
 		cat = ast_category_browse(cfg, cat);
 	}
@@ -108,24 +82,8 @@ static int load_config(void)
 static int init_module(void)
 {
 	int ret;
-	int port;
-	struct ast_json* j_general;
 
-	// connect to db
-	j_general = ast_json_object_get(g_cfg, "general");
-
-	port = 5036;
-	if(ast_json_string_get(ast_json_object_get(j_general, "db_port")) != NULL) {
-		port = atoi(ast_json_string_get(ast_json_object_get(j_general, "db_port")));
-	}
-
-	ret = db_connect(
-			ast_json_string_get(ast_json_object_get(j_general, "db_host")),
-			port,
-			ast_json_string_get(ast_json_object_get(j_general, "db_user")),
-			ast_json_string_get(ast_json_object_get(j_general, "db_pass")),
-			ast_json_string_get(ast_json_object_get(j_general, "db_name"))
-			);
+	ret = db_init();
 	if(ret == false) {
 		ast_log(LOG_ERROR, "Could not connect to db.\n");
 		return false;
