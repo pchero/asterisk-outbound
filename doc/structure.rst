@@ -1,5 +1,12 @@
 .. structure
 
+*********
+Structure
+*********
+
+Basic structures
+================
+
 Plan dial mode
 --------------
 
