@@ -11,22 +11,11 @@ This module makes easy to managing the outbound calls.
 
 ## Requirements
 * Asterisk-13.6
-* MySQL-5.6
+* Sqlite3
 
-## Installation
+## Online manual
+* https://rawgit.com/pchero/asterisk-outbound/master/doc/_build/html/index.html
 
-### Module
-* make
-* sudo mv build/res_outbound.so /usr/lib/asterisk/modules/
-* sudo cp conf/res_outbound.conf /etc/asterisk/
-
-### Database
-* Create new database for Asterisk-outbound
-** mysql> create database outbound
-* run the init script
-** cd db_scripts
-** mysql -u root -p outbound < create.sql
- 
 ## License
 * BSD License
 
