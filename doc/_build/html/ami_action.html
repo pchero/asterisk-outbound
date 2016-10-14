@@ -1,0 +1,896 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>AMI Action &mdash; asterisk-outbound 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="Plan dial mode" href="structure.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="structure.html" title="Plan dial mode"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="ami-action">
+<h1>AMI Action<a class="headerlink" href="#ami-action" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>AMI action message for Asterisk-outbound.</p>
+</div>
+<div class="section" id="outcampaigncreate">
+<h2>OutCampaignCreate<a class="headerlink" href="#outcampaigncreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
+<p>Create new campaign.</p>
+</div>
+<div class="section" id="syntax">
+<h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
+ActionID: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+[Plan:] &lt;value&gt;
+[Dlma:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Name</span></tt>: Name of campaign.</li>
+<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Description of campaign.</li>
+<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: The UUID of plan.</li>
+<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: The UUID of dlma.</li>
+</ul>
+</div>
+<div class="section" id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+Message: Campaign created successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
+
+Response: Success
+Message: Campaign created successfully
+
+Event: OutCampaignCreate
+Privilege: message,all
+Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+Name: &lt;unknown&gt;
+Detail: &lt;unknown&gt;
+Status: 0
+Plan: &lt;unknown&gt;
+Dlma: &lt;unknown&gt;
+TmCreate: 2016-10-03 20:05:49.429024
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outcampaignupdate">
+<h2>OutCampaignUpdate<a class="headerlink" href="#outcampaignupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Description<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Update exist campaign info.</p>
+</div>
+<div class="section" id="id2">
+<h3>Syntax<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignUpdate
+ActionID: &lt;value&gt;
+Uuid: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+[Status:] &lt;value&gt;
+[Plan:] &lt;value&gt;
+[Dlma:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign UUID</li>
+<li><tt class="docutils literal"><span class="pre">Name</span></tt>: &lt;optional&gt; Update campaign name.</li>
+<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: &lt;optional&gt; Update campaign description.</li>
+<li><tt class="docutils literal"><span class="pre">Status</span></tt>: &lt;optional&gt; Update campaign status.</li>
+<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: &lt;optional&gt; Update campaign plan.</li>
+<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: &lt;optional&gt; Update campaign dlma.</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>Returns<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+Message: Campaign updated successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignUpdate
+Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+Name: Test campaign 03
+
+Response: Success
+Message: Campaign updated successfully
+
+Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+Name: Test campaign 03
+Detail: &lt;unknown&gt;
+Status: 0
+Plan: &lt;unknown&gt;
+Dlma: &lt;unknown&gt;
+TmCreate: 2016-10-03 20:05:49.429024
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-03 20:07:05.932267
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outcampaigndelete">
+<h2>OutCampaignDelete<a class="headerlink" href="#outcampaigndelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>Description<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>Delete exist campaign info.</p>
+</div>
+<div class="section" id="id6">
+<h3>Syntax<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignDelete
+ActionID: &lt;value&gt;
+Uuid: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign UUID</li>
+</ul>
+</div>
+<div class="section" id="id7">
+<h3>Returns<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+Message: Campaign deleted successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Example<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignDelete
+Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+
+Response: Success
+Message: Campaign deleted successfully
+
+Event: OutCampaignDelete
+Privilege: message,all
+Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outcampaignshow">
+<h2>OutCampaignShow<a class="headerlink" href="#outcampaignshow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h3>Description<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>Show specified|all campaign info.</p>
+</div>
+<div class="section" id="id10">
+<h3>Syntax<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignShow
+ActionID: &lt;value&gt;
+[Uuid:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign UUID</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>Returns<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+EventList: start
+Message: Campaign List will follow
+
+...
+
+Event: OutCampaignListComplete
+EventList: Complete
+ListItems: 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h3>Example<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignShow
+
+Response: Success
+EventList: start
+Message: Campaign List will follow
+
+Event: OutCampaignEntry
+Uuid: c82831f1-b1c2-46ca-86f9-3bd41f45773c
+Name: test campaign 02
+Detail: The test campaign 02
+Status: 0
+Plan: &lt;unknown&gt;
+Dlma: &lt;unknown&gt;
+TmCreate: 2016-10-02 14:43:33.858693
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+
+Event: OutCampaignListComplete
+EventList: Complete
+ListItems: 1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outplancreate">
+<h2>OutPlanCreate<a class="headerlink" href="#outplancreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3>Description<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>Create a new plan.</p>
+</div>
+<div class="section" id="id14">
+<h3>Syntax<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
+ActionID: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+[DialMode:] &lt;value&gt;
+[CallerId:] &lt;value&gt;
+[AnswerHandle:] &lt;value&gt;
+[DlEndHandle:] &lt;value&gt;
+[RetryDelay:] &lt;value&gt;
+[TrunkName:] &lt;value&gt;
+[TechName:] &lt;value&gt;
+[QueueName:] &lt;value&gt;
+[AmdMode:] &lt;value&gt;
+[MaxRetry1:] &lt;value&gt;
+[MaxRetry2:] &lt;value&gt;
+[MaxRetry3:] &lt;value&gt;
+[MaxRetry4:] &lt;value&gt;
+[MaxRetry5:] &lt;value&gt;
+[MaxRetry6:] &lt;value&gt;
+[MaxRetry7:] &lt;value&gt;
+[MaxRetry8:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id15">
+<h3>Returns<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+Message: Plan created successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="id16">
+<h3>Example<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
+
+Response: Success
+Message: Plan created successfully
+
+Event: OutPlanCreate
+Privilege: message,all
+Uuid: b9a6f7b6-e3ea-4e08-839c-c51e0ad196d6
+Name: &lt;unknown&gt;
+Detail: &lt;unknown&gt;
+DialMode: 0
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+AnswerHandle: 0
+DlEndHandle: 1
+RetryDelay: 50000
+TrunkName: &lt;unknown&gt;
+QueueName: &lt;unknown&gt;
+AmdMode: 0
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-02 21:46:38.651717
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outplanupdate">
+<h2>OutPlanUpdate<a class="headerlink" href="#outplanupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id17">
+<h3>Description<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>Update a exist plan info.</p>
+</div>
+<div class="section" id="id18">
+<h3>Syntax<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanUpdate
+ActionID: &lt;value&gt;
+Uuid: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+[DialMode:] &lt;value&gt;
+[CallerId:] &lt;value&gt;
+[AnswerHandle:] &lt;value&gt;
+[DlEndHandle:] &lt;value&gt;
+[RetryDelay:] &lt;value&gt;
+[TrunkName:] &lt;value&gt;
+[TechName:] &lt;value&gt;
+[QueueName:] &lt;value&gt;
+[AmdMode:] &lt;value&gt;
+[MaxRetry1:] &lt;value&gt;
+[MaxRetry2:] &lt;value&gt;
+[MaxRetry3:] &lt;value&gt;
+[MaxRetry4:] &lt;value&gt;
+[MaxRetry5:] &lt;value&gt;
+[MaxRetry6:] &lt;value&gt;
+[MaxRetry7:] &lt;value&gt;
+[MaxRetry8:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id19">
+<h3>Returns<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">empty</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id20">
+<h3>Example<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">empty</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outplandelete">
+<h2>OutPlanDelete<a class="headerlink" href="#outplandelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id21">
+<h3>Description<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<p>Delete a exist plan info.</p>
+</div>
+<div class="section" id="id22">
+<h3>Syntax<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanDelete
+ActionID: &lt;value&gt;
+Uuid: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id23">
+<h3>Returns<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+Message: Plan deleted successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="id24">
+<h3>Example<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanDelete
+ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+Uuid: fca7a70d-fefe-4264-b967-76e7784b0d92
+
+Response: Success
+ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+Message: Plan deleted successfully
+
+Event: OutPlanDelete
+Privilege: message,all
+Uuid: fca7a70d-fefe-4264-b967-76e7784b0d92
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outplanshow">
+<h2>OutPlanShow<a class="headerlink" href="#outplanshow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id25">
+<h3>Description<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<p>Show specified|all plan info</p>
+</div>
+<div class="section" id="id26">
+<h3>Syntax<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanShow
+ActionID: &lt;value&gt;
+[Uuid:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id27">
+<h3>Returns<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+EventList: start
+Message: Plan List will follow
+
+...
+
+Event: OutPlanListComplete
+EventList: Complete
+ListItems: 31
+</pre></div>
+</div>
+</div>
+<div class="section" id="id28">
+<h3>Example<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanShow
+
+Response: Success
+EventList: start
+Message: Plan List will follow
+
+Event: OutPlanEntry
+Uuid: 015280bf-8d46-4e42-8f16-72a22cda42d3
+Name: &lt;unknown&gt;
+Detail: &lt;unknown&gt;
+DialMode: 0
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+AnswerHandle: 0
+DlEndHandle: 1
+RetryDelay: 50000
+TrunkName: &lt;unknown&gt;
+QueueName: &lt;unknown&gt;
+AmdMode: 0
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-02 20:19:08.478190
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+
+...
+
+Event: OutPlanListComplete
+EventList: Complete
+ListItems: 31
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdlmacreate">
+<h2>OutDlmaCreate<a class="headerlink" href="#outdlmacreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id29">
+<h3>Description<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<p>Create new dlma.</p>
+</div>
+<div class="section" id="id30">
+<h3>Syntax<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaCreate
+ActionID: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id31">
+<h3>Returns<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+Message: Dlma created successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="id32">
+<h3>Example<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaCreate
+
+Response: Success
+Message: Dlma created successfully
+
+Event: OutDlmaCreate
+Privilege: message,all
+Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+Name: &lt;unknown&gt;
+Detail: &lt;unknown&gt;
+DlTable: 0853bbaa_7366_4c46_9320_fe5daf92a56b
+TmCreate: 2016-10-02 15:40:14.939472
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdlmaupdate">
+<h2>OutDlmaUpdate<a class="headerlink" href="#outdlmaupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id33">
+<h3>Description<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<p>Update exist dlma info.</p>
+</div>
+<div class="section" id="id34">
+<h3>Syntax<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaUpdate
+ActionID: &lt;value&gt;
+Uuid: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id35">
+<h3>Returns<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+Message: Dlma updated successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="id36">
+<h3>Example<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaUpdate
+Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+Name: Test dlma info
+Detail: test dlma
+
+Response: Success
+Message: Dlma updated successfully
+
+Event: OutDlmaUpdate
+Privilege: message,all
+Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+Name: Test dlma info
+Detail: test dlma
+DlTable: 0853bbaa_7366_4c46_9320_fe5daf92a56b
+TmCreate: 2016-10-02 15:40:14.939472
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-02 15:42:36.595071
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdlmadelete">
+<h2>OutDlmaDelete<a class="headerlink" href="#outdlmadelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id37">
+<h3>Description<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
+<p>Delete exist dlma info.</p>
+</div>
+<div class="section" id="id38">
+<h3>Syntax<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaDelete
+ActionID: &lt;value&gt;
+Uuid: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id39">
+<h3>Returns<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+Message: Dlma deleted successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="id40">
+<h3>Example<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaDelete
+Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+
+Response: Success
+Message: Dlma deleted successfully
+
+Event: OutDlmaDelete
+Privilege: message,all
+Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdlmashow">
+<h2>OutDlmaShow<a class="headerlink" href="#outdlmashow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id41">
+<h3>Description<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<p>Show all|specified exist dlma info.</p>
+</div>
+<div class="section" id="id42">
+<h3>Syntax<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaShow
+ActionID: &lt;value&gt;
+[Uuid:] &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id43">
+<h3>Returns<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+EventList: start
+Message: Dlma List will follow
+
+...
+
+Event: OutDlmaListComplete
+EventList: Complete
+ListItems: 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="id44">
+<h3>Example<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaShow
+
+Response: Success
+EventList: start
+Message: Dlma List will follow
+
+Event: OutDlmaEntry
+Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+Name: Test dlma info
+Detail: test dlma
+DlTable: 0853bbaa_7366_4c46_9320_fe5daf92a56b
+TmCreate: 2016-10-02 15:40:14.939472
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-02 15:42:36.595071
+
+Event: OutDlmaListComplete
+EventList: Complete
+ListItems: 1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdllistcreate">
+<h2>OutDlListCreate<a class="headerlink" href="#outdllistcreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id45">
+<h3>Description<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<p>Create Dial list for dialing.</p>
+</div>
+<div class="section" id="id46">
+<h3>Syntax<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
+ActionID: &lt;value&gt;
+DlmaUuid: &lt;dlma-uuid&gt;
+Name: &lt;customer-name&gt;
+Detail: &lt;customer-detail info&gt;
+UKey: &lt;customer-unique key&gt;
+UData: &lt;customer-UUI data&gt;
+Number1: &lt;customer-destination 1&gt;
+Number2: &lt;customer-destination 2&gt;
+Number3: &lt;customer-destination 3&gt;
+Number4: &lt;customer-destination 4&gt;
+Number5: &lt;customer-destination 5&gt;
+Number6: &lt;customer-destination 6&gt;
+Number7: &lt;customer-destination 7&gt;
+Number8: &lt;customer-destination 8&gt;
+res_dial: &lt;dial-result&gt;
+res_dial_detail: &lt;dial-result-detail&gt;
+res_hangup: &lt;dial-hangup&gt;
+res_hangup_detail: &lt;dial-hangup-detail&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+</div>
+<div class="section" id="id47">
+<h3>Returns<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Response: Success
+EventList: start
+Message: Dlma List will follow
+
+...
+
+Event: OutDlmaListComplete
+EventList: Complete
+ListItems: 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="id48">
+<h3>Example<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
+DlmaUuid: 6c1e916a-608e-494c-9350-5a7095d6f640
+Name: client 01
+Detail: Dial to client 01
+Number1: sip:client-01@example.com
+
+Response: Success
+Message: Dl list created successfully
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">AMI Action</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#outcampaigncreate">OutCampaignCreate</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#syntax">Syntax</a></li>
+<li><a class="reference internal" href="#returns">Returns</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outcampaignupdate">OutCampaignUpdate</a><ul>
+<li><a class="reference internal" href="#id1">Description</a></li>
+<li><a class="reference internal" href="#id2">Syntax</a></li>
+<li><a class="reference internal" href="#id3">Returns</a></li>
+<li><a class="reference internal" href="#id4">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outcampaigndelete">OutCampaignDelete</a><ul>
+<li><a class="reference internal" href="#id5">Description</a></li>
+<li><a class="reference internal" href="#id6">Syntax</a></li>
+<li><a class="reference internal" href="#id7">Returns</a></li>
+<li><a class="reference internal" href="#id8">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outcampaignshow">OutCampaignShow</a><ul>
+<li><a class="reference internal" href="#id9">Description</a></li>
+<li><a class="reference internal" href="#id10">Syntax</a></li>
+<li><a class="reference internal" href="#id11">Returns</a></li>
+<li><a class="reference internal" href="#id12">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outplancreate">OutPlanCreate</a><ul>
+<li><a class="reference internal" href="#id13">Description</a></li>
+<li><a class="reference internal" href="#id14">Syntax</a></li>
+<li><a class="reference internal" href="#id15">Returns</a></li>
+<li><a class="reference internal" href="#id16">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outplanupdate">OutPlanUpdate</a><ul>
+<li><a class="reference internal" href="#id17">Description</a></li>
+<li><a class="reference internal" href="#id18">Syntax</a></li>
+<li><a class="reference internal" href="#id19">Returns</a></li>
+<li><a class="reference internal" href="#id20">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outplandelete">OutPlanDelete</a><ul>
+<li><a class="reference internal" href="#id21">Description</a></li>
+<li><a class="reference internal" href="#id22">Syntax</a></li>
+<li><a class="reference internal" href="#id23">Returns</a></li>
+<li><a class="reference internal" href="#id24">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outplanshow">OutPlanShow</a><ul>
+<li><a class="reference internal" href="#id25">Description</a></li>
+<li><a class="reference internal" href="#id26">Syntax</a></li>
+<li><a class="reference internal" href="#id27">Returns</a></li>
+<li><a class="reference internal" href="#id28">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdlmacreate">OutDlmaCreate</a><ul>
+<li><a class="reference internal" href="#id29">Description</a></li>
+<li><a class="reference internal" href="#id30">Syntax</a></li>
+<li><a class="reference internal" href="#id31">Returns</a></li>
+<li><a class="reference internal" href="#id32">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdlmaupdate">OutDlmaUpdate</a><ul>
+<li><a class="reference internal" href="#id33">Description</a></li>
+<li><a class="reference internal" href="#id34">Syntax</a></li>
+<li><a class="reference internal" href="#id35">Returns</a></li>
+<li><a class="reference internal" href="#id36">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdlmadelete">OutDlmaDelete</a><ul>
+<li><a class="reference internal" href="#id37">Description</a></li>
+<li><a class="reference internal" href="#id38">Syntax</a></li>
+<li><a class="reference internal" href="#id39">Returns</a></li>
+<li><a class="reference internal" href="#id40">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdlmashow">OutDlmaShow</a><ul>
+<li><a class="reference internal" href="#id41">Description</a></li>
+<li><a class="reference internal" href="#id42">Syntax</a></li>
+<li><a class="reference internal" href="#id43">Returns</a></li>
+<li><a class="reference internal" href="#id44">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdllistcreate">OutDlListCreate</a><ul>
+<li><a class="reference internal" href="#id45">Description</a></li>
+<li><a class="reference internal" href="#id46">Syntax</a></li>
+<li><a class="reference internal" href="#id47">Returns</a></li>
+<li><a class="reference internal" href="#id48">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="structure.html"
+                        title="previous chapter">Plan dial mode</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="next chapter">Tutorial</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ami_action.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="structure.html" title="Plan dial mode"
+             >previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, pchero.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

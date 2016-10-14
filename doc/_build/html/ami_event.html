@@ -1,0 +1,580 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>AMI Event &mdash; asterisk-outbound 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="ami-event">
+<h1>AMI Event<a class="headerlink" href="#ami-event" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>AMI event messages from Asterisk-outbound</p>
+</div>
+<div class="section" id="outcampaigncreate">
+<h2>OutCampaignCreate<a class="headerlink" href="#outcampaigncreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for campaign has been created.</p>
+</div>
+<div class="section" id="syntax">
+<h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignCreate
+Privilege: message,all
+Uuid: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+Status: &lt;value&gt;
+Plan: &lt;value&gt;
+Dlma: &lt;value&gt;
+TmCreate: &lt;timestamp&gt;
+TmDelete: &lt;timestamp&gt;
+TmUpdate: &lt;timestamp&gt;
+OutCampaignUpdate
+</pre></div>
+</div>
+<p>Parameters</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
+<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
+<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status.</li>
+<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
+</ul>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignCreate
+Privilege: message,all
+Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
+Name: 1009c510-71aa-4736-89f9-9b39473271cc
+Detail: TestDetail
+Status: 0
+Plan: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
+Dlma: e276d8be-a558-4546-948a-f99913a7fea2
+TmCreate: 2015-12-09 13:29:39.483175
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outcampaignupdate">
+<h2>OutCampaignUpdate<a class="headerlink" href="#outcampaignupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Description<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for updated campaign info.</p>
+</div>
+<div class="section" id="id2">
+<h3>Syntax<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: &lt;value&gt;
+[Name:] &lt;value&gt;
+[Detail:] &lt;value&gt;
+Status: &lt;value&gt;
+Plan: &lt;value&gt;
+Dlma: &lt;value&gt;
+TmCreate: &lt;timestamp&gt;
+TmDelete: &lt;timestamp&gt;
+TmUpdate: &lt;timestamp&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
+<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
+<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status.</li>
+<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
+Name: 1009c510-71aa-4736-89f9-9b39473271cc
+Detail: Change
+Status: 0
+Plan: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
+Dlma: e276d8be-a558-4546-948a-f99913a7fea2
+TmCreate: 2015-12-09 13:29:39.483175
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2015-12-09 13:29:39.630756
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outcampaigndelete">
+<h2>OutCampaignDelete<a class="headerlink" href="#outcampaigndelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>Description<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for deleted campaign info.</p>
+</div>
+<div class="section" id="id5">
+<h3>Syntax<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignDelete
+Privilege: message,all
+Uuid: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h3>Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignDelete
+Privilege: message,all
+Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outplancreate">
+<h2>OutPlanCreate<a class="headerlink" href="#outplancreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>Description<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for created plan info.</p>
+</div>
+<div class="section" id="id8">
+<h3>Syntax<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id9">
+<h3>Example<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanCreate
+Privilege: message,all
+Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
+Name: TestPlan
+Detail: TestDetail
+DialMode: 0
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+AnswerHandle: 0
+DlEndHandle: 1
+RetryDelay: 50000
+TrunkName: &lt;unknown&gt;
+QueueName: &lt;unknown&gt;
+AmdMode: 0
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2015-12-09 13:58:33.765672
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outplanupdate">
+<h2>OutPlanUpdate<a class="headerlink" href="#outplanupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3>Description<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for plan updated.</p>
+</div>
+<div class="section" id="id11">
+<h3>Syntax<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id12">
+<h3>Example<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanUpdate
+Privilege: message,all
+Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
+Name: TestPlan
+Detail: Change
+DialMode: 0
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+AnswerHandle: 0
+DlEndHandle: 1
+RetryDelay: 50000
+TrunkName: &lt;unknown&gt;
+QueueName: &lt;unknown&gt;
+AmdMode: 0
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2015-12-09 13:58:33.765672
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2015-12-09 13:58:33.945415
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outplandelete">
+<h2>OutPlanDelete<a class="headerlink" href="#outplandelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3>Description<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for deleted plan info.</p>
+</div>
+<div class="section" id="id14">
+<h3>Syntax<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id15">
+<h3>Example<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanDelete
+Privilege: message,all
+Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdlmacreate">
+<h2>OutDlmaCreate<a class="headerlink" href="#outdlmacreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h3>Description<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for dlma created.</p>
+</div>
+<div class="section" id="id17">
+<h3>Syntax<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id18">
+<h3>Example<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaCreate
+Privilege: message,all
+Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
+Name: 8e6a4214-6e1c-47a3-946f-661e6cf58c04
+Detail: TestDetail
+DlTable: a0dc9df789bd4c2cac81bc7fbc54ff96
+TmCreate: 2015-12-09 19:12:51.753941
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdlmaupdate">
+<h2>OutDlmaUpdate<a class="headerlink" href="#outdlmaupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id19">
+<h3>Description<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for dlma updated.</p>
+</div>
+<div class="section" id="id20">
+<h3>Syntax<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id21">
+<h3>Example<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaUpdate
+Privilege: message,all
+Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
+Name: 8e6a4214-6e1c-47a3-946f-661e6cf58c04
+Detail: Change
+DlTable: a0dc9df789bd4c2cac81bc7fbc54ff96
+TmCreate: 2015-12-09 19:12:51.753941
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2015-12-09 19:12:51.884059
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdlmadelete">
+<h2>OutDlmaDelete<a class="headerlink" href="#outdlmadelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id22">
+<h3>Description<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for dlma deleted.</p>
+</div>
+<div class="section" id="id23">
+<h3>Syntax<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id24">
+<h3>Example<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaDelete
+Privilege: message,all
+Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdialingcreate">
+<h2>OutDialingCreate<a class="headerlink" href="#outdialingcreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id25">
+<h3>Description<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for dialing created.</p>
+</div>
+<div class="section" id="id26">
+<h3>Syntax<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id27">
+<h3>Example<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingCreate
+Privilege: message,all
+Uuid: 14e8e861-232f-49fb-8101-f5ae489d94d6
+Status: 0
+CampUuid: 8cd1d05b-ad45-434f-9fde-4de801dee1c7
+PlanUuid: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
+DlmaUuid: e276d8be-a558-4546-948a-f99913a7fea2
+DlListUuid: 382b639c-9eba-11e5-a926-0800271f0a4b
+CurrentQueue: &lt;null&gt;
+CurrentAgent: &lt;null&gt;
+DialIndex: 1
+DialAddr: 111-111-0001
+DialChannel: SIP/111-111-0001@trunk_test_1
+DialTryCnt: 1
+DialTimeout: 30000
+DialType: 0
+DialExten: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
+DialContext: res_outbound
+DialApplication: &lt;unknown&gt;
+DialData: &lt;unknown&gt;
+ChannelName: &lt;unknown&gt;
+ResDial: 0
+ResAmd: &lt;unknown&gt;
+ResAmdDetail: &lt;unknown&gt;
+ResHangup: 0
+ResHangupDetail: &lt;unknown&gt;
+TmCreate: 2015-12-09T21:17:22.209160178Z
+TmUpdate: &lt;unknown&gt;
+TmDelete: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdialingupdate">
+<h2>OutDialingUpdate<a class="headerlink" href="#outdialingupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id28">
+<h3>Description<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for dialing updated.</p>
+</div>
+<div class="section" id="id29">
+<h3>Syntax<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id30">
+<h3>Example<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingUpdate
+Privilege: message,all
+Uuid: 14e8e861-232f-49fb-8101-f5ae489d94d6
+Status: 1
+CampUuid: 8cd1d05b-ad45-434f-9fde-4de801dee1c7
+PlanUuid: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
+DlmaUuid: e276d8be-a558-4546-948a-f99913a7fea2
+DlListUuid: 382b639c-9eba-11e5-a926-0800271f0a4b
+CurrentQueue: &lt;null&gt;
+CurrentAgent: &lt;null&gt;
+DialIndex: 1
+DialAddr: 111-111-0001
+DialChannel: SIP/111-111-0001@trunk_test_1
+DialTryCnt: 1
+DialTimeout: 30000
+DialType: 0
+DialExten: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
+DialContext: res_outbound
+DialApplication: &lt;unknown&gt;
+DialData: &lt;unknown&gt;
+ChannelName: SIP/trunk_test_1-00000007
+ResDial: 0
+ResAmd: &lt;unknown&gt;
+ResAmdDetail: &lt;unknown&gt;
+ResHangup: 0
+ResHangupDetail: &lt;unknown&gt;
+TmCreate: 2015-12-09T21:17:22.209160178Z
+TmUpdate: 2015-12-09T21:17:22.249904462Z
+TmDelete: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdialingdelete">
+<h2>OutDialingDelete<a class="headerlink" href="#outdialingdelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id31">
+<h3>Description<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<p>Notify message for dialing deleted.</p>
+</div>
+<div class="section" id="id32">
+<h3>Syntax<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id33">
+<h3>Example<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingDelete
+Privilege: message,all
+Uuid: 4100781e-88f6-403d-af46-9500335d5560
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">AMI Event</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#outcampaigncreate">OutCampaignCreate</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#syntax">Syntax</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outcampaignupdate">OutCampaignUpdate</a><ul>
+<li><a class="reference internal" href="#id1">Description</a></li>
+<li><a class="reference internal" href="#id2">Syntax</a></li>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outcampaigndelete">OutCampaignDelete</a><ul>
+<li><a class="reference internal" href="#id4">Description</a></li>
+<li><a class="reference internal" href="#id5">Syntax</a></li>
+<li><a class="reference internal" href="#id6">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outplancreate">OutPlanCreate</a><ul>
+<li><a class="reference internal" href="#id7">Description</a></li>
+<li><a class="reference internal" href="#id8">Syntax</a></li>
+<li><a class="reference internal" href="#id9">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outplanupdate">OutPlanUpdate</a><ul>
+<li><a class="reference internal" href="#id10">Description</a></li>
+<li><a class="reference internal" href="#id11">Syntax</a></li>
+<li><a class="reference internal" href="#id12">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outplandelete">OutPlanDelete</a><ul>
+<li><a class="reference internal" href="#id13">Description</a></li>
+<li><a class="reference internal" href="#id14">Syntax</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#id15">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdlmacreate">OutDlmaCreate</a><ul>
+<li><a class="reference internal" href="#id16">Description</a></li>
+<li><a class="reference internal" href="#id17">Syntax</a></li>
+<li><a class="reference internal" href="#id18">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdlmaupdate">OutDlmaUpdate</a><ul>
+<li><a class="reference internal" href="#id19">Description</a></li>
+<li><a class="reference internal" href="#id20">Syntax</a></li>
+<li><a class="reference internal" href="#id21">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdlmadelete">OutDlmaDelete</a><ul>
+<li><a class="reference internal" href="#id22">Description</a></li>
+<li><a class="reference internal" href="#id23">Syntax</a></li>
+<li><a class="reference internal" href="#id24">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdialingcreate">OutDialingCreate</a><ul>
+<li><a class="reference internal" href="#id25">Description</a></li>
+<li><a class="reference internal" href="#id26">Syntax</a></li>
+<li><a class="reference internal" href="#id27">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdialingupdate">OutDialingUpdate</a><ul>
+<li><a class="reference internal" href="#id28">Description</a></li>
+<li><a class="reference internal" href="#id29">Syntax</a></li>
+<li><a class="reference internal" href="#id30">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdialingdelete">OutDialingDelete</a><ul>
+<li><a class="reference internal" href="#id31">Description</a></li>
+<li><a class="reference internal" href="#id32">Syntax</a></li>
+<li><a class="reference internal" href="#id33">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ami_event.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, pchero.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

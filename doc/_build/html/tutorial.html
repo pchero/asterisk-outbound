@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial &mdash; asterisk-outbound 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
+    <link rel="prev" title="AMI Action" href="ami_action.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ami_action.html" title="AMI Action"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="preparation">
+<h2>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="add-the-agent-sip-info">
+<h3>Add the agent(sip) info<a class="headerlink" href="#add-the-agent-sip-info" title="Permalink to this headline">¶</a></h3>
+<p>Add the agent info to the /etc/asterisk/sip.conf</p>
+<p>This sip info is act like an agent.</p>
+<p>Assume that we have below agent info.</p>
+<div class="highlight-python"><div class="highlight"><pre>[agent-01]
+type=friend
+secret=83f8c590-89b1-11e6-9d93-eba8dc621725
+host=dynamic
+
+[agent-02]
+type=friend
+secret=876054be-89b1-11e6-b7b7-cfb4ed95428e
+host=dynamic
+
+[agent-03]
+type=friend
+secret=8b14c86a-89b1-11e6-aa09-f39f39e5592b
+host=dynamic
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-the-client-sip-info">
+<h3>Add the client(sip) info<a class="headerlink" href="#add-the-client-sip-info" title="Permalink to this headline">¶</a></h3>
+<p>Add the client info to the /etc/asterisk/sip.conf</p>
+<p>This sip info is act like an client(customer).</p>
+<p>Assume that we have a below client info.</p>
+<div class="highlight-python"><div class="highlight"><pre>[client-01]
+type=friend
+secret=6d1a5096-89b1-11e6-b0fc-d30be6e4489f
+host=dynamic
+
+[client-02]
+type=friend
+secret=8fd6f80a-89b1-11e6-9839-fb2a82d0d524
+host=dynamic
+
+[client-03]
+type=friend
+secret=946e8c20-89b1-11e6-80d6-f3e7376cf70f
+host=dynamic
+</pre></div>
+</div>
+<p>Create a queue
+&#8212;&#8212;&#8212;&#8212;&#8211;d
+Assume that we have a below queue info.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">sales_1</span><span class="p">]</span>
+<span class="n">musicclass</span> <span class="o">=</span> <span class="n">default</span>
+<span class="n">strategy</span> <span class="o">=</span> <span class="n">ringall</span>
+<span class="n">joinempty</span> <span class="o">=</span> <span class="n">yes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="ami-actions">
+<h2>AMI actions<a class="headerlink" href="#ami-actions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="login">
+<h3>Login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Connection closed by foreign host.
+$ telnet localhost 5038
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is &#39;^]&#39;.
+Asterisk Call Manager/2.8.0
+
+Action: Login
+Username: admin
+Secret: admin
+
+Response: Success
+Message: Authentication accepted
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-plan">
+<h3>Create Plan<a class="headerlink" href="#create-plan" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
+Name: sales_plan
+Detail: simple sales plan
+DialMode: 1
+QueueName: sales_1
+TechName: sip/
+
+Response: Success
+Message: Plan created successfully
+
+Event: OutPlanCreate
+Privilege: message,all
+Uuid: d1306a32-0ec6-4389-a5f1-118153b6266e
+Name: sales_plan
+Detail: simple sales plan
+DialMode: 1
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+AnswerHandle: 0
+DlEndHandle: 1
+RetryDelay: 50000
+TrunkName: &lt;unknown&gt;
+TechName: sip/
+QueueName: sales_1
+AmdMode: 0
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-04 22:40:41.573445
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-dlma">
+<h3>Create Dlma<a class="headerlink" href="#create-dlma" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaCreate
+Name: DialListMaster_Sales
+Detail: Test Dlma description
+
+Response: Success
+Message: Dlma created successfully
+
+Event: OutDlmaCreate
+Privilege: message,all
+Uuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
+Name: DialListMaster_Sales
+Detail: Test Dlma description
+DlTable: 9155a63e_6577_4abc_96e4_2c7811b5f639
+TmCreate: 2016-10-04 22:41:07.528126
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-dl-list">
+<h3>Create Dl list<a class="headerlink" href="#create-dl-list" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
+DlmaUuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
+Name: client 01
+Detail: Dial to client 01
+Number1: 300
+
+Response: Success
+Message: Dl list created successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-campaign">
+<h3>Create campaign<a class="headerlink" href="#create-campaign" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
+Name: Sales campaign
+Detail: test campaign
+Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
+Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
+
+Response: Success
+Message: Campaign created successfully
+
+Event: OutCampaignCreate
+Privilege: message,all
+Uuid: a3e95af9-5ffa-4f53-8908-6095ff24945c
+Name: Sales campaign
+Detail: test campaign
+Status: 0
+Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
+Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
+TmCreate: 2016-10-04 22:43:22.899115
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tutorial</a><ul>
+<li><a class="reference internal" href="#preparation">Preparation</a><ul>
+<li><a class="reference internal" href="#add-the-agent-sip-info">Add the agent(sip) info</a></li>
+<li><a class="reference internal" href="#add-the-client-sip-info">Add the client(sip) info</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ami-actions">AMI actions</a><ul>
+<li><a class="reference internal" href="#login">Login</a></li>
+<li><a class="reference internal" href="#create-plan">Create Plan</a></li>
+<li><a class="reference internal" href="#create-dlma">Create Dlma</a></li>
+<li><a class="reference internal" href="#create-dl-list">Create Dl list</a></li>
+<li><a class="reference internal" href="#create-campaign">Create campaign</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ami_action.html"
+                        title="previous chapter">AMI Action</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ami_action.html" title="AMI Action"
+             >previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, pchero.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
