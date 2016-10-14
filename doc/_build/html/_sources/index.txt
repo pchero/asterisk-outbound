@@ -13,10 +13,11 @@ Contents:
    
    intro
    installation
+   tutorial
    structure
+   asterisk_cli.rst
    ami_action
    ami_event
-   tutorial
 
 
 Indices and tables
