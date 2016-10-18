@@ -86,7 +86,7 @@ Login
    
    Action: Login
    Username: admin
-   Secret: admin
+   Secret: ****
    
    Response: Success
    Message: Authentication accepted

@@ -23,7 +23,6 @@
 #include "db_mysql_handler.h"
 //#include "db_sql_create.h"
 
-extern struct ast_json* g_cfg;
 
 static MYSQL* g_db = NULL;
 AST_MUTEX_DEFINE_STATIC(g_mysql_mutex);
@@ -41,7 +40,7 @@ bool db_mysql_init(void)
 	int ret;
 
 	// get [database]
-	j_database = ast_json_object_get(g_cfg, "database");
+	j_database = ast_json_object_get(g_app->j_conf, "database");
 	if(j_database == NULL) {
 		ast_log(LOG_ERROR, "Could not get database configuration.\n");
 		return false;

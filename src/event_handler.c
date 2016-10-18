@@ -18,6 +18,7 @@
 #include "asterisk/uuid.h"
 #include "asterisk/file.h"
 
+#include "res_outbound.h"
 #include "db_handler.h"
 #include "ami_handler.h"
 #include "event_handler.h"
@@ -51,6 +52,8 @@ static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* 
 
 struct ast_json* get_queue_summary(const char* name);
 struct ast_json* get_queue_param(const char* name);
+
+static bool write_result_json(struct ast_json* j_res);
 
 // todo
 static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma);
@@ -131,6 +134,7 @@ static int init_outbound(void)
 		ast_log(LOG_ERROR, "Could not initiate libevent. Table is not ready.\n");
 		return false;
 	}
+
 	j_res = db_get_record(db_res);
 	db_free(db_res);
 	ast_json_unref(j_res);
@@ -514,11 +518,16 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 				ast_json_string_get(ast_json_object_get(j_tmp, "res_hangup_detail"))
 				);
 
-		db_insert("dl_result", j_tmp);
+//		db_insert("dl_result", j_tmp);
+		ret = write_result_json(j_tmp);
 		ast_json_unref(j_tmp);
+		if(ret == false) {
+			ast_log(LOG_ERROR, "Could not write result correctly.\n");
+			continue;
+		}
 
 		rb_dialing_destory(dialing);
-		ast_log(LOG_DEBUG, "Destroied!\n");
+		ast_log(LOG_DEBUG, "Destroyed dialing info.\n");
 
 	}
 	ao2_iterator_destroy(&iter);
@@ -594,11 +603,12 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 				ast_json_string_get(ast_json_object_get(j_tmp, "res_hangup_detail"))
 				);
 
-		db_insert("dl_result", j_tmp);
+//		db_insert("dl_result", j_tmp);
+		ret = write_result_json(j_tmp);
 		ast_json_unref(j_tmp);
 
 		rb_dialing_destory(dialing);
-		ast_log(LOG_DEBUG, "Destroied!\n");
+		ast_log(LOG_DEBUG, "Destroyed!\n");
 
 	}
 	ao2_iterator_destroy(&iter);
@@ -1108,4 +1118,51 @@ struct ast_json* get_queue_param(const char* name)
 	}
 
 	return j_param;
+}
+
+static bool write_result_json(struct ast_json* j_res)
+{
+	FILE* fp;
+	struct ast_json* j_general;
+	const char* filename;
+	char* tmp;
+
+	if(j_res == NULL) {
+		ast_log(LOG_ERROR, "Wrong input parameter.\n");
+		return false;
+	}
+
+	// open json file
+	j_general = ast_json_object_get(g_app->j_conf, "general");
+	filename = ast_json_string_get(ast_json_object_get(j_general, "result_filename"));
+	if(filename == NULL) {
+		ast_log(LOG_ERROR, "Could not get option value. option[%s]\n", "result_filename");
+		return false;
+	}
+
+	// open file
+	fp = fopen(filename, "a");
+	if(fp == NULL) {
+		ast_log(LOG_ERROR, "Could not open result file. filename[%s], err[%s]\n",
+				filename, strerror(errno)
+				);
+		return false;
+	}
+
+	tmp = ast_json_dump_string_format(j_res, AST_JSON_COMPACT);
+	if(tmp == NULL) {
+		ast_log(LOG_ERROR, "Could not get result string to the file. filename[%s], err[%s]\n",
+				filename, strerror(errno)
+				);
+		fclose(fp);
+		return false;
+	}
+
+	fprintf(fp, "%s\n", tmp);
+	ast_json_free(tmp);
+	fclose(fp);
+
+	ast_log(LOG_VERBOSE, "Result write succeed.\n");
+
+	return true;
 }

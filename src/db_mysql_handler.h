@@ -14,6 +14,7 @@
 
 #include "asterisk/json.h"
 
+#include "res_outbound.h"
 #include "db_handler.h"
 
 bool 			db_mysql_init(void);

@@ -11,8 +11,10 @@
 #include "asterisk.h"
 #include "asterisk/json.h"
 
-struct _app {
-	struct ast_json*   j_cfg;
-} g_app;
+typedef struct _app {
+	struct ast_json*   j_conf;	///< config
+} app;
+
+extern app* g_app;	// global application info
 
 #endif /* SRC_RES_OUTBOUND_H_ */
