@@ -305,7 +305,7 @@ struct ast_json* get_campaigns_by_status(E_CAMP_STATUS_T status)
 	}
 
 	j_res = ast_json_array_create();
-	while(1){
+	while(1) {
 		j_tmp = db_get_record(db_res);
 		if(j_tmp == NULL) {
 			break;

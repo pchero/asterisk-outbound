@@ -33,9 +33,9 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 
 #define MODULE_DESCRIPTION  "Outbound manager for Asterisk"
 
-struct ast_json* g_cfg = NULL;
 MYSQL* g_mydb;
 pthread_t pth_outbound;
+app* g_app;
 
 /*!
  * \brief Load res_snmp.conf config file
@@ -46,13 +46,11 @@ static int load_config(void)
 	struct ast_variable *var;
 	struct ast_config *cfg;
 	struct ast_json* j_tmp;
+	struct ast_json* j_conf;
 	struct ast_flags config_flags = { 0 };
 	char *cat;
 
-	if(g_cfg != NULL) {
-		ast_json_unref(g_cfg);
-	}
-	g_cfg = ast_json_object_create();
+	j_conf = ast_json_object_create();
 
 	cfg = ast_config_load("res_outbound.conf", config_flags);
 	if (cfg == CONFIG_STATUS_FILEMISSING || cfg == CONFIG_STATUS_FILEINVALID) {
@@ -62,20 +60,27 @@ static int load_config(void)
 
 	cat = ast_category_browse(cfg, NULL);
 	while (cat) {
-		var = ast_variable_browse(cfg, cat);
 
-		if(ast_json_object_get(g_cfg, cat) == NULL) {
-			ast_json_object_set(g_cfg, cat, ast_json_object_create());
+		if(ast_json_object_get(j_conf, cat) == NULL) {
+			ast_json_object_set(j_conf, cat, ast_json_object_create());
 		}
-		j_tmp = ast_json_object_get(g_cfg, cat);
+		j_tmp = ast_json_object_get(j_conf, cat);
 
+		var = ast_variable_browse(cfg, cat);
 		while(var) {
 			ast_json_object_set(j_tmp, var->name, ast_json_string_create(var->value));
+			ast_log(LOG_VERBOSE, "Loading conf. name[%s], value[%s]\n", var->name, var->value);
 			var = var->next;
 		}
 		cat = ast_category_browse(cfg, cat);
 	}
 	ast_config_destroy(cfg);
+
+	if(g_app->j_conf != NULL) {
+		ast_json_unref(g_app->j_conf);
+	}
+	g_app->j_conf = j_conf;
+
 	return true;
 }
 
@@ -96,7 +101,8 @@ static int init_module(void)
 static void release_module(void)
 {
 	db_exit();
-	ast_json_unref(g_cfg);
+	ast_json_unref(g_app->j_conf);
+	ast_free(g_app);
 
 	ast_log(LOG_VERBOSE, "Released module.\n");
 }
@@ -120,6 +126,9 @@ static int unload_module(void)
 static int load_module(void)
 {
 	int ret;
+
+	g_app = ast_malloc(sizeof(app));
+	g_app->j_conf = NULL;
 
 	ret = load_config();
 	if(ret == false) {

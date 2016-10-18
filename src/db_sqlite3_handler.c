@@ -19,6 +19,7 @@
 #include "asterisk/json.h"
 #include "asterisk/lock.h"
 
+#include "res_outbound.h"
 #include "db_sqlite3_handler.h"
 #include "db_sql_create.h"
 
@@ -26,10 +27,20 @@ static sqlite3* g_db = NULL;
 
 #define MAX_BIND_BUF 4096
 #define DELIMITER   0x02
+#define MAX_MEMDB_LOCK_RELEASE_TRY 100
+#define MAX_MEMDB_LOCK_RELEASE_TRY 100
 
-extern struct ast_json* g_cfg;
+typedef struct {
+	int max_retry;  /* Max retry times. */
+	int sleep_ms;   /* Time to sleep before retry again. */
+} busy_handler_attr;
+
 
 static bool db_sqlite3_connect(const char* filename);
+//static bool db_sqlite3_lock(void);
+//static bool db_sqlite3_release(void);
+//static void db_sqlite3_msleep(unsigned long milisec);
+static int db_sqlite3_busy_handler(void *data, int retry);
 
 bool db_sqlite3_init(void)
 {
@@ -40,7 +51,7 @@ bool db_sqlite3_init(void)
 	db_res_t* db_res;
 
 	// get [database]
-	j_database = ast_json_object_get(g_cfg, "database");
+	j_database = ast_json_object_get(g_app->j_conf, "database");
 	if(j_database == NULL) {
 		ast_log(LOG_ERROR, "Could not get database configuration.\n");
 		return false;
@@ -57,6 +68,7 @@ bool db_sqlite3_init(void)
 	ast_asprintf(&query, "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';", "campaign");
 	db_res = db_sqlite3_query(query);
 	j_res = db_sqlite3_get_record(db_res);
+	db_sqlite3_free(db_res);
 	if(j_res != NULL) {
 		ast_json_free(j_res);
 		return true;
@@ -193,15 +205,22 @@ bool db_sqlite3_exec(const char* query)
 {
 	int ret;
 	char* err;
+	busy_handler_attr bh_attr;
 
 	if(query == NULL) {
 		ast_log(LOG_WARNING, "Could not execute NULL query.\n");
 		return false;
 	}
 
+	/* Setup busy handler for all following operations. */
+	bh_attr.max_retry = 100;  /* Max retry times */
+	bh_attr.sleep_ms = 100;   /* Sleep 100ms before each retry */
+	sqlite3_busy_handler(g_db, db_sqlite3_busy_handler, &bh_attr);
+
+	// execute
 	ret = sqlite3_exec(g_db, query, NULL, 0, &err);
 	if(ret != SQLITE_OK) {
-		ast_log(LOG_ERROR, "Could not execute NULL query. query[%s], err[%s]\n", query, err);
+		ast_log(LOG_ERROR, "Could not execute query. query[%s], err[%s]\n", query, err);
 		sqlite3_free(err);
 		return false;
 	}
@@ -285,14 +304,14 @@ struct ast_json* db_sqlite3_get_record(db_res_t* ctx)
  *
  * @param ctx
  */
-void db_sqlite3_free(db_res_t* ctx)
+void db_sqlite3_free(db_res_t* db_res)
 {
-	if(ctx == NULL) {
+	if(db_res == NULL) {
 		return;
 	}
 
-	sqlite3_finalize(ctx->res);
-	ast_free(ctx);
+	sqlite3_finalize(db_res->res);
+	ast_free(db_res);
 
 	return;
 }
@@ -527,4 +546,110 @@ char* db_sqlite3_get_update_str(const struct ast_json* j_data)
 	ast_json_unref(j_data_cp);
 
 	return res;
+}
+
+///**
+// * Do the database lock.
+// * Keep try MAX_DB_ACCESS_TRY.
+// * Each try has 100 ms delay.
+// */
+//static bool db_sqlite3_lock(void)
+//{
+//	int ret;
+//	int i;
+//	char* err;
+//
+//	for(i = 0; i < MAX_MEMDB_LOCK_RELEASE_TRY; i++) {
+//		ret = sqlite3_exec(g_db, "BEGIN IMMEDIATE", NULL, 0, &err);
+//		sqlite3_free(err);
+//		if(ret == SQLITE_OK) {
+//			break;
+//		}
+//		db_sqlite3_msleep(100);
+//	}
+//
+//	if(ret != SQLITE_OK) {
+//		return false;
+//	}
+//	return true;
+//}
+//
+//
+///**
+// * Release database lock.
+// * Keep try MAX_MEMDB_LOCK_RELEASE_TRY.
+// * Each try has 100 ms delay.
+// */
+//static bool db_sqlite3_release(void)
+//{
+//	int ret;
+//	int i;
+//	char* err;
+//
+//	for(i = 0; i < MAX_MEMDB_LOCK_RELEASE_TRY; i++) {
+//		ret = sqlite3_exec(g_db, "COMMIT", NULL, 0, &err);
+//		sqlite3_free(err);
+//		if(ret == SQLITE_OK) {
+//			break;
+//		}
+//		db_sqlite3_msleep(100);
+//	}
+//
+//	if(ret != SQLITE_OK) {
+//		return false;
+//	}
+//	return true;
+//}
+
+///**
+// * Millisecond sleep.
+// * @param milisec
+// */
+//static void db_sqlite3_msleep(unsigned long milisec)
+//{
+//    struct timespec req = {0, 0};
+//    time_t sec = (int)(milisec/1000);
+//    milisec = milisec - (sec * 1000);
+//
+//    req.tv_sec = sec;
+//    req.tv_nsec = milisec * 1000000L;
+//
+//    while(nanosleep(&req, &req) == -1)
+//    {
+//        continue;
+//    }
+//    return;
+//}
+
+/*
+ * Busy callback handler for all operations. If the busy callback handler is
+ * NULL, then SQLITE_BUSY or SQLITE_IOERR_BLOCKED is returned immediately upon
+ * encountering the lock. If the busy callback is not NULL, then the callback
+ * might be invoked.
+ *
+ * This callback will be registered by SQLite's API:
+ *    int sqlite3_busy_handler(sqlite3*, int(*)(void*,int), void*);
+ * That's very useful to deal with SQLITE_BUSY event automatically. Otherwise,
+ * you have to check the return code, reset statement and do retry manually.
+ *
+ * We've to use ANSI C declaration here to eliminate warnings in Visual Studio.
+ */
+static int db_sqlite3_busy_handler(void *data, int retry)
+{
+	busy_handler_attr* attr;
+
+	attr = (busy_handler_attr*)data;
+
+	if (retry < attr->max_retry) {
+		/* Sleep a while and retry again. */
+		ast_log(LOG_VERBOSE, "Hits SQLITE_BUSY %d times, retry again.\n", retry);
+		sqlite3_sleep(attr->sleep_ms);
+
+		/* Return non-zero to let caller retry again. */
+		return 1;
+	}
+
+	/* Return zero to let caller return SQLITE_BUSY immediately. */
+	ast_log(LOG_ERROR, "Retried too many, exit. retry[%d]\n", retry);
+	return 0;
 }

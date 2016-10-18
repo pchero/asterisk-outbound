@@ -6,7 +6,6 @@
  */
 
 
-#include "db_handler.h"
 
 #include "asterisk.h"
 
@@ -21,10 +20,10 @@
 #include "asterisk/json.h"
 #include "asterisk/lock.h"
 
+#include "res_outbound.h"
 #include "db_sqlite3_handler.h"
 #include "db_mysql_handler.h"
-
-extern struct ast_json* g_cfg;
+#include "db_handler.h"
 
 
 /**
@@ -70,7 +69,7 @@ bool db_init(void)
 	int ret;
 
 	// get [database]
-	j_database = ast_json_object_get(g_cfg, "database");
+	j_database = ast_json_object_get(g_app->j_conf, "database");
 	if(j_database == NULL) {
 		ast_log(LOG_ERROR, "Could not get database configuration.\n");
 		return false;
@@ -150,6 +149,11 @@ db_res_t* db_query(const char* query)
 {
 	E_DB_TYPE type;
 
+	if(query == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return NULL;
+	}
+
 	type = get_db_type();
 
 	switch(type) {
@@ -185,6 +189,11 @@ bool db_exec(const char* query)
 	E_DB_TYPE type;
 
 	type = get_db_type();
+
+	if(query == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return false;
+	}
 
 	switch(type) {
 		case E_DB_SQLITE3: {
@@ -248,20 +257,25 @@ struct ast_json* db_get_record(db_res_t* ctx)
  *
  * @param ctx
  */
-void db_free(db_res_t* ctx)
+void db_free(db_res_t* db_res)
 {
 	E_DB_TYPE type;
+
+	if(db_res == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	type = get_db_type();
 
 	switch(type) {
 		case E_DB_SQLITE3: {
-			return db_sqlite3_free(ctx);
+			return db_sqlite3_free(db_res);
 		}
 		break;
 
 		case E_DB_MYSQL: {
-			return db_mysql_free(ctx);
+			return db_mysql_free(db_res);
 		}
 		break;
 
