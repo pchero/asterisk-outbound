@@ -1639,14 +1639,14 @@ void send_manager_evt_out_dialing_update(rb_dialing* dialing)
 
 /**
  * AMI Event handler
- * Event: OutDestCreate
+ * Event: OutDestinationCreate
  * @param j_obj
  */
 void send_manager_evt_out_destination_create(struct ast_json* j_dest)
 {
 	char* tmp;
 
-	ast_log(LOG_VERBOSE, "AMI event. OutDestCreate.\n");
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationCreate.\n");
 
 	if(j_dest == NULL) {
 		// nothing to send.
@@ -1659,23 +1659,23 @@ void send_manager_evt_out_destination_create(struct ast_json* j_dest)
 		return;
 	}
 
-	manager_event(EVENT_FLAG_MESSAGE, "OutDestCreate", "%s\r\n", tmp);
+	manager_event(EVENT_FLAG_MESSAGE, "OutDestinationCreate", "%s\r\n", tmp);
 	ast_free(tmp);
-	ast_log(LOG_VERBOSE, "AMI event. OutDestCreate. Succeed.\n");
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationCreate. Succeed.\n");
 
 	return;
 }
 
 /**
  * AMI Event handler
- * Event: OutDestUpdate
+ * Event: OutDestinationUpdate
  * @param j_obj
  */
 void send_manager_evt_out_destination_update(struct ast_json* j_dest)
 {
 	char* tmp;
 
-	ast_log(LOG_VERBOSE, "AMI event. OutDestUpdate.\n");
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationUpdate.\n");
 
 	if(j_dest == NULL) {
 		// nothing to send.
@@ -1688,27 +1688,27 @@ void send_manager_evt_out_destination_update(struct ast_json* j_dest)
 		return;
 	}
 
-	manager_event(EVENT_FLAG_MESSAGE, "OutDestUpdate", "%s\r\n", tmp);
+	manager_event(EVENT_FLAG_MESSAGE, "OutDestinationUpdate", "%s\r\n", tmp);
 	ast_free(tmp);
-	ast_log(LOG_VERBOSE, "AMI event. OutDestUpdate. Succeed.\n");
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationUpdate. Succeed.\n");
 
 	return;
 }
 
 /**
  * AMI Event handler
- * Event: OutDestDelete
+ * Event: OutDestinationDelete
  * @param j_camp
  */
 void send_manager_evt_out_destination_delete(const char* uuid)
 {
 	char* tmp;
 
-	ast_log(LOG_VERBOSE, "AMI event. OutDestDelete.\n");
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationDelete.\n");
 
 	if(uuid == NULL) {
 		// nothing to send.
-		ast_log(LOG_WARNING, "AMI event. OutDestDelete. Failed.\n");
+		ast_log(LOG_WARNING, "AMI event. OutDestinationDelete. Failed.\n");
 		return;
 	}
 
@@ -1716,14 +1716,12 @@ void send_manager_evt_out_destination_delete(const char* uuid)
 			"Uuid: %s\r\n",
 			uuid
 			);
-	manager_event(EVENT_FLAG_MESSAGE, "OutDestDelete", "%s\r\n", tmp);
+	manager_event(EVENT_FLAG_MESSAGE, "OutDestinationDelete", "%s\r\n", tmp);
 	ast_free(tmp);
-	ast_log(LOG_VERBOSE, "AMI event. OutDestDelete. Succeed.\n");
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationDelete. Succeed.\n");
 
 	return;
 }
-
-
 
 /**
  * AMI Event handler
