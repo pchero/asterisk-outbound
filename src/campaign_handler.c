@@ -17,6 +17,7 @@
 #include "campaign_handler.h"
 #include "cli_handler.h"
 #include "event_handler.h"
+#include "utils.h"
 
 /**
  * Create campaign.
@@ -67,7 +68,7 @@ bool create_campaign(const struct ast_json* j_camp)
  * @param uuid
  * @return
  */
-bool delete_cmapaign(const char* uuid)
+bool delete_campaign(const char* uuid)
 {
 	struct ast_json* j_camp;
 	char* tmp;
@@ -105,7 +106,7 @@ bool delete_cmapaign(const char* uuid)
 }
 
 /**
- * Get all campaigns
+ * Get specified campaign
  * @return
  */
 struct ast_json* get_campaign(const char* uuid)
@@ -119,7 +120,7 @@ struct ast_json* get_campaign(const char* uuid)
 	}
 	ast_log(LOG_DEBUG, "Get campaign info. uuid[%s]\n", uuid);
 
-	// get all campaigns
+	// get specified campaign
 	ast_asprintf(&sql, "select * from campaign where uuid=\"%s\" and in_use=1;", uuid);
 
 	db_res = db_query(sql);
@@ -315,23 +316,6 @@ struct ast_json* get_campaigns_by_status(E_CAMP_STATUS_T status)
 	db_free(db_res);
 
 	return j_res;
-}
-
-/**
- * Generate uuid.
- * Return value should be free after used.
- * @param prefix
- * @return
- */
-char* gen_uuid(void)
-{
-	char tmp[AST_UUID_STR_LEN];
-	char* res;
-
-	ast_uuid_generate_str(tmp, sizeof(tmp));
-	res = ast_strdup(tmp);
-
-	return res;
 }
 
 /**

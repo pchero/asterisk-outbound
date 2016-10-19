@@ -135,6 +135,20 @@ Create Plan
    TmUpdate: <unknown>
    
 
+Create Destination
+------------------
+::
+
+   Action: OutDestinationCreate
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Application: park
+   
+   Response: Success
+   Message: Dl list created successfully
+
+
 Create Dlma
 -----------
 
@@ -170,7 +184,7 @@ Create Dl list
    
    Response: Success
    Message: Dl list created successfully
-
+   
 Create campaign
 ---------------
 ::

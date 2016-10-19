@@ -31,6 +31,9 @@ void send_manager_evt_out_queue_update(struct ast_json* j_dlma);
 void send_manager_evt_out_dialing_create(rb_dialing* dialing);
 void send_manager_evt_out_dialing_update(rb_dialing* dialing);
 void send_manager_evt_out_dialing_delete(rb_dialing* dialing);
+void send_manager_evt_out_destination_create(struct ast_json* j_dest);
+void send_manager_evt_out_destination_delete(const char* uuid);
+void send_manager_evt_out_destination_update(struct ast_json* j_dest);
 
 
 #endif /* CLI_HANDLER_H_ */

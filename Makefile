@@ -52,7 +52,9 @@ OBJS_res_outbound.so =  \
 	$(TARGETDIR_res_outbound.so)/plan_handler.o \
 	$(TARGETDIR_res_outbound.so)/queue_handler.o \
 	$(TARGETDIR_res_outbound.so)/db_sqlite3_handler.o \
-	$(TARGETDIR_res_outbound.so)/db_mysql_handler.o
+	$(TARGETDIR_res_outbound.so)/db_mysql_handler.o \
+	$(TARGETDIR_res_outbound.so)/destination_handler.o \
+	$(TARGETDIR_res_outbound.so)/utils.o
 	
 	
 
@@ -97,6 +99,11 @@ $(TARGETDIR_res_outbound.so)/db_sqlite3_handler.o: $(TARGETDIR_res_outbound.so) 
 $(TARGETDIR_res_outbound.so)/db_mysql_handler.o: $(TARGETDIR_res_outbound.so) src/db_mysql_handler.c 
 	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/db_mysql_handler.c	
 
+$(TARGETDIR_res_outbound.so)/destination_handler.o: $(TARGETDIR_res_outbound.so) src/destination_handler.c 
+	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/destination_handler.c	
+
+$(TARGETDIR_res_outbound.so)/utils.o: $(TARGETDIR_res_outbound.so) src/utils.c 
+	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/utils.c	
 
 #### Clean target deletes all generated files ####
 clean:

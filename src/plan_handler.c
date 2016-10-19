@@ -19,6 +19,7 @@
 #include "campaign_handler.h"
 #include "cli_handler.h"
 #include "ami_handler.h"
+#include "utils.h"
 
 
 static bool create_plan_extension(struct ast_json* j_plan);

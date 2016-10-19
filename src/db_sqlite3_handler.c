@@ -119,6 +119,13 @@ bool db_sqlite3_init(void)
 		return false;
 	}
 
+	// destination
+	ret = db_sqlite3_exec(g_db_sql_destination);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "destination");
+		return false;
+	}
+
 	return true;
 }
 
