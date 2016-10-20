@@ -14,6 +14,7 @@
 #include "dialing_handler.h"
 #include "event_handler.h"
 #include "cli_handler.h"
+#include "utils.h"
 
 AST_MUTEX_DEFINE_STATIC(g_rb_dialing_mutex);
 

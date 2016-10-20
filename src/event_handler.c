@@ -26,6 +26,7 @@
 #include "campaign_handler.h"
 #include "dl_handler.h"
 #include "plan_handler.h"
+#include "utils.h"
 
 #define TEMP_FILENAME "/tmp/asterisk_outbound_tmp.txt"
 
@@ -971,50 +972,6 @@ static int check_dial_avaiable_predictive(
 		return 0;
 	}
 	return 1;
-}
-
-/**
- * return utc time.
- * YYYY-MM-DDTHH:mm:ssZ
- * @return
- */
-char* get_utc_timestamp(void)
-{
-	char	timestr[128];
-	char*   res;
-	struct  timespec timeptr;
-	time_t  tt;
-	struct tm *t;
-
-	clock_gettime(CLOCK_REALTIME, &timeptr);
-	tt = (time_t)timeptr.tv_sec;
-	t = gmtime(&tt);
-
-	strftime(timestr, sizeof(timestr), "%Y-%m-%dT%H:%M:%S", t);
-	ast_asprintf(&res, "%s.%ldZ", timestr, timeptr.tv_nsec);
-
-	return res;
-}
-
-/**
- * return utc time.
- * YYYY-MM-DDTHH:mm:ssZ
- * @return
- */
-char* get_utc_timestamp_using_timespec(struct timespec timeptr)
-{
-	char	timestr[128];
-	char*   res;
-	time_t  tt;
-	struct tm *t;
-
-	tt = (time_t)timeptr.tv_sec;
-	t = gmtime(&tt);
-
-	strftime(timestr, sizeof(timestr), "%Y-%m-%dT%H:%M:%S", t);
-	ast_asprintf(&res, "%s.%ldZ", timestr, timeptr.tv_nsec);
-
-	return res;
 }
 
 struct ast_json* get_queue_summary(const char* name)

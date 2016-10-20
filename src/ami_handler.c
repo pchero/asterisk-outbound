@@ -15,6 +15,7 @@
 
 #include "dialing_handler.h"
 #include "event_handler.h"
+#include "utils.h"
 
 
 static char* g_cmd_buf = NULL;  //!< action cmd buffer
