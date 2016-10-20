@@ -21,6 +21,7 @@
 
 static int get_avail_cnt_exten(struct ast_json* j_dest);
 static int get_avail_cnt_app(struct ast_json* j_dest);
+static int get_avail_cnt_app_queue(const char* name);
 static int get_avail_cnt_app_queue_service_perf(const char* name);
 
 /**
@@ -297,7 +298,7 @@ static int get_avail_cnt_app(struct ast_json* j_dest)
 	int ret;
 
 	if(j_dest == NULL) {
-		astlog(LOG_WARNING, "Wrong input parameter.\n");
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
 		return 0;
 	}
 

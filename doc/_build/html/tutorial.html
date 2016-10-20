@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
-    <link rel="next" title="Structure" href="structure.html" />
+    <link rel="next" title="Basic" href="basic.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="structure.html" title="Structure"
+          <a href="basic.html" title="Basic"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation"
@@ -120,7 +120,7 @@ Asterisk Call Manager/2.8.0
 
 Action: Login
 Username: admin
-Secret: admin
+Secret: ****
 
 Response: Success
 Message: Authentication accepted
@@ -165,6 +165,19 @@ MaxRetryCnt8: 5
 TmCreate: 2016-10-04 22:40:41.573445
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-destination">
+<h3>Create Destination<a class="headerlink" href="#create-destination" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestinationCreate
+Name: destination test
+Detail: test destination
+Type: 1
+Application: park
+
+Response: Success
+Message: Dl list created successfully
 </pre></div>
 </div>
 </div>
@@ -247,6 +260,7 @@ TmUpdate: &lt;unknown&gt;
 <li><a class="reference internal" href="#ami-actions">AMI actions</a><ul>
 <li><a class="reference internal" href="#login">Login</a></li>
 <li><a class="reference internal" href="#create-plan">Create Plan</a></li>
+<li><a class="reference internal" href="#create-destination">Create Destination</a></li>
 <li><a class="reference internal" href="#create-dlma">Create Dlma</a></li>
 <li><a class="reference internal" href="#create-dl-list">Create Dl list</a></li>
 <li><a class="reference internal" href="#create-campaign">Create campaign</a></li>
@@ -260,8 +274,8 @@ TmUpdate: &lt;unknown&gt;
   <p class="topless"><a href="installation.html"
                         title="previous chapter">Installation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="structure.html"
-                        title="next chapter">Structure</a></p>
+  <p class="topless"><a href="basic.html"
+                        title="next chapter">Basic</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/tutorial.txt"
@@ -291,7 +305,7 @@ TmUpdate: &lt;unknown&gt;
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="structure.html" title="Structure"
+          <a href="basic.html" title="Basic"
              >next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation"
