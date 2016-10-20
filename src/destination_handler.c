@@ -19,6 +19,10 @@
 
 #include "destination_handler.h"
 
+static int get_avail_cnt_exten(struct ast_json* j_dest);
+static int get_avail_cnt_app(struct ast_json* j_dest);
+static int get_avail_cnt_app_queue_service_perf(const char* name);
+
 /**
  * Create destination.
  * @param j_camp
@@ -235,5 +239,139 @@ bool update_destination(const struct ast_json* j_dest)
 	ast_json_unref(j_tmp);
 
 	return true;
+}
+
+/**
+ * Return the available resource count of given destination
+ * \param j_dest
+ * \return
+ */
+int get_destination_available_count(struct ast_json* j_dest)
+{
+	int type;
+	int ret;
+
+	type = ast_json_integer_get(ast_json_object_get(j_dest, "type"));
+	switch(type) {
+		case DESTINATION_EXTEN:
+		{
+			ret = get_avail_cnt_exten(j_dest);
+		}
+		break;
+
+		case DESTINATION_APPLICATION:
+		{
+			ret = get_avail_cnt_app(j_dest);
+		}
+		break;
+
+		default:
+		{
+			ast_log(LOG_ERROR, "No support destination type. type[%d]\n", type);
+			ret = 0;
+		}
+		break;
+	}
+
+	return ret;
+}
+
+/**
+ * TODO:
+ * \param j_dest
+ * \return
+ */
+static int get_avail_cnt_exten(struct ast_json* j_dest)
+{
+	return 0;
+}
+
+/**
+ * TODO:
+ * \param j_dest
+ * \return
+ */
+static int get_avail_cnt_app(struct ast_json* j_dest)
+{
+	const char* application;
+	int ret;
+
+	if(j_dest == NULL) {
+		astlog(LOG_WARNING, "Wrong input parameter.\n");
+		return 0;
+	}
+
+	application = ast_json_string_get(ast_json_object_get(j_dest, "application"));
+	if(application == NULL) {
+		ast_log(LOG_WARNING, "Could not get correct application name. uuid[%s]\n",
+				ast_json_string_get(ast_json_object_get(j_dest, "uuid"))
+				);
+		return 0;
+	}
+
+	if(strcasecmp(application, "queue") == 0) {
+		ret = get_avail_cnt_app_queue(application);
+	}
+	else {
+		ast_log(LOG_WARNING, "Unsupported application. application[%s]\n", application);
+		ret = 0;
+	}
+
+	ast_log(LOG_DEBUG, "Available application count. cnt[%d]\n", ret);
+
+	return ret;
+}
+
+static int get_avail_cnt_app_queue_service_perf(const char* name)
+{
+	struct ast_json* j_tmp;
+	double service_perf;
+
+	if(name == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return 0;
+	}
+
+	// get queue param
+	j_tmp = get_queue_param(name);
+	if(j_tmp == NULL) {
+		ast_log(LOG_ERROR, "Could not get queue_param info. queue_name[%s]\n", name);
+		return 0;
+	}
+
+	service_perf = atof(ast_json_string_get(ast_json_object_get(j_tmp, "ServicelevelPerf")));
+	if(service_perf == 0) {
+		service_perf = 100;
+	}
+	ast_json_unref(j_tmp);
+
+	return service_perf;
+}
+
+static int get_avail_cnt_app_queue(const char* name)
+{
+	struct ast_json* j_tmp;
+	const char* tmp_const;
+	int ret;
+
+	if(name == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return 0;
+	}
+
+	// get queue summary info.
+	j_tmp = get_queue_summary(name);
+	if(j_tmp == NULL) {
+		ast_log(LOG_ERROR, "Could not get queue_summary info. queue_name[%s]\n", name);
+		return 0;
+	}
+
+	// get available
+	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "Available"));
+	ret = atoi(tmp_const);
+	ast_json_unref(j_tmp);
+
+	ast_log(LOG_DEBUG, "Application queue available count. name[%s], available[%d]\n", name, ret);
+	return ret;
 }
 

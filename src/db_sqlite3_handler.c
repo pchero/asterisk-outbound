@@ -70,7 +70,7 @@ bool db_sqlite3_init(void)
 	j_res = db_sqlite3_get_record(db_res);
 	db_sqlite3_free(db_res);
 	if(j_res != NULL) {
-		ast_json_free(j_res);
+		ast_json_unref(j_res);
 		return true;
 	}
 

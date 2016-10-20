@@ -3042,6 +3042,7 @@ static char* get_variables(const struct message *m)
 	struct ast_variable* var;
 	struct ast_json* j_res;
 	char* res;
+	char* tmp;
 
 	var_org = astman_get_variables_order(m, ORDER_REVERSE);
 	if(var_org == NULL) {
@@ -3057,8 +3058,12 @@ static char* get_variables(const struct message *m)
 	}
 	ast_variables_destroy(var_org);
 
-	res = ast_json_dump_string_format(j_res, AST_JSON_COMPACT);
-	ast_json_free(j_res);
+	tmp = ast_json_dump_string_format(j_res, AST_JSON_COMPACT);
+	res = ast_strdup(tmp);
+
+	ast_json_free(tmp);
+	ast_json_unref(j_res);
+
 	return res;
 }
 
