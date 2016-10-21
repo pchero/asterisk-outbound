@@ -43,7 +43,7 @@ typedef struct _rb_dialing{
 } rb_dialing;
 
 int init_rb_dialing(void);
-rb_dialing* rb_dialing_create(const char* dialing_uuid, struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dl);
+rb_dialing* rb_dialing_create(const char* dialing_uuid, struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dest, struct ast_json* j_dl);
 void rb_dialing_destory(rb_dialing* dialing);
 
 rb_dialing* rb_dialing_find_chan_name(const char* chan);

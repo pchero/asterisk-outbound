@@ -484,3 +484,25 @@ static int set_amd_mode(const char* exten, E_AMD_MODE amd_mode, int priority)
 
 	return priority;
 }
+
+
+struct ast_json* create_dial_plan_info(struct ast_json* j_plan)
+{
+	struct ast_json* j_res;
+
+	if(j_plan == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return NULL;
+	}
+
+	j_res = ast_json_pack("{s:i}",
+			"timeout", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout"))
+			);
+
+	if(ast_json_string_get(ast_json_object_get(j_plan, "caller_id")) != NULL) {
+		ast_json_object_set(j_res, "callerid", ast_json_ref(ast_json_object_get(j_plan, "caller_id")));
+	}
+
+	return j_res;
+
+}

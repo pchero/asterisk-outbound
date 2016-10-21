@@ -563,7 +563,7 @@ static char* _out_create_campaign(int fd, int *total, struct mansession *s, cons
 
 	j_camp = ast_json_object_create();
 	if(argc >= 7) { ast_json_object_set(j_camp, "detail", ast_json_string_create(argv[7])); }
-	if(argc >= 6) { ast_json_object_set(j_camp, "queue", ast_json_string_create(argv[6])); }
+	if(argc >= 6) { ast_json_object_set(j_camp, "dest", ast_json_string_create(argv[6])); }
 	if(argc >= 5) { ast_json_object_set(j_camp, "dlma", ast_json_string_create(argv[5])); }
 	if(argc >= 4) { ast_json_object_set(j_camp, "plan", ast_json_string_create(argv[4])); }
 	if(argc >= 3) { ast_json_object_set(j_camp, "name", ast_json_string_create(argv[3])); }
@@ -643,6 +643,7 @@ static char* get_campaign_str(struct ast_json* j_camp)
 			"Status: %lld\r\n"
 			"Plan: %s\r\n"
 			"Dlma: %s\r\n"
+			"Dest: %s\r\n"
 			"TmCreate: %s\r\n"
 			"TmDelete: %s\r\n"
 			"TmUpdate: %s\r\n",
@@ -652,6 +653,7 @@ static char* get_campaign_str(struct ast_json* j_camp)
 			ast_json_integer_get(ast_json_object_get(j_camp, "status")),
 			ast_json_string_get(ast_json_object_get(j_camp, "plan"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "dlma"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_camp, "dest"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "tm_create"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "tm_delete"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "tm_update"))? : "<unknown>"
@@ -2129,6 +2131,9 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
 	tmp_const = astman_get_header(m, "Dlma");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
 
+	tmp_const = astman_get_header(m, "Dest");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
+
 	ret = create_campaign(j_tmp);
 	ast_json_unref(j_tmp);
 	if(ret == false) {
@@ -2206,6 +2211,9 @@ static int manager_out_campaign_update(struct mansession *s, const struct messag
 
 	tmp_const = astman_get_header(m, "Dlma");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Dest");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
 
 	tmp_const = astman_get_header(m, "Status");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "status", ast_json_integer_create(atoi(tmp_const)));}

@@ -16,13 +16,18 @@
 #include "cli_handler.h"
 #include "event_handler.h"
 #include "utils.h"
+#include "ami_handler.h"
 
 #include "destination_handler.h"
 
 static int get_avail_cnt_exten(struct ast_json* j_dest);
 static int get_avail_cnt_app(struct ast_json* j_dest);
+static int get_avail_cnt_app_park(void);
 static int get_avail_cnt_app_queue(const char* name);
 static int get_avail_cnt_app_queue_service_perf(const char* name);
+
+static struct ast_json* get_app_queue_param(const char* name);
+struct ast_json* get_app_queue_summary(const char* name);
 
 /**
  * Create destination.
@@ -313,6 +318,9 @@ static int get_avail_cnt_app(struct ast_json* j_dest)
 	if(strcasecmp(application, "queue") == 0) {
 		ret = get_avail_cnt_app_queue(application);
 	}
+	if(strcasecmp(application, "park") == 0) {
+		ret = get_avail_cnt_app_park();
+	}
 	else {
 		ast_log(LOG_WARNING, "Unsupported application. application[%s]\n", application);
 		ret = 0;
@@ -334,7 +342,7 @@ static int get_avail_cnt_app_queue_service_perf(const char* name)
 	}
 
 	// get queue param
-	j_tmp = get_queue_param(name);
+	j_tmp = get_app_queue_param(name);
 	if(j_tmp == NULL) {
 		ast_log(LOG_ERROR, "Could not get queue_param info. queue_name[%s]\n", name);
 		return 0;
@@ -354,6 +362,9 @@ static int get_avail_cnt_app_queue(const char* name)
 	struct ast_json* j_tmp;
 	const char* tmp_const;
 	int ret;
+	int perf;
+	int avail;
+	int loggedin;
 
 	if(name == NULL) {
 		ast_log(LOG_WARNING, "Wrong input parameter.\n");
@@ -361,18 +372,222 @@ static int get_avail_cnt_app_queue(const char* name)
 	}
 
 	// get queue summary info.
-	j_tmp = get_queue_summary(name);
+	j_tmp = get_app_queue_summary(name);
 	if(j_tmp == NULL) {
 		ast_log(LOG_ERROR, "Could not get queue_summary info. queue_name[%s]\n", name);
 		return 0;
 	}
 
-	// get available
+	// get available, loggedin
 	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "Available"));
-	ret = atoi(tmp_const);
+	avail = atoi(tmp_const);
+
+	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "LoggedIn"));
+	loggedin = atoi(tmp_const);
 	ast_json_unref(j_tmp);
 
-	ast_log(LOG_DEBUG, "Application queue available count. name[%s], available[%d]\n", name, ret);
+	if(loggedin < 10) {
+		ast_log(LOG_NOTICE, "Not many people logged in. Ignore perf calculate. loggenin[%d], avail[%d]\n", loggedin, avail);
+		return avail;
+	}
+
+	// get perf
+	perf = get_avail_cnt_app_queue_service_perf(name);
+
+	ret = avail * perf / 100;
+	ast_log(LOG_DEBUG, "Application queue available count. name[%s], available[%d], performance[%d]\n", name, avail, perf);
 	return ret;
+}
+
+/**
+ *
+ * \return -1:unlimited
+ */
+static int get_avail_cnt_app_park(void)
+{
+	// just return unlimited
+	// todo: support specified parking lot
+	return DEF_DESTINATION_AVAIL_CNT_UNLIMITED;
+}
+
+
+/**
+ * Get Queue param only.
+ * @param name
+ * @return
+ */
+static struct ast_json* get_app_queue_param(const char* name)
+{
+	struct ast_json* j_ami_res;
+	struct ast_json* j_param;
+	struct ast_json* j_tmp;
+	size_t size;
+	int i;
+	const char* tmp_const;
+
+	if(name == NULL) {
+		return NULL;
+	}
+	ast_log(LOG_DEBUG, "Getting queue param info. queue_name[%s]\n", name);
+
+	j_ami_res = ami_cmd_queue_status(name);
+	if(j_ami_res == NULL) {
+		ast_log(LOG_NOTICE, "Could not get queue status. name[%s]\n", name);
+		return NULL;
+	}
+
+	// get result.
+	i = 0;
+	j_param = NULL;
+	size = ast_json_array_size(j_ami_res);
+	for(i = 0; i < size; i++) {
+		j_tmp = ast_json_array_get(j_ami_res, i);
+
+		// Event check
+		tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "Event"));
+		if(tmp_const == NULL) {
+			continue;
+		}
+		if(strcmp(tmp_const, "QueueParams") != 0) {
+			continue;
+		}
+
+		// compare the queue name
+		tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "Queue"));
+		if(tmp_const == NULL) {
+			continue;
+		}
+		if(strcmp(tmp_const, name) == 0) {
+			j_param = ast_json_deep_copy(j_tmp);
+			break;
+		}
+	}
+	ast_json_unref(j_ami_res);
+	if(j_param == NULL) {
+		ast_log(LOG_NOTICE, "Could not get queue param. name[%s]\n", name);
+		return NULL;
+	}
+
+	return j_param;
+}
+
+struct ast_json* get_app_queue_summary(const char* name)
+{
+	struct ast_json* j_ami_res;
+	struct ast_json* j_queue;
+	struct ast_json* j_tmp;
+	size_t size;
+	int i;
+	const char* tmp_const;
+
+	if(name == NULL) {
+		return NULL;
+	}
+
+	j_ami_res = ami_cmd_queue_summary(name);
+	if(j_ami_res == NULL) {
+		ast_log(LOG_NOTICE, "Could not get queue summary. name[%s]\n", name);
+		return NULL;
+	}
+
+	// get result.
+	i = 0;
+	j_queue = NULL;
+	size = ast_json_array_size(j_ami_res);
+	for(i = 0; i < size; i++) {
+		j_tmp = ast_json_array_get(j_ami_res, i);
+		tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "Queue"));
+		if(tmp_const == NULL) {
+			continue;
+		}
+		if(strcmp(tmp_const, name) == 0) {
+			j_queue = ast_json_deep_copy(j_tmp);
+			break;
+		}
+	}
+	ast_json_unref(j_ami_res);
+	if(j_queue == NULL) {
+		ast_log(LOG_NOTICE, "Could not get queue summary. name[%s]\n", name);
+		return NULL;
+	}
+
+	return j_queue;
+}
+
+static struct ast_json* create_destination_exten(struct ast_json* j_dest)
+{
+	struct ast_json* j_res;
+
+	if(j_dest == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return NULL;
+	}
+
+	j_res = ast_json_pack("{s:s, s:s}",
+			"dial_exten",		ast_json_string_get(ast_json_object_get(j_dest, "exten"))? : "",
+			"dial_context",	ast_json_string_get(ast_json_object_get(j_dest, "context"))? : ""
+			);
+
+	return j_res;
+}
+
+static struct ast_json* create_dial_destination_application(struct ast_json* j_dest)
+{
+	struct ast_json* j_res;
+
+	if(j_dest == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return NULL;
+	}
+
+	j_res = ast_json_pack("{s:s, s:s}",
+			"dial_application",		ast_json_string_get(ast_json_object_get(j_dest, "application"))? : "",
+			"dial_data",					ast_json_string_get(ast_json_object_get(j_dest, "data"))? : ""
+			);
+
+	return j_res;
+}
+
+struct ast_json* create_dial_destination_info(struct ast_json* j_dest)
+{
+	int type;
+	struct ast_json* j_res;
+
+	if(j_dest == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return NULL;
+	}
+
+	type = ast_json_integer_get(ast_json_object_get(j_dest, "type"));
+	switch(type) {
+		case DESTINATION_EXTEN:
+		{
+			j_res = create_destination_exten(j_dest);
+		}
+		break;
+
+		case DESTINATION_APPLICATION:
+		{
+			j_res = create_dial_destination_application(j_dest);
+		}
+		break;
+
+		default:
+		{
+			ast_log(LOG_ERROR, "No support destination type. type[%d]\n", type);
+			j_res = NULL;
+		}
+		break;
+	}
+
+	if(j_res == NULL) {
+		ast_log(LOG_ERROR, "Could not get correct dial destination info.\n");
+		return NULL;
+	}
+
+	// set dial_type
+	ast_json_object_set(j_res, "dial_type", ast_json_integer_create(type));
+
+	return j_res;
 }
 

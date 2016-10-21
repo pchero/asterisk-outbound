@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Basic &mdash; asterisk-outbound 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Structure" href="structure.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="structure.html" title="Structure"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="basic">
+<h1>Basic<a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="concept">
+<h2>Concept<a class="headerlink" href="#concept" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="principle">
+<h3>Principle<a class="headerlink" href="#principle" title="Permalink to this headline">¶</a></h3>
+<p>asterisk-outbound has a 5W1H principle.</p>
+<ul class="simple">
+<li>Campaign : Determine why make a call(Why).</li>
+<li>Dial list : Determine where/what call heading for(Where/What).</li>
+<li>Destination : Determine who get a call after answer(Who).</li>
+<li>Plan : Determine how/when to make a call(How/When).</li>
+</ul>
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="campaign">
+<h3>Campaign<a class="headerlink" href="#campaign" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Set destination, plan, dial list(dlma).</li>
+</ul>
+</div>
+<div class="section" id="destination">
+<h3>Destination<a class="headerlink" href="#destination" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Call&#8217;s transfer destination after customer has answered.</li>
+</ul>
+</div>
+<div class="section" id="plan">
+<h3>Plan<a class="headerlink" href="#plan" title="Permalink to this headline">¶</a></h3>
+<p>Dialling stragegy.
+* UUI delivery.
+* Dial mode
+* Dialing control.</p>
+</div>
+<div class="section" id="dial-list">
+<h3>Dial list<a class="headerlink" href="#dial-list" title="Permalink to this headline">¶</a></h3>
+<p>Customer info list.
+* Dial number.
+* UUI info.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Plan<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="dial-mode">
+<h3>Dial mode<a class="headerlink" href="#dial-mode" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="predictive">
+<h4>Predictive<a class="headerlink" href="#predictive" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Predict how many call will be answered or not answered.</li>
+<li>Calculate possilbilties automatically.</li>
+</ul>
+</div>
+<div class="section" id="power">
+<h4>Power<a class="headerlink" href="#power" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Make a call and play recorded message.</li>
+<li>Will be supported in a future.</li>
+</ul>
+</div>
+<div class="section" id="sms">
+<h4>SMS<a class="headerlink" href="#sms" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Send an SMS messages</li>
+<li>Will be supported in a future.</li>
+</ul>
+</div>
+<div class="section" id="desktop">
+<h4>Desktop<a class="headerlink" href="#desktop" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>The destination makes decision to make a call.</li>
+<li>Will be supported in a future.</li>
+</ul>
+</div>
+<div class="section" id="fax">
+<h4>Fax<a class="headerlink" href="#fax" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Send a fax</li>
+<li>Will be supported in a future.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Basic</a><ul>
+<li><a class="reference internal" href="#concept">Concept</a><ul>
+<li><a class="reference internal" href="#principle">Principle</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#resources">Resources</a><ul>
+<li><a class="reference internal" href="#campaign">Campaign</a></li>
+<li><a class="reference internal" href="#destination">Destination</a></li>
+<li><a class="reference internal" href="#plan">Plan</a></li>
+<li><a class="reference internal" href="#dial-list">Dial list</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">Plan</a><ul>
+<li><a class="reference internal" href="#dial-mode">Dial mode</a><ul>
+<li><a class="reference internal" href="#predictive">Predictive</a></li>
+<li><a class="reference internal" href="#power">Power</a></li>
+<li><a class="reference internal" href="#sms">SMS</a></li>
+<li><a class="reference internal" href="#desktop">Desktop</a></li>
+<li><a class="reference internal" href="#fax">Fax</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="structure.html"
+                        title="next chapter">Structure</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/basic.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="structure.html" title="Structure"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             >previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, pchero.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
