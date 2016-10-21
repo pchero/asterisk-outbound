@@ -15,6 +15,7 @@
 
 #include "dialing_handler.h"
 #include "event_handler.h"
+#include "utils.h"
 
 
 static char* g_cmd_buf = NULL;  //!< action cmd buffer
@@ -167,6 +168,7 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 	struct manager_custom_hook* hook;
 	char str_cmd[10240];
 	struct ast_json_iter* j_iter;
+	int type;
 
 	// just for log
 	if(j_cmd == NULL) {
@@ -193,6 +195,23 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 			continue;
 		}
 		j_tmp = ast_json_object_iter_value(j_iter);
+
+		type = ast_json_typeof(j_tmp);
+		switch(type) {
+			case AST_JSON_REAL:
+			case AST_JSON_INTEGER:
+			{
+				sprintf(str_cmd, "%s%s: %lld\n", str_cmd, tmp_const, ast_json_integer_get(j_tmp));
+			}
+			break;
+
+			default:
+			{
+				sprintf(str_cmd, "%s%s: %s\n", str_cmd, tmp_const, ast_json_string_get(j_tmp));
+			}
+			break;
+		}
+
 		sprintf(str_cmd, "%s%s: %s\n", str_cmd, tmp_const, ast_json_string_get(j_tmp));
 	}
 

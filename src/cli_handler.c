@@ -11,6 +11,7 @@
 #include "asterisk/json.h"
 #include "asterisk/xml.h"
 #include "asterisk/cli.h"
+#include "asterisk/config.h"
 
 #include <stdbool.h>
 
@@ -21,6 +22,7 @@
 #include "dl_handler.h"
 #include "plan_handler.h"
 #include "queue_handler.h"
+#include "destination_handler.h"
 
 /*** DOCUMENTATION
 	<manager name="OutCampaignCreate" language="en_US">
@@ -50,6 +52,10 @@
 		</managerEventInstance>
 	</managerEvent>
 ***/
+
+
+static char* get_variables(const struct message *m);
+
 
 #define CAMP_FORMAT2 "%-36.36s %-40.40s %-6.6s %-36.36s %-36.36s %-40.40s\n"
 #define CAMP_FORMAT3 "%-36.36s %-40.40s %6lld %-36.36s %-36.36s %-40.40s\n"
@@ -557,7 +563,7 @@ static char* _out_create_campaign(int fd, int *total, struct mansession *s, cons
 
 	j_camp = ast_json_object_create();
 	if(argc >= 7) { ast_json_object_set(j_camp, "detail", ast_json_string_create(argv[7])); }
-	if(argc >= 6) { ast_json_object_set(j_camp, "queue", ast_json_string_create(argv[6])); }
+	if(argc >= 6) { ast_json_object_set(j_camp, "dest", ast_json_string_create(argv[6])); }
 	if(argc >= 5) { ast_json_object_set(j_camp, "dlma", ast_json_string_create(argv[5])); }
 	if(argc >= 4) { ast_json_object_set(j_camp, "plan", ast_json_string_create(argv[4])); }
 	if(argc >= 3) { ast_json_object_set(j_camp, "name", ast_json_string_create(argv[3])); }
@@ -596,7 +602,7 @@ static char* _out_delete_campaign(int fd, int *total, struct mansession *s, cons
 		return CLI_SHOWUSAGE;
 	}
 
-	ret = delete_cmapaign(argv[3]);
+	ret = delete_campaign(argv[3]);
 	if(ret == false) {
 		return CLI_FAILURE;
 	}
@@ -637,6 +643,7 @@ static char* get_campaign_str(struct ast_json* j_camp)
 			"Status: %lld\r\n"
 			"Plan: %s\r\n"
 			"Dlma: %s\r\n"
+			"Dest: %s\r\n"
 			"TmCreate: %s\r\n"
 			"TmDelete: %s\r\n"
 			"TmUpdate: %s\r\n",
@@ -646,6 +653,7 @@ static char* get_campaign_str(struct ast_json* j_camp)
 			ast_json_integer_get(ast_json_object_get(j_camp, "status")),
 			ast_json_string_get(ast_json_object_get(j_camp, "plan"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "dlma"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_camp, "dest"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "tm_create"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "tm_delete"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_camp, "tm_update"))? : "<unknown>"
@@ -986,6 +994,90 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 			ast_json_string_get(ast_json_object_get(j_dl, "tm_delete"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dl, "tm_update"))? : "<unknown>"
 			);
+	return tmp;
+}
+
+/**
+ * Create AMI string for plan
+ * @param j_plan
+ * @return
+ */
+static char* get_destination_str(struct ast_json* j_dest)
+{
+	char* tmp;
+	const char* tmp_const;
+	struct ast_json* j_tmp;
+	struct ast_json_iter* iter;
+	char* setvars;
+	char* setvar;
+
+
+	if(j_dest == NULL) {
+		return NULL;
+	}
+
+	// create Setvar string
+	setvars = NULL;
+	tmp_const = ast_json_string_get(ast_json_object_get(j_dest, "setvars"));
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
+		j_tmp = ast_json_load_string(tmp_const, NULL);
+
+		for(iter = ast_json_object_iter(j_tmp);
+				iter != NULL;
+				iter = ast_json_object_iter_next(j_tmp, iter))
+		{
+			ast_asprintf(&setvar, "%sVariable: %s=%s\r\n",
+					setvars? : "",
+					ast_json_object_iter_key(iter)? : "",
+					ast_json_string_get(ast_json_object_iter_value(iter))? : ""
+					);
+			if(setvars != NULL) {
+				ast_free(setvars);
+			}
+			setvars = setvar;
+		}
+	}
+
+	ast_asprintf(&tmp,
+			"Uuid: %s\r\n"
+			"Name: %s\r\n"
+			"Detail: %s\r\n"
+
+			"Type: %lld\r\n"
+
+			"Exten: %s\r\n"
+			"Context: %s\r\n"
+			"Priority: %s\r\n"
+			"%s"// Variables
+
+			"Application: %s\r\n"
+			"Data: %s\r\n"
+
+			"TmCreate: %s\r\n"
+			"TmDelete: %s\r\n"
+			"TmUpdate: %s\r\n",
+
+			ast_json_string_get(ast_json_object_get(j_dest, "uuid"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_dest, "name"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_dest, "detail"))? : "<unknown>",
+
+			ast_json_integer_get(ast_json_object_get(j_dest, "type")),
+
+			ast_json_string_get(ast_json_object_get(j_dest, "exten"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_dest, "context"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_dest, "priority"))? : "<unknown>",
+			setvars? : "Variable: <unknown>\r\n",
+
+			ast_json_string_get(ast_json_object_get(j_dest, "application"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_dest, "data"))? : "<unknown>",
+
+			ast_json_string_get(ast_json_object_get(j_dest, "tm_create"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_dest, "tm_delete"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(j_dest, "tm_update"))? : "<unknown>"
+			);
+	ast_free(setvars);
+
+	ast_log(LOG_VERBOSE, "Value check. created plan string. str[%s]\n", tmp);
 	return tmp;
 }
 
@@ -1549,6 +1641,92 @@ void send_manager_evt_out_dialing_update(rb_dialing* dialing)
 
 /**
  * AMI Event handler
+ * Event: OutDestinationCreate
+ * @param j_obj
+ */
+void send_manager_evt_out_destination_create(struct ast_json* j_dest)
+{
+	char* tmp;
+
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationCreate.\n");
+
+	if(j_dest == NULL) {
+		// nothing to send.
+		ast_log(LOG_WARNING, "Nothing to send.\n");
+		return;
+	}
+
+	tmp = get_destination_str(j_dest);
+	if(tmp == NULL) {
+		return;
+	}
+
+	manager_event(EVENT_FLAG_MESSAGE, "OutDestinationCreate", "%s\r\n", tmp);
+	ast_free(tmp);
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationCreate. Succeed.\n");
+
+	return;
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDestinationUpdate
+ * @param j_obj
+ */
+void send_manager_evt_out_destination_update(struct ast_json* j_dest)
+{
+	char* tmp;
+
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationUpdate.\n");
+
+	if(j_dest == NULL) {
+		// nothing to send.
+		ast_log(LOG_WARNING, "Nothing to send.\n");
+		return;
+	}
+
+	tmp = get_destination_str(j_dest);
+	if(tmp == NULL) {
+		return;
+	}
+
+	manager_event(EVENT_FLAG_MESSAGE, "OutDestinationUpdate", "%s\r\n", tmp);
+	ast_free(tmp);
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationUpdate. Succeed.\n");
+
+	return;
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDestinationDelete
+ * @param j_camp
+ */
+void send_manager_evt_out_destination_delete(const char* uuid)
+{
+	char* tmp;
+
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationDelete.\n");
+
+	if(uuid == NULL) {
+		// nothing to send.
+		ast_log(LOG_WARNING, "AMI event. OutDestinationDelete. Failed.\n");
+		return;
+	}
+
+	ast_asprintf(&tmp,
+			"Uuid: %s\r\n",
+			uuid
+			);
+	manager_event(EVENT_FLAG_MESSAGE, "OutDestinationDelete", "%s\r\n", tmp);
+	ast_free(tmp);
+	ast_log(LOG_VERBOSE, "AMI event. OutDestinationDelete. Succeed.\n");
+
+	return;
+}
+
+/**
+ * AMI Event handler
  * Event: OutDialingEntry
  * @param s
  * @param m
@@ -1953,6 +2131,9 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
 	tmp_const = astman_get_header(m, "Dlma");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
 
+	tmp_const = astman_get_header(m, "Dest");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
+
 	ret = create_campaign(j_tmp);
 	ast_json_unref(j_tmp);
 	if(ret == false) {
@@ -1987,7 +2168,7 @@ static int manager_out_campaign_delete(struct mansession *s, const struct messag
 		return 0;
 	}
 
-	ret = delete_cmapaign(tmp_const);
+	ret = delete_campaign(tmp_const);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while deleting campaign");
 		ast_log(LOG_WARNING, "OutCampaignDelete failed.\n");
@@ -2030,6 +2211,9 @@ static int manager_out_campaign_update(struct mansession *s, const struct messag
 
 	tmp_const = astman_get_header(m, "Dlma");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Dest");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
 
 	tmp_const = astman_get_header(m, "Status");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "status", ast_json_integer_create(atoi(tmp_const)));}
@@ -2693,6 +2877,205 @@ static int manager_out_dialing_summary(struct mansession *s, const struct messag
    return 0;
 }
 
+/**
+ * AMI Action handler
+ * Action: OutDestinationCreate
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_destination_create(struct mansession *s, const struct message *m)
+{
+	struct ast_json* j_tmp;
+	const char* tmp_const;
+	char* tmp;
+	int ret;
+
+	ast_log(LOG_VERBOSE, "AMI request. OutDestinationCreate.\n");
+
+	j_tmp = ast_json_object_create();
+
+	tmp_const = astman_get_header(m, "Name");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Detail");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Type");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "type", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Exten");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "exten", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Context");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "context", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Priority");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "priority", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Application");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "application", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Data");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "data", ast_json_string_create(tmp_const));}
+
+	// Variable
+	tmp = get_variables(m);
+	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
+	ast_free(tmp);
+
+	ret = create_destination(j_tmp);
+	ast_json_unref(j_tmp);
+	if(ret == false) {
+		astman_send_error(s, m, "Error encountered while creating destination");
+		ast_log(LOG_NOTICE, "OutDestinationCreate failed.\n");
+		return 0;
+	}
+	astman_send_ack(s, m, "Destination created successfully");
+	ast_log(LOG_NOTICE, "OutDestinationCreate succeed.\n");
+
+	return 0;
+}
+
+/**
+ * AMI Action handler
+ * Action: OutDestinationUpdate
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_destination_update(struct mansession *s, const struct message *m)
+{
+	struct ast_json* j_tmp;
+	const char* tmp_const;
+	char* tmp;
+	int ret;
+
+	ast_log(LOG_VERBOSE, "AMI request. OutDestinationCreate.\n");
+
+	j_tmp = ast_json_object_create();
+
+	tmp_const = astman_get_header(m, "Uuid");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Name");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Detail");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Type");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "type", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Exten");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "exten", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Context");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "context", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Priority");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "priority", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Application");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "application", ast_json_string_create(tmp_const));}
+
+	tmp_const = astman_get_header(m, "Data");
+	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "data", ast_json_string_create(tmp_const));}
+
+	// Variable
+	tmp = get_variables(m);
+	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
+	ast_free(tmp);
+
+	ret = update_destination(j_tmp);
+	ast_json_unref(j_tmp);
+	if(ret == false) {
+		astman_send_error(s, m, "Error encountered while updating destination");
+		ast_log(LOG_NOTICE, "OutDestinationUpdate failed.\n");
+		return 0;
+	}
+	astman_send_ack(s, m, "Destination updated successfully");
+	ast_log(LOG_NOTICE, "OutDestinationUpdate succeed.\n");
+
+	return 0;
+}
+
+/**
+ * AMI Action handler
+ * Action: OutDestinationDelete
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_destination_delete(struct mansession *s, const struct message *m)
+{
+	const char* tmp_const;
+	int ret;
+
+	ast_log(LOG_VERBOSE, "AMI request. OutDestinationDelete.\n");
+
+	tmp_const = astman_get_header(m, "Uuid");
+	if(strcmp(tmp_const, "") == 0) {
+		astman_send_error(s, m, "Error encountered while deleting destination");
+		ast_log(LOG_WARNING, "OutDestinationDelete failed.\n");
+		return 0;
+	}
+
+	ret = delete_destination(tmp_const);
+	if(ret == false) {
+		astman_send_error(s, m, "Error encountered while deleting destination");
+		ast_log(LOG_WARNING, "OutDestinationDelete failed.\n");
+		return 0;
+	}
+	astman_send_ack(s, m, "Destination deleted successfully");
+	ast_log(LOG_NOTICE, "OutDestinationDelete succeed.\n");
+
+	return 0;
+}
+
+/**
+ * Parsing the AMI message
+ * Return the json string
+ *
+ * Variable: var1=val1
+ * Variable: var2=val2
+ *
+ * "{\"var1\":\"val1\", \"var2\":\"val2\"}"
+ * \param m
+ * \return
+ */
+static char* get_variables(const struct message *m)
+{
+	struct ast_variable* var_org;
+	struct ast_variable* var;
+	struct ast_json* j_res;
+	char* res;
+	char* tmp;
+
+	var_org = astman_get_variables_order(m, ORDER_REVERSE);
+	if(var_org == NULL) {
+		return NULL;
+	}
+
+	// get every each variables.
+	var = var_org;
+	j_res = ast_json_object_create();
+	while(var != NULL) {
+		ast_json_object_set(j_res, var->name, ast_json_string_create(var->value));
+		var = var->next;
+	}
+	ast_variables_destroy(var_org);
+
+	tmp = ast_json_dump_string_format(j_res, AST_JSON_COMPACT);
+	res = ast_strdup(tmp);
+
+	ast_json_free(tmp);
+	ast_json_unref(j_res);
+
+	return res;
+}
+
+
 struct ast_cli_entry cli_out[] = {
 	AST_CLI_DEFINE(out_show_campaigns,	  "List defined outbound campaigns"),
 	AST_CLI_DEFINE(out_show_plans,		  "List defined outbound plans"),
@@ -2735,6 +3118,9 @@ int init_cli_handler(void)
 	err |= ast_manager_register2("OutQueueShow", EVENT_FLAG_COMMAND, manager_out_queue_show, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutDialingShow", EVENT_FLAG_COMMAND, manager_out_dialing_show, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutDialingSummary", EVENT_FLAG_COMMAND, manager_out_dialing_summary, NULL, NULL, NULL);
+	err |= ast_manager_register2("OutDestinationCreate", EVENT_FLAG_COMMAND, manager_out_destination_create, NULL, NULL, NULL);
+	err |= ast_manager_register2("OutDestinationDelete", EVENT_FLAG_COMMAND, manager_out_destination_delete, NULL, NULL, NULL);
+	err |= ast_manager_register2("OutDestinationUpdate", EVENT_FLAG_COMMAND, manager_out_destination_update, NULL, NULL, NULL);
 
 
 	if(err != 0) {
@@ -2771,6 +3157,9 @@ void term_cli_handler(void)
 	ast_manager_unregister("OutQueueShow");
 	ast_manager_unregister("OutDialingShow");
 	ast_manager_unregister("OutDialingSummary");
+	ast_manager_unregister("OutDestinationCreate");
+	ast_manager_unregister("OutDestinationUpdate");
+	ast_manager_unregister("OutDestinationDelete");
 
 
 	return;

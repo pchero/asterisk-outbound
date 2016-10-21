@@ -14,6 +14,7 @@
 #include "dialing_handler.h"
 #include "event_handler.h"
 #include "cli_handler.h"
+#include "utils.h"
 
 AST_MUTEX_DEFINE_STATIC(g_rb_dialing_mutex);
 
@@ -138,6 +139,7 @@ rb_dialing* rb_dialing_create(
 		struct ast_json* j_camp,
 		struct ast_json* j_plan,
 		struct ast_json* j_dlma,
+		struct ast_json* j_dest,
 		struct ast_json* j_dial
 		)
 {
@@ -145,7 +147,8 @@ rb_dialing* rb_dialing_create(
 	char* tmp;
 	const char* tmp_const;
 
-	if((dialing_uuid == NULL) || (j_camp == NULL) || (j_plan == NULL) || (j_dial == NULL)) {
+	if((dialing_uuid == NULL) || (j_camp == NULL) || (j_plan == NULL) || (j_dial == NULL) || (j_dest == NULL)) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
 		return NULL;
 	}
 
@@ -183,6 +186,11 @@ rb_dialing* rb_dialing_create(
 	// info_plan
 	tmp = ast_json_dump_string_format(j_dlma, 0);
 	ast_json_object_set(dialing->j_dialing, "info_dlma", ast_json_string_create(tmp));
+	ast_json_free(tmp);
+
+	// info_dest
+	tmp = ast_json_dump_string_format(j_dest, 0);
+	ast_json_object_set(dialing->j_dialing, "info_dest", ast_json_string_create(tmp));
 	ast_json_free(tmp);
 
 	// info_dl

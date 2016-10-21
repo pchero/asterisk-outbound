@@ -14,8 +14,9 @@ Contents:
    intro
    installation
    tutorial
+   basic
    structure
-   asterisk_cli.rst
+   asterisk_cli
    ami_action
    ami_event
 

@@ -29,10 +29,8 @@ typedef enum _E_CAMP_STATUS_T
 	E_CAMP_STOPPING_FORCE = 30,
 } E_CAMP_STATUS_T;
 
-char* gen_uuid(void);
-
 bool create_campaign(const struct ast_json* j_camp);
-bool delete_cmapaign(const char* uuid);
+bool delete_campaign(const char* uuid);
 bool update_campaign(const struct ast_json* j_camp);
 bool update_campaign_status(const char* uuid, E_CAMP_STATUS_T status);
 struct ast_json* get_campaigns_all(void);

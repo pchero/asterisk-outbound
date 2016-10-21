@@ -70,7 +70,7 @@ bool db_sqlite3_init(void)
 	j_res = db_sqlite3_get_record(db_res);
 	db_sqlite3_free(db_res);
 	if(j_res != NULL) {
-		ast_json_free(j_res);
+		ast_json_unref(j_res);
 		return true;
 	}
 
@@ -116,6 +116,13 @@ bool db_sqlite3_init(void)
 	ret = db_sqlite3_exec(g_sql_dl_result);
 	if(ret == false) {
 		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "dl_result");
+		return false;
+	}
+
+	// destination
+	ret = db_sqlite3_exec(g_db_sql_destination);
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "destination");
 		return false;
 	}
 

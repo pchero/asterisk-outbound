@@ -15,6 +15,9 @@
 #include "campaign_handler.h"
 #include "cli_handler.h"
 #include "event_handler.h"
+#include "utils.h"
+#include "destination_handler.h"
+#include "plan_handler.h"
 
 #include <stdbool.h>
 
@@ -22,6 +25,7 @@ static char* create_chan_addr_for_dial(struct ast_json* j_plan, struct ast_json*
 static char* get_dial_number(struct ast_json* j_dlist, const int cnt);
 static char* create_view_name(const char* uuid);
 static bool create_dlma_view(const char* uuid, const char* view_name);
+static struct ast_json* create_dial_dl_info(struct ast_json* j_dl_list, struct ast_json* j_plan);
 
 
 /**
@@ -659,90 +663,51 @@ struct ast_json* get_dl_list(const char* uuid)
 struct ast_json* create_dial_info(
 		struct ast_json* j_plan,
 		struct ast_json* j_dl_list,
-		E_DIAL_TYPE dial_type,
-		const char* data_1,	 ///< extension | application name
-		const char* data_2	  ///< context | data
+		struct ast_json* j_dest
 		)
 {
 	struct ast_json* j_dial;
-	char* dial_addr;
-	char* dial_channel;
-	int dial_num_point;
-	char tmp_timeout[10];
-	char* channel_id;
-	char* other_channel_id;
-	int dial_count;
+	struct ast_json* j_dial_dest;
+	struct ast_json* j_dial_dl;
+	struct ast_json* j_dial_plan;
 
-	// get dial number point
-	dial_num_point = get_dial_num_point(j_dl_list, j_plan);
-	if(dial_num_point < 0) {
-		ast_log(LOG_ERROR, "Could not find correct number count.\n");
+	if((j_plan == NULL) || (j_dl_list == NULL) || (j_dest == NULL)) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
 		return NULL;
 	}
 
-	// get dial count
-	dial_count = get_dial_try_cnt(j_dl_list, dial_num_point);
-	if(dial_count == -1) {
-		ast_log(LOG_ERROR, "Could not get correct dial count number.\n");
+	// get dial destination
+	j_dial_dest = create_dial_destination_info(j_dest);
+	if(j_dial_dest == NULL) {
+		ast_log(LOG_ERROR, "Could not create correct dial destination.\n");
 		return NULL;
 	}
 
-	dial_addr = get_dial_number(j_dl_list, dial_num_point);
-	if(dial_addr == NULL) {
-		ast_log(LOG_ERROR, "Could not get correct dial address.\n");
+	// get dial dl
+	j_dial_dl = create_dial_dl_info(j_dl_list, j_plan);
+	if(j_dial_dl == NULL) {
+		ast_log(LOG_ERROR, "Could not create correct dial dl info.\n");
+		ast_json_unref(j_dial_dest);
 		return NULL;
 	}
 
-	// create destination channel address.
-	dial_channel = create_chan_addr_for_dial(j_plan, j_dl_list, dial_num_point);
-	if(dial_channel == NULL) {
-		ast_log(LOG_ERROR, "Could not get correct channel address.\n");
-		ast_free(dial_addr);
+	j_dial_plan = create_dial_plan_info(j_plan);
+	if(j_dial_plan == NULL) {
+		ast_log(LOG_ERROR, "Could not create correct dial plan info.\n");
+		ast_json_unref(j_dial_dest);
+		ast_json_unref(j_dial_dl);
 		return NULL;
 	}
 
-	sprintf(tmp_timeout, "%lld", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout")));
-	channel_id = gen_uuid();
-	other_channel_id = gen_uuid();
+	// create dial
+	j_dial = ast_json_object_create();
+	ast_json_object_update(j_dial, j_dial_dest);
+	ast_json_object_update(j_dial, j_dial_dl);
+	ast_json_object_update(j_dial, j_dial_plan);
 
-	j_dial = ast_json_pack("{"
-			"s:s, "
-			"s:i, s:s, s:s, s:s, s:s, s:s, "
-			"s:i, s:i, s:i"
-			"}",
-			// identity info
-			"uuid",	  ast_json_string_get(ast_json_object_get(j_dl_list, "uuid")),
-
-			// channel set
-			"dial_type",		dial_type,
-			"dial_channel",	 dial_channel,   ///< dialing channel
-			"dial_addr",		dial_addr,	  ///< dialing address(number)
-			"timeout",		  tmp_timeout,
-			"channelid",		channel_id,													 ///< Channel unique ID
-			"otherchannelid",   other_channel_id,											   ///< Other channel unique id.
-
-			// other info
-			"dial_index",	   dial_num_point,
-			"dial_trycnt",	  dial_count,
-			"dial_type",		dial_type
-			);
-	if(dial_type == E_DIAL_EXTEN) {
-		ast_json_object_set(j_dial, "dial_exten", ast_json_string_create(data_1));
-		ast_json_object_set(j_dial, "dial_context", ast_json_string_create(data_2));
-	}
-	else if(dial_type == E_DIAL_APPL) {
-		ast_json_object_set(j_dial, "dial_application", ast_json_string_create(data_1));
-		ast_json_object_set(j_dial, "dial_data", ast_json_string_create(data_2));
-	}
-	// caller id
-	if(ast_json_string_get(ast_json_object_get(j_plan, "caller_id")) != NULL) {
-		ast_json_object_set(j_dial, "callerid", ast_json_ref(ast_json_object_get(j_plan, "caller_id")));
-	}
-
-	ast_free(dial_channel);
-	ast_free(dial_addr);
-	ast_free(channel_id);
-	ast_free(other_channel_id);
+	ast_json_unref(j_dial_dest);
+	ast_json_unref(j_dial_dl);
+	ast_json_unref(j_dial_plan);
 
 	return j_dial;
 }
@@ -994,4 +959,76 @@ static bool create_dlma_view(const char* uuid, const char* view_name)
 	}
 
 	return true;
+}
+
+static struct ast_json* create_dial_dl_info(struct ast_json* j_dl_list, struct ast_json* j_plan)
+{
+	int index;
+	int count;
+	char* addr;
+	char* channel;
+	struct ast_json* j_res;
+	char* channel_id;
+	char* other_channel_id;
+
+	if((j_dl_list == NULL) || (j_plan == NULL)) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return NULL;
+	}
+
+	// get dial number point(index)
+	index = get_dial_num_point(j_dl_list, j_plan);
+	if(index < 0) {
+		ast_log(LOG_ERROR, "Could not find correct number count.\n");
+		return NULL;
+	}
+
+	// get dial count
+	count = get_dial_try_cnt(j_dl_list, index);
+	if(count == -1) {
+		ast_log(LOG_ERROR, "Could not get correct dial count number.\n");
+		return NULL;
+	}
+
+	// get dial address
+	addr = get_dial_number(j_dl_list, index);
+	if(addr == NULL) {
+		ast_log(LOG_ERROR, "Could not get correct dial address.\n");
+		return NULL;
+	}
+
+	// create destination channel address.
+	channel = create_chan_addr_for_dial(j_plan, j_dl_list, index);
+	if(channel == NULL) {
+		ast_log(LOG_ERROR, "Could not get correct channel address.\n");
+		ast_free(addr);
+		return NULL;
+	}
+
+	channel_id = gen_uuid();
+	other_channel_id = gen_uuid();
+
+	j_res = ast_json_pack(
+			"{"
+			"s:s, "
+			"s:s, s:s, s:i, s:i,"
+			"s:s, s:s"
+			"}",
+
+			"uuid",	  ast_json_string_get(ast_json_object_get(j_dl_list, "uuid")),
+
+			"dial_channel", 	channel,
+			"dial_addr",			addr,
+			"dial_index",			index,
+			"dial_trycnt",		count,
+
+			"channelid",			channel_id,
+			"otherchannelid",	other_channel_id
+			);
+	ast_free(channel);
+	ast_free(addr);
+	ast_free(channel_id);
+	ast_free(other_channel_id);
+
+	return j_res;
 }

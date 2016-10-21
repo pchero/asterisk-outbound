@@ -53,53 +53,22 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="asterisk">
-<h3>Asterisk<a class="headerlink" href="#asterisk" title="Permalink to this headline">¶</a></h3>
-<p>Asterisk-13.6 or later.</p>
-</div>
-<div class="section" id="asterisk-zmq">
-<h3>asterisk-zmq<a class="headerlink" href="#asterisk-zmq" title="Permalink to this headline">¶</a></h3>
-<p>asterisk-zmq-1.5 or later.</p>
-<p>Download at here.</p>
-<div class="highlight-python"><div class="highlight"><pre>https://github.com/pchero/asterisk-zmq/releases
+<div class="highlight-python"><div class="highlight"><pre>Asterisk-13.6 or later.
+sqlite3
+libevent2
 </pre></div>
-</div>
-</div>
-<div class="section" id="database">
-<h3>database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h3>
-<p>mariadb-10.0.1 or later
-mysql-5.6 or later</p>
-</div>
-<div class="section" id="library">
-<h3>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h3>
-<p>Ubuntu/Debian</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install libevent2
-</pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="module">
-<h3>Module<a class="headerlink" href="#module" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>$ make
 $ sudo make install
 $ sudo cp conf/res_outbound.conf /etc/asterisk
 </pre></div>
 </div>
 </div>
-<div class="section" id="id1">
-<h3>Database<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>Create new database for the asterisk-outbound.</p>
-<div class="highlight-python"><div class="highlight"><pre>mysql&gt; create database outbound
-</pre></div>
-</div>
-<p>Run the initial script.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ cd db_srcripts
-$ mysql -u root -p outbound &lt; create.sql
-</pre></div>
-</div>
-</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -112,18 +81,9 @@ $ mysql -u root -p outbound &lt; create.sql
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#requirements">Requirements</a><ul>
-<li><a class="reference internal" href="#asterisk">Asterisk</a></li>
-<li><a class="reference internal" href="#asterisk-zmq">asterisk-zmq</a></li>
-<li><a class="reference internal" href="#database">database</a></li>
-<li><a class="reference internal" href="#library">Library</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#install">Install</a><ul>
-<li><a class="reference internal" href="#module">Module</a></li>
-<li><a class="reference internal" href="#id1">Database</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>
 </li>
 </ul>

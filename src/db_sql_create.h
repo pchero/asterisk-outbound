@@ -156,6 +156,39 @@ static const char* g_sql_dl_list_ma =
 "    primary key(uuid)"
 ");";
 
+
+
+// destination
+static const char* g_db_sql_destination =
+"create table destination("
+
+// identity
+" uuid          varchar(255)    unique,"
+" name          varchar(255),"
+" detail        varchar(1023),"
+" in_use        int     default 1,"
+
+// information
+" type          int default 0,"         // 0:extension, 1:application
+
+// extension
+" exten         varchar(255),"
+" context       varchar(255),"
+" priority      varchar(255),"
+" variables     text,"   // string of json object. "{"var1":"value1", "var2":"value2", ... }"
+
+
+// application
+" application   varchar(255),"  // application name
+" data          text,"  // application arguments
+
+// timestamp. UTC
+" tm_create     datetime(6),"
+" tm_delete     datetime(6),"
+" tm_update     datetime(6)"
+");";
+
+
 // campaign
 static const char* g_sql_campaign =
 "create table campaign("
@@ -173,6 +206,7 @@ static const char* g_sql_campaign =
 
 "    plan    varchar(255),"                       // plan uuid"
 "    dlma    varchar(255),"                       // dial_list_ma uuid"
+"    dest    varchar(255),"                       // destination uuid
 
 // timestamp. UTC."
 "    tm_create           datetime(6),"   // create time."
@@ -252,5 +286,6 @@ static const char* g_sql_dl_result =
 "    primary key(dialing_uuid)"
 
 ");";
+
 
 #endif /* SRC_DB_SQL_CREATE_H_ */

@@ -742,3 +742,91 @@ Example
    Response: Success
    Message: Dl list created successfully
    
+
+OutDestCreate
+=============
+
+Description
+-----------
+Create Destination for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDestCreate
+   Name: <value>
+   Detail: <value>
+   Type: <value>
+   Exten: <value>
+   Context: <value>
+   Priority: <value>
+   Variable: <var=value>
+   Application: <value>
+   Data: <value>
+
+* Name: <optional> Destination name.
+* Detail: <optional> Detail info.
+* Type: <required> Destination type. 0:exten, 1:application
+* Exten: <optional> Extension. Type: 0(exten) only
+* Context: <optional> Conetxt. Type: 0(exten) only
+* Priority: <optional> Priority. Type: 0(exten) only
+* Variable: <optional> Set(var=val). Could be more than one. Type: 0(exten) only.
+* Application: <optional> Application name. Type: 1(application) only
+* Data: <optional> Application name. Type: 1(application) only
+
+OutDestUpdate
+=============
+
+Description
+-----------
+Update Destination for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDestUpdate
+   Uuid: <value>
+   Name: <value>
+   Detail: <value>
+   Type: <value>
+   Exten: <value>
+   Context: <value>
+   Priority: <value>
+   Variable: <var=value>
+   Application: <value>
+   Data: <value>
+
+* Uuid: <required> Destination uuid.
+* Name: <optional> Destination name.
+* Detail: <optional> Detail info.
+* Type: <required> Destination type. 0:exten, 1:application
+* Exten: <optional> Extension. Type: 0(exten) only
+* Context: <optional> Conetxt. Type: 0(exten) only
+* Priority: <optional> Priority. Type: 0(exten) only
+* Variable: <optional> Set(var=val). Could be more than one. Type: 0(exten) only.
+* Application: <optional> Application name. Type: 1(application) only
+* Data: <optional> Application name. Type: 1(application) only
+
+
+OutDestDelete
+=============
+
+Description
+-----------
+Delete Destination for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDestDelete
+   Uuid: <value>
+
+* Uuid: <required> Destination uuid.
+   
+   

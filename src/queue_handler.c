@@ -14,6 +14,7 @@
 #include "db_handler.h"
 #include "campaign_handler.h"
 #include "cli_handler.h"
+#include "utils.h"
 
 
 #include <stdbool.h>
