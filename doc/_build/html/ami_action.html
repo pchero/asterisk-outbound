@@ -69,14 +69,16 @@ ActionID: &lt;value&gt;
 [Detail:] &lt;value&gt;
 [Plan:] &lt;value&gt;
 [Dlma:] &lt;value&gt;
+[Dest:] &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">Name</span></tt>: Name of campaign.</li>
 <li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Description of campaign.</li>
-<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: The UUID of plan.</li>
-<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: The UUID of dlma.</li>
+<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Plan uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Dlma uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Destination uuid.</li>
 </ul>
 </div>
 <div class="section" id="returns">
@@ -89,21 +91,14 @@ Message: Campaign created successfully
 <div class="section" id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
+Name: Sales campaign
+Detail: test campaign
+Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
 
 Response: Success
 Message: Campaign created successfully
-
-Event: OutCampaignCreate
-Privilege: message,all
-Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
-Name: &lt;unknown&gt;
-Detail: &lt;unknown&gt;
-Status: 0
-Plan: &lt;unknown&gt;
-Dlma: &lt;unknown&gt;
-TmCreate: 2016-10-03 20:05:49.429024
-TmDelete: &lt;unknown&gt;
-TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -308,35 +303,14 @@ Message: Plan created successfully
 <div class="section" id="id16">
 <h3>Example<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
+Name: sales_plan
+Detail: simple sales plan
+DialMode: 1
+QueueName: sales_1
+TechName: sip/
 
 Response: Success
 Message: Plan created successfully
-
-Event: OutPlanCreate
-Privilege: message,all
-Uuid: b9a6f7b6-e3ea-4e08-839c-c51e0ad196d6
-Name: &lt;unknown&gt;
-Detail: &lt;unknown&gt;
-DialMode: 0
-DialTimeout: 30000
-CallerId: &lt;unknown&gt;
-AnswerHandle: 0
-DlEndHandle: 1
-RetryDelay: 50000
-TrunkName: &lt;unknown&gt;
-QueueName: &lt;unknown&gt;
-AmdMode: 0
-MaxRetryCnt1: 5
-MaxRetryCnt2: 5
-MaxRetryCnt3: 5
-MaxRetryCnt4: 5
-MaxRetryCnt5: 5
-MaxRetryCnt6: 5
-MaxRetryCnt7: 5
-MaxRetryCnt8: 5
-TmCreate: 2016-10-02 21:46:38.651717
-TmDelete: &lt;unknown&gt;
-TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -713,14 +687,7 @@ res_hangup_detail: &lt;dial-hangup-detail&gt;
 <div class="section" id="id47">
 <h3>Returns<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Response: Success
-EventList: start
-Message: Dlma List will follow
-
-...
-
-Event: OutDlmaListComplete
-EventList: Complete
-ListItems: 1
+Message: Dl list created successfully
 </pre></div>
 </div>
 </div>
@@ -736,6 +703,104 @@ Response: Success
 Message: Dl list created successfully
 </pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="outdestinationcreate">
+<h2>OutDestinationCreate<a class="headerlink" href="#outdestinationcreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id49">
+<h3>Description<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+<p>Create Destination for dialing.</p>
+</div>
+<div class="section" id="id50">
+<h3>Syntax<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestinationCreate
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+Type: &lt;value&gt;
+Exten: &lt;value&gt;
+Context: &lt;value&gt;
+Priority: &lt;value&gt;
+Variable: &lt;var=value&gt;
+Application: &lt;value&gt;
+Data: &lt;value&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li>Name: &lt;optional&gt; Destination name.</li>
+<li>Detail: &lt;optional&gt; Detail info.</li>
+<li>Type: &lt;required&gt; Destination type. 0:exten, 1:application</li>
+<li>Exten: &lt;optional&gt; Extension. Type: 0(exten) only</li>
+<li>Context: &lt;optional&gt; Conetxt. Type: 0(exten) only</li>
+<li>Priority: &lt;optional&gt; Priority. Type: 0(exten) only</li>
+<li>Variable: &lt;optional&gt; Set(var=val). Could be more than one. Type: 0(exten) only.</li>
+<li>Application: &lt;optional&gt; Application name. Type: 1(application) only</li>
+<li>Data: &lt;optional&gt; Application name. Type: 1(application) only</li>
+</ul>
+</div>
+<div class="section" id="id51">
+<h3>Example<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestinationCreate
+Name: destination test
+Detail: test destination
+Type: 1
+Application: park
+
+Response: Success
+Message: Destination created successfully
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdestupdate">
+<h2>OutDestUpdate<a class="headerlink" href="#outdestupdate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id52">
+<h3>Description<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+<p>Update Destination for dialing.</p>
+</div>
+<div class="section" id="id53">
+<h3>Syntax<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestUpdate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+Type: &lt;value&gt;
+Exten: &lt;value&gt;
+Context: &lt;value&gt;
+Priority: &lt;value&gt;
+Variable: &lt;var=value&gt;
+Application: &lt;value&gt;
+Data: &lt;value&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li>Uuid: &lt;required&gt; Destination uuid.</li>
+<li>Name: &lt;optional&gt; Destination name.</li>
+<li>Detail: &lt;optional&gt; Detail info.</li>
+<li>Type: &lt;required&gt; Destination type. 0:exten, 1:application</li>
+<li>Exten: &lt;optional&gt; Extension. Type: 0(exten) only</li>
+<li>Context: &lt;optional&gt; Conetxt. Type: 0(exten) only</li>
+<li>Priority: &lt;optional&gt; Priority. Type: 0(exten) only</li>
+<li>Variable: &lt;optional&gt; Set(var=val). Could be more than one. Type: 0(exten) only.</li>
+<li>Application: &lt;optional&gt; Application name. Type: 1(application) only</li>
+<li>Data: &lt;optional&gt; Application name. Type: 1(application) only</li>
+</ul>
+</div>
+</div>
+<div class="section" id="outdestdelete">
+<h2>OutDestDelete<a class="headerlink" href="#outdestdelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id54">
+<h3>Description<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<p>Delete Destination for dialing.</p>
+</div>
+<div class="section" id="id55">
+<h3>Syntax<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestDelete
+Uuid: &lt;value&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li>Uuid: &lt;required&gt; Destination uuid.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -839,6 +904,22 @@ Message: Dl list created successfully
 <li><a class="reference internal" href="#id46">Syntax</a></li>
 <li><a class="reference internal" href="#id47">Returns</a></li>
 <li><a class="reference internal" href="#id48">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdestinationcreate">OutDestinationCreate</a><ul>
+<li><a class="reference internal" href="#id49">Description</a></li>
+<li><a class="reference internal" href="#id50">Syntax</a></li>
+<li><a class="reference internal" href="#id51">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdestupdate">OutDestUpdate</a><ul>
+<li><a class="reference internal" href="#id52">Description</a></li>
+<li><a class="reference internal" href="#id53">Syntax</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdestdelete">OutDestDelete</a><ul>
+<li><a class="reference internal" href="#id54">Description</a></li>
+<li><a class="reference internal" href="#id55">Syntax</a></li>
 </ul>
 </li>
 </ul>

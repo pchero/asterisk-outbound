@@ -42,23 +42,25 @@ Parameters
 * ``Status``: Campaign status.
 * ``Plan``: Registered plan uuid.
 * ``Dlma``: Registered dlma uuid.
+* ``Dest``: Registered destination uuid.
 
 Example
 -------
 
 ::
 
-  Event: OutCampaignCreate
-  Privilege: message,all
-  Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
-  Name: 1009c510-71aa-4736-89f9-9b39473271cc
-  Detail: TestDetail
-  Status: 0
-  Plan: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
-  Dlma: e276d8be-a558-4546-948a-f99913a7fea2
-  TmCreate: 2015-12-09 13:29:39.483175
-  TmDelete: <unknown>
-  TmUpdate: <unknown>
+   Event: OutCampaignCreate
+   Privilege: message,all
+   Uuid: 02c4aebf-789c-46aa-817e-b7406416d211
+   Name: Sales campaign
+   Detail: test campaign
+   Status: 0
+   Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+   Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+   Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+   TmCreate: 2016-10-22T14:34:45.33929956Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
 
 
 OutCampaignUpdate
@@ -159,31 +161,30 @@ Example
 
 ::
 
-  Event: OutPlanCreate
-  Privilege: message,all
-  Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
-  Name: TestPlan
-  Detail: TestDetail
-  DialMode: 0
-  DialTimeout: 30000
-  CallerId: <unknown>
-  AnswerHandle: 0
-  DlEndHandle: 1
-  RetryDelay: 50000
-  TrunkName: <unknown>
-  QueueName: <unknown>
-  AmdMode: 0
-  MaxRetryCnt1: 5
-  MaxRetryCnt2: 5
-  MaxRetryCnt3: 5
-  MaxRetryCnt4: 5
-  MaxRetryCnt5: 5
-  MaxRetryCnt6: 5
-  MaxRetryCnt7: 5
-  MaxRetryCnt8: 5
-  TmCreate: 2015-12-09 13:58:33.765672
-  TmDelete: <unknown>
-  TmUpdate: <unknown>
+   Event: OutPlanCreate
+   Privilege: message,all
+   Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+   Name: sales_plan
+   Detail: simple sales plan
+   DialMode: 1
+   DialTimeout: 30000
+   CallerId: <unknown>
+   DlEndHandle: 1
+   RetryDelay: 50000
+   TrunkName: <unknown>
+   TechName: sip/
+   MaxRetryCnt1: 5
+   MaxRetryCnt2: 5
+   MaxRetryCnt3: 5
+   MaxRetryCnt4: 5
+   MaxRetryCnt5: 5
+   MaxRetryCnt6: 5
+   MaxRetryCnt7: 5
+   MaxRetryCnt8: 5
+   TmCreate: 2016-10-22T12:45:58.868877001Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
 
 
 OutPlanUpdate
@@ -261,7 +262,7 @@ Description
 Notify event message for dlma created.
 
 Syntax
--------
+------
 
 Parameters
 
@@ -270,15 +271,15 @@ Example
 
 ::
 
-  Event: OutDlmaCreate
-  Privilege: message,all
-  Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
-  Name: 8e6a4214-6e1c-47a3-946f-661e6cf58c04
-  Detail: TestDetail
-  DlTable: a0dc9df789bd4c2cac81bc7fbc54ff96
-  TmCreate: 2015-12-09 19:12:51.753941
-  TmDelete: <unknown>
-  TmUpdate: <unknown>
+   Event: OutDlmaCreate
+   Privilege: message,all
+   Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
+   Name: 8e6a4214-6e1c-47a3-946f-661e6cf58c04
+   Detail: TestDetail
+   DlTable: a0dc9df789bd4c2cac81bc7fbc54ff96
+   TmCreate: 2015-12-09 19:12:51.753941
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
 
 
 OutDlmaUpdate
@@ -446,4 +447,28 @@ Example
   Privilege: message,all
   Uuid: 4100781e-88f6-403d-af46-9500335d5560
 
+
+OutDestinationCreate
+====================
+
+Example
+-------
+
+::
+
+   Event: OutDestinationCreate
+   Privilege: message,all
+   Uuid: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Exten: <unknown>
+   Context: <unknown>
+   Priority: <unknown>
+   Variable: <unknown>
+   Application: park
+   Data: <unknown>
+   TmCreate: 2016-10-22T14:14:26.443747068Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
 

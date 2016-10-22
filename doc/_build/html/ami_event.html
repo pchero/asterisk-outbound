@@ -81,19 +81,21 @@ OutCampaignUpdate
 <li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status.</li>
 <li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
 <li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Registered destination uuid.</li>
 </ul>
 </div>
 <div class="section" id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignCreate
 Privilege: message,all
-Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
-Name: 1009c510-71aa-4736-89f9-9b39473271cc
-Detail: TestDetail
+Uuid: 02c4aebf-789c-46aa-817e-b7406416d211
+Name: Sales campaign
+Detail: test campaign
 Status: 0
-Plan: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
-Dlma: e276d8be-a558-4546-948a-f99913a7fea2
-TmCreate: 2015-12-09 13:29:39.483175
+Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+TmCreate: 2016-10-22T14:34:45.33929956Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -189,18 +191,16 @@ Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
 <h3>Example<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutPlanCreate
 Privilege: message,all
-Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
-Name: TestPlan
-Detail: TestDetail
-DialMode: 0
+Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Name: sales_plan
+Detail: simple sales plan
+DialMode: 1
 DialTimeout: 30000
 CallerId: &lt;unknown&gt;
-AnswerHandle: 0
 DlEndHandle: 1
 RetryDelay: 50000
 TrunkName: &lt;unknown&gt;
-QueueName: &lt;unknown&gt;
-AmdMode: 0
+TechName: sip/
 MaxRetryCnt1: 5
 MaxRetryCnt2: 5
 MaxRetryCnt3: 5
@@ -209,7 +209,7 @@ MaxRetryCnt5: 5
 MaxRetryCnt6: 5
 MaxRetryCnt7: 5
 MaxRetryCnt8: 5
-TmCreate: 2015-12-09 13:58:33.765672
+TmCreate: 2016-10-22T12:45:58.868877001Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -456,6 +456,29 @@ Uuid: 4100781e-88f6-403d-af46-9500335d5560
 </div>
 </div>
 </div>
+<div class="section" id="outdestinationcreate">
+<h2>OutDestinationCreate<a class="headerlink" href="#outdestinationcreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id34">
+<h3>Example<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationCreate
+Privilege: message,all
+Uuid: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+Name: destination test
+Detail: test destination
+Type: 1
+Exten: &lt;unknown&gt;
+Context: &lt;unknown&gt;
+Priority: &lt;unknown&gt;
+Variable: &lt;unknown&gt;
+Application: park
+Data: &lt;unknown&gt;
+TmCreate: 2016-10-22T14:14:26.443747068Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 
 
@@ -539,6 +562,10 @@ Uuid: 4100781e-88f6-403d-af46-9500335d5560
 <li><a class="reference internal" href="#id31">Description</a></li>
 <li><a class="reference internal" href="#id32">Syntax</a></li>
 <li><a class="reference internal" href="#id33">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdestinationcreate">OutDestinationCreate</a><ul>
+<li><a class="reference internal" href="#id34">Example</a></li>
 </ul>
 </li>
 </ul>

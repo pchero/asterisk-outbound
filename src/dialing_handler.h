@@ -53,6 +53,7 @@ void rb_dialing_iter_destroy(struct ao2_iterator* iter);
 rb_dialing* rb_dialing_iter_next(struct ao2_iterator *iter);
 
 struct ast_json* rb_dialing_get_all_for_cli(void);
+struct ast_json* rb_dialing_get_info_for_cli(const char* uuid);
 
 bool rb_dialing_update_name(rb_dialing* dialing, const char* name);
 bool rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status);

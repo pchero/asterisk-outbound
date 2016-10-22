@@ -178,6 +178,7 @@ rb_dialing* rb_dialing_create(
 	ast_json_object_set(dialing->j_dialing, "camp_uuid",	ast_json_ref(ast_json_object_get(j_camp, "uuid")));
 	ast_json_object_set(dialing->j_dialing, "plan_uuid",	ast_json_ref(ast_json_object_get(j_plan, "uuid")));
 	ast_json_object_set(dialing->j_dialing, "dlma_uuid",	ast_json_ref(ast_json_object_get(j_dlma, "uuid")));
+	ast_json_object_set(dialing->j_dialing, "dest_uuid",	ast_json_ref(ast_json_object_get(j_dest, "uuid")));
 	ast_json_object_set(dialing->j_dialing, "dl_list_uuid", ast_json_ref(ast_json_object_get(j_dial, "uuid")));
 
 	// set info
@@ -536,18 +537,39 @@ struct ast_json* rb_dialing_get_all_for_cli(void)
 			break;
 		}
 
-		j_tmp = ast_json_pack("{s:s, s:s, s:s, s:s, s:s, s:s}",
-				"uuid",		 dialing->uuid,
-				"channelstate",	ast_json_string_get(ast_json_object_get(dialing->j_event, "channelstate")) ? : "",
-				"channel",			ast_json_string_get(ast_json_object_get(dialing->j_event, "channel")) ? : "",
-				"queue",				ast_json_string_get(ast_json_object_get(dialing->j_event, "queue")) ? : "",
-				"membername",		ast_json_string_get(ast_json_object_get(dialing->j_event, "membername")) ? : "",
-				"tm_hangup",		ast_json_string_get(ast_json_object_get(dialing->j_event, "tm_hangup")) ? : ""
-				);
-
+		j_tmp = ast_json_deep_copy(dialing->j_dialing);
+		ast_json_object_set(j_tmp, "status", ast_json_integer_create(dialing->status));
 		ast_json_array_append(j_res, j_tmp);
 	}
 	rb_dialing_iter_destroy(&iter);
+
+	return j_res;
+}
+
+struct ast_json* rb_dialing_get_info_for_cli(const char* uuid)
+{
+	rb_dialing* dialing;
+	struct ast_json* j_res;
+
+	dialing = rb_dialing_find_chan_uuid(uuid);
+	if(dialing == NULL) {
+		return false;
+	}
+
+	j_res = ast_json_pack("{"
+			"s:s, s:i, s:s, "
+			"s:s, s:s, s:s"
+			"}",
+			"uuid",				dialing->uuid? : "",
+			"status",			dialing->status,
+			"name",				dialing->name? : "",
+
+			"tm_create",	dialing->tm_create? : "",
+			"tm_update",	dialing->tm_update? : "",
+			"tm_delete",	dialing->tm_delete? : ""
+			);
+	ast_json_object_set(j_res, "j_dialing", ast_json_ref(dialing->j_dialing));
+	ast_json_object_set(j_res, "j_event", ast_json_ref(dialing->j_event));
 
 	return j_res;
 }
