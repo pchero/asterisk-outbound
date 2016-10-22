@@ -436,9 +436,9 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
 			// hang up the channel
 			ast_log(LOG_NOTICE, "Hangup channel. uuid[%s], channel[%s]\n",
 					dialing->uuid,
-					ast_json_string_get(ast_json_object_get(dialing->j_chan, "channel"))
+					ast_json_string_get(ast_json_object_get(dialing->j_event, "channel"))
 					);
-			ami_cmd_hangup(ast_json_string_get(ast_json_object_get(dialing->j_chan, "channel")), AST_CAUSE_NORMAL_CLEARING);
+			ami_cmd_hangup(ast_json_string_get(ast_json_object_get(dialing->j_event, "channel")), AST_CAUSE_NORMAL_CLEARING);
 		}
 		rb_dialing_iter_destroy(&iter);
 
@@ -774,7 +774,15 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 			);
 
 	// create rbtree
-	dialing = rb_dialing_create(ast_json_string_get(ast_json_object_get(j_dial, "channelid")), j_camp, j_plan, j_dlma, j_dest, j_dial);
+	dialing = rb_dialing_create(
+			ast_json_string_get(ast_json_object_get(j_dial, "channelid")),
+			j_camp,
+			j_plan,
+			j_dlma,
+			j_dest,
+			j_dl_list,
+			j_dial
+			);
 	if(dialing == NULL) {
 		ast_log(LOG_WARNING, "Could not create rbtree object.");
 		ast_json_unref(j_dial);

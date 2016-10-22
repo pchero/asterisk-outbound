@@ -788,7 +788,6 @@ static char* get_dial_number(struct ast_json* j_dlist, const int cnt)
 struct ast_json* create_json_for_dl_result(rb_dialing* dialing)
 {
 	struct ast_json* j_res;
-	char* tmp;
 
 	j_res = ast_json_deep_copy(dialing->j_dialing);
 
@@ -800,25 +799,8 @@ struct ast_json* create_json_for_dl_result(rb_dialing* dialing)
 			ast_json_string_get(ast_json_object_get(j_res, "dl_list_uuid"))
 			);
 
-	// info_chan
-	tmp = ast_json_dump_string_format(dialing->j_chan, 0);
-	ast_json_object_set(j_res, "info_chan", ast_json_string_create(tmp));
-	ast_json_free(tmp);
-
-	// info_queues
-	tmp = ast_json_dump_string_format(dialing->j_queues, 0);
-	ast_json_object_set(j_res, "info_queues", ast_json_string_create(tmp));
-	ast_json_free(tmp);
-
-	// info_agents
-	tmp = ast_json_dump_string_format(dialing->j_agents, 0);
-	ast_json_object_set(j_res, "info_agents", ast_json_string_create(tmp));
-	ast_json_free(tmp);
-
-	// delete current_*
-	ast_json_object_del(j_res, "current_queue");
-	ast_json_object_del(j_res, "current_agent");
-
+	// info_events
+	ast_json_object_set(j_res, "info_events", ast_json_ref(dialing->j_events));
 
 	return j_res;
 }

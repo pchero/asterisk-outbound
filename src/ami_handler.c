@@ -818,7 +818,12 @@ static void ami_evt_Newchannel(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -826,17 +831,13 @@ static void ami_evt_Newchannel(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	ast_json_object_del(j_tmp, "event");
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(j_tmp, "tm_newchannel", ast_json_string_create(tmp));
-	ast_free(tmp);
-
-	// update channel
-	rb_dialing_update_chan_update(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
 	// update name
@@ -848,7 +849,7 @@ static void ami_evt_Newchannel(struct ast_json* j_evt)
 	rb_dialing_update_dialing_update(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
-
+	ast_free(timestamp);
 	return;
 }
 
@@ -879,6 +880,12 @@ static void ami_evt_Newexten(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -886,12 +893,17 @@ static void ami_evt_Newexten(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-	ast_json_object_del(j_tmp, "event");
-
-	ast_json_object_update(dialing->j_chan, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
+
+	ast_free(timestamp);
+	return;
 }
 
 static void ami_evt_Newstate(struct ast_json* j_evt)
@@ -918,6 +930,12 @@ static void ami_evt_Newstate(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -925,15 +943,16 @@ static void ami_evt_Newstate(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	ast_json_object_del(j_tmp, "event");
-
-	// update
-	rb_dialing_update_chan_update(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
+	ast_free(timestamp);
 	return;
 }
 
@@ -964,7 +983,12 @@ static void ami_evt_QueueCallerJoin(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -972,25 +996,16 @@ static void ami_evt_QueueCallerJoin(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
-	// queue event.
-	// just add time stamp and append to queue json.
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(tmp));
-	ast_free(tmp);
-
-	// append
-	rb_dialing_update_queue_append(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
-	// update current queue
-	j_tmp = ast_json_object_create();
-	ast_json_object_set(j_tmp, "current_queue", ast_json_ref(ast_json_object_get(j_evt, "queue")));
-	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
-
+	ast_free(timestamp);
 	return;
 }
 
@@ -1021,7 +1036,12 @@ static void ami_evt_QueueCallerLeave(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -1029,25 +1049,16 @@ static void ami_evt_QueueCallerLeave(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
-	// queue event.
-	// just add time stamp and append to queue json.
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(tmp));
-	ast_free(tmp);
-
-	// append
-	rb_dialing_update_queue_append(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
-	// update dialing
-	j_tmp = ast_json_object_create();
-	ast_json_object_set(j_tmp, "current_queue", ast_json_string_create("<null>"));
-	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
-
+	ast_free(timestamp);
 	return;
 }
 
@@ -1092,7 +1103,12 @@ static void ami_evt_AgentCalled(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -1100,24 +1116,16 @@ static void ami_evt_AgentCalled(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	ast_json_object_del(j_tmp, "event");
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(j_tmp, "tm_agent_called", ast_json_string_create(tmp));
-	ast_free(tmp);
-
-	// append
-	rb_dialing_update_agent_append(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
-	j_tmp = ast_json_object_create();
-	ast_json_object_set(j_tmp, "current_agent", ast_json_ref(ast_json_object_get(j_evt, "membername")));
-	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
-
+	ast_free(timestamp);
 	return;
 }
 
@@ -1164,7 +1172,12 @@ static void ami_evt_AgentConnect(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -1172,19 +1185,16 @@ static void ami_evt_AgentConnect(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	ast_json_object_del(j_tmp, "event");
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(j_tmp, "tm_agent_connect", ast_json_string_create(tmp));
-	ast_free(tmp);
-
-	// append
-	rb_dialing_update_agent_update(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
+	ast_free(timestamp);
 	return;
 }
 
@@ -1232,7 +1242,12 @@ static void ami_evt_AgentComplete(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -1240,24 +1255,16 @@ static void ami_evt_AgentComplete(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	ast_json_object_del(j_tmp, "event");
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(j_tmp, "tm_agent_complete", ast_json_string_create(tmp));
-	ast_free(tmp);
-
-	// append
-	rb_dialing_update_agent_update(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
-	j_tmp = ast_json_object_create();
-	ast_json_object_set(j_tmp, "current_agent", ast_json_string_create("<null>"));
-	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
-
+	ast_free(timestamp);
 	return;
 }
 
@@ -1300,50 +1307,83 @@ static void ami_evt_DialBegin(struct ast_json* j_evt)
 	const char* tmp_const;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
-	if(tmp_const != NULL) {
-		// dialing begin to agent
-		dialing = rb_dialing_find_chan_uuid(tmp_const);
-		if(dialing == NULL) {
-			return;
-		}
-
-		j_tmp = ast_json_deep_copy(j_evt);
-		ast_json_object_del(j_tmp, "event");
-
-		tmp = get_utc_timestamp();
-		ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(tmp));
-		ast_free(tmp);
-
-		// update
-		rb_dialing_update_agent_update(dialing, j_tmp);
-		ast_json_unref(j_tmp);
+	dialing = rb_dialing_find_chan_uuid(tmp_const);
+	if(dialing == NULL) {
+		return;
 	}
-	else {
-		// dialing begin to customer
-		tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "destuniqueid"));
-		dialing = rb_dialing_find_chan_uuid(tmp_const);
-		if(dialing == NULL) {
-			return;
-		}
+	timestamp = get_utc_timestamp();
 
-		j_tmp = ast_json_object_create();
+	// append/substitute event
+	j_tmp = ast_json_deep_copy(j_evt);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
+	ast_json_unref(j_tmp);
 
-		tmp = get_utc_timestamp();
-		ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(tmp));
-		ast_free(tmp);
+	// update dialing
+	j_tmp = ast_json_object_create();
+	ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(timestamp));
+	rb_dialing_update_dialing_update(dialing, j_tmp);
+	ast_json_unref(j_tmp);
 
-		// update status
-		rb_dialing_update_status(dialing, E_DIALING_DIAL_BEGIN);
+	// update status
+	rb_dialing_update_status(dialing, E_DIALING_DIAL_BEGIN);
 
-		rb_dialing_update_dialing_update(dialing, j_tmp);
-		ast_json_unref(j_tmp);
-	}
-
+	ast_free(timestamp);
 	return;
+
+
+//	// get rb_dialing
+//	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
+//	if(tmp_const != NULL) {
+//		// dialing begin to agent
+//		dialing = rb_dialing_find_chan_uuid(tmp_const);
+//		if(dialing == NULL) {
+//			return;
+//		}
+//
+//		j_tmp = ast_json_deep_copy(j_evt);
+//		ast_json_object_del(j_tmp, "event");
+//
+//		tmp = get_utc_timestamp();
+//		ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(tmp));
+//		ast_free(tmp);
+//
+//		// update
+//		rb_dialing_update_agent_update(dialing, j_tmp);
+//		ast_json_unref(j_tmp);
+//	}
+//	else {
+//		// dialing begin to customer
+//		tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "destuniqueid"));
+//		dialing = rb_dialing_find_chan_uuid(tmp_const);
+//		if(dialing == NULL) {
+//			return;
+//		}
+//
+//		j_tmp = ast_json_object_create();
+//
+//		tmp = get_utc_timestamp();
+//		ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(tmp));
+//		ast_free(tmp);
+//
+//		// update status
+//		rb_dialing_update_status(dialing, E_DIALING_DIAL_BEGIN);
+//
+//		rb_dialing_update_dialing_update(dialing, j_tmp);
+//		ast_json_unref(j_tmp);
+//	}
+//
+//	return;
 }
 
 static void ami_evt_DialEnd(struct ast_json* j_evt)
@@ -1382,55 +1422,89 @@ static void ami_evt_DialEnd(struct ast_json* j_evt)
 //		"destuniqueid": "1447457889.1"
 //	}
 
-	const char* uuid;
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
-	char* tmp;
+	char* timestamp;
+	const char* tmp_const;
 
-	uuid = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
-
-	if(uuid != NULL) {
-		// get rb_dialing
-		dialing = rb_dialing_find_chan_uuid(uuid);
-		if(dialing == NULL) {
-			return;
-		}
-
-		j_tmp = ast_json_deep_copy(j_evt);
-
-		ast_json_object_del(j_tmp, "event");
-
-		tmp = get_utc_timestamp();
-		ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
-		ast_free(tmp);
-
-		// agent_update
-		rb_dialing_update_agent_update(dialing, j_tmp);
-		ast_json_unref(j_tmp);
-	}
-	else {
-		// assume this is for dialing itself.
-		uuid = ast_json_string_get(ast_json_object_get(j_evt, "destuniqueid"));
-		// get rb_dialing
-		dialing = rb_dialing_find_chan_uuid(uuid);
-		if(dialing == NULL) {
-			return;
-		}
-
-		j_tmp = ast_json_object_create();
-
-		tmp = get_utc_timestamp();
-		ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
-		ast_free(tmp);
-
-		rb_dialing_update_status(dialing, E_DIALING_DIAL_END);
-
-		rb_dialing_update_dialing_update(dialing, j_tmp);
-		ast_json_unref(j_tmp);
-
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
 	}
 
+	// get rb_dialing
+	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
+	dialing = rb_dialing_find_chan_uuid(tmp_const);
+	if(dialing == NULL) {
+		return;
+	}
+	timestamp = get_utc_timestamp();
+
+	// append/substitute event
+	j_tmp = ast_json_deep_copy(j_evt);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
+	ast_json_unref(j_tmp);
+
+	// update dialing
+	j_tmp = ast_json_object_create();
+	ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(timestamp));
+	rb_dialing_update_dialing_update(dialing, j_tmp);
+	ast_json_unref(j_tmp);
+
+	// update status
+	rb_dialing_update_status(dialing, E_DIALING_DIAL_END);
+
+	ast_free(timestamp);
 	return;
+
+
+//
+//	uuid = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
+//
+//	if(uuid != NULL) {
+//		// get rb_dialing
+//		dialing = rb_dialing_find_chan_uuid(uuid);
+//		if(dialing == NULL) {
+//			return;
+//		}
+//
+//		j_tmp = ast_json_deep_copy(j_evt);
+//
+//		ast_json_object_del(j_tmp, "event");
+//
+//		tmp = get_utc_timestamp();
+//		ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
+//		ast_free(tmp);
+//
+//		// agent_update
+//		rb_dialing_update_agent_update(dialing, j_tmp);
+//		ast_json_unref(j_tmp);
+//	}
+//	else {
+//		// assume this is for dialing itself.
+//		uuid = ast_json_string_get(ast_json_object_get(j_evt, "destuniqueid"));
+//		// get rb_dialing
+//		dialing = rb_dialing_find_chan_uuid(uuid);
+//		if(dialing == NULL) {
+//			return;
+//		}
+//
+//		j_tmp = ast_json_object_create();
+//
+//		tmp = get_utc_timestamp();
+//		ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
+//		ast_free(tmp);
+//
+//		rb_dialing_update_status(dialing, E_DIALING_DIAL_END);
+//
+//		rb_dialing_update_dialing_update(dialing, j_tmp);
+//		ast_json_unref(j_tmp);
+//
+//	}
+//
+//	return;
 }
 
 /**
@@ -1456,9 +1530,14 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 //
 	const char* uuid;
 	rb_dialing* dialing;
-	char* tmp;
+	char* timestamp;
 	const char* tmp_const;
 	struct ast_json* j_tmp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	uuid = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -1466,29 +1545,27 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	ast_log(LOG_DEBUG, "Received originate response. response[%s], reason[%s]\n",
+			ast_json_string_get(ast_json_object_get(j_evt, "response")),
+			ast_json_string_get(ast_json_object_get(j_evt, "reason"))
+			);
+
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	ast_json_object_del(j_tmp, "event");
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(dialing->j_chan, "tm_originte_response", ast_json_string_create(tmp));
-
-	// update channel
-	rb_dialing_update_chan_update(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
-	// update result
+	// update dialing
 	j_tmp = ast_json_object_create();
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "reason"));
 	ast_json_object_set(j_tmp, "res_dial", ast_json_integer_create(atoi(tmp_const)));
-	ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(tmp));
-	ast_free(tmp);
-
-	ast_log(LOG_DEBUG, "Received originate response. response[%s], res_dial[%lld]\n",
-			ast_json_string_get(ast_json_object_get(j_evt, "response")),
-			ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial"))
-			);
+	ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(timestamp));
+	rb_dialing_update_dialing_update(dialing, j_tmp);
+	ast_json_unref(j_tmp);
 
 	// update status
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "response"));
@@ -1499,10 +1576,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 		rb_dialing_update_status(dialing, E_DIALING_ORIGINATE_RESPONSE);
 	}
 
-
-	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
-
+	ast_free(timestamp);
 	return;
 }
 
@@ -1531,9 +1605,14 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
 
 	const char* uuid;
 	rb_dialing* dialing;
-	char* tmp;
+	char* timestamp;
 	const char* tmp_const;
 	struct ast_json* j_tmp;
+
+	if(j_evt == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return;
+	}
 
 	// get rb_dialing
 	uuid = ast_json_string_get(ast_json_object_get(j_evt, "uniqueid"));
@@ -1541,31 +1620,27 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
 	if(dialing == NULL) {
 		return;
 	}
+	timestamp = get_utc_timestamp();
 
+	// append/substitute event
 	j_tmp = ast_json_deep_copy(j_evt);
-
-	ast_json_object_del(j_tmp, "event");
-
-	tmp = get_utc_timestamp();
-	ast_json_object_set(j_tmp, "tm_hangup", ast_json_string_create(tmp));
-
-	// update
-	rb_dialing_update_chan_update(dialing, j_tmp);
+	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
+	rb_dialing_update_events_append(dialing, j_tmp);
+	rb_dialing_update_event_substitute(dialing, j_tmp);
 	ast_json_unref(j_tmp);
 
-	// update result json
+	// update dialing
 	j_tmp = ast_json_object_create();
-	ast_json_object_set(j_tmp, "tm_hangup", ast_json_string_create(tmp));
+	ast_json_object_set(j_tmp, "tm_hangup", ast_json_string_create(timestamp));
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "cause"));
 	ast_json_object_set(j_tmp, "res_hangup", ast_json_integer_create(atoi(tmp_const)));
 	ast_json_object_set(j_tmp, "res_hangup_detail", ast_json_ref(ast_json_object_get(j_evt, "cause-txt")));
-	ast_free(tmp);
+	rb_dialing_update_dialing_update(dialing, j_tmp);
+	ast_json_unref(j_tmp);
 
 	// update dialing status
 	rb_dialing_update_status(dialing, E_DIALING_HANGUP);
 
-	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
-
+	ast_free(timestamp);
 	return;
 }

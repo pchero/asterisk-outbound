@@ -35,15 +35,13 @@ typedef struct _rb_dialing{
 	char* tm_delete;
 	struct timespec timeptr_update; ///< timestamp for timeout
 
-	struct ast_json* j_dialing;	 ///< dialing info
-
-	struct ast_json* j_chan;	///< channel info.
-	struct ast_json* j_queues;  ///< queue info.(json array)
-	struct ast_json* j_agents;  ///< agents info. Who had a talk with. (json array)
+	struct ast_json* j_dialing;	///< dialing info(result).
+	struct ast_json* j_event;	///< current channel status info(the latest event)
+	struct ast_json* j_events;		///< event info(json array).
 } rb_dialing;
 
 int init_rb_dialing(void);
-rb_dialing* rb_dialing_create(const char* dialing_uuid, struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dest, struct ast_json* j_dl);
+rb_dialing* rb_dialing_create(const char* dialing_uuid, struct ast_json* j_camp, struct ast_json* j_plan, struct ast_json* j_dlma, struct ast_json* j_dest, struct ast_json* j_dl_list, struct ast_json* j_dial);
 void rb_dialing_destory(rb_dialing* dialing);
 
 rb_dialing* rb_dialing_find_chan_name(const char* chan);
@@ -58,11 +56,10 @@ struct ast_json* rb_dialing_get_all_for_cli(void);
 
 bool rb_dialing_update_name(rb_dialing* dialing, const char* name);
 bool rb_dialing_update_status(rb_dialing* dialing, E_DIALING_STATUS_T status);
-bool rb_dialing_update_agent_append(rb_dialing* dialing, struct ast_json* j_evt);
-bool rb_dialing_update_agent_update(rb_dialing* dialing, struct ast_json* j_evt);
-bool rb_dialing_update_queue_append(rb_dialing* dialing, struct ast_json* j_evt);
+bool rb_dialing_update_events_append(rb_dialing* dialing, struct ast_json* j_evt);
 bool rb_dialing_update_dialing_update(rb_dialing* dialing, struct ast_json* j_dialing);
-bool rb_dialing_update_chan_update(rb_dialing* dialing, struct ast_json* j_evt);
+bool rb_dialing_update_current_update(rb_dialing* dialing, struct ast_json* j_evt);
+bool rb_dialing_update_event_substitute(rb_dialing* dialing, struct ast_json* j_evt);
 
 int rb_dialing_get_count(void);
 int rb_dialing_get_count_by_camp_uuid(const char* camp_uuid);
