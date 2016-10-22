@@ -51,9 +51,461 @@
             
   <div class="section" id="asterisk-cli">
 <h1>Asterisk CLI<a class="headerlink" href="#asterisk-cli" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>Asterisk cli list</p>
+<div class="section" id="help-out">
+<h2>help out<a class="headerlink" href="#help-out" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out
+out create campaign            -- Create new campaign
+out delete campaign            -- Delete campaign
+out set status {start|starting|stop|stopping|pause|pausing} on -- Set campaign parameters
+out show campaigns             -- List all defined outbound campaigns
+out show campaign              -- Shows detail campaign info
+out show destinations          -- List all defined outbound destinations
+out show destination           -- Show detail given destination info
+out show dialings              -- List currently on serviced dialings
+out show dlma list             -- Show list of dlma dial list
+out show dlmas                 -- List all defined outbound dlmas
+out show dlma                  -- Show detail given dlma info
+out show dl                    -- Show detail given dl info
+out show dls                   -- Show list of dlma dial list
+out show plans                 -- List all defined outbound plans
+out show plan                  -- Show detail given plan info
+</pre></div>
+</div>
+</div>
+<div class="section" id="out-show-plans">
+<h2>out show plans<a class="headerlink" href="#out-show-plans" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show plans
+Uuid
+4ea35c4b-c2db-4a22-baef-443b5fadd677 sales_plan           simple sales plan           1       30000            sip/
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-plan-plan-uuid">
+<h2>out show plan &lt;plan-uuid&gt;<a class="headerlink" href="#out-show-plan-plan-uuid" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show plan 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Plan detail info. plan-uuid[4ea35c4b-c2db-4a22-baef-443b5fadd677]
+
+{
+  &quot;uuid&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+  &quot;name&quot;: &quot;sales_plan&quot;,
+  &quot;detail&quot;: &quot;simple sales plan&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;uui_field&quot;: null,
+  &quot;dial_mode&quot;: 1,
+  &quot;dial_timeout&quot;: 30000,
+  &quot;caller_id&quot;: null,
+  &quot;dl_end_handle&quot;: 1,
+  &quot;retry_delay&quot;: 50000,
+  &quot;trunk_name&quot;: null,
+  &quot;tech_name&quot;: &quot;sip/&quot;,
+  &quot;service_level&quot;: 0,
+  &quot;max_retry_cnt_1&quot;: 5,
+  &quot;max_retry_cnt_2&quot;: 5,
+  &quot;max_retry_cnt_3&quot;: 5,
+  &quot;max_retry_cnt_4&quot;: 5,
+  &quot;max_retry_cnt_5&quot;: 5,
+  &quot;max_retry_cnt_6&quot;: 5,
+  &quot;max_retry_cnt_7&quot;: 5,
+  &quot;max_retry_cnt_8&quot;: 5,
+  &quot;tm_create&quot;: &quot;2016-10-22T12:45:58.868877001Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-dlmas">
+<h2>out show dlmas<a class="headerlink" href="#out-show-dlmas" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dlmas
+Uuid                                 Name                                     Detail                                   Table
+acc994d2-04d9-4a53-bfcf-50c96ff924bc DialListMaster_Sales                     Test Dlma description                    acc994d2_04d9_4a53_bfcf_50c96f
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-dlma-dlma-uuid">
+<h2>out show dlma &lt;dlma-uuid&gt;<a class="headerlink" href="#out-show-dlma-dlma-uuid" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dlma acc994d2-04d9-4a53-bfcf-50c96ff924bc
+Dlma detail info. dlma-uuid[acc994d2-04d9-4a53-bfcf-50c96ff924bc]
+
+{
+  &quot;uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+  &quot;name&quot;: &quot;DialListMaster_Sales&quot;,
+  &quot;detail&quot;: &quot;Test Dlma description&quot;,
+  &quot;dl_table&quot;: &quot;acc994d2_04d9_4a53_bfcf_50c96ff924bc&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;tm_create&quot;: &quot;2016-10-22T13:29:35.820096127Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-dlma-list-dlma-uuid-count-100">
+<h2>out show dlma list &lt;dlma-uuid&gt; &lt;count=100&gt;<a class="headerlink" href="#out-show-dlma-list-dlma-uuid-count-100" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dlma list
+Usage: out show dlma list &lt;dlma-uuid&gt; &lt;count=100&gt;
+      Lists count of dial list.
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dlma list acc994d2-04d9-4a53-bfcf-50c96ff924bc
+Uuid                                 Name       Detail               Num1                 Num2                 Num3                 Num4                 Num5                 Num6                 Num7                 Num8
+f9dfa7d2-5223-4b63-aca1-881ebacae420 client 01  Dial to client 01    300
+</pre></div>
+</div>
+</div>
+<div class="section" id="out-show-dl-dl-uuid">
+<h2>out show dl &lt;dl-uuid&gt;<a class="headerlink" href="#out-show-dl-dl-uuid" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dl
+Usage: out show dl &lt;dl-uuid&gt;
+      Show detail given dl info.
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dl f9dfa7d2-5223-4b63-aca1-881ebacae420
+Dl detail info. dl-uuid[f9dfa7d2-5223-4b63-aca1-881ebacae420]
+
+{
+  &quot;uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+  &quot;dlma_uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;name&quot;: &quot;client 01&quot;,
+  &quot;detail&quot;: &quot;Dial to client 01&quot;,
+  &quot;status&quot;: 0,
+  &quot;resv_target&quot;: null,
+  &quot;ukey&quot;: null,
+  &quot;udata&quot;: null,
+  &quot;dialing_uuid&quot;: null,
+  &quot;dialing_camp_uuid&quot;: null,
+  &quot;dialing_plan_uuid&quot;: null,
+  &quot;number_1&quot;: &quot;300&quot;,
+  &quot;number_2&quot;: null,
+  &quot;number_3&quot;: null,
+  &quot;number_4&quot;: null,
+  &quot;number_5&quot;: null,
+  &quot;number_6&quot;: null,
+  &quot;number_7&quot;: null,
+  &quot;number_8&quot;: null,
+  &quot;email&quot;: null,
+  &quot;trycnt_1&quot;: 0,
+  &quot;trycnt_2&quot;: 0,
+  &quot;trycnt_3&quot;: 0,
+  &quot;trycnt_4&quot;: 0,
+  &quot;trycnt_5&quot;: 0,
+  &quot;trycnt_6&quot;: 0,
+  &quot;trycnt_7&quot;: 0,
+  &quot;trycnt_8&quot;: 0,
+  &quot;res_dial&quot;: 0,
+  &quot;res_dial_detail&quot;: null,
+  &quot;res_hangup&quot;: 0,
+  &quot;res_hangup_detail&quot;: null,
+  &quot;tm_create&quot;: &quot;2016-10-22T13:47:23.899652156Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null,
+  &quot;tm_last_dial&quot;: null
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="out-show-destinations">
+<h2>out show destinations<a class="headerlink" href="#out-show-destinations" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show destinations
+Usage: out show destinations
+      Lists all registered destinations.
+</pre></div>
+</div>
+<div class="section" id="id4">
+<h3>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show destinations
+Uuid                                 Name       Detail               Type  Exten      Context    Applicatio Data
+4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94 destinatio test destination         1                       park
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-destination-dest-uuid">
+<h2>out show destination &lt;dest-uuid&gt;<a class="headerlink" href="#out-show-destination-dest-uuid" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show destination
+Usage: out show destination &lt;dest-uuid&gt;
+      Show detail given destination info.
+</pre></div>
+</div>
+<div class="section" id="id5">
+<h3>Example<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show destination 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+Destination detail info. dest-uuid[4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94]
+
+{
+  &quot;uuid&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+  &quot;name&quot;: &quot;destination test&quot;,
+  &quot;detail&quot;: &quot;test destination&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;type&quot;: 1,
+  &quot;exten&quot;: null,
+  &quot;context&quot;: null,
+  &quot;priority&quot;: null,
+  &quot;variables&quot;: null,
+  &quot;application&quot;: &quot;park&quot;,
+  &quot;data&quot;: null,
+  &quot;tm_create&quot;: &quot;2016-10-22T14:14:26.443747068Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-campaigns">
+<h2>out show campaigns<a class="headerlink" href="#out-show-campaigns" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show campaigns
+Usage: out show campaigns
+      Lists all currently registered campaigns.
+</pre></div>
+</div>
+<div class="section" id="id6">
+<h3>Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show campaigns
+Uuid                                 Name       Detail               Status     Plan       Dlma       Dest
+02c4aebf-789c-46aa-817e-b7406416d211 Sales camp test campaign                 0 4ea35c4b-c acc994d2-0 4e6ed9e6-5
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-campaign-camp-uuid">
+<h2>out show campaign &lt;camp-uuid&gt;<a class="headerlink" href="#out-show-campaign-camp-uuid" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show campaign
+Usage: out show campaign &lt;camp-uuid&gt;
+      Show detail given campaign info.
+</pre></div>
+</div>
+<div class="section" id="id7">
+<h3>Example<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show campaign 02c4aebf-789c-46aa-817e-b7406416d211
+Campaign detail info. camp-uuid[02c4aebf-789c-46aa-817e-b7406416d211]
+
+{
+  &quot;uuid&quot;: &quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;,
+  &quot;detail&quot;: &quot;test campaign&quot;,
+  &quot;name&quot;: &quot;Sales campaign&quot;,
+  &quot;status&quot;: 0,
+  &quot;in_use&quot;: 1,
+  &quot;next_campaign&quot;: null,
+  &quot;plan&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+  &quot;dlma&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+  &quot;dest&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+  &quot;tm_create&quot;: &quot;2016-10-22T14:34:45.33929956Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-dialings">
+<h2>out show dialings<a class="headerlink" href="#out-show-dialings" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dialings
+Usage: out show dialings
+      Lists all currently on service dialings.
+</pre></div>
+</div>
+<div class="section" id="id8">
+<h3>Example<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dialings
+Uuid                                 Status Channel              Addr                 Camp       Plan       Dlma       Dest       Dl
+73dfbf10-8455-48e1-84b8-190b6f63cb11      1 sip/300              300                  02c4aebf-7 4ea35c4b-c acc994d2-0 4e6ed9e6-5 7d545ae0-d
+ad0a2345-08e7-4cec-bdce-36d9c4746e1a      1 sip/300              300                  02c4aebf-7 4ea35c4b-c acc994d2-0 4e6ed9e6-5 f9dfa7d2-5
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="out-show-dialing-dialing-uuid">
+<h2>out show dialing &lt;dialing-uuid&gt;<a class="headerlink" href="#out-show-dialing-dialing-uuid" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dialing
+Usage: out show dialing &lt;dialing-uuid&gt;
+      Show detail given dialing info.
+</pre></div>
+</div>
+<div class="section" id="id9">
+<h3>Example<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dialing ad0a2345-08e7-4cec-bdce-36d9c4746e1a
+Dialing detail info. dialing-uuid[ad0a2345-08e7-4cec-bdce-36d9c4746e1a]
+
+{
+  &quot;uuid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+  &quot;status&quot;: 1,
+  &quot;name&quot;: &quot;SIP/300-0000000a&quot;,
+  &quot;tm_create&quot;: &quot;2016-10-22T15:30:27.793155560Z&quot;,
+  &quot;tm_update&quot;: &quot;2016-10-22T15:30:27.799098693Z&quot;,
+  &quot;tm_delete&quot;: &quot;&quot;,
+  &quot;j_dialing&quot;: {
+    &quot;dialing_uuid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+    &quot;camp_uuid&quot;: &quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;,
+    &quot;plan_uuid&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+    &quot;dlma_uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+    &quot;dest_uuid&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+    &quot;dl_list_uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+    &quot;info_camp&quot;: {
+      &quot;uuid&quot;: &quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;,
+      &quot;name&quot;: &quot;Sales campaign&quot;,
+      &quot;detail&quot;: &quot;test campaign&quot;,
+      &quot;status&quot;: 1,
+      &quot;in_use&quot;: 1,
+      &quot;next_campaign&quot;: null,
+      &quot;tm_delete&quot;: null,
+      &quot;dlma&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+      &quot;plan&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+      &quot;tm_create&quot;: &quot;2016-10-22T14:34:45.33929956Z&quot;,
+      &quot;dest&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+      &quot;tm_update&quot;: &quot;2016-10-22T15:30:21.705707350Z&quot;
+    },
+    &quot;info_plan&quot;: {
+      &quot;uuid&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+      &quot;detail&quot;: &quot;simple sales plan&quot;,
+      &quot;tech_name&quot;: &quot;sip/&quot;,
+      &quot;name&quot;: &quot;sales_plan&quot;,
+      &quot;uui_field&quot;: null,
+      &quot;in_use&quot;: 1,
+      &quot;max_retry_cnt_2&quot;: 5,
+      &quot;max_retry_cnt_8&quot;: 5,
+      &quot;max_retry_cnt_7&quot;: 5,
+      &quot;dial_mode&quot;: 1,
+      &quot;caller_id&quot;: null,
+      &quot;max_retry_cnt_1&quot;: 5,
+      &quot;dial_timeout&quot;: 30000,
+      &quot;retry_delay&quot;: 50000,
+      &quot;max_retry_cnt_5&quot;: 5,
+      &quot;dl_end_handle&quot;: 1,
+      &quot;max_retry_cnt_3&quot;: 5,
+      &quot;trunk_name&quot;: null,
+      &quot;tm_update&quot;: null,
+      &quot;service_level&quot;: 0,
+      &quot;tm_delete&quot;: null,
+      &quot;max_retry_cnt_4&quot;: 5,
+      &quot;max_retry_cnt_6&quot;: 5,
+      &quot;tm_create&quot;: &quot;2016-10-22T12:45:58.868877001Z&quot;
+    },
+    &quot;info_dlma&quot;: {
+      &quot;tm_update&quot;: null,
+      &quot;uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+      &quot;dl_table&quot;: &quot;acc994d2_04d9_4a53_bfcf_50c96ff924bc&quot;,
+      &quot;detail&quot;: &quot;Test Dlma description&quot;,
+      &quot;name&quot;: &quot;DialListMaster_Sales&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;tm_create&quot;: &quot;2016-10-22T13:29:35.820096127Z&quot;,
+      &quot;tm_delete&quot;: null
+    },
+    &quot;info_dest&quot;: {
+      &quot;tm_update&quot;: null,
+      &quot;context&quot;: null,
+      &quot;application&quot;: &quot;park&quot;,
+      &quot;uuid&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+      &quot;detail&quot;: &quot;test destination&quot;,
+      &quot;variables&quot;: null,
+      &quot;name&quot;: &quot;destination test&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;priority&quot;: null,
+      &quot;tm_create&quot;: &quot;2016-10-22T14:14:26.443747068Z&quot;,
+      &quot;type&quot;: 1,
+      &quot;exten&quot;: null,
+      &quot;data&quot;: null,
+      &quot;tm_delete&quot;: null
+    },
+    &quot;info_dl_list&quot;: {
+      &quot;dialing_uuid&quot;: null,
+      &quot;tm_update&quot;: null,
+      &quot;ukey&quot;: null,
+      &quot;email&quot;: null,
+      &quot;uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+      &quot;number_1&quot;: &quot;300&quot;,
+      &quot;dialing_plan_uuid&quot;: null,
+      &quot;dlma_uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;name&quot;: &quot;client 01&quot;,
+      &quot;trycnt_5&quot;: 0,
+      &quot;number_6&quot;: null,
+      &quot;res_dial_detail&quot;: null,
+      &quot;resv_target&quot;: null,
+      &quot;number_3&quot;: null,
+      &quot;detail&quot;: &quot;Dial to client 01&quot;,
+      &quot;status&quot;: 0,
+      &quot;trycnt_7&quot;: 0,
+      &quot;res_dial&quot;: 5,
+      &quot;number_2&quot;: null,
+      &quot;udata&quot;: null,
+      &quot;trycnt&quot;: 3,
+      &quot;trycnt_3&quot;: 0,
+      &quot;dialing_camp_uuid&quot;: null,
+      &quot;number_4&quot;: null,
+      &quot;res_hangup&quot;: 17,
+      &quot;number_5&quot;: null,
+      &quot;number_7&quot;: null,
+      &quot;number_8&quot;: null,
+      &quot;trycnt_8&quot;: 0,
+      &quot;trycnt_1&quot;: 3,
+      &quot;trycnt_2&quot;: 0,
+      &quot;trycnt_4&quot;: 0,
+      &quot;tm_last_dial&quot;: &quot;2016-10-22T15:28:08.232616848Z&quot;,
+      &quot;trycnt_6&quot;: 0,
+      &quot;res_hangup_detail&quot;: null,
+      &quot;tm_create&quot;: &quot;2016-10-22T13:47:23.899652156Z&quot;,
+      &quot;tm_delete&quot;: null
+    },
+    &quot;info_dial&quot;: {
+      &quot;dial_application&quot;: &quot;park&quot;,
+      &quot;dial_data&quot;: &quot;&quot;,
+      &quot;dial_type&quot;: 1,
+      &quot;timeout&quot;: 30000,
+      &quot;dial_index&quot;: 1,
+      &quot;uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+      &quot;dial_addr&quot;: &quot;300&quot;,
+      &quot;dial_channel&quot;: &quot;sip/300&quot;,
+      &quot;dial_trycnt&quot;: 4,
+      &quot;channelid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+      &quot;otherchannelid&quot;: &quot;3702cb20-4eb0-40a7-926b-bbcde07451a9&quot;
+    },
+    &quot;dial_channel&quot;: &quot;sip/300&quot;,
+    &quot;dial_addr&quot;: &quot;300&quot;,
+    &quot;dial_index&quot;: 1,
+    &quot;dial_trycnt&quot;: 4,
+    &quot;dial_type&quot;: 1,
+    &quot;dial_application&quot;: &quot;park&quot;,
+    &quot;dial_data&quot;: &quot;&quot;,
+    &quot;tm_dialing&quot;: &quot;2016-10-22T15:30:27.793155560Z&quot;,
+    &quot;channel_name&quot;: &quot;SIP/300-0000000a&quot;
+  },
+  &quot;j_event&quot;: {
+    &quot;connectedlinenum&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;calleridname&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;event&quot;: &quot;Newstate&quot;,
+    &quot;privilege&quot;: &quot;call,all&quot;,
+    &quot;channelstate&quot;: &quot;5&quot;,
+    &quot;channel&quot;: &quot;SIP/300-0000000a&quot;,
+    &quot;channelstatedesc&quot;: &quot;Ringing&quot;,
+    &quot;calleridnum&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;connectedlinename&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;linkedid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+    &quot;language&quot;: &quot;en&quot;,
+    &quot;accountcode&quot;: &quot;&quot;,
+    &quot;context&quot;: &quot;public&quot;,
+    &quot;exten&quot;: &quot;&quot;,
+    &quot;priority&quot;: &quot;1&quot;,
+    &quot;uniqueid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+    &quot;tm_event&quot;: &quot;2016-10-22T15:30:27.864585447Z&quot;
+  }
+}
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -66,7 +518,49 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Asterisk CLI</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#help-out">help out</a></li>
+<li><a class="reference internal" href="#out-show-plans">out show plans</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-plan-plan-uuid">out show plan &lt;plan-uuid&gt;</a><ul>
+<li><a class="reference internal" href="#id1">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-dlmas">out show dlmas</a><ul>
+<li><a class="reference internal" href="#id2">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-dlma-dlma-uuid">out show dlma &lt;dlma-uuid&gt;</a><ul>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-dlma-list-dlma-uuid-count-100">out show dlma list &lt;dlma-uuid&gt; &lt;count=100&gt;</a></li>
+<li><a class="reference internal" href="#out-show-dl-dl-uuid">out show dl &lt;dl-uuid&gt;</a></li>
+<li><a class="reference internal" href="#out-show-destinations">out show destinations</a><ul>
+<li><a class="reference internal" href="#id4">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-destination-dest-uuid">out show destination &lt;dest-uuid&gt;</a><ul>
+<li><a class="reference internal" href="#id5">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-campaigns">out show campaigns</a><ul>
+<li><a class="reference internal" href="#id6">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-campaign-camp-uuid">out show campaign &lt;camp-uuid&gt;</a><ul>
+<li><a class="reference internal" href="#id7">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-dialings">out show dialings</a><ul>
+<li><a class="reference internal" href="#id8">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#out-show-dialing-dialing-uuid">out show dialing &lt;dialing-uuid&gt;</a><ul>
+<li><a class="reference internal" href="#id9">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

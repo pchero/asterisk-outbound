@@ -25,13 +25,15 @@ Syntax
     [Detail:] <value>
     [Plan:] <value>
     [Dlma:] <value>
+    [Dest:] <value>
 
 Parameters
 
 * ``Name``: Name of campaign.
 * ``Detail``: Description of campaign.
-* ``Plan``: The UUID of plan.
-* ``Dlma``: The UUID of dlma.
+* ``Plan``: Plan uuid.
+* ``Dlma``: Dlma uuid.
+* ``Dest``: Destination uuid.
 
 Returns
 -------
@@ -45,21 +47,14 @@ Example
 ::
 
    Action: OutCampaignCreate
+   Name: Sales campaign
+   Detail: test campaign
+   Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+   Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+   Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
    
    Response: Success
    Message: Campaign created successfully
-   
-   Event: OutCampaignCreate
-   Privilege: message,all
-   Uuid: 0198236d-0ffd-4c8d-b3fb-133d976f8a01
-   Name: <unknown>
-   Detail: <unknown>
-   Status: 0
-   Plan: <unknown>
-   Dlma: <unknown>
-   TmCreate: 2016-10-03 20:05:49.429024
-   TmDelete: <unknown>
-   TmUpdate: <unknown>
 
 
 OutCampaignUpdate
@@ -272,35 +267,14 @@ Example
 ::
 
    Action: OutPlanCreate
-
+   Name: sales_plan
+   Detail: simple sales plan
+   DialMode: 1
+   QueueName: sales_1
+   TechName: sip/
+   
    Response: Success
    Message: Plan created successfully
-   
-   Event: OutPlanCreate
-   Privilege: message,all
-   Uuid: b9a6f7b6-e3ea-4e08-839c-c51e0ad196d6
-   Name: <unknown>
-   Detail: <unknown>
-   DialMode: 0
-   DialTimeout: 30000
-   CallerId: <unknown>
-   AnswerHandle: 0
-   DlEndHandle: 1
-   RetryDelay: 50000
-   TrunkName: <unknown>
-   QueueName: <unknown>
-   AmdMode: 0
-   MaxRetryCnt1: 5
-   MaxRetryCnt2: 5
-   MaxRetryCnt3: 5
-   MaxRetryCnt4: 5
-   MaxRetryCnt5: 5
-   MaxRetryCnt6: 5
-   MaxRetryCnt7: 5
-   MaxRetryCnt8: 5
-   TmCreate: 2016-10-02 21:46:38.651717
-   TmDelete: <unknown>
-   TmUpdate: <unknown>
 
 
 OutPlanUpdate
@@ -719,15 +693,8 @@ Returns
 -------
 ::
         
-    Response: Success
-    EventList: start
-    Message: Dlma List will follow
-
-    ...
-    
-    Event: OutDlmaListComplete
-    EventList: Complete
-    ListItems: 1
+   Response: Success
+   Message: Dl list created successfully
 
 Example
 -------
@@ -741,4 +708,107 @@ Example
    
    Response: Success
    Message: Dl list created successfully
+   
+
+OutDestinationCreate
+====================
+
+Description
+-----------
+Create Destination for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDestinationCreate
+   Name: <value>
+   Detail: <value>
+   Type: <value>
+   Exten: <value>
+   Context: <value>
+   Priority: <value>
+   Variable: <var=value>
+   Application: <value>
+   Data: <value>
+
+* Name: <optional> Destination name.
+* Detail: <optional> Detail info.
+* Type: <required> Destination type. 0:exten, 1:application
+* Exten: <optional> Extension. Type: 0(exten) only
+* Context: <optional> Conetxt. Type: 0(exten) only
+* Priority: <optional> Priority. Type: 0(exten) only
+* Variable: <optional> Set(var=val). Could be more than one. Type: 0(exten) only.
+* Application: <optional> Application name. Type: 1(application) only
+* Data: <optional> Application name. Type: 1(application) only
+
+Example
+-------
+
+::
+
+   Action: OutDestinationCreate
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Application: park
+   
+   Response: Success
+   Message: Destination created successfully
+
+
+OutDestUpdate
+=============
+
+Description
+-----------
+Update Destination for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDestUpdate
+   Uuid: <value>
+   Name: <value>
+   Detail: <value>
+   Type: <value>
+   Exten: <value>
+   Context: <value>
+   Priority: <value>
+   Variable: <var=value>
+   Application: <value>
+   Data: <value>
+
+* Uuid: <required> Destination uuid.
+* Name: <optional> Destination name.
+* Detail: <optional> Detail info.
+* Type: <required> Destination type. 0:exten, 1:application
+* Exten: <optional> Extension. Type: 0(exten) only
+* Context: <optional> Conetxt. Type: 0(exten) only
+* Priority: <optional> Priority. Type: 0(exten) only
+* Variable: <optional> Set(var=val). Could be more than one. Type: 0(exten) only.
+* Application: <optional> Application name. Type: 1(application) only
+* Data: <optional> Application name. Type: 1(application) only
+
+
+OutDestDelete
+=============
+
+Description
+-----------
+Delete Destination for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDestDelete
+   Uuid: <value>
+
+* Uuid: <required> Destination uuid.
+   
    
