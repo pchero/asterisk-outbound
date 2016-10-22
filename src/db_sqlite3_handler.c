@@ -22,6 +22,7 @@
 #include "res_outbound.h"
 #include "db_sqlite3_handler.h"
 #include "db_sql_create.h"
+#include "utils.h"
 
 static sqlite3* g_db = NULL;
 
@@ -70,7 +71,7 @@ bool db_sqlite3_init(void)
 	j_res = db_sqlite3_get_record(db_res);
 	db_sqlite3_free(db_res);
 	if(j_res != NULL) {
-		ast_json_unref(j_res);
+		AST_JSON_UNREF(j_res);
 		return true;
 	}
 
@@ -446,7 +447,7 @@ bool db_sqlite3_insert(const char* table, const struct ast_json* j_data)
 
 		iter = ast_json_object_iter_next(j_data_cp, iter);
 	}
-	ast_json_unref(j_data_cp);
+	AST_JSON_UNREF(j_data_cp);
 
 	ret = ast_asprintf(&sql, "insert into %s(%s) values (%s);", table, sql_keys, sql_values);
 	ast_free(sql_keys);
@@ -550,7 +551,7 @@ char* db_sqlite3_get_update_str(const struct ast_json* j_data)
 		iter = ast_json_object_iter_next(j_data_cp, iter);
 	}
 
-	ast_json_unref(j_data_cp);
+	AST_JSON_UNREF(j_data_cp);
 
 	return res;
 }

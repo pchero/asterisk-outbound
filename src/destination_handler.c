@@ -59,7 +59,7 @@ bool create_destination(const struct ast_json* j_dest)
 			ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : ""
 			);
 	ret = db_insert("destination", j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_free(uuid);
 		return false;
@@ -69,7 +69,7 @@ bool create_destination(const struct ast_json* j_dest)
 	j_tmp = get_destination(uuid);
 	ast_free(uuid);
 	send_manager_evt_out_destination_create(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -100,7 +100,7 @@ bool delete_destination(const char* uuid)
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 
@@ -211,7 +211,7 @@ bool update_destination(const struct ast_json* j_dest)
 	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
 	if(tmp_const == NULL) {
 		ast_log(LOG_WARNING, "Could not get uuid info.\n");
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 		return false;
 	}
 	uuid = ast_strdup(tmp_const);
@@ -223,11 +223,11 @@ bool update_destination(const struct ast_json* j_dest)
 	tmp = db_get_update_str(j_tmp);
 	if(tmp == NULL) {
 		ast_log(LOG_WARNING, "Could not get update str.\n");
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 		ast_free(uuid);
 		return false;
 	}
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_asprintf(&sql, "update destination set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
@@ -242,7 +242,7 @@ bool update_destination(const struct ast_json* j_dest)
 		return false;
 	}
 	send_manager_evt_out_destination_update(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -322,8 +322,8 @@ static int get_avail_cnt_app(struct ast_json* j_dest)
 		ret = get_avail_cnt_app_park();
 	}
 	else {
-		ast_log(LOG_WARNING, "Unsupported application. application[%s]\n", application);
-		ret = 0;
+		ast_log(LOG_WARNING, "Unsupported application. Consider unlimited. application[%s]\n", application);
+		ret = DEF_DESTINATION_AVAIL_CNT_UNLIMITED;
 	}
 
 	ast_log(LOG_DEBUG, "Available application count. cnt[%d]\n", ret);
@@ -352,7 +352,7 @@ static int get_avail_cnt_app_queue_service_perf(const char* name)
 	if(service_perf == 0) {
 		service_perf = 100;
 	}
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return service_perf;
 }
@@ -384,7 +384,7 @@ static int get_avail_cnt_app_queue(const char* name)
 
 	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "LoggedIn"));
 	loggedin = atoi(tmp_const);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	if(loggedin < 10) {
 		ast_log(LOG_NOTICE, "Not many people logged in. Ignore perf calculate. loggenin[%d], avail[%d]\n", loggedin, avail);
@@ -405,8 +405,6 @@ static int get_avail_cnt_app_queue(const char* name)
  */
 static int get_avail_cnt_app_park(void)
 {
-	// just return unlimited
-	// todo: support specified parking lot
 	return DEF_DESTINATION_AVAIL_CNT_UNLIMITED;
 }
 
@@ -462,7 +460,7 @@ static struct ast_json* get_app_queue_param(const char* name)
 			break;
 		}
 	}
-	ast_json_unref(j_ami_res);
+	AST_JSON_UNREF(j_ami_res);
 	if(j_param == NULL) {
 		ast_log(LOG_NOTICE, "Could not get queue param. name[%s]\n", name);
 		return NULL;
@@ -505,7 +503,7 @@ struct ast_json* get_app_queue_summary(const char* name)
 			break;
 		}
 	}
-	ast_json_unref(j_ami_res);
+	AST_JSON_UNREF(j_ami_res);
 	if(j_queue == NULL) {
 		ast_log(LOG_NOTICE, "Could not get queue summary. name[%s]\n", name);
 		return NULL;

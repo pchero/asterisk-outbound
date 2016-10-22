@@ -151,9 +151,10 @@ rb_dialing* rb_dialing_create(
 	if((dialing_uuid == NULL)
 			|| (j_camp == NULL)
 			|| (j_plan == NULL)
-			|| (j_dial == NULL)
+			|| (j_dlma == NULL)
 			|| (j_dest == NULL)
 			|| (j_dl_list == NULL)
+			|| (j_dial == NULL)
 			) {
 		ast_log(LOG_WARNING, "Wrong input parameter.\n");
 		return NULL;
@@ -273,9 +274,9 @@ static void rb_dialing_destructor(void* obj)
 
 	if(dialing->uuid != NULL)		   ast_free(dialing->uuid);
 	if(dialing->name != NULL)		   ast_free(dialing->name);
-	if(dialing->j_dialing != NULL)	  ast_json_unref(dialing->j_dialing);
-	if(dialing->j_event != NULL)	  ast_json_unref(dialing->j_event);
-	if(dialing->j_events != NULL)	  ast_json_unref(dialing->j_events);
+	if(dialing->j_dialing != NULL)	  AST_JSON_UNREF(dialing->j_dialing);
+	if(dialing->j_event != NULL)	  AST_JSON_UNREF(dialing->j_event);
+	if(dialing->j_events != NULL)	  AST_JSON_UNREF(dialing->j_events);
 	if(dialing->tm_create != NULL)  ast_free(dialing->tm_create);
 	if(dialing->tm_update != NULL)  ast_free(dialing->tm_update);
 	if(dialing->tm_delete != NULL)  ast_free(dialing->tm_delete);
@@ -404,7 +405,7 @@ bool rb_dialing_update_event_substitute(rb_dialing* dialing, struct ast_json* j_
 	ast_mutex_lock(&g_rb_dialing_mutex);
 
 	if(dialing->j_event != NULL) {
-		ast_json_unref(dialing->j_event);
+		AST_JSON_UNREF(dialing->j_event);
 	}
 
 	dialing->j_event = ast_json_deep_copy(j_evt);

@@ -24,6 +24,7 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 #include "ami_handler.h"
 #include "dialing_handler.h"
 #include "cli_handler.h"
+#include "utils.h"
 
 
 #include <stdbool.h>
@@ -77,7 +78,7 @@ static int load_config(void)
 	ast_config_destroy(cfg);
 
 	if(g_app->j_conf != NULL) {
-		ast_json_unref(g_app->j_conf);
+		AST_JSON_UNREF(g_app->j_conf);
 	}
 	g_app->j_conf = j_conf;
 
@@ -101,7 +102,7 @@ static int init_module(void)
 static void release_module(void)
 {
 	db_exit();
-	ast_json_unref(g_app->j_conf);
+	AST_JSON_UNREF(g_app->j_conf);
 	ast_free(g_app);
 
 	ast_log(LOG_VERBOSE, "Released module.\n");

@@ -117,7 +117,7 @@ static struct ast_json* parse_ami_msg(char* msg)
 			ret = strlen(tmp);
 			if(ret == 0) {
 				ret = ast_json_array_append(j_out, ast_json_deep_copy(j_tmp));
-				ast_json_unref(j_tmp);
+				AST_JSON_UNREF(j_tmp);
 				j_tmp = NULL;
 
 				j_tmp = ast_json_object_create();
@@ -149,7 +149,7 @@ static struct ast_json* parse_ami_msg(char* msg)
 	}
 
 	if(j_tmp != NULL) {
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 	}
 	return j_out;
 }
@@ -336,7 +336,7 @@ static int ami_evt_helper(int category, const char *event, char *content)
 	}
 
 	ami_evt_process(j_out);
-	ast_json_unref(j_out);
+	AST_JSON_UNREF(j_out);
 
 	return 0;
 }
@@ -399,7 +399,7 @@ struct ast_json* ami_cmd_queue_summary(const char* name)
 	}
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	return j_res;
 }
@@ -425,7 +425,7 @@ struct ast_json* ami_cmd_queue_status(const char* name)
 	}
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	return j_res;
 }
@@ -489,11 +489,11 @@ struct ast_json* ami_cmd_originate_to_application(struct ast_json* j_dial)
 	ast_json_free(tmp);
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	ret = ami_is_response_success(j_res);
 	if(ret == false) {
-		ast_json_unref(j_res);
+		AST_JSON_UNREF(j_res);
 		return NULL;
 	}
 
@@ -558,11 +558,11 @@ struct ast_json* ami_cmd_originate_to_exten(struct ast_json* j_dial)
 	ast_json_free(tmp);
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	ret = ami_is_response_success(j_res);
 	if(ret == false) {
-		ast_json_unref(j_res);
+		AST_JSON_UNREF(j_res);
 		return NULL;
 	}
 
@@ -608,11 +608,11 @@ struct ast_json* ami_cmd_hangup(const char* channel, int cause)
 	ast_json_free(tmp);
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	ret = ami_is_response_success(j_res);
 	if(ret == false) {
-		ast_json_unref(j_res);
+		AST_JSON_UNREF(j_res);
 		return NULL;
 	}
 
@@ -632,12 +632,12 @@ struct ast_json* ami_cmd_SIPshowregistry(void)
 			);
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	// check response
 	ret = ami_is_response_success(j_res);
 	if(ret == false) {
-		ast_json_unref(j_res);
+		AST_JSON_UNREF(j_res);
 		return NULL;
 	}
 
@@ -681,12 +681,12 @@ struct ast_json* ami_cmd_dialplan_extension_add(struct ast_json* j_dialplan)
 	}
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	// check response
 	ret = ami_is_response_success(j_res);
 	if(ret == false) {
-		ast_json_unref(j_res);
+		AST_JSON_UNREF(j_res);
 		return NULL;
 	}
 
@@ -724,12 +724,12 @@ struct ast_json* ami_cmd_dialplan_extension_remove(const char* context, const ch
 	}
 
 	j_res = ami_cmd_handler(j_cmd);
-	ast_json_unref(j_cmd);
+	AST_JSON_UNREF(j_cmd);
 
 	// check response
 	ret = ami_is_response_success(j_res);
 	if(ret == false) {
-		ast_json_unref(j_res);
+		AST_JSON_UNREF(j_res);
 		return NULL;
 	}
 
@@ -838,7 +838,7 @@ static void ami_evt_Newchannel(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update name
 	rb_dialing_update_name(dialing, ast_json_string_get(ast_json_object_get(j_evt, "channel")));
@@ -847,7 +847,7 @@ static void ami_evt_Newchannel(struct ast_json* j_evt)
 	j_tmp = ast_json_object_create();
 	ast_json_object_set(j_tmp, "channel_name", ast_json_ref(ast_json_object_get(j_evt, "channel")));
 	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -900,7 +900,7 @@ static void ami_evt_Newexten(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -950,7 +950,7 @@ static void ami_evt_Newstate(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -1003,7 +1003,7 @@ static void ami_evt_QueueCallerJoin(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -1056,7 +1056,7 @@ static void ami_evt_QueueCallerLeave(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -1123,7 +1123,7 @@ static void ami_evt_AgentCalled(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -1192,7 +1192,7 @@ static void ami_evt_AgentConnect(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -1262,7 +1262,7 @@ static void ami_evt_AgentComplete(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_free(timestamp);
 	return;
@@ -1327,13 +1327,13 @@ static void ami_evt_DialBegin(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update dialing
 	j_tmp = ast_json_object_create();
 	ast_json_object_set(j_tmp, "tm_dial_begin", ast_json_string_create(timestamp));
 	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update status
 	rb_dialing_update_status(dialing, E_DIALING_DIAL_BEGIN);
@@ -1360,7 +1360,7 @@ static void ami_evt_DialBegin(struct ast_json* j_evt)
 //
 //		// update
 //		rb_dialing_update_agent_update(dialing, j_tmp);
-//		ast_json_unref(j_tmp);
+//		AST_JSON_UNREF(j_tmp);
 //	}
 //	else {
 //		// dialing begin to customer
@@ -1380,7 +1380,7 @@ static void ami_evt_DialBegin(struct ast_json* j_evt)
 //		rb_dialing_update_status(dialing, E_DIALING_DIAL_BEGIN);
 //
 //		rb_dialing_update_dialing_update(dialing, j_tmp);
-//		ast_json_unref(j_tmp);
+//		AST_JSON_UNREF(j_tmp);
 //	}
 //
 //	return;
@@ -1445,13 +1445,13 @@ static void ami_evt_DialEnd(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update dialing
 	j_tmp = ast_json_object_create();
 	ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(timestamp));
 	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update status
 	rb_dialing_update_status(dialing, E_DIALING_DIAL_END);
@@ -1480,7 +1480,7 @@ static void ami_evt_DialEnd(struct ast_json* j_evt)
 //
 //		// agent_update
 //		rb_dialing_update_agent_update(dialing, j_tmp);
-//		ast_json_unref(j_tmp);
+//		AST_JSON_UNREF(j_tmp);
 //	}
 //	else {
 //		// assume this is for dialing itself.
@@ -1500,7 +1500,7 @@ static void ami_evt_DialEnd(struct ast_json* j_evt)
 //		rb_dialing_update_status(dialing, E_DIALING_DIAL_END);
 //
 //		rb_dialing_update_dialing_update(dialing, j_tmp);
-//		ast_json_unref(j_tmp);
+//		AST_JSON_UNREF(j_tmp);
 //
 //	}
 //
@@ -1557,7 +1557,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update dialing
 	j_tmp = ast_json_object_create();
@@ -1565,7 +1565,7 @@ static void ami_evt_OriginateResponse(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "res_dial", ast_json_integer_create(atoi(tmp_const)));
 	ast_json_object_set(j_tmp, "tm_dial_end", ast_json_string_create(timestamp));
 	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update status
 	tmp_const = ast_json_string_get(ast_json_object_get(j_evt, "response"));
@@ -1627,7 +1627,7 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "tm_event", ast_json_string_create(timestamp));
 	rb_dialing_update_events_append(dialing, j_tmp);
 	rb_dialing_update_event_substitute(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update dialing
 	j_tmp = ast_json_object_create();
@@ -1636,7 +1636,7 @@ static void ami_evt_Hangup(struct ast_json* j_evt)
 	ast_json_object_set(j_tmp, "res_hangup", ast_json_integer_create(atoi(tmp_const)));
 	ast_json_object_set(j_tmp, "res_hangup_detail", ast_json_ref(ast_json_object_get(j_evt, "cause-txt")));
 	rb_dialing_update_dialing_update(dialing, j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	// update dialing status
 	rb_dialing_update_status(dialing, E_DIALING_HANGUP);

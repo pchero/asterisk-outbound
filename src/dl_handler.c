@@ -188,7 +188,7 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
 	if(j_res == NULL) {
 		return false;
 	}
-	ast_json_unref(j_res);
+	AST_JSON_UNREF(j_res);
 
 	return true;
 }
@@ -213,7 +213,7 @@ void clear_dl_list_dialing(const char* uuid)
 			"dialing_plan_uuid",	ast_json_null()
 			);
 	update_dl_list(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return;
 }
@@ -293,7 +293,7 @@ int get_current_dialing_dl_cnt(const char* camp_uuid, const char* dl_table)
 	}
 
 	ret = ast_json_integer_get(ast_json_object_get(j_tmp, "count(*)"));
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return ret;
 }
@@ -438,7 +438,7 @@ bool create_dlma(const struct ast_json* j_dlma)
 			);
 
 	ret = db_insert("dl_list_ma", j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_free(uuid);
 		return false;
@@ -448,7 +448,7 @@ bool create_dlma(const struct ast_json* j_dlma)
 	j_tmp = get_dlma(uuid);
 	ast_free(uuid);
 	send_manager_evt_out_dlma_create(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -472,7 +472,7 @@ bool update_dlma(const struct ast_json* j_dlma)
 	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
 	if(tmp_const == NULL) {
 		ast_log(LOG_WARNING, "Could not get uuid.\n");
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 		return false;
 	}
 	uuid = ast_strdup(tmp_const);
@@ -483,7 +483,7 @@ bool update_dlma(const struct ast_json* j_dlma)
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(tmp == NULL) {
 		ast_log(LOG_WARNING, "Could not get update str.\n");
 		ast_free(uuid);
@@ -508,7 +508,7 @@ bool update_dlma(const struct ast_json* j_dlma)
 		return false;
 	}
 	send_manager_evt_out_dlma_update(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -532,7 +532,7 @@ bool delete_dlma(const char* uuid)
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	ast_asprintf(&sql, "update dl_list_ma set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 
@@ -609,7 +609,7 @@ struct ast_json* get_dl_lists(const char* dlma_uuid, int count)
 			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
 			count
 			);
-	ast_json_unref(j_dlma);
+	AST_JSON_UNREF(j_dlma);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -687,15 +687,15 @@ struct ast_json* create_dial_info(
 	j_dial_dl = create_dial_dl_info(j_dl_list, j_plan);
 	if(j_dial_dl == NULL) {
 		ast_log(LOG_ERROR, "Could not create correct dial dl info.\n");
-		ast_json_unref(j_dial_dest);
+		AST_JSON_UNREF(j_dial_dest);
 		return NULL;
 	}
 
 	j_dial_plan = create_dial_plan_info(j_plan);
 	if(j_dial_plan == NULL) {
 		ast_log(LOG_ERROR, "Could not create correct dial plan info.\n");
-		ast_json_unref(j_dial_dest);
-		ast_json_unref(j_dial_dl);
+		AST_JSON_UNREF(j_dial_dest);
+		AST_JSON_UNREF(j_dial_dl);
 		return NULL;
 	}
 
@@ -705,9 +705,9 @@ struct ast_json* create_dial_info(
 	ast_json_object_update(j_dial, j_dial_dl);
 	ast_json_object_update(j_dial, j_dial_plan);
 
-	ast_json_unref(j_dial_dest);
-	ast_json_unref(j_dial_dl);
-	ast_json_unref(j_dial_plan);
+	AST_JSON_UNREF(j_dial_dest);
+	AST_JSON_UNREF(j_dial_dl);
+	AST_JSON_UNREF(j_dial_plan);
 
 	return j_dial;
 }
@@ -872,7 +872,7 @@ bool create_dl_list(struct ast_json* j_dl)
 			);
 
 	ret = db_insert("dl_list", j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_free(uuid);
 		return false;
@@ -906,7 +906,7 @@ bool delete_dl_list(const char* uuid)
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	ast_asprintf(&sql, "update dl_list set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 

@@ -59,7 +59,7 @@ bool create_plan(const struct ast_json* j_plan)
 			ast_json_string_get(ast_json_object_get(j_tmp, "name"))? : "<unknown>"
 			);
 	ret = db_insert("plan", j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_free(uuid);
 		return false;
@@ -77,7 +77,7 @@ bool create_plan(const struct ast_json* j_plan)
 		return false;
 	}
 	send_manager_evt_out_plan_create(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -106,7 +106,7 @@ bool delete_plan(const char* uuid)
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	ast_asprintf(&sql, "update plan set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 
@@ -213,7 +213,7 @@ bool update_plan(const struct ast_json* j_plan)
 	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
 	if(tmp_const == NULL) {
 		ast_log(LOG_WARNING, "Could not get uuid.\n");
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 		return false;
 	}
 	uuid = ast_strdup(tmp_const);
@@ -225,11 +225,11 @@ bool update_plan(const struct ast_json* j_plan)
 	tmp = db_get_update_str(j_tmp);
 	if(tmp == NULL) {
 		ast_log(LOG_WARNING, "Could not get update str.\n");
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 		ast_free(uuid);
 		return false;
 	}
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_asprintf(&sql, "update plan set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
@@ -249,7 +249,7 @@ bool update_plan(const struct ast_json* j_plan)
 		return false;
 	}
 	send_manager_evt_out_plan_update(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }

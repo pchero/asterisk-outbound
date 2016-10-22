@@ -23,6 +23,7 @@
 #include "plan_handler.h"
 #include "queue_handler.h"
 #include "destination_handler.h"
+#include "utils.h"
 
 /*** DOCUMENTATION
 	<manager name="OutCampaignCreate" language="en_US">
@@ -89,7 +90,7 @@ static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const
 				ast_json_string_get(ast_json_object_get(j_tmp, "detail")) ? : ""
 				);
 	}
-	ast_json_unref(j_res);
+	AST_JSON_UNREF(j_res);
 
 	return CLI_SUCCESS;
 }
@@ -131,7 +132,7 @@ static char* _out_show_campaign(int fd, int *total, struct mansession *s, const 
 	ast_cli(fd, "  DLMA : %s\n", ast_json_string_get(ast_json_object_get(j_res, "dlma")));
 	ast_cli(fd, "\n");
 
-	ast_json_unref(j_res);
+	AST_JSON_UNREF(j_res);
 
 	return CLI_SUCCESS;
 }
@@ -251,7 +252,7 @@ static char* _out_show_plans(int fd, int *total, struct mansession *s, const str
 				ast_json_string_get(ast_json_object_get(j_tmp, "trunk_name")) ? : ""
 				);
 	}
-	ast_json_unref(j_res);
+	AST_JSON_UNREF(j_res);
 
 	return CLI_SUCCESS;
 }
@@ -303,7 +304,7 @@ static char* _out_show_dlmas(int fd, int *total, struct mansession *s, const str
 				ast_json_string_get(ast_json_object_get(j_tmp, "dl_table")) ? : ""
 				);
 	}
-	ast_json_unref(j_res);
+	AST_JSON_UNREF(j_res);
 
 	return CLI_SUCCESS;
 }
@@ -359,7 +360,7 @@ static char* _out_show_dialings(int fd, int *total, struct mansession *s, const 
 				ast_json_string_get(ast_json_object_get(j_tmp, "tm_hangup")) ? : ""
 				);
 	}
-	ast_json_unref(j_res);
+	AST_JSON_UNREF(j_res);
 
 	return CLI_SUCCESS;
 }
@@ -437,7 +438,7 @@ static char* _out_show_dlma_list(int fd, int *total, struct mansession *s, const
 				);
 	}
 
-	ast_json_unref(j_dls);
+	AST_JSON_UNREF(j_dls);
 
 	return CLI_SUCCESS;
 }
@@ -527,7 +528,7 @@ static char* _out_show_dl(int fd, int *total, struct mansession *s, const struct
 			ast_json_integer_get(ast_json_object_get(j_tmp, "res_hangup"))
 			);
 
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return CLI_SUCCESS;
 
@@ -569,7 +570,7 @@ static char* _out_create_campaign(int fd, int *total, struct mansession *s, cons
 	if(argc >= 3) { ast_json_object_set(j_camp, "name", ast_json_string_create(argv[3])); }
 
 	ret = create_campaign(j_camp);
-	ast_json_unref(j_camp);
+	AST_JSON_UNREF(j_camp);
 	if(ret == false) {
 		return CLI_FAILURE;
 	}
@@ -1821,7 +1822,7 @@ static int manager_out_dl_list_create(struct mansession *s, const struct message
 	}
 
 	ret = create_dl_list(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while creating dl list.");
 		ast_log(LOG_NOTICE, "OutDlListCreate failed.\n");
@@ -1864,7 +1865,7 @@ static int manager_out_dl_list_update(struct mansession *s, const struct message
 	ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
 
 	ret = update_dl_list(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while updating dl list.");
 		ast_log(LOG_NOTICE, "OutDlListUpdate failed.\n");
@@ -1973,7 +1974,7 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 		astman_send_listack(s, m, "Dl List will follow", "start");
 
 		manager_out_dl_list_entry(s, m, j_tmp, action_id);
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 
 		astman_send_list_complete_start(s, m, "OutDlListComplete", 1);
 		astman_send_list_complete_end(s);
@@ -1998,7 +1999,7 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 			}
 			manager_out_dl_list_entry(s, m, j_tmp, action_id);
 		}
-		ast_json_unref(j_arr);
+		AST_JSON_UNREF(j_arr);
 		astman_send_list_complete_start(s, m, "OutDlListComplete", size);
 		astman_send_list_complete_end(s);
 		return 0;
@@ -2135,7 +2136,7 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
 
 	ret = create_campaign(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while creating campaign");
 		ast_log(LOG_NOTICE, "OutCampaignCreate failed.\n");
@@ -2219,7 +2220,7 @@ static int manager_out_campaign_update(struct mansession *s, const struct messag
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "status", ast_json_integer_create(atoi(tmp_const)));}
 
 	ret = update_campaign(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while updating campaign");
 		ast_log(LOG_WARNING, "OutCampaignUpdate failed.\n");
@@ -2270,7 +2271,7 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
 		astman_send_listack(s, m, "Campaign List will follow", "start");
 
 		manager_out_campaign_entry(s, m, j_tmp, action_id);
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 
 		astman_send_list_complete_start(s, m, "OutCampaignListComplete", 1);
 		astman_send_list_complete_end(s);
@@ -2289,7 +2290,7 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
 		}
 		astman_send_list_complete_start(s, m, "OutCampaignListComplete", size);
 		astman_send_list_complete_end(s);
-		ast_json_unref(j_arr);
+		AST_JSON_UNREF(j_arr);
 	}
 
 	ast_log(LOG_NOTICE, "OutCampaignShow succeed.\n");
@@ -2313,7 +2314,7 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
 
 	j_tmp = create_json_plan(m);
 	ret = create_plan(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while creating plan");
 		ast_log(LOG_WARNING, "OutPlanCreate failed.\n");
@@ -2386,7 +2387,7 @@ static int manager_out_plan_update(struct mansession *s, const struct message *m
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
 
 	ret = update_plan(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while updating plan");
 		ast_log(LOG_WARNING, "OutPlanUpdate failed.\n");
@@ -2438,7 +2439,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
 		astman_send_listack(s, m, "Plan List will follow", "start");
 
 		manager_out_plan_entry(s, m, j_tmp, action_id);
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 
 		astman_send_list_complete_start(s, m, "OutPlanListComplete", 1);
 		astman_send_list_complete_end(s);
@@ -2457,7 +2458,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
 		}
 		astman_send_list_complete_start(s, m, "OutPlanListComplete", size);
 		astman_send_list_complete_end(s);
-		ast_json_unref(j_arr);
+		AST_JSON_UNREF(j_arr);
 	}
 
 	ast_free(action_id);
@@ -2490,7 +2491,7 @@ static int manager_out_dlma_create(struct mansession *s, const struct message *m
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
 
 	ret = create_dlma(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while creating dlma");
 		ast_log(LOG_WARNING, "OutDlmaCreate failed.\n");
@@ -2532,7 +2533,7 @@ static int manager_out_dlma_update(struct mansession *s, const struct message *m
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
 
 	ret = update_dlma(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while updating dlma");
 		return 0;
@@ -2603,7 +2604,7 @@ static int manager_out_dlma_show(struct mansession *s, const struct message *m)
 		astman_send_listack(s, m, "Dlma List will follow", "start");
 
 		manager_out_dlma_entry(s, m, j_tmp, action_id);
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 
 		astman_send_list_complete_start(s, m, "OutDlmaListComplete", 1);
 		astman_send_list_complete_end(s);
@@ -2622,7 +2623,7 @@ static int manager_out_dlma_show(struct mansession *s, const struct message *m)
 		}
 		astman_send_list_complete_start(s, m, "OutDlmaListComplete", size);
 		astman_send_list_complete_end(s);
-		ast_json_unref(j_arr);
+		AST_JSON_UNREF(j_arr);
 	}
 	ast_free(action_id);
 	return 0;
@@ -2649,7 +2650,7 @@ static int manager_out_queue_create(struct mansession *s, const struct message *
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
 
 	ret = create_queue(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while creating queue");
 		return 0;
@@ -2689,7 +2690,7 @@ static int manager_out_queue_update(struct mansession *s, const struct message *
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
 
 	ret = update_queue(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while updating queue");
 		return 0;
@@ -2779,7 +2780,7 @@ static int manager_out_queue_show(struct mansession *s, const struct message *m)
 		}
 		astman_send_list_complete_start(s, m, "OutQueueListComplete", size);
 		astman_send_list_complete_end(s);
-		ast_json_unref(j_arr);
+		AST_JSON_UNREF(j_arr);
 	}
 	ast_free(action_id);
 	return 0;
@@ -2925,7 +2926,7 @@ static int manager_out_destination_create(struct mansession *s, const struct mes
 	ast_free(tmp);
 
 	ret = create_destination(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while creating destination");
 		ast_log(LOG_NOTICE, "OutDestinationCreate failed.\n");
@@ -2988,7 +2989,7 @@ static int manager_out_destination_update(struct mansession *s, const struct mes
 	ast_free(tmp);
 
 	ret = update_destination(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		astman_send_error(s, m, "Error encountered while updating destination");
 		ast_log(LOG_NOTICE, "OutDestinationUpdate failed.\n");
@@ -3070,7 +3071,7 @@ static char* get_variables(const struct message *m)
 	res = ast_strdup(tmp);
 
 	ast_json_free(tmp);
-	ast_json_unref(j_res);
+	AST_JSON_UNREF(j_res);
 
 	return res;
 }

@@ -38,7 +38,7 @@ int create_queue(struct ast_json* j_queue)
 			ast_json_string_get(ast_json_object_get(j_tmp, "name"))
 			);
 	ret = db_insert("queue", j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_free(uuid);
 		return false;
@@ -47,7 +47,7 @@ int create_queue(struct ast_json* j_queue)
 	// send ami event
 	j_tmp = get_queue(uuid);
 	send_manager_evt_out_queue_create(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -72,7 +72,7 @@ int delete_queue(const char* uuid)
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	ast_asprintf(&sql, "update queue set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 
@@ -179,7 +179,7 @@ int update_queue(struct ast_json* j_queue)
 		return false;
 	}
 	send_manager_evt_out_queue_update(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }

@@ -20,6 +20,7 @@
 #include "asterisk/json.h"
 #include "asterisk/lock.h"
 
+#include "utils.h"
 #include "db_mysql_handler.h"
 //#include "db_sql_create.h"
 
@@ -380,7 +381,7 @@ bool db_mysql_insert(const char* table, const struct ast_json* j_data)
 
 		iter = ast_json_object_iter_next(j_data_cp, iter);
 	}
-	ast_json_unref(j_data_cp);
+	AST_JSON_UNREF(j_data_cp);
 
 	ret = ast_asprintf(&sql, "insert into %s(%s) values (%s);", table, sql_keys, sql_values);
 	ast_free(sql_keys);
@@ -484,7 +485,7 @@ char* db_mysql_get_update_str(const struct ast_json* j_data)
 		iter = ast_json_object_iter_next(j_data_cp, iter);
 	}
 
-	ast_json_unref(j_data_cp);
+	AST_JSON_UNREF(j_data_cp);
 
 	return res;
 }

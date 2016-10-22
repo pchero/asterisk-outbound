@@ -48,7 +48,7 @@ bool create_campaign(const struct ast_json* j_camp)
 			ast_json_string_get(ast_json_object_get(j_tmp, "name"))
 			);
 	ret = db_insert("campaign", j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_free(uuid);
 		return false;
@@ -58,7 +58,7 @@ bool create_campaign(const struct ast_json* j_camp)
 	j_tmp = get_campaign(uuid);
 	ast_free(uuid);
 	send_manager_evt_out_campaign_create(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -88,7 +88,7 @@ bool delete_campaign(const char* uuid)
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_camp);
-	ast_json_unref(j_camp);
+	AST_JSON_UNREF(j_camp);
 	ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 
@@ -196,7 +196,7 @@ bool update_campaign(const struct ast_json* j_camp)
 	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
 	if(tmp_const == NULL) {
 		ast_log(LOG_WARNING, "Could not get uuid info.\n");
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 		return false;
 	}
 	uuid = ast_strdup(tmp_const);
@@ -208,11 +208,11 @@ bool update_campaign(const struct ast_json* j_camp)
 	tmp = db_get_update_str(j_tmp);
 	if(tmp == NULL) {
 		ast_log(LOG_WARNING, "Could not get update str.\n");
-		ast_json_unref(j_tmp);
+		AST_JSON_UNREF(j_tmp);
 		ast_free(uuid);
 		return false;
 	}
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	ast_asprintf(&sql, "update campaign set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
@@ -227,7 +227,7 @@ bool update_campaign(const struct ast_json* j_camp)
 		return false;
 	}
 	send_manager_evt_out_campaign_update(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -273,7 +273,7 @@ bool update_campaign_status(const char* uuid, E_CAMP_STATUS_T status)
 
 	// update
 	ret = update_campaign(j_tmp);
-	ast_json_unref(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_log(LOG_ERROR, "Could not update campaign status. camp_uuid[%s], status[%d]", uuid, status);
 		return false;
