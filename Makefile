@@ -33,12 +33,11 @@ all: $(TARGETDIR_res_outbound.so)/res_outbound.so
 ## Target: res_outbound.so
 CFLAGS_res_outbound.so = \
 	-I/usr/include/ \
-	-I/usr/local/include/ \
-	`mysql_config --cflags`
+	-I/usr/local/include/
 	
 #CPPFLAGS_res_outbound.so =
 
-LDLIBS_res_outbound.so = $(OSLDLIBS) `mysql_config --libs` -levent -lpthread -levent_pthreads
+LDLIBS_res_outbound.so = $(OSLDLIBS) -levent -lpthread -levent_pthreads
 
 OBJS_res_outbound.so =  \
 	$(TARGETDIR_res_outbound.so)/res_outbound.o \
@@ -52,7 +51,6 @@ OBJS_res_outbound.so =  \
 	$(TARGETDIR_res_outbound.so)/plan_handler.o \
 	$(TARGETDIR_res_outbound.so)/queue_handler.o \
 	$(TARGETDIR_res_outbound.so)/db_sqlite3_handler.o \
-	$(TARGETDIR_res_outbound.so)/db_mysql_handler.o \
 	$(TARGETDIR_res_outbound.so)/destination_handler.o \
 	$(TARGETDIR_res_outbound.so)/utils.o
 	
@@ -95,9 +93,6 @@ $(TARGETDIR_res_outbound.so)/queue_handler.o: $(TARGETDIR_res_outbound.so) src/q
 
 $(TARGETDIR_res_outbound.so)/db_sqlite3_handler.o: $(TARGETDIR_res_outbound.so) src/db_sqlite3_handler.c 
 	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/db_sqlite3_handler.c
-
-$(TARGETDIR_res_outbound.so)/db_mysql_handler.o: $(TARGETDIR_res_outbound.so) src/db_mysql_handler.c 
-	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/db_mysql_handler.c	
 
 $(TARGETDIR_res_outbound.so)/destination_handler.o: $(TARGETDIR_res_outbound.so) src/destination_handler.c 
 	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/destination_handler.c	

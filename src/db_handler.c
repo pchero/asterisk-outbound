@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <mysql/mysql.h>
+//#include <mysql/mysql.h>
 
 #include "asterisk/utils.h"
 #include "asterisk/module.h"
@@ -22,7 +22,7 @@
 
 #include "res_outbound.h"
 #include "db_sqlite3_handler.h"
-#include "db_mysql_handler.h"
+//#include "db_mysql_handler.h"
 #include "db_handler.h"
 
 
@@ -33,7 +33,7 @@ typedef enum _E_DB_TYPE
 {
 	E_DB_NONE			= 0,
 	E_DB_SQLITE3,				///< sqlite3
-	E_DB_MYSQL,  				///< mysql, maria
+//	E_DB_MYSQL,  				///< mysql, maria
 } E_DB_TYPE;
 
 E_DB_TYPE g_db_type = E_DB_NONE;
@@ -95,10 +95,10 @@ bool db_init(void)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_init();
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_init();
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
@@ -127,10 +127,10 @@ void db_exit(void)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_exit();
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_exit();
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
@@ -162,10 +162,10 @@ db_res_t* db_query(const char* query)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_query(query);
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_query(query);
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
@@ -201,10 +201,10 @@ bool db_exec(const char* query)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_exec(query);
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_exec(query);
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
@@ -236,10 +236,10 @@ struct ast_json* db_get_record(db_res_t* ctx)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_get_record(ctx);
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_get_record(ctx);
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
@@ -274,10 +274,10 @@ void db_free(db_res_t* db_res)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_free(db_res);
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_free(db_res);
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
@@ -309,10 +309,10 @@ bool db_insert(const char* table, const struct ast_json* j_data)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_insert(table, j_data);
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_insert(table, j_data);
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
@@ -343,10 +343,10 @@ char* db_get_update_str(const struct ast_json* j_data)
 		}
 		break;
 
-		case E_DB_MYSQL: {
-			return db_mysql_get_update_str(j_data);
-		}
-		break;
+//		case E_DB_MYSQL: {
+//			return db_mysql_get_update_str(j_data);
+//		}
+//		break;
 
 		default: {
 			ast_log(LOG_ERROR, "Unsupported database type. type[%d]\n", type);
