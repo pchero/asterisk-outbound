@@ -27,8 +27,8 @@
     <link rel="next" title="AMI Action" href="ami_action.html" />
     <link rel="prev" title="Structure" href="structure.html" /> 
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
+  <body>
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,35 +40,35 @@
         <li class="right" >
           <a href="structure.html" title="Structure"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body" role="main">
+          <div class="body">
             
   <div class="section" id="asterisk-cli">
 <h1>Asterisk CLI<a class="headerlink" href="#asterisk-cli" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="help-out">
 <h2>help out<a class="headerlink" href="#help-out" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span>
-<span class="n">out</span> <span class="n">create</span> <span class="n">campaign</span>            <span class="o">--</span> <span class="n">Create</span> <span class="n">new</span> <span class="n">campaign</span>
-<span class="n">out</span> <span class="n">delete</span> <span class="n">campaign</span>            <span class="o">--</span> <span class="n">Delete</span> <span class="n">campaign</span>
-<span class="n">out</span> <span class="nb">set</span> <span class="n">status</span> <span class="p">{</span><span class="n">start</span><span class="o">|</span><span class="n">starting</span><span class="o">|</span><span class="n">stop</span><span class="o">|</span><span class="n">stopping</span><span class="o">|</span><span class="n">pause</span><span class="o">|</span><span class="n">pausing</span><span class="p">}</span> <span class="n">on</span> <span class="o">--</span> <span class="n">Set</span> <span class="n">campaign</span> <span class="n">parameters</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">campaigns</span>             <span class="o">--</span> <span class="n">List</span> <span class="nb">all</span> <span class="n">defined</span> <span class="n">outbound</span> <span class="n">campaigns</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">campaign</span>              <span class="o">--</span> <span class="n">Shows</span> <span class="n">detail</span> <span class="n">campaign</span> <span class="n">info</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">destinations</span>          <span class="o">--</span> <span class="n">List</span> <span class="nb">all</span> <span class="n">defined</span> <span class="n">outbound</span> <span class="n">destinations</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">destination</span>           <span class="o">--</span> <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">destination</span> <span class="n">info</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">dialings</span>              <span class="o">--</span> <span class="n">List</span> <span class="n">currently</span> <span class="n">on</span> <span class="n">serviced</span> <span class="n">dialings</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">dlma</span> <span class="nb">list</span>             <span class="o">--</span> <span class="n">Show</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">dlma</span> <span class="n">dial</span> <span class="nb">list</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">dlmas</span>                 <span class="o">--</span> <span class="n">List</span> <span class="nb">all</span> <span class="n">defined</span> <span class="n">outbound</span> <span class="n">dlmas</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">dlma</span>                  <span class="o">--</span> <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">dlma</span> <span class="n">info</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">dl</span>                    <span class="o">--</span> <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">dl</span> <span class="n">info</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">dls</span>                   <span class="o">--</span> <span class="n">Show</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">dlma</span> <span class="n">dial</span> <span class="nb">list</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">plans</span>                 <span class="o">--</span> <span class="n">List</span> <span class="nb">all</span> <span class="n">defined</span> <span class="n">outbound</span> <span class="n">plans</span>
-<span class="n">out</span> <span class="n">show</span> <span class="n">plan</span>                  <span class="o">--</span> <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">plan</span> <span class="n">info</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out
+out create campaign            -- Create new campaign
+out delete campaign            -- Delete campaign
+out set status {start|starting|stop|stopping|pause|pausing} on -- Set campaign parameters
+out show campaigns             -- List all defined outbound campaigns
+out show campaign              -- Shows detail campaign info
+out show destinations          -- List all defined outbound destinations
+out show destination           -- Show detail given destination info
+out show dialings              -- List currently on serviced dialings
+out show dlma list             -- Show list of dlma dial list
+out show dlmas                 -- List all defined outbound dlmas
+out show dlma                  -- Show detail given dlma info
+out show dl                    -- Show detail given dl info
+out show dls                   -- Show list of dlma dial list
+out show plans                 -- List all defined outbound plans
+out show plan                  -- Show detail given plan info
 </pre></div>
 </div>
 </div>
@@ -76,9 +76,9 @@
 <h2>out show plans<a class="headerlink" href="#out-show-plans" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">plans</span>
-<span class="n">Uuid</span>
-<span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span> <span class="n">sales_plan</span>           <span class="n">simple</span> <span class="n">sales</span> <span class="n">plan</span>           <span class="mi">1</span>       <span class="mi">30000</span>            <span class="n">sip</span><span class="o">/</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show plans
+Uuid
+4ea35c4b-c2db-4a22-baef-443b5fadd677 sales_plan           simple sales plan           1       30000            sip/
 </pre></div>
 </div>
 </div>
@@ -87,35 +87,35 @@
 <h2>out show plan &lt;plan-uuid&gt;<a class="headerlink" href="#out-show-plan-plan-uuid" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id1">
 <h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">plan</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span>
-<span class="n">Plan</span> <span class="n">detail</span> <span class="n">info</span><span class="o">.</span> <span class="n">plan</span><span class="o">-</span><span class="n">uuid</span><span class="p">[</span><span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show plan 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Plan detail info. plan-uuid[4ea35c4b-c2db-4a22-baef-443b5fadd677]
 
-<span class="p">{</span>
-  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sales_plan&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;simple sales plan&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;uui_field&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;dial_mode&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;dial_timeout&quot;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
-  <span class="s2">&quot;caller_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;dl_end_handle&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;retry_delay&quot;</span><span class="p">:</span> <span class="mi">50000</span><span class="p">,</span>
-  <span class="s2">&quot;trunk_name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tech_name&quot;</span><span class="p">:</span> <span class="s2">&quot;sip/&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;service_level&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_1&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_2&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_3&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_4&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_5&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_6&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_7&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;max_retry_cnt_8&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-  <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T12:45:58.868877001Z&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span>
-<span class="p">}</span>
+{
+  &quot;uuid&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+  &quot;name&quot;: &quot;sales_plan&quot;,
+  &quot;detail&quot;: &quot;simple sales plan&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;uui_field&quot;: null,
+  &quot;dial_mode&quot;: 1,
+  &quot;dial_timeout&quot;: 30000,
+  &quot;caller_id&quot;: null,
+  &quot;dl_end_handle&quot;: 1,
+  &quot;retry_delay&quot;: 50000,
+  &quot;trunk_name&quot;: null,
+  &quot;tech_name&quot;: &quot;sip/&quot;,
+  &quot;service_level&quot;: 0,
+  &quot;max_retry_cnt_1&quot;: 5,
+  &quot;max_retry_cnt_2&quot;: 5,
+  &quot;max_retry_cnt_3&quot;: 5,
+  &quot;max_retry_cnt_4&quot;: 5,
+  &quot;max_retry_cnt_5&quot;: 5,
+  &quot;max_retry_cnt_6&quot;: 5,
+  &quot;max_retry_cnt_7&quot;: 5,
+  &quot;max_retry_cnt_8&quot;: 5,
+  &quot;tm_create&quot;: &quot;2016-10-22T12:45:58.868877001Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
 </pre></div>
 </div>
 </div>
@@ -124,9 +124,9 @@
 <h2>out show dlmas<a class="headerlink" href="#out-show-dlmas" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id2">
 <h3>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dlmas</span>
-<span class="n">Uuid</span>                                 <span class="n">Name</span>                                     <span class="n">Detail</span>                                   <span class="n">Table</span>
-<span class="n">acc994d2</span><span class="o">-</span><span class="mi">04</span><span class="n">d9</span><span class="o">-</span><span class="mi">4</span><span class="n">a53</span><span class="o">-</span><span class="n">bfcf</span><span class="o">-</span><span class="mi">50</span><span class="n">c96ff924bc</span> <span class="n">DialListMaster_Sales</span>                     <span class="n">Test</span> <span class="n">Dlma</span> <span class="n">description</span>                    <span class="n">acc994d2_04d9_4a53_bfcf_50c96f</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dlmas
+Uuid                                 Name                                     Detail                                   Table
+acc994d2-04d9-4a53-bfcf-50c96ff924bc DialListMaster_Sales                     Test Dlma description                    acc994d2_04d9_4a53_bfcf_50c96f
 </pre></div>
 </div>
 </div>
@@ -135,374 +135,374 @@
 <h2>out show dlma &lt;dlma-uuid&gt;<a class="headerlink" href="#out-show-dlma-dlma-uuid" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id3">
 <h3>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dlma</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">04</span><span class="n">d9</span><span class="o">-</span><span class="mi">4</span><span class="n">a53</span><span class="o">-</span><span class="n">bfcf</span><span class="o">-</span><span class="mi">50</span><span class="n">c96ff924bc</span>
-<span class="n">Dlma</span> <span class="n">detail</span> <span class="n">info</span><span class="o">.</span> <span class="n">dlma</span><span class="o">-</span><span class="n">uuid</span><span class="p">[</span><span class="n">acc994d2</span><span class="o">-</span><span class="mi">04</span><span class="n">d9</span><span class="o">-</span><span class="mi">4</span><span class="n">a53</span><span class="o">-</span><span class="n">bfcf</span><span class="o">-</span><span class="mi">50</span><span class="n">c96ff924bc</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dlma acc994d2-04d9-4a53-bfcf-50c96ff924bc
+Dlma detail info. dlma-uuid[acc994d2-04d9-4a53-bfcf-50c96ff924bc]
 
-<span class="p">{</span>
-  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DialListMaster_Sales&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Dlma description&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;dl_table&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2_04d9_4a53_bfcf_50c96ff924bc&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T13:29:35.820096127Z&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span>
-<span class="p">}</span>
+{
+  &quot;uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+  &quot;name&quot;: &quot;DialListMaster_Sales&quot;,
+  &quot;detail&quot;: &quot;Test Dlma description&quot;,
+  &quot;dl_table&quot;: &quot;acc994d2_04d9_4a53_bfcf_50c96ff924bc&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;tm_create&quot;: &quot;2016-10-22T13:29:35.820096127Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="out-show-dlma-list-dlma-uuid-count-100">
 <h2>out show dlma list &lt;dlma-uuid&gt; &lt;count=100&gt;<a class="headerlink" href="#out-show-dlma-list-dlma-uuid-count-100" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dlma</span> <span class="nb">list</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dlma</span> <span class="nb">list</span> <span class="o">&lt;</span><span class="n">dlma</span><span class="o">-</span><span class="n">uuid</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">count</span><span class="o">=</span><span class="mi">100</span><span class="o">&gt;</span>
-      <span class="n">Lists</span> <span class="n">count</span> <span class="n">of</span> <span class="n">dial</span> <span class="nb">list</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dlma list
+Usage: out show dlma list &lt;dlma-uuid&gt; &lt;count=100&gt;
+      Lists count of dial list.
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dlma</span> <span class="nb">list</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">04</span><span class="n">d9</span><span class="o">-</span><span class="mi">4</span><span class="n">a53</span><span class="o">-</span><span class="n">bfcf</span><span class="o">-</span><span class="mi">50</span><span class="n">c96ff924bc</span>
-<span class="n">Uuid</span>                                 <span class="n">Name</span>       <span class="n">Detail</span>               <span class="n">Num1</span>                 <span class="n">Num2</span>                 <span class="n">Num3</span>                 <span class="n">Num4</span>                 <span class="n">Num5</span>                 <span class="n">Num6</span>                 <span class="n">Num7</span>                 <span class="n">Num8</span>
-<span class="n">f9dfa7d2</span><span class="o">-</span><span class="mi">5223</span><span class="o">-</span><span class="mi">4</span><span class="n">b63</span><span class="o">-</span><span class="n">aca1</span><span class="o">-</span><span class="mi">881</span><span class="n">ebacae420</span> <span class="n">client</span> <span class="mi">01</span>  <span class="n">Dial</span> <span class="n">to</span> <span class="n">client</span> <span class="mi">01</span>    <span class="mi">300</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dlma list acc994d2-04d9-4a53-bfcf-50c96ff924bc
+Uuid                                 Name       Detail               Num1                 Num2                 Num3                 Num4                 Num5                 Num6                 Num7                 Num8
+f9dfa7d2-5223-4b63-aca1-881ebacae420 client 01  Dial to client 01    300
 </pre></div>
 </div>
 </div>
 <div class="section" id="out-show-dl-dl-uuid">
 <h2>out show dl &lt;dl-uuid&gt;<a class="headerlink" href="#out-show-dl-dl-uuid" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dl</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dl</span> <span class="o">&lt;</span><span class="n">dl</span><span class="o">-</span><span class="n">uuid</span><span class="o">&gt;</span>
-      <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">dl</span> <span class="n">info</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dl
+Usage: out show dl &lt;dl-uuid&gt;
+      Show detail given dl info.
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dl</span> <span class="n">f9dfa7d2</span><span class="o">-</span><span class="mi">5223</span><span class="o">-</span><span class="mi">4</span><span class="n">b63</span><span class="o">-</span><span class="n">aca1</span><span class="o">-</span><span class="mi">881</span><span class="n">ebacae420</span>
-<span class="n">Dl</span> <span class="n">detail</span> <span class="n">info</span><span class="o">.</span> <span class="n">dl</span><span class="o">-</span><span class="n">uuid</span><span class="p">[</span><span class="n">f9dfa7d2</span><span class="o">-</span><span class="mi">5223</span><span class="o">-</span><span class="mi">4</span><span class="n">b63</span><span class="o">-</span><span class="n">aca1</span><span class="o">-</span><span class="mi">881</span><span class="n">ebacae420</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dl f9dfa7d2-5223-4b63-aca1-881ebacae420
+Dl detail info. dl-uuid[f9dfa7d2-5223-4b63-aca1-881ebacae420]
 
-<span class="p">{</span>
-  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;dlma_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;client 01&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;Dial to client 01&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;resv_target&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;ukey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;udata&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;dialing_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;dialing_camp_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;dialing_plan_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;number_1&quot;</span><span class="p">:</span> <span class="s2">&quot;300&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;number_2&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;number_3&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;number_4&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;number_5&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;number_6&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;number_7&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;number_8&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_3&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_4&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_5&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_6&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_7&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;trycnt_8&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;res_dial&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;res_dial_detail&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;res_hangup&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;res_hangup_detail&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T13:47:23.899652156Z&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_last_dial&quot;</span><span class="p">:</span> <span class="n">null</span>
-<span class="p">}</span>
+{
+  &quot;uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+  &quot;dlma_uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;name&quot;: &quot;client 01&quot;,
+  &quot;detail&quot;: &quot;Dial to client 01&quot;,
+  &quot;status&quot;: 0,
+  &quot;resv_target&quot;: null,
+  &quot;ukey&quot;: null,
+  &quot;udata&quot;: null,
+  &quot;dialing_uuid&quot;: null,
+  &quot;dialing_camp_uuid&quot;: null,
+  &quot;dialing_plan_uuid&quot;: null,
+  &quot;number_1&quot;: &quot;300&quot;,
+  &quot;number_2&quot;: null,
+  &quot;number_3&quot;: null,
+  &quot;number_4&quot;: null,
+  &quot;number_5&quot;: null,
+  &quot;number_6&quot;: null,
+  &quot;number_7&quot;: null,
+  &quot;number_8&quot;: null,
+  &quot;email&quot;: null,
+  &quot;trycnt_1&quot;: 0,
+  &quot;trycnt_2&quot;: 0,
+  &quot;trycnt_3&quot;: 0,
+  &quot;trycnt_4&quot;: 0,
+  &quot;trycnt_5&quot;: 0,
+  &quot;trycnt_6&quot;: 0,
+  &quot;trycnt_7&quot;: 0,
+  &quot;trycnt_8&quot;: 0,
+  &quot;res_dial&quot;: 0,
+  &quot;res_dial_detail&quot;: null,
+  &quot;res_hangup&quot;: 0,
+  &quot;res_hangup_detail&quot;: null,
+  &quot;tm_create&quot;: &quot;2016-10-22T13:47:23.899652156Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null,
+  &quot;tm_last_dial&quot;: null
+}
 </pre></div>
 </div>
 </div>
 <div class="section" id="out-show-destinations">
 <h2>out show destinations<a class="headerlink" href="#out-show-destinations" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">destinations</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">destinations</span>
-      <span class="n">Lists</span> <span class="nb">all</span> <span class="n">registered</span> <span class="n">destinations</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show destinations
+Usage: out show destinations
+      Lists all registered destinations.
 </pre></div>
 </div>
 <div class="section" id="id4">
 <h3>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">destinations</span>
-<span class="n">Uuid</span>                                 <span class="n">Name</span>       <span class="n">Detail</span>               <span class="n">Type</span>  <span class="n">Exten</span>      <span class="n">Context</span>    <span class="n">Applicatio</span> <span class="n">Data</span>
-<span class="mi">4</span><span class="n">e6ed9e6</span><span class="o">-</span><span class="mi">5</span><span class="n">dd2</span><span class="o">-</span><span class="mi">409</span><span class="n">a</span><span class="o">-</span><span class="n">b6fe</span><span class="o">-</span><span class="n">a07ca11b1e94</span> <span class="n">destinatio</span> <span class="n">test</span> <span class="n">destination</span>         <span class="mi">1</span>                       <span class="n">park</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show destinations
+Uuid                                 Name       Detail               Type  Exten      Context    Applicatio Data
+4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94 destinatio test destination         1                       park
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="out-show-destination-dest-uuid">
 <h2>out show destination &lt;dest-uuid&gt;<a class="headerlink" href="#out-show-destination-dest-uuid" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">destination</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">destination</span> <span class="o">&lt;</span><span class="n">dest</span><span class="o">-</span><span class="n">uuid</span><span class="o">&gt;</span>
-      <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">destination</span> <span class="n">info</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show destination
+Usage: out show destination &lt;dest-uuid&gt;
+      Show detail given destination info.
 </pre></div>
 </div>
 <div class="section" id="id5">
 <h3>Example<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">destination</span> <span class="mi">4</span><span class="n">e6ed9e6</span><span class="o">-</span><span class="mi">5</span><span class="n">dd2</span><span class="o">-</span><span class="mi">409</span><span class="n">a</span><span class="o">-</span><span class="n">b6fe</span><span class="o">-</span><span class="n">a07ca11b1e94</span>
-<span class="n">Destination</span> <span class="n">detail</span> <span class="n">info</span><span class="o">.</span> <span class="n">dest</span><span class="o">-</span><span class="n">uuid</span><span class="p">[</span><span class="mi">4</span><span class="n">e6ed9e6</span><span class="o">-</span><span class="mi">5</span><span class="n">dd2</span><span class="o">-</span><span class="mi">409</span><span class="n">a</span><span class="o">-</span><span class="n">b6fe</span><span class="o">-</span><span class="n">a07ca11b1e94</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show destination 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+Destination detail info. dest-uuid[4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94]
 
-<span class="p">{</span>
-  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;destination test&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;test destination&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;exten&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;application&quot;</span><span class="p">:</span> <span class="s2">&quot;park&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T14:14:26.443747068Z&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span>
-<span class="p">}</span>
+{
+  &quot;uuid&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+  &quot;name&quot;: &quot;destination test&quot;,
+  &quot;detail&quot;: &quot;test destination&quot;,
+  &quot;in_use&quot;: 1,
+  &quot;type&quot;: 1,
+  &quot;exten&quot;: null,
+  &quot;context&quot;: null,
+  &quot;priority&quot;: null,
+  &quot;variables&quot;: null,
+  &quot;application&quot;: &quot;park&quot;,
+  &quot;data&quot;: null,
+  &quot;tm_create&quot;: &quot;2016-10-22T14:14:26.443747068Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="out-show-campaigns">
 <h2>out show campaigns<a class="headerlink" href="#out-show-campaigns" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">campaigns</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">campaigns</span>
-      <span class="n">Lists</span> <span class="nb">all</span> <span class="n">currently</span> <span class="n">registered</span> <span class="n">campaigns</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show campaigns
+Usage: out show campaigns
+      Lists all currently registered campaigns.
 </pre></div>
 </div>
 <div class="section" id="id6">
 <h3>Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">campaigns</span>
-<span class="n">Uuid</span>                                 <span class="n">Name</span>       <span class="n">Detail</span>               <span class="n">Status</span>     <span class="n">Plan</span>       <span class="n">Dlma</span>       <span class="n">Dest</span>
-<span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">789</span><span class="n">c</span><span class="o">-</span><span class="mi">46</span><span class="n">aa</span><span class="o">-</span><span class="mi">817</span><span class="n">e</span><span class="o">-</span><span class="n">b7406416d211</span> <span class="n">Sales</span> <span class="n">camp</span> <span class="n">test</span> <span class="n">campaign</span>                 <span class="mi">0</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">0</span> <span class="mi">4</span><span class="n">e6ed9e6</span><span class="o">-</span><span class="mi">5</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show campaigns
+Uuid                                 Name       Detail               Status     Plan       Dlma       Dest
+02c4aebf-789c-46aa-817e-b7406416d211 Sales camp test campaign                 0 4ea35c4b-c acc994d2-0 4e6ed9e6-5
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="out-show-campaign-camp-uuid">
 <h2>out show campaign &lt;camp-uuid&gt;<a class="headerlink" href="#out-show-campaign-camp-uuid" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">campaign</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">campaign</span> <span class="o">&lt;</span><span class="n">camp</span><span class="o">-</span><span class="n">uuid</span><span class="o">&gt;</span>
-      <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">campaign</span> <span class="n">info</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show campaign
+Usage: out show campaign &lt;camp-uuid&gt;
+      Show detail given campaign info.
 </pre></div>
 </div>
 <div class="section" id="id7">
 <h3>Example<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">campaign</span> <span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">789</span><span class="n">c</span><span class="o">-</span><span class="mi">46</span><span class="n">aa</span><span class="o">-</span><span class="mi">817</span><span class="n">e</span><span class="o">-</span><span class="n">b7406416d211</span>
-<span class="n">Campaign</span> <span class="n">detail</span> <span class="n">info</span><span class="o">.</span> <span class="n">camp</span><span class="o">-</span><span class="n">uuid</span><span class="p">[</span><span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">789</span><span class="n">c</span><span class="o">-</span><span class="mi">46</span><span class="n">aa</span><span class="o">-</span><span class="mi">817</span><span class="n">e</span><span class="o">-</span><span class="n">b7406416d211</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show campaign 02c4aebf-789c-46aa-817e-b7406416d211
+Campaign detail info. camp-uuid[02c4aebf-789c-46aa-817e-b7406416d211]
 
-<span class="p">{</span>
-  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;test campaign&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sales campaign&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;next_campaign&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;plan&quot;</span><span class="p">:</span> <span class="s2">&quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;dlma&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="s2">&quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T14:34:45.33929956Z&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-  <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span>
-<span class="p">}</span>
+{
+  &quot;uuid&quot;: &quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;,
+  &quot;detail&quot;: &quot;test campaign&quot;,
+  &quot;name&quot;: &quot;Sales campaign&quot;,
+  &quot;status&quot;: 0,
+  &quot;in_use&quot;: 1,
+  &quot;next_campaign&quot;: null,
+  &quot;plan&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+  &quot;dlma&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+  &quot;dest&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+  &quot;tm_create&quot;: &quot;2016-10-22T14:34:45.33929956Z&quot;,
+  &quot;tm_delete&quot;: null,
+  &quot;tm_update&quot;: null
+}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="out-show-dialings">
 <h2>out show dialings<a class="headerlink" href="#out-show-dialings" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dialings</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dialings</span>
-      <span class="n">Lists</span> <span class="nb">all</span> <span class="n">currently</span> <span class="n">on</span> <span class="n">service</span> <span class="n">dialings</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dialings
+Usage: out show dialings
+      Lists all currently on service dialings.
 </pre></div>
 </div>
 <div class="section" id="id8">
 <h3>Example<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dialings</span>
-<span class="n">Uuid</span>                                 <span class="n">Status</span> <span class="n">Channel</span>              <span class="n">Addr</span>                 <span class="n">Camp</span>       <span class="n">Plan</span>       <span class="n">Dlma</span>       <span class="n">Dest</span>       <span class="n">Dl</span>
-<span class="mi">73</span><span class="n">dfbf10</span><span class="o">-</span><span class="mi">8455</span><span class="o">-</span><span class="mi">48</span><span class="n">e1</span><span class="o">-</span><span class="mi">84</span><span class="n">b8</span><span class="o">-</span><span class="mi">190</span><span class="n">b6f63cb11</span>      <span class="mi">1</span> <span class="n">sip</span><span class="o">/</span><span class="mi">300</span>              <span class="mi">300</span>                  <span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">7</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">0</span> <span class="mi">4</span><span class="n">e6ed9e6</span><span class="o">-</span><span class="mi">5</span> <span class="mi">7</span><span class="n">d545ae0</span><span class="o">-</span><span class="n">d</span>
-<span class="n">ad0a2345</span><span class="o">-</span><span class="mi">08</span><span class="n">e7</span><span class="o">-</span><span class="mi">4</span><span class="n">cec</span><span class="o">-</span><span class="n">bdce</span><span class="o">-</span><span class="mi">36</span><span class="n">d9c4746e1a</span>      <span class="mi">1</span> <span class="n">sip</span><span class="o">/</span><span class="mi">300</span>              <span class="mi">300</span>                  <span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">7</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">0</span> <span class="mi">4</span><span class="n">e6ed9e6</span><span class="o">-</span><span class="mi">5</span> <span class="n">f9dfa7d2</span><span class="o">-</span><span class="mi">5</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dialings
+Uuid                                 Status Channel              Addr                 Camp       Plan       Dlma       Dest       Dl
+73dfbf10-8455-48e1-84b8-190b6f63cb11      1 sip/300              300                  02c4aebf-7 4ea35c4b-c acc994d2-0 4e6ed9e6-5 7d545ae0-d
+ad0a2345-08e7-4cec-bdce-36d9c4746e1a      1 sip/300              300                  02c4aebf-7 4ea35c4b-c acc994d2-0 4e6ed9e6-5 f9dfa7d2-5
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="out-show-dialing-dialing-uuid">
 <h2>out show dialing &lt;dialing-uuid&gt;<a class="headerlink" href="#out-show-dialing-dialing-uuid" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dialing</span>
-<span class="n">Usage</span><span class="p">:</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dialing</span> <span class="o">&lt;</span><span class="n">dialing</span><span class="o">-</span><span class="n">uuid</span><span class="o">&gt;</span>
-      <span class="n">Show</span> <span class="n">detail</span> <span class="n">given</span> <span class="n">dialing</span> <span class="n">info</span><span class="o">.</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; help out show dialing
+Usage: out show dialing &lt;dialing-uuid&gt;
+      Show detail given dialing info.
 </pre></div>
 </div>
 <div class="section" id="id9">
 <h3>Example<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pluto</span><span class="o">*</span><span class="n">CLI</span><span class="o">&gt;</span> <span class="n">out</span> <span class="n">show</span> <span class="n">dialing</span> <span class="n">ad0a2345</span><span class="o">-</span><span class="mi">08</span><span class="n">e7</span><span class="o">-</span><span class="mi">4</span><span class="n">cec</span><span class="o">-</span><span class="n">bdce</span><span class="o">-</span><span class="mi">36</span><span class="n">d9c4746e1a</span>
-<span class="n">Dialing</span> <span class="n">detail</span> <span class="n">info</span><span class="o">.</span> <span class="n">dialing</span><span class="o">-</span><span class="n">uuid</span><span class="p">[</span><span class="n">ad0a2345</span><span class="o">-</span><span class="mi">08</span><span class="n">e7</span><span class="o">-</span><span class="mi">4</span><span class="n">cec</span><span class="o">-</span><span class="n">bdce</span><span class="o">-</span><span class="mi">36</span><span class="n">d9c4746e1a</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; out show dialing ad0a2345-08e7-4cec-bdce-36d9c4746e1a
+Dialing detail info. dialing-uuid[ad0a2345-08e7-4cec-bdce-36d9c4746e1a]
 
-<span class="p">{</span>
-  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SIP/300-0000000a&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T15:30:27.793155560Z&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T15:30:27.799098693Z&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;j_dialing&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;dialing_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;camp_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;plan_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dlma_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dest_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dl_list_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;info_camp&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sales campaign&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;test campaign&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;next_campaign&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;dlma&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;plan&quot;</span><span class="p">:</span> <span class="s2">&quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T14:34:45.33929956Z&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="s2">&quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T15:30:21.705707350Z&quot;</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;info_plan&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;simple sales plan&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;tech_name&quot;</span><span class="p">:</span> <span class="s2">&quot;sip/&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sales_plan&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;uui_field&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_2&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_8&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_7&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;dial_mode&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;caller_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_1&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;dial_timeout&quot;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
-      <span class="s2">&quot;retry_delay&quot;</span><span class="p">:</span> <span class="mi">50000</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_5&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;dl_end_handle&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_3&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;trunk_name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;service_level&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_4&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;max_retry_cnt_6&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T12:45:58.868877001Z&quot;</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;info_dlma&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dl_table&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2_04d9_4a53_bfcf_50c96ff924bc&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Dlma description&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DialListMaster_Sales&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T13:29:35.820096127Z&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;info_dest&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;application&quot;</span><span class="p">:</span> <span class="s2">&quot;park&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;test destination&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;destination test&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T14:14:26.443747068Z&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;exten&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;info_dl_list&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;dialing_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;ukey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;number_1&quot;</span><span class="p">:</span> <span class="s2">&quot;300&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dialing_plan_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;dlma_uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;client 01&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_5&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;number_6&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;res_dial_detail&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;resv_target&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;number_3&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;Dial to client 01&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_7&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;res_dial&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-      <span class="s2">&quot;number_2&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;udata&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_3&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;dialing_camp_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;number_4&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;res_hangup&quot;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
-      <span class="s2">&quot;number_5&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;number_7&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;number_8&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_8&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_1&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_4&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;tm_last_dial&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T15:28:08.232616848Z&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;trycnt_6&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="s2">&quot;res_hangup_detail&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-      <span class="s2">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T13:47:23.899652156Z&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;info_dial&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;dial_application&quot;</span><span class="p">:</span> <span class="s2">&quot;park&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dial_data&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dial_type&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
-      <span class="s2">&quot;dial_index&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dial_addr&quot;</span><span class="p">:</span> <span class="s2">&quot;300&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dial_channel&quot;</span><span class="p">:</span> <span class="s2">&quot;sip/300&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;dial_trycnt&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-      <span class="s2">&quot;channelid&quot;</span><span class="p">:</span> <span class="s2">&quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;otherchannelid&quot;</span><span class="p">:</span> <span class="s2">&quot;3702cb20-4eb0-40a7-926b-bbcde07451a9&quot;</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;dial_channel&quot;</span><span class="p">:</span> <span class="s2">&quot;sip/300&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dial_addr&quot;</span><span class="p">:</span> <span class="s2">&quot;300&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dial_index&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;dial_trycnt&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s2">&quot;dial_type&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;dial_application&quot;</span><span class="p">:</span> <span class="s2">&quot;park&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dial_data&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tm_dialing&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T15:30:27.793155560Z&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SIP/300-0000000a&quot;</span>
-  <span class="p">},</span>
-  <span class="s2">&quot;j_event&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;connectedlinenum&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;calleridname&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;Newstate&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;privilege&quot;</span><span class="p">:</span> <span class="s2">&quot;call,all&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;channelstate&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="s2">&quot;SIP/300-0000000a&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;channelstatedesc&quot;</span><span class="p">:</span> <span class="s2">&quot;Ringing&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;calleridnum&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;connectedlinename&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;linkedid&quot;</span><span class="p">:</span> <span class="s2">&quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;accountcode&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;public&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;exten&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;uniqueid&quot;</span><span class="p">:</span> <span class="s2">&quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tm_event&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-10-22T15:30:27.864585447Z&quot;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+{
+  &quot;uuid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+  &quot;status&quot;: 1,
+  &quot;name&quot;: &quot;SIP/300-0000000a&quot;,
+  &quot;tm_create&quot;: &quot;2016-10-22T15:30:27.793155560Z&quot;,
+  &quot;tm_update&quot;: &quot;2016-10-22T15:30:27.799098693Z&quot;,
+  &quot;tm_delete&quot;: &quot;&quot;,
+  &quot;j_dialing&quot;: {
+    &quot;dialing_uuid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+    &quot;camp_uuid&quot;: &quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;,
+    &quot;plan_uuid&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+    &quot;dlma_uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+    &quot;dest_uuid&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+    &quot;dl_list_uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+    &quot;info_camp&quot;: {
+      &quot;uuid&quot;: &quot;02c4aebf-789c-46aa-817e-b7406416d211&quot;,
+      &quot;name&quot;: &quot;Sales campaign&quot;,
+      &quot;detail&quot;: &quot;test campaign&quot;,
+      &quot;status&quot;: 1,
+      &quot;in_use&quot;: 1,
+      &quot;next_campaign&quot;: null,
+      &quot;tm_delete&quot;: null,
+      &quot;dlma&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+      &quot;plan&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+      &quot;tm_create&quot;: &quot;2016-10-22T14:34:45.33929956Z&quot;,
+      &quot;dest&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+      &quot;tm_update&quot;: &quot;2016-10-22T15:30:21.705707350Z&quot;
+    },
+    &quot;info_plan&quot;: {
+      &quot;uuid&quot;: &quot;4ea35c4b-c2db-4a22-baef-443b5fadd677&quot;,
+      &quot;detail&quot;: &quot;simple sales plan&quot;,
+      &quot;tech_name&quot;: &quot;sip/&quot;,
+      &quot;name&quot;: &quot;sales_plan&quot;,
+      &quot;uui_field&quot;: null,
+      &quot;in_use&quot;: 1,
+      &quot;max_retry_cnt_2&quot;: 5,
+      &quot;max_retry_cnt_8&quot;: 5,
+      &quot;max_retry_cnt_7&quot;: 5,
+      &quot;dial_mode&quot;: 1,
+      &quot;caller_id&quot;: null,
+      &quot;max_retry_cnt_1&quot;: 5,
+      &quot;dial_timeout&quot;: 30000,
+      &quot;retry_delay&quot;: 50000,
+      &quot;max_retry_cnt_5&quot;: 5,
+      &quot;dl_end_handle&quot;: 1,
+      &quot;max_retry_cnt_3&quot;: 5,
+      &quot;trunk_name&quot;: null,
+      &quot;tm_update&quot;: null,
+      &quot;service_level&quot;: 0,
+      &quot;tm_delete&quot;: null,
+      &quot;max_retry_cnt_4&quot;: 5,
+      &quot;max_retry_cnt_6&quot;: 5,
+      &quot;tm_create&quot;: &quot;2016-10-22T12:45:58.868877001Z&quot;
+    },
+    &quot;info_dlma&quot;: {
+      &quot;tm_update&quot;: null,
+      &quot;uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+      &quot;dl_table&quot;: &quot;acc994d2_04d9_4a53_bfcf_50c96ff924bc&quot;,
+      &quot;detail&quot;: &quot;Test Dlma description&quot;,
+      &quot;name&quot;: &quot;DialListMaster_Sales&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;tm_create&quot;: &quot;2016-10-22T13:29:35.820096127Z&quot;,
+      &quot;tm_delete&quot;: null
+    },
+    &quot;info_dest&quot;: {
+      &quot;tm_update&quot;: null,
+      &quot;context&quot;: null,
+      &quot;application&quot;: &quot;park&quot;,
+      &quot;uuid&quot;: &quot;4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94&quot;,
+      &quot;detail&quot;: &quot;test destination&quot;,
+      &quot;variables&quot;: null,
+      &quot;name&quot;: &quot;destination test&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;priority&quot;: null,
+      &quot;tm_create&quot;: &quot;2016-10-22T14:14:26.443747068Z&quot;,
+      &quot;type&quot;: 1,
+      &quot;exten&quot;: null,
+      &quot;data&quot;: null,
+      &quot;tm_delete&quot;: null
+    },
+    &quot;info_dl_list&quot;: {
+      &quot;dialing_uuid&quot;: null,
+      &quot;tm_update&quot;: null,
+      &quot;ukey&quot;: null,
+      &quot;email&quot;: null,
+      &quot;uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+      &quot;number_1&quot;: &quot;300&quot;,
+      &quot;dialing_plan_uuid&quot;: null,
+      &quot;dlma_uuid&quot;: &quot;acc994d2-04d9-4a53-bfcf-50c96ff924bc&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;name&quot;: &quot;client 01&quot;,
+      &quot;trycnt_5&quot;: 0,
+      &quot;number_6&quot;: null,
+      &quot;res_dial_detail&quot;: null,
+      &quot;resv_target&quot;: null,
+      &quot;number_3&quot;: null,
+      &quot;detail&quot;: &quot;Dial to client 01&quot;,
+      &quot;status&quot;: 0,
+      &quot;trycnt_7&quot;: 0,
+      &quot;res_dial&quot;: 5,
+      &quot;number_2&quot;: null,
+      &quot;udata&quot;: null,
+      &quot;trycnt&quot;: 3,
+      &quot;trycnt_3&quot;: 0,
+      &quot;dialing_camp_uuid&quot;: null,
+      &quot;number_4&quot;: null,
+      &quot;res_hangup&quot;: 17,
+      &quot;number_5&quot;: null,
+      &quot;number_7&quot;: null,
+      &quot;number_8&quot;: null,
+      &quot;trycnt_8&quot;: 0,
+      &quot;trycnt_1&quot;: 3,
+      &quot;trycnt_2&quot;: 0,
+      &quot;trycnt_4&quot;: 0,
+      &quot;tm_last_dial&quot;: &quot;2016-10-22T15:28:08.232616848Z&quot;,
+      &quot;trycnt_6&quot;: 0,
+      &quot;res_hangup_detail&quot;: null,
+      &quot;tm_create&quot;: &quot;2016-10-22T13:47:23.899652156Z&quot;,
+      &quot;tm_delete&quot;: null
+    },
+    &quot;info_dial&quot;: {
+      &quot;dial_application&quot;: &quot;park&quot;,
+      &quot;dial_data&quot;: &quot;&quot;,
+      &quot;dial_type&quot;: 1,
+      &quot;timeout&quot;: 30000,
+      &quot;dial_index&quot;: 1,
+      &quot;uuid&quot;: &quot;f9dfa7d2-5223-4b63-aca1-881ebacae420&quot;,
+      &quot;dial_addr&quot;: &quot;300&quot;,
+      &quot;dial_channel&quot;: &quot;sip/300&quot;,
+      &quot;dial_trycnt&quot;: 4,
+      &quot;channelid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+      &quot;otherchannelid&quot;: &quot;3702cb20-4eb0-40a7-926b-bbcde07451a9&quot;
+    },
+    &quot;dial_channel&quot;: &quot;sip/300&quot;,
+    &quot;dial_addr&quot;: &quot;300&quot;,
+    &quot;dial_index&quot;: 1,
+    &quot;dial_trycnt&quot;: 4,
+    &quot;dial_type&quot;: 1,
+    &quot;dial_application&quot;: &quot;park&quot;,
+    &quot;dial_data&quot;: &quot;&quot;,
+    &quot;tm_dialing&quot;: &quot;2016-10-22T15:30:27.793155560Z&quot;,
+    &quot;channel_name&quot;: &quot;SIP/300-0000000a&quot;
+  },
+  &quot;j_event&quot;: {
+    &quot;connectedlinenum&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;calleridname&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;event&quot;: &quot;Newstate&quot;,
+    &quot;privilege&quot;: &quot;call,all&quot;,
+    &quot;channelstate&quot;: &quot;5&quot;,
+    &quot;channel&quot;: &quot;SIP/300-0000000a&quot;,
+    &quot;channelstatedesc&quot;: &quot;Ringing&quot;,
+    &quot;calleridnum&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;connectedlinename&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;linkedid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+    &quot;language&quot;: &quot;en&quot;,
+    &quot;accountcode&quot;: &quot;&quot;,
+    &quot;context&quot;: &quot;public&quot;,
+    &quot;exten&quot;: &quot;&quot;,
+    &quot;priority&quot;: &quot;1&quot;,
+    &quot;uniqueid&quot;: &quot;ad0a2345-08e7-4cec-bdce-36d9c4746e1a&quot;,
+    &quot;tm_event&quot;: &quot;2016-10-22T15:30:27.864585447Z&quot;
+  }
+}
 </pre></div>
 </div>
 </div>
@@ -513,7 +513,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -571,28 +571,29 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="ami_action.html"
                         title="next chapter">AMI Action</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/asterisk_cli.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/asterisk_cli.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -604,12 +605,12 @@
         <li class="right" >
           <a href="structure.html" title="Structure"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer" role="contentinfo">
+    <div class="footer">
         &copy; Copyright 2016, pchero.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

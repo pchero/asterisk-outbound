@@ -27,8 +27,8 @@
     <link rel="next" title="Basic" href="basic.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
+  <body>
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,14 +40,14 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body" role="main">
+          <div class="body">
             
   <div class="section" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
@@ -58,187 +58,589 @@
 <p>Add the agent info to the /etc/asterisk/sip.conf</p>
 <p>This sip info is act like an agent.</p>
 <p>Assume that we have below agent info.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">agent</span><span class="o">-</span><span class="mi">01</span><span class="p">]</span>
-<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
-<span class="n">secret</span><span class="o">=</span><span class="mi">83</span><span class="n">f8c590</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="mi">9</span><span class="n">d93</span><span class="o">-</span><span class="n">eba8dc621725</span>
-<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
+<div class="highlight-python"><div class="highlight"><pre>[agent-01]
+type=friend
+secret=83f8c590-89b1-11e6-9d93-eba8dc621725
+host=dynamic
 
-<span class="p">[</span><span class="n">agent</span><span class="o">-</span><span class="mi">02</span><span class="p">]</span>
-<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
-<span class="n">secret</span><span class="o">=</span><span class="mi">876054</span><span class="n">be</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="n">b7b7</span><span class="o">-</span><span class="n">cfb4ed95428e</span>
-<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
+[agent-02]
+type=friend
+secret=876054be-89b1-11e6-b7b7-cfb4ed95428e
+host=dynamic
 
-<span class="p">[</span><span class="n">agent</span><span class="o">-</span><span class="mi">03</span><span class="p">]</span>
-<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
-<span class="n">secret</span><span class="o">=</span><span class="mi">8</span><span class="n">b14c86a</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="n">aa09</span><span class="o">-</span><span class="n">f39f39e5592b</span>
-<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
+[agent-03]
+type=friend
+secret=8b14c86a-89b1-11e6-aa09-f39f39e5592b
+host=dynamic
 </pre></div>
 </div>
 </div>
-<div class="section" id="add-the-client-sip-info">
-<h3>Add the client(sip) info<a class="headerlink" href="#add-the-client-sip-info" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="add-the-client-customer-sip-info">
+<h3>Add the client/customer(sip) info<a class="headerlink" href="#add-the-client-customer-sip-info" title="Permalink to this headline">¶</a></h3>
 <p>Add the client info to the /etc/asterisk/sip.conf</p>
 <p>This sip info is act like an client(customer).</p>
 <p>Assume that we have a below client info.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">client</span><span class="o">-</span><span class="mi">01</span><span class="p">]</span>
-<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
-<span class="n">secret</span><span class="o">=</span><span class="mi">6</span><span class="n">d1a5096</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="n">b0fc</span><span class="o">-</span><span class="n">d30be6e4489f</span>
-<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
+<div class="highlight-python"><div class="highlight"><pre>[300]
+type=friend
+secret=beb398d1-bf46-4895-a703-544679423e58
+host=dynamic
 
-<span class="p">[</span><span class="n">client</span><span class="o">-</span><span class="mi">02</span><span class="p">]</span>
-<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
-<span class="n">secret</span><span class="o">=</span><span class="mi">8</span><span class="n">fd6f80a</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="mi">9839</span><span class="o">-</span><span class="n">fb2a82d0d524</span>
-<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
+[301]
+type=friend
+secret=573958ec-862c-4ba3-b73d-3c281277f551
+host=dynamic
 
-<span class="p">[</span><span class="n">client</span><span class="o">-</span><span class="mi">03</span><span class="p">]</span>
-<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
-<span class="n">secret</span><span class="o">=</span><span class="mi">946</span><span class="n">e8c20</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="mi">80</span><span class="n">d6</span><span class="o">-</span><span class="n">f3e7376cf70f</span>
-<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
+[302]
+type=friend
+secret=c3c3b964-cf44-421b-9529-4cb9f0b3e277
+host=dynamic
 </pre></div>
 </div>
-<p>Create a queue
-&#8212;&#8212;&#8212;&#8212;&#8211;d
-Assume that we have a below queue info.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">sales_1</span><span class="p">]</span>
+</div>
+</div>
+<div class="section" id="basic-tutorial">
+<h2>Basic tutorial<a class="headerlink" href="#basic-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>Dial to the customer. After the customer answered call, the call will be transfferred to parking lot.</p>
+<div class="section" id="create-plan">
+<h3>Create plan<a class="headerlink" href="#create-plan" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
+Name: sales_plan
+Detail: simple sales plan
+DialMode: 1
+TechName: sip/
+
+Response: Success
+Message: Plan created successfully
+
+Event: OutPlanCreate
+Privilege: message,all
+Uuid: 687763ed-c977-4e5b-a30d-1221941a4d21
+Name: sales_plan
+Detail: simple sales plan
+DialMode: 1
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+DlEndHandle: 1
+RetryDelay: 60
+TrunkName: &lt;unknown&gt;
+TechName: sip/
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-24T21:36:03.702384603Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-dlma">
+<h3>Create dlma<a class="headerlink" href="#create-dlma" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaCreate
+Name: DialListMaster_Sales
+Detail: Test Dlma description
+
+Response: Success
+Message: Dlma created successfully
+
+Event: OutDlmaCreate
+Privilege: message,all
+Uuid: a6a29e7a-49c4-4339-92ff-543a121f348f
+Name: DialListMaster_Sales
+Detail: Test Dlma description
+DlTable: a6a29e7a_49c4_4339_92ff_543a121f348f
+TmCreate: 2016-10-24T21:37:39.972064103Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-destination">
+<h3>Create destination<a class="headerlink" href="#create-destination" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestinationCreate
+Name: destination test
+Detail: test destination
+Type: 1
+Application: park
+
+Response: Success
+Message: Destination created successfully
+
+Event: OutDestinationCreate
+Privilege: message,all
+Uuid: ef355147-48bf-4170-8f88-f49b00f3ab37
+Name: destination test
+Detail: test destination
+Type: 1
+Exten: &lt;unknown&gt;
+Context: &lt;unknown&gt;
+Priority: &lt;unknown&gt;
+Variable: &lt;unknown&gt;
+Application: park
+Data: &lt;unknown&gt;
+TmCreate: 2016-10-24T21:38:35.700905321Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-dial-list">
+<h3>Create dial list<a class="headerlink" href="#create-dial-list" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
+DlmaUuid: a6a29e7a-49c4-4339-92ff-543a121f348f
+Name: client 01
+Detail: Dial to client 01
+Number1: 300
+
+Response: Success
+Message: Dl list created successfully
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-campaign">
+<h3>Create campaign<a class="headerlink" href="#create-campaign" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
+Name: Sales campaign
+Detail: test campaign
+Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+
+Response: Success
+Message: Campaign created successfully
+
+Event: OutCampaignCreate
+Privilege: message,all
+Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+Name: Sales campaign
+Detail: test campaign
+Status: 0
+Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+TmCreate: 2016-10-24T21:41:24.939663006Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="update-campaign-status-to-start">
+<h3>Update Campaign status to start<a class="headerlink" href="#update-campaign-status-to-start" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignUpdate
+Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+Status: 1
+
+Response: Success
+Message: Campaign updated successfully
+
+Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+Name: Sales campaign
+Detail: test campaign
+Status: 1
+Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+TmCreate: 2016-10-24T21:41:24.939663006Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-24T21:42:38.66081477Z
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="normal-call-distribute">
+<h2>Normal call distribute<a class="headerlink" href="#normal-call-distribute" title="Permalink to this headline">¶</a></h2>
+<p>Dial to the customer. After the customer answered call, the call will be distributed to the waiting agents.</p>
+<div class="section" id="create-a-queue">
+<h3>Create a queue<a class="headerlink" href="#create-a-queue" title="Permalink to this headline">¶</a></h3>
+<p>Add the queue info to the /etc/asterisk/queues.conf</p>
+<p>Assume that we have a below queue info.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">sales_1</span><span class="p">]</span>
 <span class="n">musicclass</span> <span class="o">=</span> <span class="n">default</span>
 <span class="n">strategy</span> <span class="o">=</span> <span class="n">ringall</span>
 <span class="n">joinempty</span> <span class="o">=</span> <span class="n">yes</span>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="ami-actions">
-<h2>AMI actions<a class="headerlink" href="#ami-actions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="login">
-<h3>Login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Connection closed by foreign host.
-$ telnet localhost 5038
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is &#39;^]&#39;.
-Asterisk Call Manager/2.8.0
+<div class="section" id="add-members">
+<h3>Add members<a class="headerlink" href="#add-members" title="Permalink to this headline">¶</a></h3>
+<p>Add the all agents to the queue.</p>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; queue add member sip/agent-01 to sales_1
+Added interface &#39;sip/agent-01&#39; to queue &#39;sales_1&#39;
 
-Action: Login
-Username: admin
-Secret: ****
+pluto*CLI&gt; queue add member sip/agent-02 to sales_1
+Added interface &#39;sip/agent-02&#39; to queue &#39;sales_1&#39;
+
+pluto*CLI&gt; queue add member sip/agent-03 to sales_1
+Added interface &#39;sip/agent-03&#39; to queue &#39;sales_1&#39;
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h3>Create plan<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
+Name: queue distribute plan
+Detail: simple queue distbute plan
+DialMode: 1
+TechName: sip/
 
 Response: Success
-Message: Authentication accepted
+Message: Plan created successfully
+
+Event: OutPlanCreate
+Privilege: message,all
+Uuid: 5acea376-195a-4519-b68f-58e9ceaadc68
+Name: queue distribute plan
+Detail: simple queue distbute plan
+DialMode: 1
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+DlEndHandle: 1
+RetryDelay: 60
+TrunkName: &lt;unknown&gt;
+TechName: sip/
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-24T22:46:14.893825038Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
-<div class="section" id="create-plan">
-<h3>Create Plan<a class="headerlink" href="#create-plan" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutPlanCreate</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">sales_plan</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">simple</span> <span class="n">sales</span> <span class="n">plan</span>
-<span class="n">DialMode</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">QueueName</span><span class="p">:</span> <span class="n">sales_1</span>
-<span class="n">TechName</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span>
+<div class="section" id="id2">
+<h3>Create destination<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestinationCreate
+Name: destination test
+Detail: test destination
+Type: 1
+Application: queue
+Data: sales_1
 
-<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
-<span class="n">Message</span><span class="p">:</span> <span class="n">Plan</span> <span class="n">created</span> <span class="n">successfully</span>
+Response: Success
+Message: Destination created successfully
 
-<span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="n">d1306a32</span><span class="o">-</span><span class="mi">0</span><span class="n">ec6</span><span class="o">-</span><span class="mi">4389</span><span class="o">-</span><span class="n">a5f1</span><span class="o">-</span><span class="mi">118153</span><span class="n">b6266e</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">sales_plan</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">simple</span> <span class="n">sales</span> <span class="n">plan</span>
-<span class="n">DialMode</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialTimeout</span><span class="p">:</span> <span class="mi">30000</span>
-<span class="n">CallerId</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">AnswerHandle</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">DlEndHandle</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">RetryDelay</span><span class="p">:</span> <span class="mi">50000</span>
-<span class="n">TrunkName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TechName</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span>
-<span class="n">QueueName</span><span class="p">:</span> <span class="n">sales_1</span>
-<span class="n">AmdMode</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">MaxRetryCnt1</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt2</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt3</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt4</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt5</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt6</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt7</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt8</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">04</span> <span class="mi">22</span><span class="p">:</span><span class="mi">40</span><span class="p">:</span><span class="mf">41.573445</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+Event: OutDestinationCreate
+Privilege: message,all
+Uuid: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+Name: destination test
+Detail: test destination
+Type: 1
+Exten: &lt;unknown&gt;
+Context: &lt;unknown&gt;
+Priority: &lt;unknown&gt;
+Variable: &lt;unknown&gt;
+Application: queue
+Data: sales_1
+TmCreate: 2016-10-24T22:48:11.604966289Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
-<div class="section" id="create-destination">
-<h3>Create Destination<a class="headerlink" href="#create-destination" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutDestinationCreate</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">destination</span> <span class="n">test</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">test</span> <span class="n">destination</span>
-<span class="n">Type</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">Application</span><span class="p">:</span> <span class="n">park</span>
+<div class="section" id="create-dlma-and-dial-list">
+<h3>Create dlma and dial list<a class="headerlink" href="#create-dlma-and-dial-list" title="Permalink to this headline">¶</a></h3>
+<p>Create Dlma</p>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaCreate
+Name: DialListMaster queue distribute
+Detail: Test Dlma description
 
-<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
-<span class="n">Message</span><span class="p">:</span> <span class="n">Dl</span> <span class="nb">list</span> <span class="n">created</span> <span class="n">successfully</span>
+Response: Success
+Message: Dlma created successfully
+
+Event: OutDlmaCreate
+Privilege: message,all
+Uuid: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+Name: DialListMaster queue distribute
+Detail: Test Dlma description
+DlTable: 8f1cda4d_1a95_4cbc_9865_fb604ce3f70a
+TmCreate: 2016-10-24T22:47:00.685610240Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+<p>Create dial list(dl)</p>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
+DlmaUuid: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+Name: client 01
+Detail: Dial to client 01
+Number1: 300
+
+Response: Success
+Message: Dl list created successfully
 </pre></div>
 </div>
 </div>
-<div class="section" id="create-dlma">
-<h3>Create Dlma<a class="headerlink" href="#create-dlma" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutDlmaCreate</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">DialListMaster_Sales</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">Test</span> <span class="n">Dlma</span> <span class="n">description</span>
+<div class="section" id="create-campaign-and-status-update">
+<h3>Create campaign and status update<a class="headerlink" href="#create-campaign-and-status-update" title="Permalink to this headline">¶</a></h3>
+<p>Create campaign.</p>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
+Name: Sales campaign
+Detail: test campaign
+Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
+Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
 
-<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
-<span class="n">Message</span><span class="p">:</span> <span class="n">Dlma</span> <span class="n">created</span> <span class="n">successfully</span>
+Response: Success
+Message: Campaign created successfully
 
-<span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">DialListMaster_Sales</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">Test</span> <span class="n">Dlma</span> <span class="n">description</span>
-<span class="n">DlTable</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e_6577_4abc_96e4_2c7811b5f639</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">04</span> <span class="mi">22</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">07.528126</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+Event: OutCampaignCreate
+Privilege: message,all
+Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+Name: Sales campaign
+Detail: test campaign
+Status: 0
+Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
+Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+TmCreate: 2016-10-24T22:49:45.907295315Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
+<p>Update campaign status.</p>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignUpdate
+Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+Status: 1
+
+Response: Success
+Message: Campaign updated successfully
+
+Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+Name: Sales campaign
+Detail: test campaign
+Status: 1
+Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
+Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+TmCreate: 2016-10-24T22:49:45.907295315Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-24T22:52:16.250101358Z
 </pre></div>
 </div>
 </div>
-<div class="section" id="create-dl-list">
-<h3>Create Dl list<a class="headerlink" href="#create-dl-list" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutDlListCreate</span>
-<span class="n">DlmaUuid</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">client</span> <span class="mi">01</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">Dial</span> <span class="n">to</span> <span class="n">client</span> <span class="mi">01</span>
-<span class="n">Number1</span><span class="p">:</span> <span class="mi">300</span>
+<div class="section" id="check-result">
+<h3>Check result<a class="headerlink" href="#check-result" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>tail -n 1 /var/lib/asterisk/astout.result
 
-<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
-<span class="n">Message</span><span class="p">:</span> <span class="n">Dl</span> <span class="nb">list</span> <span class="n">created</span> <span class="n">successfully</span>
+{
+   &quot;dialing_uuid&quot;: &quot;a624ecec-e3a8-4e95-9538-abed6e2271ab&quot;,
+   &quot;camp_uuid&quot;: &quot;ea289ed8-92f3-430c-b00c-b5254257282b&quot;,
+   &quot;plan_uuid&quot;: &quot;5acea376-195a-4519-b68f-58e9ceaadc68&quot;,
+   &quot;tm_hangup&quot;: &quot;2016-10-24T22:51:32.482367256Z&quot;,
+   &quot;dlma_uuid&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
+   &quot;channel_name&quot;: &quot;SIP/300-00000014&quot;,
+   &quot;tm_dial_begin&quot;: &quot;2016-10-24T22:51:27.734721762Z&quot;,
+   &quot;info_camp&quot;: {
+      &quot;uuid&quot;: &quot;ea289ed8-92f3-430c-b00c-b5254257282b&quot;,
+      &quot;plan&quot;: &quot;5acea376-195a-4519-b68f-58e9ceaadc68&quot;,
+      &quot;dlma&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
+      &quot;detail&quot;: &quot;test campaign&quot;,
+      &quot;name&quot;: &quot;Sales campaign&quot;,
+      &quot;status&quot;: 1,
+      &quot;in_use&quot;: 1,
+      &quot;next_campaign&quot;: null,
+      &quot;dest&quot;: &quot;1a88f58d-3353-4a55-83be-1d6ab58b2bfc&quot;,
+      &quot;tm_create&quot;: &quot;2016-10-24T22:49:45.907295315Z&quot;,
+      &quot;tm_delete&quot;: null,
+      &quot;tm_update&quot;: &quot;2016-10-24T22:50:10.706866142Z&quot;
+   },
+   &quot;dest_uuid&quot;: &quot;1a88f58d-3353-4a55-83be-1d6ab58b2bfc&quot;,
+   &quot;res_hangup_detail&quot;: &quot;Normal Clearing&quot;,
+   &quot;dial_addr&quot;: &quot;300&quot;,
+   &quot;dl_list_uuid&quot;: &quot;8e0d1ef2-faf0-42d8-a70a-b494cae7f90d&quot;,
+   &quot;info_plan&quot;: {
+      &quot;caller_id&quot;: null,
+      &quot;uuid&quot;: &quot;5acea376-195a-4519-b68f-58e9ceaadc68&quot;,
+      &quot;trunk_name&quot;: null,
+      &quot;dl_end_handle&quot;: 1,
+      &quot;detail&quot;: &quot;simple queue distbute plan&quot;,
+      &quot;name&quot;: &quot;queue distribute plan&quot;,
+      &quot;max_retry_cnt_2&quot;: 5,
+      &quot;max_retry_cnt_5&quot;: 5,
+      &quot;uui_field&quot;: null,
+      &quot;tm_update&quot;: null,
+      &quot;service_level&quot;: 0,
+      &quot;in_use&quot;: 1,
+      &quot;dial_mode&quot;: 1,
+      &quot;retry_delay&quot;: 60,
+      &quot;max_retry_cnt_6&quot;: 5,
+      &quot;dial_timeout&quot;: 30000,
+      &quot;tech_name&quot;: &quot;sip/&quot;,
+      &quot;max_retry_cnt_1&quot;: 5,
+      &quot;max_retry_cnt_3&quot;: 5,
+      &quot;max_retry_cnt_4&quot;: 5,
+      &quot;max_retry_cnt_7&quot;: 5,
+      &quot;max_retry_cnt_8&quot;: 5,
+      &quot;tm_create&quot;: &quot;2016-10-24T22:46:14.893825038Z&quot;,
+      &quot;tm_delete&quot;: null
+   },
+   &quot;info_dlma&quot;: {
+      &quot;uuid&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
+      &quot;detail&quot;: &quot;Test Dlma description&quot;,
+      &quot;name&quot;: &quot;DialListMaster queue distribute&quot;,
+      &quot;dl_table&quot;: &quot;8f1cda4d_1a95_4cbc_9865_fb604ce3f70a&quot;,
+      &quot;tm_update&quot;: null,
+      &quot;in_use&quot;: 1,
+      &quot;tm_create&quot;: &quot;2016-10-24T22:47:00.685610240Z&quot;,
+      &quot;tm_delete&quot;: null
+   },
+   &quot;info_dest&quot;: {
+      &quot;uuid&quot;: &quot;1a88f58d-3353-4a55-83be-1d6ab58b2bfc&quot;,
+      &quot;name&quot;: &quot;destination test&quot;,
+      &quot;detail&quot;: &quot;test destination&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;type&quot;: 1,
+      &quot;exten&quot;: null,
+      &quot;context&quot;: null,
+      &quot;tm_create&quot;: &quot;2016-10-24T22:48:11.604966289Z&quot;,
+      &quot;application&quot;: &quot;queue&quot;,
+      &quot;priority&quot;: null,
+      &quot;variables&quot;: null,
+      &quot;tm_update&quot;: null,
+      &quot;data&quot;: &quot;sales_1&quot;,
+      &quot;tm_delete&quot;: null
+   },
+   &quot;dial_trycnt&quot;: 1,
+   &quot;dial_channel&quot;: &quot;sip/300&quot;,
+   &quot;info_dl_list&quot;: {
+      &quot;number_4&quot;: null,
+      &quot;number_8&quot;: null,
+      &quot;uuid&quot;: &quot;8e0d1ef2-faf0-42d8-a70a-b494cae7f90d&quot;,
+      &quot;number_3&quot;: null,
+      &quot;ukey&quot;: null,
+      &quot;tm_update&quot;: null,
+      &quot;dlma_uuid&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
+      &quot;in_use&quot;: 1,
+      &quot;tm_last_dial&quot;: null,
+      &quot;detail&quot;: &quot;Dial to client 01&quot;,
+      &quot;name&quot;: &quot;client 01&quot;,
+      &quot;status&quot;: 0,
+      &quot;dialing_camp_uuid&quot;: null,
+      &quot;resv_target&quot;: null,
+      &quot;number_6&quot;: null,
+      &quot;udata&quot;: null,
+      &quot;res_hangup_detail&quot;: null,
+      &quot;dialing_uuid&quot;: null,
+      &quot;number_2&quot;: null,
+      &quot;trycnt_4&quot;: 0,
+      &quot;res_dial_detail&quot;: null,
+      &quot;dialing_plan_uuid&quot;: null,
+      &quot;trycnt_3&quot;: 0,
+      &quot;number_1&quot;: &quot;300&quot;,
+      &quot;number_5&quot;: null,
+      &quot;trycnt_2&quot;: 0,
+      &quot;number_7&quot;: null,
+      &quot;email&quot;: null,
+      &quot;trycnt_1&quot;: 0,
+      &quot;trycnt_5&quot;: 0,
+      &quot;trycnt_6&quot;: 0,
+      &quot;trycnt_7&quot;: 0,
+      &quot;trycnt_8&quot;: 0,
+      &quot;res_dial&quot;: 0,
+      &quot;res_hangup&quot;: 0,
+      &quot;tm_create&quot;: &quot;2016-10-24T22:48:43.572379619Z&quot;,
+      &quot;tm_delete&quot;: null,
+      &quot;tm_last_hangup&quot;: null,
+      &quot;trycnt&quot;: 0
+   },
+   &quot;dial_index&quot;: 1,
+   &quot;dial_data&quot;: &quot;sales_1&quot;,
+   &quot;info_dial&quot;: {
+      &quot;dial_application&quot;: &quot;queue&quot;,
+      &quot;dial_index&quot;: 1,
+      &quot;dial_data&quot;: &quot;sales_1&quot;,
+      &quot;dial_trycnt&quot;: 1,
+      &quot;dial_channel&quot;: &quot;sip/300&quot;,
+      &quot;dial_type&quot;: 1,
+      &quot;uuid&quot;: &quot;8e0d1ef2-faf0-42d8-a70a-b494cae7f90d&quot;,
+      &quot;channelid&quot;: &quot;a624ecec-e3a8-4e95-9538-abed6e2271ab&quot;,
+      &quot;dial_addr&quot;: &quot;300&quot;,
+      &quot;timeout&quot;: 30000,
+      &quot;otherchannelid&quot;: &quot;cb1325bd-4ae7-4db8-aa64-bb0babadb782&quot;
+   },
+   &quot;dial_type&quot;: 1,
+   &quot;tm_dialing&quot;: &quot;2016-10-24T22:50:10.784443999Z&quot;,
+   &quot;dial_application&quot;: &quot;queue&quot;,
+   &quot;res_hangup&quot;: 16,
+   &quot;res_dial&quot;: 4,
+   &quot;tm_dial_end&quot;: &quot;2016-10-24T22:51:29.294001808Z&quot;
+}
 </pre></div>
 </div>
 </div>
-<div class="section" id="create-campaign">
-<h3>Create campaign<a class="headerlink" href="#create-campaign" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutCampaignCreate</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">Sales</span> <span class="n">campaign</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">test</span> <span class="n">campaign</span>
-<span class="n">Plan</span><span class="p">:</span> <span class="n">d1306a32</span><span class="o">-</span><span class="mi">0</span><span class="n">ec6</span><span class="o">-</span><span class="mi">4389</span><span class="o">-</span><span class="n">a5f1</span><span class="o">-</span><span class="mi">118153</span><span class="n">b6266e</span>
-<span class="n">Dlma</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
-
-<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
-<span class="n">Message</span><span class="p">:</span> <span class="n">Campaign</span> <span class="n">created</span> <span class="n">successfully</span>
-
-<span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="n">a3e95af9</span><span class="o">-</span><span class="mi">5</span><span class="n">ffa</span><span class="o">-</span><span class="mi">4</span><span class="n">f53</span><span class="o">-</span><span class="mi">8908</span><span class="o">-</span><span class="mi">6095</span><span class="n">ff24945c</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">Sales</span> <span class="n">campaign</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">test</span> <span class="n">campaign</span>
-<span class="n">Status</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Plan</span><span class="p">:</span> <span class="n">d1306a32</span><span class="o">-</span><span class="mi">0</span><span class="n">ec6</span><span class="o">-</span><span class="mi">4389</span><span class="o">-</span><span class="n">a5f1</span><span class="o">-</span><span class="mi">118153</span><span class="n">b6266e</span>
-<span class="n">Dlma</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">04</span> <span class="mi">22</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mf">22.899115</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-</pre></div>
 </div>
+<div class="section" id="power-dialing">
+<h2>Power dialing<a class="headerlink" href="#power-dialing" title="Permalink to this headline">¶</a></h2>
+<p>Dial to the customer. After the customer answered call, the recorded message will be played.</p>
+<div class="section" id="id3">
+<h3>Create plan<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Set application Playback with data.</p>
+</div>
+<div class="section" id="id4">
+<h3>Create destination<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id5">
+<h3>Create dlma and dial list<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id6">
+<h3>Create campaign and status update<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id7">
+<h3>Check result<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="transfer-to-the-dialplan">
+<h2>Transfer to the dialplan<a class="headerlink" href="#transfer-to-the-dialplan" title="Permalink to this headline">¶</a></h2>
+<p>Dial to the customer. If the customer answered call, the call will be transferred to the designated dialplan.</p>
+<div class="section" id="id8">
+<h3>Create plan<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>Set dialplan context, extension.</p>
+</div>
+<div class="section" id="id9">
+<h3>Create destination<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id10">
+<h3>Create dlma and dial list<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id11">
+<h3>Create campaign and status update<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id12">
+<h3>Check result<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="transfer-to-the-dialplan-check-human-machine">
+<h2>Transfer to the dialplan check Human/Machine<a class="headerlink" href="#transfer-to-the-dialplan-check-human-machine" title="Permalink to this headline">¶</a></h2>
+<p>Dial to the customer. If the customer answered call, the call will be transferred to the designated dialplan.</p>
+<p>Then check the who is answered it(Human/Machine).</p>
+<div class="section" id="id13">
+<h3>Create plan<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>Set dialplan context, extension. AMD() application.</p>
+</div>
+<div class="section" id="id14">
+<h3>Create destination<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id15">
+<h3>Create dlma and dial list<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id16">
+<h3>Create campaign and status update<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id17">
+<h3>Check result<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 </div>
@@ -247,23 +649,57 @@ Message: Authentication accepted
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Tutorial</a><ul>
 <li><a class="reference internal" href="#preparation">Preparation</a><ul>
 <li><a class="reference internal" href="#add-the-agent-sip-info">Add the agent(sip) info</a></li>
-<li><a class="reference internal" href="#add-the-client-sip-info">Add the client(sip) info</a></li>
+<li><a class="reference internal" href="#add-the-client-customer-sip-info">Add the client/customer(sip) info</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ami-actions">AMI actions</a><ul>
-<li><a class="reference internal" href="#login">Login</a></li>
-<li><a class="reference internal" href="#create-plan">Create Plan</a></li>
-<li><a class="reference internal" href="#create-destination">Create Destination</a></li>
-<li><a class="reference internal" href="#create-dlma">Create Dlma</a></li>
-<li><a class="reference internal" href="#create-dl-list">Create Dl list</a></li>
+<li><a class="reference internal" href="#basic-tutorial">Basic tutorial</a><ul>
+<li><a class="reference internal" href="#create-plan">Create plan</a></li>
+<li><a class="reference internal" href="#create-dlma">Create dlma</a></li>
+<li><a class="reference internal" href="#create-destination">Create destination</a></li>
+<li><a class="reference internal" href="#create-dial-list">Create dial list</a></li>
 <li><a class="reference internal" href="#create-campaign">Create campaign</a></li>
+<li><a class="reference internal" href="#update-campaign-status-to-start">Update Campaign status to start</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#normal-call-distribute">Normal call distribute</a><ul>
+<li><a class="reference internal" href="#create-a-queue">Create a queue</a></li>
+<li><a class="reference internal" href="#add-members">Add members</a></li>
+<li><a class="reference internal" href="#id1">Create plan</a></li>
+<li><a class="reference internal" href="#id2">Create destination</a></li>
+<li><a class="reference internal" href="#create-dlma-and-dial-list">Create dlma and dial list</a></li>
+<li><a class="reference internal" href="#create-campaign-and-status-update">Create campaign and status update</a></li>
+<li><a class="reference internal" href="#check-result">Check result</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#power-dialing">Power dialing</a><ul>
+<li><a class="reference internal" href="#id3">Create plan</a></li>
+<li><a class="reference internal" href="#id4">Create destination</a></li>
+<li><a class="reference internal" href="#id5">Create dlma and dial list</a></li>
+<li><a class="reference internal" href="#id6">Create campaign and status update</a></li>
+<li><a class="reference internal" href="#id7">Check result</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transfer-to-the-dialplan">Transfer to the dialplan</a><ul>
+<li><a class="reference internal" href="#id8">Create plan</a></li>
+<li><a class="reference internal" href="#id9">Create destination</a></li>
+<li><a class="reference internal" href="#id10">Create dlma and dial list</a></li>
+<li><a class="reference internal" href="#id11">Create campaign and status update</a></li>
+<li><a class="reference internal" href="#id12">Check result</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transfer-to-the-dialplan-check-human-machine">Transfer to the dialplan check Human/Machine</a><ul>
+<li><a class="reference internal" href="#id13">Create plan</a></li>
+<li><a class="reference internal" href="#id14">Create destination</a></li>
+<li><a class="reference internal" href="#id15">Create dlma and dial list</a></li>
+<li><a class="reference internal" href="#id16">Create campaign and status update</a></li>
+<li><a class="reference internal" href="#id17">Check result</a></li>
 </ul>
 </li>
 </ul>
@@ -276,28 +712,29 @@ Message: Authentication accepted
   <h4>Next topic</h4>
   <p class="topless"><a href="basic.html"
                         title="next chapter">Basic</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/tutorial.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -309,12 +746,12 @@ Message: Authentication accepted
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer" role="contentinfo">
+    <div class="footer">
         &copy; Copyright 2016, pchero.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

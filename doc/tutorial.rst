@@ -252,8 +252,10 @@ Add the all agents to the queue.
 
    pluto*CLI> queue add member sip/agent-01 to sales_1 
    Added interface 'sip/agent-01' to queue 'sales_1'
+   
    pluto*CLI> queue add member sip/agent-02 to sales_1
    Added interface 'sip/agent-02' to queue 'sales_1'
+   
    pluto*CLI> queue add member sip/agent-03 to sales_1
    Added interface 'sip/agent-03' to queue 'sales_1'
 

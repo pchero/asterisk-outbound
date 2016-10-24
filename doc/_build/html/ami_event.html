@@ -26,8 +26,8 @@
     <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
     <link rel="prev" title="AMI Action" href="ami_action.html" /> 
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
+  <body>
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -36,14 +36,14 @@
         <li class="right" >
           <a href="ami_action.html" title="AMI Action"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body" role="main">
+          <div class="body">
             
   <div class="section" id="ami-event">
 <h1>AMI Event<a class="headerlink" href="#ami-event" title="Permalink to this headline">¶</a></h1>
@@ -55,44 +55,44 @@
 </div>
 <div class="section" id="syntax">
 <h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignCreate</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Status</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Plan</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Dlma</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Dest</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignCreate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+Status: &lt;value&gt;
+Plan: &lt;value&gt;
+Dlma: &lt;value&gt;
+Dest: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">Uuid</span></code>: Campaign uuid.</li>
-<li><code class="docutils literal"><span class="pre">Name</span></code>: Campaign name.</li>
-<li><code class="docutils literal"><span class="pre">Detail</span></code>: Campaign detail info.</li>
-<li><code class="docutils literal"><span class="pre">Status</span></code>: Campaign status. See detail <a class="reference internal" href="structure.html#id4"><span class="std std-ref">Campaign status</span></a>.</li>
-<li><code class="docutils literal"><span class="pre">Plan</span></code>: Registered plan uuid.</li>
-<li><code class="docutils literal"><span class="pre">Dlma</span></code>: Registered dlma uuid.</li>
-<li><code class="docutils literal"><span class="pre">Dest</span></code>: Registered destination uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
+<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
+<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status. See detail <a class="reference internal" href="structure.html#id4"><em>Campaign status</em></a>.</li>
+<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Registered destination uuid.</li>
 </ul>
 </div>
 <div class="section" id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">789</span><span class="n">c</span><span class="o">-</span><span class="mi">46</span><span class="n">aa</span><span class="o">-</span><span class="mi">817</span><span class="n">e</span><span class="o">-</span><span class="n">b7406416d211</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">Sales</span> <span class="n">campaign</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">test</span> <span class="n">campaign</span>
-<span class="n">Status</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Plan</span><span class="p">:</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span>
-<span class="n">Dlma</span><span class="p">:</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">04</span><span class="n">d9</span><span class="o">-</span><span class="mi">4</span><span class="n">a53</span><span class="o">-</span><span class="n">bfcf</span><span class="o">-</span><span class="mi">50</span><span class="n">c96ff924bc</span>
-<span class="n">Dest</span><span class="p">:</span> <span class="mi">4</span><span class="n">e6ed9e6</span><span class="o">-</span><span class="mi">5</span><span class="n">dd2</span><span class="o">-</span><span class="mi">409</span><span class="n">a</span><span class="o">-</span><span class="n">b6fe</span><span class="o">-</span><span class="n">a07ca11b1e94</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">22</span><span class="n">T14</span><span class="p">:</span><span class="mi">34</span><span class="p">:</span><span class="mf">45.33929956</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignCreate
+Privilege: message,all
+Uuid: 02c4aebf-789c-46aa-817e-b7406416d211
+Name: Sales campaign
+Detail: test campaign
+Status: 0
+Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+TmCreate: 2016-10-22T14:34:45.33929956Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -105,44 +105,44 @@
 </div>
 <div class="section" id="id2">
 <h3>Syntax<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignUpdate</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Status</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Plan</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Dlma</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Dest</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignUpdate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+Status: &lt;value&gt;
+Plan: &lt;value&gt;
+Dlma: &lt;value&gt;
+Dest: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">Uuid</span></code>: Campaign uuid.</li>
-<li><code class="docutils literal"><span class="pre">Name</span></code>: Campaign name.</li>
-<li><code class="docutils literal"><span class="pre">Detail</span></code>: Campaign detail info.</li>
-<li><code class="docutils literal"><span class="pre">Status</span></code>: Campaign status. See detail <a class="reference internal" href="structure.html#id4"><span class="std std-ref">Campaign status</span></a>.</li>
-<li><code class="docutils literal"><span class="pre">Plan</span></code>: Registered plan uuid.</li>
-<li><code class="docutils literal"><span class="pre">Dlma</span></code>: Registered dlma uuid.</li>
-<li><code class="docutils literal"><span class="pre">Dest</span></code>: Registered destination uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
+<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
+<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status. See detail <a class="reference internal" href="structure.html#id4"><em>Campaign status</em></a>.</li>
+<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Registered destination uuid.</li>
 </ul>
 </div>
 <div class="section" id="id3">
 <h3>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignUpdate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="n">a3e3cc0e</span><span class="o">-</span><span class="mi">083</span><span class="n">e</span><span class="o">-</span><span class="mi">4</span><span class="n">b9e</span><span class="o">-</span><span class="mi">8120</span><span class="o">-</span><span class="mi">522</span><span class="n">eb9834098</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">test</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Status</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Plan</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Dlma</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Dest</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">23</span><span class="n">T23</span><span class="p">:</span><span class="mi">59</span><span class="p">:</span><span class="mf">18.883765584</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mf">29.706507679</span><span class="n">Z</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: a3e3cc0e-083e-4b9e-8120-522eb9834098
+Name: test
+Detail: &lt;unknown&gt;
+Status: 0
+Plan: &lt;unknown&gt;
+Dlma: &lt;unknown&gt;
+Dest: &lt;unknown&gt;
+TmCreate: 2016-10-23T23:59:18.883765584Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-24T00:01:29.706507679Z
 </pre></div>
 </div>
 </div>
@@ -155,21 +155,21 @@
 </div>
 <div class="section" id="id5">
 <h3>Syntax<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignDelete</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignDelete
+Privilege: message,all
+Uuid: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">Uuid</span></code>: Campaign uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
 </ul>
 </div>
 <div class="section" id="id6">
 <h3>Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignDelete</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">92</span><span class="n">dadd08</span><span class="o">-</span><span class="n">ac3c</span><span class="o">-</span><span class="mi">47</span><span class="n">dc</span><span class="o">-</span><span class="n">a41b</span><span class="o">-</span><span class="mi">10040643</span><span class="n">ee38</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignDelete
+Privilege: message,all
+Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
 </pre></div>
 </div>
 </div>
@@ -182,42 +182,42 @@
 </div>
 <div class="section" id="id8">
 <h3>Syntax<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanCreate</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DialMode</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DialTimeout</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">CallerId</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DlEndHandle</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">RetryDelay</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TrunkName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TechName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt1</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt2</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt3</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt4</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt5</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt6</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt7</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt8</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanCreate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DialMode: &lt;value&gt;
+DialTimeout: &lt;value&gt;
+CallerId: &lt;value&gt;
+DlEndHandle: &lt;value&gt;
+RetryDelay: &lt;value&gt;
+TrunkName: &lt;value&gt;
+TechName: &lt;value&gt;
+MaxRetryCnt1: &lt;value&gt;
+MaxRetryCnt2: &lt;value&gt;
+MaxRetryCnt3: &lt;value&gt;
+MaxRetryCnt4: &lt;value&gt;
+MaxRetryCnt5: &lt;value&gt;
+MaxRetryCnt6: &lt;value&gt;
+MaxRetryCnt7: &lt;value&gt;
+MaxRetryCnt8: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
 <ul class="simple">
 <li>Name: Plan name.</li>
 <li>Detail: Detail info.</li>
-<li>DialMode: Dialling mode. See detail <a class="reference internal" href="structure.html#id1"><span class="std std-ref">Dial mode</span></a>.</li>
+<li>DialMode: Dialling mode. See detail <a class="reference internal" href="structure.html#id1"><em>Dial mode</em></a>.</li>
 <li>UuiField: Customer&#8217;s Uui field name.</li>
 <li>DialTimeout: Ringing timeout(ms).</li>
 <li>CallerId: Caller&#8217;s id.</li>
-<li>DlEndHandle: Determine behavior of when the dial list end. See detail <a class="reference internal" href="structure.html#id2"><span class="std std-ref">Dail list end handling</span></a>.</li>
-<li>RetryDelay: Delay time for next try(ms).</li>
+<li>DlEndHandle: Determine behavior of when the dial list end. See detail <a class="reference internal" href="structure.html#id2"><em>Dail list end handling</em></a>.</li>
+<li>RetryDelay: Delay time for next try(sec).</li>
 <li>TrunkName: Trunkname for outbound dialing.</li>
-<li>TechName: Tech name for outbound dialing. See detail <a class="reference internal" href="structure.html#id3"><span class="std std-ref">Tech name</span></a>.</li>
+<li>TechName: Tech name for outbound dialing. See detail <a class="reference internal" href="structure.html#id3"><em>Tech name</em></a>.</li>
 <li>ServiceLevel: Determine service level.</li>
 <li>MaxRetry1: Max retry count for number 1.</li>
 <li>MaxRetry2: Max retry count for number 2.</li>
@@ -231,29 +231,29 @@
 </div>
 <div class="section" id="id9">
 <h3>Example<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">sales_plan</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">simple</span> <span class="n">sales</span> <span class="n">plan</span>
-<span class="n">DialMode</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialTimeout</span><span class="p">:</span> <span class="mi">30000</span>
-<span class="n">CallerId</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DlEndHandle</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">RetryDelay</span><span class="p">:</span> <span class="mi">50000</span>
-<span class="n">TrunkName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TechName</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span>
-<span class="n">MaxRetryCnt1</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt2</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt3</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt4</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt5</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt6</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt7</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt8</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">22</span><span class="n">T12</span><span class="p">:</span><span class="mi">45</span><span class="p">:</span><span class="mf">58.868877001</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanCreate
+Privilege: message,all
+Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Name: sales_plan
+Detail: simple sales plan
+DialMode: 1
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+DlEndHandle: 1
+RetryDelay: 60
+TrunkName: &lt;unknown&gt;
+TechName: sip/
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-22T12:45:58.868877001Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -266,42 +266,42 @@
 </div>
 <div class="section" id="id11">
 <h3>Syntax<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanUpdate</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DialMode</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DialTimeout</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">CallerId</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DlEndHandle</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">RetryDelay</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TrunkName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TechName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt1</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt2</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt3</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt4</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt5</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt6</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt7</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">MaxRetryCnt8</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanUpdate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DialMode: &lt;value&gt;
+DialTimeout: &lt;value&gt;
+CallerId: &lt;value&gt;
+DlEndHandle: &lt;value&gt;
+RetryDelay: &lt;value&gt;
+TrunkName: &lt;value&gt;
+TechName: &lt;value&gt;
+MaxRetryCnt1: &lt;value&gt;
+MaxRetryCnt2: &lt;value&gt;
+MaxRetryCnt3: &lt;value&gt;
+MaxRetryCnt4: &lt;value&gt;
+MaxRetryCnt5: &lt;value&gt;
+MaxRetryCnt6: &lt;value&gt;
+MaxRetryCnt7: &lt;value&gt;
+MaxRetryCnt8: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
 <ul class="simple">
 <li>Name: Plan name.</li>
 <li>Detail: Detail info.</li>
-<li>DialMode: Dialling mode. See detail <a class="reference internal" href="structure.html#id1"><span class="std std-ref">Dial mode</span></a>.</li>
+<li>DialMode: Dialling mode. See detail <a class="reference internal" href="structure.html#id1"><em>Dial mode</em></a>.</li>
 <li>UuiField: Customer&#8217;s Uui field name.</li>
 <li>DialTimeout: Ringing timeout(ms).</li>
 <li>CallerId: Caller&#8217;s id.</li>
-<li>DlEndHandle: Determine behavior of when the dial list end. See detail <a class="reference internal" href="structure.html#id2"><span class="std std-ref">Dail list end handling</span></a>.</li>
-<li>RetryDelay: Delay time for next try(ms).</li>
+<li>DlEndHandle: Determine behavior of when the dial list end. See detail <a class="reference internal" href="structure.html#id2"><em>Dail list end handling</em></a>.</li>
+<li>RetryDelay: Delay time for next try(sec).</li>
 <li>TrunkName: Trunkname for outbound dialing.</li>
-<li>TechName: Tech name for outbound dialing. See detail <a class="reference internal" href="structure.html#id3"><span class="std std-ref">Tech name</span></a>.</li>
+<li>TechName: Tech name for outbound dialing. See detail <a class="reference internal" href="structure.html#id3"><em>Tech name</em></a>.</li>
 <li>ServiceLevel: Determine service level.</li>
 <li>MaxRetry1: Max retry count for number 1.</li>
 <li>MaxRetry2: Max retry count for number 2.</li>
@@ -315,29 +315,29 @@
 </div>
 <div class="section" id="id12">
 <h3>Example<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanUpdate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">sales_plan</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">Plan</span> <span class="n">update</span> <span class="n">test</span>
-<span class="n">DialMode</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialTimeout</span><span class="p">:</span> <span class="mi">30000</span>
-<span class="n">CallerId</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DlEndHandle</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">RetryDelay</span><span class="p">:</span> <span class="mi">50000</span>
-<span class="n">TrunkName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TechName</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span>
-<span class="n">MaxRetryCnt1</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt2</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt3</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt4</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt5</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt6</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt7</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">MaxRetryCnt8</span><span class="p">:</span> <span class="mi">5</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">22</span><span class="n">T12</span><span class="p">:</span><span class="mi">45</span><span class="p">:</span><span class="mf">58.868877001</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">23</span><span class="n">T23</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mf">20.503366656</span><span class="n">Z</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanUpdate
+Privilege: message,all
+Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Name: sales_plan
+Detail: Plan update test
+DialMode: 1
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+DlEndHandle: 1
+RetryDelay: 60
+TrunkName: &lt;unknown&gt;
+TechName: sip/
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-22T12:45:58.868877001Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-23T23:12:20.503366656Z
 </pre></div>
 </div>
 </div>
@@ -350,8 +350,8 @@
 </div>
 <div class="section" id="id14">
 <h3>Syntax<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanDelete</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanDelete
+Uuid: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
@@ -361,9 +361,9 @@
 </div>
 <div class="section" id="id15">
 <h3>Example<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanDelete</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">945</span><span class="n">e7631</span><span class="o">-</span><span class="mi">047</span><span class="n">f</span><span class="o">-</span><span class="mi">49</span><span class="n">a8</span><span class="o">-</span><span class="n">a389</span><span class="o">-</span><span class="n">fb52ebc8ca45</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanDelete
+Privilege: message,all
+Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
 </pre></div>
 </div>
 </div>
@@ -376,14 +376,14 @@
 </div>
 <div class="section" id="id17">
 <h3>Syntax<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaCreate</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DlTable</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaCreate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DlTable: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
@@ -396,15 +396,15 @@
 </div>
 <div class="section" id="id18">
 <h3>Example<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">9</span><span class="n">e2f750f</span><span class="o">-</span><span class="mi">82</span><span class="n">e4</span><span class="o">-</span><span class="mi">42</span><span class="n">c3</span><span class="o">-</span><span class="n">a06f</span><span class="o">-</span><span class="mi">41</span><span class="n">b55056fdb0</span>
-<span class="n">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DlTable</span><span class="p">:</span> <span class="mi">9</span><span class="n">e2f750f_82e4_42c3_a06f_41b55056fdb0</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mf">59.767803436</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaCreate
+Privilege: message,all
+Uuid: 9e2f750f-82e4-42c3-a06f-41b55056fdb0
+Name: &lt;unknown&gt;
+Detail: &lt;unknown&gt;
+DlTable: 9e2f750f_82e4_42c3_a06f_41b55056fdb0
+TmCreate: 2016-10-24T00:07:59.767803436Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -417,14 +417,14 @@
 </div>
 <div class="section" id="id20">
 <h3>Syntax<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaUpdate</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">DlTable</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaUpdate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DlTable: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
@@ -437,15 +437,15 @@
 </div>
 <div class="section" id="id21">
 <h3>Example<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaUpdate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="n">a0dc9df7</span><span class="o">-</span><span class="mi">89</span><span class="n">bd</span><span class="o">-</span><span class="mi">4</span><span class="n">c2c</span><span class="o">-</span><span class="n">ac81</span><span class="o">-</span><span class="n">bc7fbc54ff96</span>
-<span class="n">Name</span><span class="p">:</span> <span class="mi">8</span><span class="n">e6a4214</span><span class="o">-</span><span class="mi">6</span><span class="n">e1c</span><span class="o">-</span><span class="mi">47</span><span class="n">a3</span><span class="o">-</span><span class="mi">946</span><span class="n">f</span><span class="o">-</span><span class="mi">661</span><span class="n">e6cf58c04</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">Change</span>
-<span class="n">DlTable</span><span class="p">:</span> <span class="n">a0dc9df789bd4c2cac81bc7fbc54ff96</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2015</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">09</span> <span class="mi">19</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mf">51.753941</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="mi">2015</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">09</span> <span class="mi">19</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mf">51.884059</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaUpdate
+Privilege: message,all
+Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
+Name: 8e6a4214-6e1c-47a3-946f-661e6cf58c04
+Detail: Change
+DlTable: a0dc9df789bd4c2cac81bc7fbc54ff96
+TmCreate: 2015-12-09 19:12:51.753941
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2015-12-09 19:12:51.884059
 </pre></div>
 </div>
 </div>
@@ -458,8 +458,8 @@
 </div>
 <div class="section" id="id23">
 <h3>Syntax<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaDelete</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaDelete
+Uuid: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
@@ -469,9 +469,9 @@
 </div>
 <div class="section" id="id24">
 <h3>Example<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaDelete</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="n">a0dc9df7</span><span class="o">-</span><span class="mi">89</span><span class="n">bd</span><span class="o">-</span><span class="mi">4</span><span class="n">c2c</span><span class="o">-</span><span class="n">ac81</span><span class="o">-</span><span class="n">bc7fbc54ff96</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaDelete
+Privilege: message,all
+Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
 </pre></div>
 </div>
 </div>
@@ -480,22 +480,22 @@
 <h2>OutDestinationCreate<a class="headerlink" href="#outdestinationcreate" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id25">
 <h3>Example<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDestinationCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">3</span><span class="n">ff22c32</span><span class="o">-</span><span class="n">a727</span><span class="o">-</span><span class="mi">4</span><span class="n">d0b</span><span class="o">-</span><span class="n">ba85</span><span class="o">-</span><span class="n">aa8aef58ddc0</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">test</span> <span class="n">destination</span><span class="o">.</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">detail</span> <span class="n">test</span> <span class="n">destination</span>
-<span class="n">Type</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Exten</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Context</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Priority</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Variable</span><span class="p">:</span> <span class="n">test</span><span class="o">=</span><span class="n">good</span>
-<span class="n">Variable</span><span class="p">:</span> <span class="n">test1</span><span class="o">=</span><span class="n">good1</span>
-<span class="n">Application</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Data</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">39.178684973</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationCreate
+Privilege: message,all
+Uuid: 3ff22c32-a727-4d0b-ba85-aa8aef58ddc0
+Name: test destination.
+Detail: detail test destination
+Type: 0
+Exten: &lt;unknown&gt;
+Context: &lt;unknown&gt;
+Priority: &lt;unknown&gt;
+Variable: test=good
+Variable: test1=good1
+Application: &lt;unknown&gt;
+Data: &lt;unknown&gt;
+TmCreate: 2016-10-24T00:41:39.178684973Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -504,21 +504,21 @@
 <h2>OutDestinationUpdate<a class="headerlink" href="#outdestinationupdate" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id26">
 <h3>Example<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDestinationUpdate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">36612</span><span class="n">bfb</span><span class="o">-</span><span class="mi">3830</span><span class="o">-</span><span class="mi">4</span><span class="n">c77</span><span class="o">-</span><span class="n">b0f0</span><span class="o">-</span><span class="n">e74bb77fb3ac</span>
-<span class="n">Name</span><span class="p">:</span> <span class="n">update</span> <span class="n">test</span> <span class="n">destination</span>
-<span class="n">Detail</span><span class="p">:</span> <span class="n">detail</span> <span class="n">test</span> <span class="n">destination</span>
-<span class="n">Type</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Exten</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Context</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Priority</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Variable</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Application</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">Data</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mf">59.864623354</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="mf">11.304260041</span><span class="n">Z</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationUpdate
+Privilege: message,all
+Uuid: 36612bfb-3830-4c77-b0f0-e74bb77fb3ac
+Name: update test destination
+Detail: detail test destination
+Type: 0
+Exten: &lt;unknown&gt;
+Context: &lt;unknown&gt;
+Priority: &lt;unknown&gt;
+Variable: &lt;unknown&gt;
+Application: &lt;unknown&gt;
+Data: &lt;unknown&gt;
+TmCreate: 2016-10-24T00:33:59.864623354Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-24T00:47:11.304260041Z
 </pre></div>
 </div>
 </div>
@@ -527,9 +527,9 @@
 <h2>OutDestinationDelete<a class="headerlink" href="#outdestinationdelete" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id27">
 <h3>Example<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDestinationDelete</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">36612</span><span class="n">bfb</span><span class="o">-</span><span class="mi">3830</span><span class="o">-</span><span class="mi">4</span><span class="n">c77</span><span class="o">-</span><span class="n">b0f0</span><span class="o">-</span><span class="n">e74bb77fb3ac</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationDelete
+Privilege: message,all
+Uuid: 36612bfb-3830-4c77-b0f0-e74bb77fb3ac
 </pre></div>
 </div>
 </div>
@@ -546,35 +546,35 @@
 </div>
 <div class="section" id="id30">
 <h3>Example<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDialingCreate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">28863</span><span class="n">ee7</span><span class="o">-</span><span class="mi">3</span><span class="n">e86</span><span class="o">-</span><span class="mi">47</span><span class="n">cd</span><span class="o">-</span><span class="n">b87e</span><span class="o">-</span><span class="mi">0894</span><span class="n">d328644c</span>
-<span class="n">Status</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">CampUuid</span><span class="p">:</span> <span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">789</span><span class="n">c</span><span class="o">-</span><span class="mi">46</span><span class="n">aa</span><span class="o">-</span><span class="mi">817</span><span class="n">e</span><span class="o">-</span><span class="n">b7406416d211</span>
-<span class="n">PlanUuid</span><span class="p">:</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span>
-<span class="n">DlmaUuid</span><span class="p">:</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">04</span><span class="n">d9</span><span class="o">-</span><span class="mi">4</span><span class="n">a53</span><span class="o">-</span><span class="n">bfcf</span><span class="o">-</span><span class="mi">50</span><span class="n">c96ff924bc</span>
-<span class="n">DlListUuid</span><span class="p">:</span> <span class="n">dc5bf351</span><span class="o">-</span><span class="n">a63c</span><span class="o">-</span><span class="mi">4</span><span class="n">dda</span><span class="o">-</span><span class="mi">8</span><span class="n">a1f</span><span class="o">-</span><span class="mi">2</span><span class="n">bf337ce4e45</span>
-<span class="n">CurrentQueue</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">CurrentAgent</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DialIndex</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialAddr</span><span class="p">:</span> <span class="mi">300</span>
-<span class="n">DialChannel</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span><span class="mi">300</span>
-<span class="n">DialTryCnt</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialTimeout</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">DialType</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialExten</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DialContext</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DialApplication</span><span class="p">:</span> <span class="n">park</span>
-<span class="n">DialData</span><span class="p">:</span>
-<span class="n">ChannelName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">ResDial</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">ResAmd</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">ResAmdDetail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">ResHangup</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">ResHangupDetail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="mf">46.302114915</span><span class="n">Z</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingCreate
+Privilege: message,all
+Uuid: 28863ee7-3e86-47cd-b87e-0894d328644c
+Status: 0
+CampUuid: 02c4aebf-789c-46aa-817e-b7406416d211
+PlanUuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+DlmaUuid: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+DlListUuid: dc5bf351-a63c-4dda-8a1f-2bf337ce4e45
+CurrentQueue: &lt;unknown&gt;
+CurrentAgent: &lt;unknown&gt;
+DialIndex: 1
+DialAddr: 300
+DialChannel: sip/300
+DialTryCnt: 1
+DialTimeout: 0
+DialType: 1
+DialExten: &lt;unknown&gt;
+DialContext: &lt;unknown&gt;
+DialApplication: park
+DialData:
+ChannelName: &lt;unknown&gt;
+ResDial: 0
+ResAmd: &lt;unknown&gt;
+ResAmdDetail: &lt;unknown&gt;
+ResHangup: 0
+ResHangupDetail: &lt;unknown&gt;
+TmCreate: 2016-10-24T00:10:46.302114915Z
+TmUpdate: &lt;unknown&gt;
+TmDelete: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -591,35 +591,35 @@
 </div>
 <div class="section" id="id33">
 <h3>Example<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDialingUpdate</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">28863</span><span class="n">ee7</span><span class="o">-</span><span class="mi">3</span><span class="n">e86</span><span class="o">-</span><span class="mi">47</span><span class="n">cd</span><span class="o">-</span><span class="n">b87e</span><span class="o">-</span><span class="mi">0894</span><span class="n">d328644c</span>
-<span class="n">Status</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">CampUuid</span><span class="p">:</span> <span class="mi">02</span><span class="n">c4aebf</span><span class="o">-</span><span class="mi">789</span><span class="n">c</span><span class="o">-</span><span class="mi">46</span><span class="n">aa</span><span class="o">-</span><span class="mi">817</span><span class="n">e</span><span class="o">-</span><span class="n">b7406416d211</span>
-<span class="n">PlanUuid</span><span class="p">:</span> <span class="mi">4</span><span class="n">ea35c4b</span><span class="o">-</span><span class="n">c2db</span><span class="o">-</span><span class="mi">4</span><span class="n">a22</span><span class="o">-</span><span class="n">baef</span><span class="o">-</span><span class="mi">443</span><span class="n">b5fadd677</span>
-<span class="n">DlmaUuid</span><span class="p">:</span> <span class="n">acc994d2</span><span class="o">-</span><span class="mi">04</span><span class="n">d9</span><span class="o">-</span><span class="mi">4</span><span class="n">a53</span><span class="o">-</span><span class="n">bfcf</span><span class="o">-</span><span class="mi">50</span><span class="n">c96ff924bc</span>
-<span class="n">DlListUuid</span><span class="p">:</span> <span class="n">dc5bf351</span><span class="o">-</span><span class="n">a63c</span><span class="o">-</span><span class="mi">4</span><span class="n">dda</span><span class="o">-</span><span class="mi">8</span><span class="n">a1f</span><span class="o">-</span><span class="mi">2</span><span class="n">bf337ce4e45</span>
-<span class="n">CurrentQueue</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">CurrentAgent</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DialIndex</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialAddr</span><span class="p">:</span> <span class="mi">300</span>
-<span class="n">DialChannel</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span><span class="mi">300</span>
-<span class="n">DialTryCnt</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialTimeout</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">DialType</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">DialExten</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DialContext</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">DialApplication</span><span class="p">:</span> <span class="n">park</span>
-<span class="n">DialData</span><span class="p">:</span>
-<span class="n">ChannelName</span><span class="p">:</span> <span class="n">SIP</span><span class="o">/</span><span class="mi">300</span><span class="o">-</span><span class="mi">00000000</span>
-<span class="n">ResDial</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">ResAmd</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">ResAmdDetail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">ResHangup</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">ResHangupDetail</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
-<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="mf">46.302114915</span><span class="n">Z</span>
-<span class="n">TmUpdate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">24</span><span class="n">T00</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="mf">46.310483656</span><span class="n">Z</span>
-<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingUpdate
+Privilege: message,all
+Uuid: 28863ee7-3e86-47cd-b87e-0894d328644c
+Status: 1
+CampUuid: 02c4aebf-789c-46aa-817e-b7406416d211
+PlanUuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+DlmaUuid: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+DlListUuid: dc5bf351-a63c-4dda-8a1f-2bf337ce4e45
+CurrentQueue: &lt;unknown&gt;
+CurrentAgent: &lt;unknown&gt;
+DialIndex: 1
+DialAddr: 300
+DialChannel: sip/300
+DialTryCnt: 1
+DialTimeout: 0
+DialType: 1
+DialExten: &lt;unknown&gt;
+DialContext: &lt;unknown&gt;
+DialApplication: park
+DialData:
+ChannelName: SIP/300-00000000
+ResDial: 0
+ResAmd: &lt;unknown&gt;
+ResAmdDetail: &lt;unknown&gt;
+ResHangup: 0
+ResHangupDetail: &lt;unknown&gt;
+TmCreate: 2016-10-24T00:10:46.302114915Z
+TmUpdate: 2016-10-24T00:10:46.310483656Z
+TmDelete: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -632,8 +632,8 @@
 </div>
 <div class="section" id="id35">
 <h3>Syntax<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDialingDelete</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingDelete
+Uuid: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
@@ -643,9 +643,9 @@
 </div>
 <div class="section" id="id36">
 <h3>Example<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="n">OutDialingDelete</span>
-<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
-<span class="n">Uuid</span><span class="p">:</span> <span class="mi">0</span><span class="n">db3d746</span><span class="o">-</span><span class="mi">5185</span><span class="o">-</span><span class="mi">42</span><span class="n">b9</span><span class="o">-</span><span class="mi">9</span><span class="n">c5e</span><span class="o">-</span><span class="mi">6</span><span class="n">bc95617ee00</span>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingDelete
+Privilege: message,all
+Uuid: 0db3d746-5185-42b9-9c5e-6bc95617ee00
 </pre></div>
 </div>
 </div>
@@ -656,7 +656,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -752,28 +752,29 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="ami_action.html"
                         title="previous chapter">AMI Action</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/ami_event.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ami_event.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -782,12 +783,12 @@
         <li class="right" >
           <a href="ami_action.html" title="AMI Action"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer" role="contentinfo">
+    <div class="footer">
         &copy; Copyright 2016, pchero.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

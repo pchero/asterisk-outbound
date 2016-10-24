@@ -32,8 +32,8 @@ Assume that we have below agent info.
    secret=8b14c86a-89b1-11e6-aa09-f39f39e5592b
    host=dynamic
    
-Add the client(sip) info
-------------------------
+Add the client/customer(sip) info
+---------------------------------
 Add the client info to the /etc/asterisk/sip.conf
 
 This sip info is act like an client(customer).
@@ -42,57 +42,27 @@ Assume that we have a below client info.
 
 ::
 
-   [client-01]
+   [300]
    type=friend
-   secret=6d1a5096-89b1-11e6-b0fc-d30be6e4489f
+   secret=beb398d1-bf46-4895-a703-544679423e58
    host=dynamic
    
-   [client-02]
+   [301]
    type=friend
-   secret=8fd6f80a-89b1-11e6-9839-fb2a82d0d524
+   secret=573958ec-862c-4ba3-b73d-3c281277f551
    host=dynamic
    
-   [client-03]
+   [302]
    type=friend
-   secret=946e8c20-89b1-11e6-80d6-f3e7376cf70f
+   secret=c3c3b964-cf44-421b-9529-4cb9f0b3e277
    host=dynamic
 
-Create a queue
---------------d
-Assume that we have a below queue info.
-
-::
-
-   [sales_1]
-   musicclass = default
-   strategy = ringall
-   joinempty = yes
    
+Basic tutorial
+==============
+Dial to the customer. After the customer answered call, the call will be transfferred to parking lot.
 
-AMI actions
-===========
-
-Login
------
-
-::
-
-   Connection closed by foreign host.
-   $ telnet localhost 5038
-   Trying 127.0.0.1...
-   Connected to localhost.
-   Escape character is '^]'.
-   Asterisk Call Manager/2.8.0
-   
-   Action: Login
-   Username: admin
-   Secret: ****
-   
-   Response: Success
-   Message: Authentication accepted
-   
-
-Create Plan
+Create plan
 -----------
 
 ::
@@ -101,7 +71,6 @@ Create Plan
    Name: sales_plan
    Detail: simple sales plan
    DialMode: 1
-   QueueName: sales_1
    TechName: sip/
    
    Response: Success
@@ -109,19 +78,16 @@ Create Plan
    
    Event: OutPlanCreate
    Privilege: message,all
-   Uuid: d1306a32-0ec6-4389-a5f1-118153b6266e
+   Uuid: 687763ed-c977-4e5b-a30d-1221941a4d21
    Name: sales_plan
    Detail: simple sales plan
    DialMode: 1
    DialTimeout: 30000
    CallerId: <unknown>
-   AnswerHandle: 0
    DlEndHandle: 1
-   RetryDelay: 50000
+   RetryDelay: 60
    TrunkName: <unknown>
    TechName: sip/
-   QueueName: sales_1
-   AmdMode: 0
    MaxRetryCnt1: 5
    MaxRetryCnt2: 5
    MaxRetryCnt3: 5
@@ -130,26 +96,12 @@ Create Plan
    MaxRetryCnt6: 5
    MaxRetryCnt7: 5
    MaxRetryCnt8: 5
-   TmCreate: 2016-10-04 22:40:41.573445
+   TmCreate: 2016-10-24T21:36:03.702384603Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
-   
-
-Create Destination
-------------------
-::
-
-   Action: OutDestinationCreate
-   Name: destination test
-   Detail: test destination
-   Type: 1
-   Application: park
-   
-   Response: Success
-   Message: Dl list created successfully
 
 
-Create Dlma
+Create dlma
 -----------
 
 ::
@@ -163,51 +115,527 @@ Create Dlma
    
    Event: OutDlmaCreate
    Privilege: message,all
-   Uuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
+   Uuid: a6a29e7a-49c4-4339-92ff-543a121f348f
    Name: DialListMaster_Sales
    Detail: Test Dlma description
-   DlTable: 9155a63e_6577_4abc_96e4_2c7811b5f639
-   TmCreate: 2016-10-04 22:41:07.528126
+   DlTable: a6a29e7a_49c4_4339_92ff_543a121f348f
+   TmCreate: 2016-10-24T21:37:39.972064103Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
 
-Create Dl list
---------------
+Create destination
+------------------
+
+::
+
+   Action: OutDestinationCreate
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Application: park
+   
+   Response: Success
+   Message: Destination created successfully
+   
+   Event: OutDestinationCreate
+   Privilege: message,all
+   Uuid: ef355147-48bf-4170-8f88-f49b00f3ab37
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Exten: <unknown>
+   Context: <unknown>
+   Priority: <unknown>
+   Variable: <unknown>
+   Application: park
+   Data: <unknown>
+   TmCreate: 2016-10-24T21:38:35.700905321Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+
+Create dial list
+----------------
+
 ::
 
    Action: OutDlListCreate
-   DlmaUuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
+   DlmaUuid: a6a29e7a-49c4-4339-92ff-543a121f348f
    Name: client 01
    Detail: Dial to client 01
    Number1: 300
    
    Response: Success
    Message: Dl list created successfully
-   
+
+
 Create campaign
 ---------------
+
 ::
 
    Action: OutCampaignCreate
    Name: Sales campaign
    Detail: test campaign
-   Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
-   Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
+   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
    
    Response: Success
    Message: Campaign created successfully
    
    Event: OutCampaignCreate
    Privilege: message,all
-   Uuid: a3e95af9-5ffa-4f53-8908-6095ff24945c
+   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
    Name: Sales campaign
    Detail: test campaign
    Status: 0
-   Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
-   Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
-   TmCreate: 2016-10-04 22:43:22.899115
+   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+   TmCreate: 2016-10-24T21:41:24.939663006Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
+Update Campaign status to start
+-------------------------------
+
+::
+
+   Action: OutCampaignUpdate
+   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+   Status: 1
    
+   Response: Success
+   Message: Campaign updated successfully
+   
+   Event: OutCampaignUpdate
+   Privilege: message,all
+   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+   Name: Sales campaign
+   Detail: test campaign
+   Status: 1
+   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+   TmCreate: 2016-10-24T21:41:24.939663006Z
+   TmDelete: <unknown>
+   TmUpdate: 2016-10-24T21:42:38.66081477Z
+
+ 
+Normal call distribute
+======================
+
+Dial to the customer. After the customer answered call, the call will be distributed to the waiting agents.
+
+
+Create a queue
+--------------
+Add the queue info to the /etc/asterisk/queues.conf
+
+Assume that we have a below queue info.
+
+::
+
+   [sales_1]
+   musicclass = default
+   strategy = ringall
+   joinempty = yes
+
+
+Add members
+-----------
+Add the all agents to the queue.
+
+::
+
+   pluto*CLI> queue add member sip/agent-01 to sales_1 
+   Added interface 'sip/agent-01' to queue 'sales_1'
+   
+   pluto*CLI> queue add member sip/agent-02 to sales_1
+   Added interface 'sip/agent-02' to queue 'sales_1'
+   
+   pluto*CLI> queue add member sip/agent-03 to sales_1
+   Added interface 'sip/agent-03' to queue 'sales_1'
+
+
+Create plan
+-----------
+
+::
+
+   Action: OutPlanCreate
+   Name: queue distribute plan
+   Detail: simple queue distbute plan
+   DialMode: 1
+   TechName: sip/
+   
+   Response: Success
+   Message: Plan created successfully
+   
+   Event: OutPlanCreate
+   Privilege: message,all
+   Uuid: 5acea376-195a-4519-b68f-58e9ceaadc68
+   Name: queue distribute plan
+   Detail: simple queue distbute plan
+   DialMode: 1
+   DialTimeout: 30000
+   CallerId: <unknown>
+   DlEndHandle: 1
+   RetryDelay: 60
+   TrunkName: <unknown>
+   TechName: sip/
+   MaxRetryCnt1: 5
+   MaxRetryCnt2: 5
+   MaxRetryCnt3: 5
+   MaxRetryCnt4: 5
+   MaxRetryCnt5: 5
+   MaxRetryCnt6: 5
+   MaxRetryCnt7: 5
+   MaxRetryCnt8: 5
+   TmCreate: 2016-10-24T22:46:14.893825038Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+
+Create destination
+------------------
+
+::
+
+   Action: OutDestinationCreate
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Application: queue
+   Data: sales_1
+   
+   Response: Success
+   Message: Destination created successfully
+   
+   Event: OutDestinationCreate
+   Privilege: message,all
+   Uuid: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Exten: <unknown>
+   Context: <unknown>
+   Priority: <unknown>
+   Variable: <unknown>
+   Application: queue
+   Data: sales_1
+   TmCreate: 2016-10-24T22:48:11.604966289Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+
+Create dlma and dial list
+-------------------------
+
+Create Dlma
+
+::
+
+   Action: OutDlmaCreate
+   Name: DialListMaster queue distribute
+   Detail: Test Dlma description
+   
+   Response: Success
+   Message: Dlma created successfully
+   
+   Event: OutDlmaCreate
+   Privilege: message,all
+   Uuid: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+   Name: DialListMaster queue distribute
+   Detail: Test Dlma description
+   DlTable: 8f1cda4d_1a95_4cbc_9865_fb604ce3f70a
+   TmCreate: 2016-10-24T22:47:00.685610240Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+
+Create dial list(dl)
+
+::
+
+   Action: OutDlListCreate
+   DlmaUuid: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+   Name: client 01
+   Detail: Dial to client 01
+   Number1: 300
+   
+   Response: Success
+   Message: Dl list created successfully
+
+
+Create campaign and status update
+---------------------------------
+
+Create campaign.
+
+::
+
+   Action: OutCampaignCreate
+   Name: Sales campaign
+   Detail: test campaign
+   Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
+   Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+   Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+   
+   Response: Success
+   Message: Campaign created successfully
+   
+   Event: OutCampaignCreate
+   Privilege: message,all
+   Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+   Name: Sales campaign
+   Detail: test campaign
+   Status: 0
+   Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
+   Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+   Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+   TmCreate: 2016-10-24T22:49:45.907295315Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+Update campaign status.
+
+::
+
+   Action: OutCampaignUpdate
+   Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+   Status: 1
+   
+   Response: Success
+   Message: Campaign updated successfully
+   
+   Event: OutCampaignUpdate
+   Privilege: message,all
+   Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+   Name: Sales campaign
+   Detail: test campaign
+   Status: 1
+   Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
+   Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+   Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+   TmCreate: 2016-10-24T22:49:45.907295315Z
+   TmDelete: <unknown>
+   TmUpdate: 2016-10-24T22:52:16.250101358Z
+
+
+
+Check result
+------------
+
+::
+
+   tail -n 1 /var/lib/asterisk/astout.result
+
+   {
+      "dialing_uuid": "a624ecec-e3a8-4e95-9538-abed6e2271ab",
+      "camp_uuid": "ea289ed8-92f3-430c-b00c-b5254257282b",
+      "plan_uuid": "5acea376-195a-4519-b68f-58e9ceaadc68",
+      "tm_hangup": "2016-10-24T22:51:32.482367256Z",
+      "dlma_uuid": "8f1cda4d-1a95-4cbc-9865-fb604ce3f70a",
+      "channel_name": "SIP/300-00000014",
+      "tm_dial_begin": "2016-10-24T22:51:27.734721762Z",
+      "info_camp": {
+         "uuid": "ea289ed8-92f3-430c-b00c-b5254257282b",
+         "plan": "5acea376-195a-4519-b68f-58e9ceaadc68",
+         "dlma": "8f1cda4d-1a95-4cbc-9865-fb604ce3f70a",
+         "detail": "test campaign",
+         "name": "Sales campaign",
+         "status": 1,
+         "in_use": 1,
+         "next_campaign": null,
+         "dest": "1a88f58d-3353-4a55-83be-1d6ab58b2bfc",
+         "tm_create": "2016-10-24T22:49:45.907295315Z",
+         "tm_delete": null,
+         "tm_update": "2016-10-24T22:50:10.706866142Z"
+      },
+      "dest_uuid": "1a88f58d-3353-4a55-83be-1d6ab58b2bfc",
+      "res_hangup_detail": "Normal Clearing",
+      "dial_addr": "300",
+      "dl_list_uuid": "8e0d1ef2-faf0-42d8-a70a-b494cae7f90d",
+      "info_plan": {
+         "caller_id": null,
+         "uuid": "5acea376-195a-4519-b68f-58e9ceaadc68",
+         "trunk_name": null,
+         "dl_end_handle": 1,
+         "detail": "simple queue distbute plan",
+         "name": "queue distribute plan",
+         "max_retry_cnt_2": 5,
+         "max_retry_cnt_5": 5,
+         "uui_field": null,
+         "tm_update": null,
+         "service_level": 0,
+         "in_use": 1,
+         "dial_mode": 1,
+         "retry_delay": 60,
+         "max_retry_cnt_6": 5,
+         "dial_timeout": 30000,
+         "tech_name": "sip/",
+         "max_retry_cnt_1": 5,
+         "max_retry_cnt_3": 5,
+         "max_retry_cnt_4": 5,
+         "max_retry_cnt_7": 5,
+         "max_retry_cnt_8": 5,
+         "tm_create": "2016-10-24T22:46:14.893825038Z",
+         "tm_delete": null
+      },
+      "info_dlma": {
+         "uuid": "8f1cda4d-1a95-4cbc-9865-fb604ce3f70a",
+         "detail": "Test Dlma description",
+         "name": "DialListMaster queue distribute",
+         "dl_table": "8f1cda4d_1a95_4cbc_9865_fb604ce3f70a",
+         "tm_update": null,
+         "in_use": 1,
+         "tm_create": "2016-10-24T22:47:00.685610240Z",
+         "tm_delete": null
+      },
+      "info_dest": {
+         "uuid": "1a88f58d-3353-4a55-83be-1d6ab58b2bfc",
+         "name": "destination test",
+         "detail": "test destination",
+         "in_use": 1,
+         "type": 1,
+         "exten": null,
+         "context": null,
+         "tm_create": "2016-10-24T22:48:11.604966289Z",
+         "application": "queue",
+         "priority": null,
+         "variables": null,
+         "tm_update": null,
+         "data": "sales_1",
+         "tm_delete": null
+      },
+      "dial_trycnt": 1,
+      "dial_channel": "sip/300",
+      "info_dl_list": {
+         "number_4": null,
+         "number_8": null,
+         "uuid": "8e0d1ef2-faf0-42d8-a70a-b494cae7f90d",
+         "number_3": null,
+         "ukey": null,
+         "tm_update": null,
+         "dlma_uuid": "8f1cda4d-1a95-4cbc-9865-fb604ce3f70a",
+         "in_use": 1,
+         "tm_last_dial": null,
+         "detail": "Dial to client 01",
+         "name": "client 01",
+         "status": 0,
+         "dialing_camp_uuid": null,
+         "resv_target": null,
+         "number_6": null,
+         "udata": null,
+         "res_hangup_detail": null,
+         "dialing_uuid": null,
+         "number_2": null,
+         "trycnt_4": 0,
+         "res_dial_detail": null,
+         "dialing_plan_uuid": null,
+         "trycnt_3": 0,
+         "number_1": "300",
+         "number_5": null,
+         "trycnt_2": 0,
+         "number_7": null,
+         "email": null,
+         "trycnt_1": 0,
+         "trycnt_5": 0,
+         "trycnt_6": 0,
+         "trycnt_7": 0,
+         "trycnt_8": 0,
+         "res_dial": 0,
+         "res_hangup": 0,
+         "tm_create": "2016-10-24T22:48:43.572379619Z",
+         "tm_delete": null,
+         "tm_last_hangup": null,
+         "trycnt": 0
+      },
+      "dial_index": 1,
+      "dial_data": "sales_1",
+      "info_dial": {
+         "dial_application": "queue",
+         "dial_index": 1,
+         "dial_data": "sales_1",
+         "dial_trycnt": 1,
+         "dial_channel": "sip/300",
+         "dial_type": 1,
+         "uuid": "8e0d1ef2-faf0-42d8-a70a-b494cae7f90d",
+         "channelid": "a624ecec-e3a8-4e95-9538-abed6e2271ab",
+         "dial_addr": "300",
+         "timeout": 30000,
+         "otherchannelid": "cb1325bd-4ae7-4db8-aa64-bb0babadb782"
+      },
+      "dial_type": 1,
+      "tm_dialing": "2016-10-24T22:50:10.784443999Z",
+      "dial_application": "queue",
+      "res_hangup": 16,
+      "res_dial": 4,
+      "tm_dial_end": "2016-10-24T22:51:29.294001808Z"
+   }
+
+Power dialing
+=============
+Dial to the customer. After the customer answered call, the recorded message will be played.
+
+Create plan
+-----------
+Set application Playback with data.
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
+Transfer to the dialplan
+========================
+Dial to the customer. If the customer answered call, the call will be transferred to the designated dialplan.
+
+Create plan
+-----------
+Set dialplan context, extension.
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
+Transfer to the dialplan check Human/Machine
+============================================
+Dial to the customer. If the customer answered call, the call will be transferred to the designated dialplan.
+
+Then check the who is answered it(Human/Machine).
+
+Create plan
+-----------
+Set dialplan context, extension. AMD() application.
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
