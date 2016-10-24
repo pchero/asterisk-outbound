@@ -175,8 +175,6 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
 	struct ast_json* j_dest;
 	int dial_mode;
 
-	ast_log(LOG_DEBUG, "cb_campagin start\n");
-
 	j_camp = get_campaign_for_dialing();
 	if(j_camp == NULL) {
 		// Nothing.
@@ -299,8 +297,6 @@ static void cb_campaign_starting(__attribute__((unused)) int fd, __attribute__((
 	int i;
 	int ret;
 
-	ast_log(LOG_DEBUG, "cb_campaign_starting.\n");
-
 	j_camps = get_campaigns_by_status(E_CAMP_STARTING);
 	if(j_camps == NULL) {
 		// Nothing.
@@ -347,8 +343,6 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
 	int i;
 	int size;
 	int ret;
-
-	ast_log(LOG_DEBUG, "cb_campaign_stopping.\n");
 
 	j_camps = get_campaigns_by_status(E_CAMP_STOPPING);
 	if(j_camps == NULL) {
@@ -399,8 +393,6 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
 	const char* tmp_const;
 	int i;
 	int size;
-
-	ast_log(LOG_DEBUG, "cb_campaign_stopping_force\n");
 
 	j_camps = get_campaigns_by_status(E_CAMP_STOPPING_FORCE);
 	if(j_camps == NULL) {
@@ -455,8 +447,6 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 	struct ast_json* j_tmp;
 	int ret;
 
-	ast_log(LOG_DEBUG, "cb_check_dialing_end\n");
-
 	iter = rb_dialing_iter_init();
 	while(1) {
 		dialing = rb_dialing_iter_next(&iter);
@@ -497,7 +487,7 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 
 		// create result data
 		j_tmp = create_json_for_dl_result(dialing);
-		ast_log(LOG_DEBUG, "Check result value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s], res_dial[%lld], res_amd[%lld], res_amd_detail[%s], res_hangup[%lld], res_hangup_detail[%s]\n",
+		ast_log(LOG_DEBUG, "Check result value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s], res_dial[%lld], res_hangup[%lld], res_hangup_detail[%s]\n",
 
 				// dial
 				ast_json_string_get(ast_json_object_get(j_tmp, "dial_channel")),
@@ -510,8 +500,6 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 
 				// result
 				ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial")),
-				ast_json_integer_get(ast_json_object_get(j_tmp, "res_amd")),
-				ast_json_string_get(ast_json_object_get(j_tmp, "res_amd_detail")),
 				ast_json_integer_get(ast_json_object_get(j_tmp, "res_hangup")),
 				ast_json_string_get(ast_json_object_get(j_tmp, "res_hangup_detail"))
 				);
@@ -539,8 +527,6 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
 	int ret;
-
-	ast_log(LOG_DEBUG, "cb_check_dialing_error.\n");
 
 	iter = rb_dialing_iter_init();
 	while(1) {
@@ -582,7 +568,7 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 
 		// create result data
 		j_tmp = create_json_for_dl_result(dialing);
-		ast_log(LOG_DEBUG, "Check result value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s], res_dial[%lld], res_amd[%lld], res_amd_detail[%s], res_hangup[%lld], res_hangup_detail[%s]\n",
+		ast_log(LOG_DEBUG, "Check result value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s], res_dial[%lld], res_hangup[%lld], res_hangup_detail[%s]\n",
 
 				// dial
 				ast_json_string_get(ast_json_object_get(j_tmp, "dial_channel")),
@@ -595,8 +581,6 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 
 				// result
 				ast_json_integer_get(ast_json_object_get(j_tmp, "res_dial")),
-				ast_json_integer_get(ast_json_object_get(j_tmp, "res_amd")),
-				ast_json_string_get(ast_json_object_get(j_tmp, "res_amd_detail")),
 				ast_json_integer_get(ast_json_object_get(j_tmp, "res_hangup")),
 				ast_json_string_get(ast_json_object_get(j_tmp, "res_hangup_detail"))
 				);
@@ -624,8 +608,6 @@ static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__(
 	int i;
 	int size;
 	int ret;
-
-	ast_log(LOG_DEBUG, "cb_check_campaign_end\n");
 
 	j_camps = get_campaigns_by_status(E_CAMP_START);
 	size = ast_json_array_size(j_camps);

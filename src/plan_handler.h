@@ -17,6 +17,15 @@ typedef enum _E_DIAL_MODE {
 	E_DIAL_MODE_REDIRECT = 5,	   ///
 } E_DIAL_MODE;
 
+/**
+ * Determine when the dial list end.
+ */
+typedef enum _E_PLAN_DL_END_HANDLE {
+	E_PLAN_DL_END_NONSTOP		= 0,	/// Keep current status.
+	E_PLAN_DL_END_STOP 			= 1,	/// Stop the campaign.
+} E_PLAN_DL_END_HANDLE;
+
+
 bool init_plan(void);
 
 bool create_plan(const struct ast_json* j_plan);

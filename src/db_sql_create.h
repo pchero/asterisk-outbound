@@ -22,7 +22,7 @@ static const char* g_sql_plan =
 "    uui_field   varchar(255)    default null,"   	// x-header name for UUI(later)"
 
 // strategy"
-"    dial_mode       int default 0,"              	// dial mode(desktop, power, predictive, email, fax, sms)"
+"    dial_mode       int default 1,"              	// dial mode(desktop, power, predictive, email, fax, sms)"
 "    dial_timeout    int default 30000,"          	// no answer hangup timeout(30000 ms = 30 second)"
 "    caller_id       varchar(255) default null,"		// caller name(from)"
 "    dl_end_handle   int default 1,"              	// stratery when it running out dial list(keep_running, stop)"
@@ -272,8 +272,6 @@ static const char* g_sql_dl_result =
 
 // dial result"
 "    res_dial                int default 0 not null,"     // dial result(answer, no_answer, ...)"
-"    res_amd                 varchar(255),"               // AMD result.(AMDSTATUS)"
-"    res_amd_detail          varchar(255),"               // AMD result detail.(AMDCAUSE)"
 "    res_hangup              int default 0 not null,"     // hangup code."
 "    res_hangup_detail       varchar(255),"               // hangup detail."
 "    res_tr_dial             varchar(255),"               // transferred dial result(answer, no_answer, ...)"

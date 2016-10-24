@@ -1026,11 +1026,8 @@ static char* get_dialing_str(const rb_dialing* dialing)
 			"CampUuid: %s\r\n"
 			"PlanUuid: %s\r\n"
 			"DlmaUuid: %s\r\n"
+			"DestUuid: %s\r\n"
 			"DlListUuid: %s\r\n"	// todo: need to do more...
-
-			// current info
-			"CurrentQueue: %s\r\n"
-			"CurrentAgent: %s\r\n"
 
 			// dial info
 			"DialIndex: %lld\r\n"
@@ -1049,8 +1046,6 @@ static char* get_dialing_str(const rb_dialing* dialing)
 
 			// dial result
 			"ResDial: %lld\r\n"
-			"ResAmd: %s\r\n"
-			"ResAmdDetail: %s\r\n"
 			"ResHangup: %lld\r\n"
 			"ResHangupDetail: %s\r\n"
 
@@ -1067,11 +1062,8 @@ static char* get_dialing_str(const rb_dialing* dialing)
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "plan_uuid"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dlma_uuid"))? : "<unknown>",
+			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dest_uuid"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid"))? : "<unknown>",
-
-			// current info
-			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_queue"))? : "<unknown>",
-			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "current_agent"))? : "<unknown>",
 
 			// dial info
 			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")),
@@ -1090,8 +1082,6 @@ static char* get_dialing_str(const rb_dialing* dialing)
 
 			// result info
 			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_dial")),
-			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_amd"))? : "<unknown>",
-			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_amd_detail"))? : "<unknown>",
 			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "res_hangup")),
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "res_hangup_detail"))? : "<unknown>",
 
@@ -1225,8 +1215,8 @@ static char* get_destination_str(struct ast_json* j_dest)
 	const char* tmp_const;
 	struct ast_json* j_tmp;
 	struct ast_json_iter* iter;
-	char* setvars;
-	char* setvar;
+	char* variables;
+	char* variable;
 
 
 	if(j_dest == NULL) {
@@ -1234,8 +1224,8 @@ static char* get_destination_str(struct ast_json* j_dest)
 	}
 
 	// create Setvar string
-	setvars = NULL;
-	tmp_const = ast_json_string_get(ast_json_object_get(j_dest, "setvars"));
+	variables = NULL;
+	tmp_const = ast_json_string_get(ast_json_object_get(j_dest, "variables"));
 	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
 		j_tmp = ast_json_load_string(tmp_const, NULL);
 
@@ -1243,15 +1233,15 @@ static char* get_destination_str(struct ast_json* j_dest)
 				iter != NULL;
 				iter = ast_json_object_iter_next(j_tmp, iter))
 		{
-			ast_asprintf(&setvar, "%sVariable: %s=%s\r\n",
-					setvars? : "",
+			ast_asprintf(&variable, "%sVariable: %s=%s\r\n",
+					variables? : "",
 					ast_json_object_iter_key(iter)? : "",
 					ast_json_string_get(ast_json_object_iter_value(iter))? : ""
 					);
-			if(setvars != NULL) {
-				ast_free(setvars);
+			if(variables != NULL) {
+				ast_free(variables);
 			}
-			setvars = setvar;
+			variables = variable;
 		}
 	}
 
@@ -1283,7 +1273,7 @@ static char* get_destination_str(struct ast_json* j_dest)
 			ast_json_string_get(ast_json_object_get(j_dest, "exten"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dest, "context"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dest, "priority"))? : "<unknown>",
-			setvars? : "Variable: <unknown>\r\n",
+			variables? : "Variable: <unknown>\r\n",
 
 			ast_json_string_get(ast_json_object_get(j_dest, "application"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dest, "data"))? : "<unknown>",
@@ -1292,7 +1282,7 @@ static char* get_destination_str(struct ast_json* j_dest)
 			ast_json_string_get(ast_json_object_get(j_dest, "tm_delete"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dest, "tm_update"))? : "<unknown>"
 			);
-	ast_free(setvars);
+	ast_free(variables);
 
 	ast_log(LOG_VERBOSE, "Value check. created plan string. str[%s]\n", tmp);
 	return tmp;
@@ -1324,6 +1314,16 @@ static struct ast_json* create_json_plan(const struct message* m)
 		ast_json_object_set(j_tmp, "dial_mode", ast_json_integer_create(atoi(tmp_const)));
 	}
 
+	tmp_const = astman_get_header(m, "UuiField");
+	if(strcmp(tmp_const, "") != 0) {
+		ast_json_object_set(j_tmp, "uui_field", ast_json_string_create(tmp_const));
+	}
+
+	tmp_const = astman_get_header(m, "DialTimeout");
+	if(strcmp(tmp_const, "") != 0) {
+		ast_json_object_set(j_tmp, "dial_timeout", ast_json_integer_create(atoi(tmp_const)));
+	}
+
 	tmp_const = astman_get_header(m, "CallerId");
 	if(strcmp(tmp_const, "") != 0) {
 		ast_json_object_set(j_tmp, "caller_id", ast_json_string_create(tmp_const));
@@ -1347,6 +1347,11 @@ static struct ast_json* create_json_plan(const struct message* m)
 	tmp_const = astman_get_header(m, "TechName");
 	if(strcmp(tmp_const, "") != 0) {
 		ast_json_object_set(j_tmp, "tech_name", ast_json_string_create(tmp_const));
+	}
+
+	tmp_const = astman_get_header(m, "ServiceLevel");
+	if(strcmp(tmp_const, "") != 0) {
+		ast_json_object_set(j_tmp, "service_level", ast_json_integer_create(atoi(tmp_const)));
 	}
 
 	tmp_const = astman_get_header(m, "MaxRetry1");
@@ -3254,7 +3259,7 @@ static char* get_variables(const struct message *m)
 	char* res;
 	char* tmp;
 
-	var_org = astman_get_variables_order(m, ORDER_REVERSE);
+	var_org = astman_get_variables_order(m, ORDER_NATURAL);
 	if(var_org == NULL) {
 		return NULL;
 	}
