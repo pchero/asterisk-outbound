@@ -30,6 +30,9 @@
 #include "utils.h"
 
 #define TEMP_FILENAME "/tmp/asterisk_outbound_tmp.txt"
+#define DEF_EVENT_TIME_FAST "100000"
+#define DEF_EVENT_TIME_SLOW "3000000"
+#define DEF_ONE_SEC_IN_MICRO_SEC	1000000
 
 
 struct event_base*  g_base = NULL;
@@ -63,10 +66,35 @@ static int check_dial_avaiable_predictive(struct ast_json* j_camp, struct ast_js
 int run_outbound(void)
 {
 	int ret;
+	int event_delay;
+	const char* tmp_const;
 	struct event* ev;
-//	struct timeval tm_fast = {0, 2000};	// 20 ms
-	struct timeval tm_fast = {3, 0};	// 3 sec
-//	struct timeval tm_slow = {0, 500000};   // 500 ms
+	struct timeval tm_fast;
+	struct timeval tm_slow;
+
+	// event delay fast.
+	tmp_const = ast_json_string_get(ast_json_object_get(ast_json_object_get(g_app->j_conf, "general"), "event_time_fast"));
+	if(tmp_const == NULL) {
+		tmp_const = DEF_EVENT_TIME_FAST;
+		ast_log(LOG_NOTICE, "Could not get correct event_time_fast value. Set default. event_time_fast[%s]\n", tmp_const);
+	}
+	ast_log(LOG_NOTICE, "Event delay time for fast event. event_time_fast[%s]\n", tmp_const);
+
+	event_delay = atoi(tmp_const);
+	tm_fast.tv_sec = event_delay / DEF_ONE_SEC_IN_MICRO_SEC;
+	tm_fast.tv_usec = event_delay % DEF_ONE_SEC_IN_MICRO_SEC;
+
+	// event delay slow.
+	tmp_const = ast_json_string_get(ast_json_object_get(ast_json_object_get(g_app->j_conf, "general"), "event_time_slow"));
+	if(tmp_const == NULL) {
+		tmp_const = DEF_EVENT_TIME_SLOW;
+		ast_log(LOG_NOTICE, "Could not get correct event_time_fast value. Set default. event_time_fast[%s]\n", tmp_const);
+	}
+	ast_log(LOG_NOTICE, "Event delay time for fast event. event_time_fast[%s]\n", tmp_const);
+
+	event_delay = atoi(tmp_const);
+	tm_slow.tv_sec = event_delay / DEF_ONE_SEC_IN_MICRO_SEC;
+	tm_slow.tv_usec = event_delay % DEF_ONE_SEC_IN_MICRO_SEC;
 
 	// init libevent
 	ret = init_outbound();
@@ -81,26 +109,27 @@ int run_outbound(void)
 
 	// check starting
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_starting, NULL);
-	event_add(ev, &tm_fast);
+	event_add(ev, &tm_slow);
 
 	// check stopping.
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_stopping, NULL);
-	event_add(ev, &tm_fast);
+	event_add(ev, &tm_slow);
 
 	// check force stopping
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_stopping_force, NULL);
-	event_add(ev, &tm_fast);
+	event_add(ev, &tm_slow);
 
-
-
+	// chceck dialing end
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_dialing_end, NULL);
 	event_add(ev, &tm_fast);
 
+	// check diaing error
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_dialing_error, NULL);
 	event_add(ev, &tm_fast);
 
+	// check end
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_campaign_end, NULL);
-	event_add(ev, &tm_fast);
+	event_add(ev, &tm_slow);
 
 
 	event_base_loop(g_base, 0);
