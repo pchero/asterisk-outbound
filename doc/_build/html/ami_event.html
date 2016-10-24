@@ -47,10 +47,6 @@
             
   <div class="section" id="ami-event">
 <h1>AMI Event<a class="headerlink" href="#ami-event" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>AMI event messages from Asterisk-outbound</p>
-</div>
 <div class="section" id="outcampaigncreate">
 <h2>OutCampaignCreate<a class="headerlink" href="#outcampaigncreate" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="description">
@@ -60,17 +56,16 @@
 <div class="section" id="syntax">
 <h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignCreate
-Privilege: message,all
 Uuid: &lt;value&gt;
-[Name:] &lt;value&gt;
-[Detail:] &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
 Status: &lt;value&gt;
 Plan: &lt;value&gt;
 Dlma: &lt;value&gt;
-TmCreate: &lt;timestamp&gt;
-TmDelete: &lt;timestamp&gt;
-TmUpdate: &lt;timestamp&gt;
-OutCampaignUpdate
+Dest: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
@@ -78,7 +73,7 @@ OutCampaignUpdate
 <li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
 <li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
 <li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
-<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status.</li>
+<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status. See detail <a class="reference internal" href="structure.html#id2"><em>Campaign status</em></a>.</li>
 <li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
 <li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
 <li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Registered destination uuid.</li>
@@ -111,16 +106,16 @@ TmUpdate: &lt;unknown&gt;
 <div class="section" id="id2">
 <h3>Syntax<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignUpdate
-Privilege: message,all
 Uuid: &lt;value&gt;
-[Name:] &lt;value&gt;
-[Detail:] &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
 Status: &lt;value&gt;
 Plan: &lt;value&gt;
 Dlma: &lt;value&gt;
-TmCreate: &lt;timestamp&gt;
-TmDelete: &lt;timestamp&gt;
-TmUpdate: &lt;timestamp&gt;
+Dest: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
 </pre></div>
 </div>
 <p>Parameters</p>
@@ -128,24 +123,26 @@ TmUpdate: &lt;timestamp&gt;
 <li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
 <li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
 <li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
-<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status.</li>
+<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status. See detail <a class="reference internal" href="structure.html#id2"><em>Campaign status</em></a>.</li>
 <li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
 <li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
+<li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Registered destination uuid.</li>
 </ul>
 </div>
 <div class="section" id="id3">
 <h3>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignUpdate
 Privilege: message,all
-Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
-Name: 1009c510-71aa-4736-89f9-9b39473271cc
-Detail: Change
+Uuid: a3e3cc0e-083e-4b9e-8120-522eb9834098
+Name: test
+Detail: &lt;unknown&gt;
 Status: 0
-Plan: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
-Dlma: e276d8be-a558-4546-948a-f99913a7fea2
-TmCreate: 2015-12-09 13:29:39.483175
+Plan: &lt;unknown&gt;
+Dlma: &lt;unknown&gt;
+Dest: &lt;unknown&gt;
+TmCreate: 2016-10-23T23:59:18.883765584Z
 TmDelete: &lt;unknown&gt;
-TmUpdate: 2015-12-09 13:29:39.630756
+TmUpdate: 2016-10-24T00:01:29.706507679Z
 </pre></div>
 </div>
 </div>
@@ -185,7 +182,50 @@ Uuid: 92dadd08-ac3c-47dc-a41b-10040643ee38
 </div>
 <div class="section" id="id8">
 <h3>Syntax<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<p>Parameters</p>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanCreate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DialMode: &lt;value&gt;
+DialTimeout: &lt;value&gt;
+CallerId: &lt;value&gt;
+DlEndHandle: &lt;value&gt;
+RetryDelay: &lt;value&gt;
+TrunkName: &lt;value&gt;
+TechName: &lt;value&gt;
+MaxRetryCnt1: &lt;value&gt;
+MaxRetryCnt2: &lt;value&gt;
+MaxRetryCnt3: &lt;value&gt;
+MaxRetryCnt4: &lt;value&gt;
+MaxRetryCnt5: &lt;value&gt;
+MaxRetryCnt6: &lt;value&gt;
+MaxRetryCnt7: &lt;value&gt;
+MaxRetryCnt8: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters
+* Name: Plan name..
+* Detail: Detail info.
+* DialMode: Dialling mode. See detail <em class="xref std std-ref">plan_dial_mode</em>.
+* UuiField: Customer&#8217;s Uui field name.
+* DialTimeout: Ringing timeout(ms).
+* CallerId: Caller&#8217;s id.
+* DlEndHandle: Determine behavior of when the dial list end. See detail <em class="xref std std-ref">dial_list_end_handling</em>.
+* RetryDelay: Delay time for next try(ms).
+* TrunkName: Trunkname for outbound dialing.
+* TechName: Tech name for outbound dialing. See detail <em class="xref std std-ref">tech_name</em>.
+* ServiceLevel: Determine service level.
+* MaxRetry1: Max retry count for number 1.
+* MaxRetry2: Max retry count for number 2.
+* MaxRetry3: Max retry count for number 3.
+* MaxRetry4: Max retry count for number 4.
+* MaxRetry5: Max retry count for number 5.
+* MaxRetry6: Max retry count for number 6.
+* MaxRetry7: Max retry count for number 7.
+* MaxRetry8: Max retry count for number 8.</p>
 </div>
 <div class="section" id="id9">
 <h3>Example<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
@@ -224,24 +264,65 @@ TmUpdate: &lt;unknown&gt;
 </div>
 <div class="section" id="id11">
 <h3>Syntax<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
-<p>Parameters</p>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanUpdate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DialMode: &lt;value&gt;
+DialTimeout: &lt;value&gt;
+CallerId: &lt;value&gt;
+DlEndHandle: &lt;value&gt;
+RetryDelay: &lt;value&gt;
+TrunkName: &lt;value&gt;
+TechName: &lt;value&gt;
+MaxRetryCnt1: &lt;value&gt;
+MaxRetryCnt2: &lt;value&gt;
+MaxRetryCnt3: &lt;value&gt;
+MaxRetryCnt4: &lt;value&gt;
+MaxRetryCnt5: &lt;value&gt;
+MaxRetryCnt6: &lt;value&gt;
+MaxRetryCnt7: &lt;value&gt;
+MaxRetryCnt8: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters
+* Name: Plan name..
+* Detail: Detail info.
+* DialMode: Dialling mode. See detail <em class="xref std std-ref">plan_dial_mode</em>.
+* UuiField: Customer&#8217;s Uui field name.
+* DialTimeout: Ringing timeout(ms).
+* CallerId: Caller&#8217;s id.
+* DlEndHandle: Determine behavior of when the dial list end. See detail <em class="xref std std-ref">dial_list_end_handling</em>.
+* RetryDelay: Delay time for next try(ms).
+* TrunkName: Trunkname for outbound dialing.
+* TechName: Tech name for outbound dialing. See detail <em class="xref std std-ref">tech_name</em>.
+* ServiceLevel: Determine service level.
+* MaxRetry1: Max retry count for number 1.
+* MaxRetry2: Max retry count for number 2.
+* MaxRetry3: Max retry count for number 3.
+* MaxRetry4: Max retry count for number 4.
+* MaxRetry5: Max retry count for number 5.
+* MaxRetry6: Max retry count for number 6.
+* MaxRetry7: Max retry count for number 7.
+* MaxRetry8: Max retry count for number 8.</p>
 </div>
 <div class="section" id="id12">
 <h3>Example<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutPlanUpdate
 Privilege: message,all
-Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
-Name: TestPlan
-Detail: Change
-DialMode: 0
+Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+Name: sales_plan
+Detail: Plan update test
+DialMode: 1
 DialTimeout: 30000
 CallerId: &lt;unknown&gt;
-AnswerHandle: 0
 DlEndHandle: 1
 RetryDelay: 50000
 TrunkName: &lt;unknown&gt;
-QueueName: &lt;unknown&gt;
-AmdMode: 0
+TechName: sip/
 MaxRetryCnt1: 5
 MaxRetryCnt2: 5
 MaxRetryCnt3: 5
@@ -250,9 +331,9 @@ MaxRetryCnt5: 5
 MaxRetryCnt6: 5
 MaxRetryCnt7: 5
 MaxRetryCnt8: 5
-TmCreate: 2015-12-09 13:58:33.765672
+TmCreate: 2016-10-22T12:45:58.868877001Z
 TmDelete: &lt;unknown&gt;
-TmUpdate: 2015-12-09 13:58:33.945415
+TmUpdate: 2016-10-23T23:12:20.503366656Z
 </pre></div>
 </div>
 </div>
@@ -265,9 +346,12 @@ TmUpdate: 2015-12-09 13:58:33.945415
 </div>
 <div class="section" id="id14">
 <h3>Syntax<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutPlanDelete
+Uuid: &lt;value&gt;
+</pre></div>
 </div>
-<div class="section" id="parameters">
-<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
+<p>Parameters
+* Uuid: Plan uuid.</p>
 </div>
 <div class="section" id="id15">
 <h3>Example<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
@@ -286,17 +370,31 @@ Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
 </div>
 <div class="section" id="id17">
 <h3>Syntax<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
-<p>Parameters</p>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaCreate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DlTable: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters
+* Uuid: Dlma uuid.
+* Name: Dlma name.
+* Detail: Dlma detail info.
+* DlTable: Dlma reference table.</p>
 </div>
 <div class="section" id="id18">
 <h3>Example<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaCreate
 Privilege: message,all
-Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
-Name: 8e6a4214-6e1c-47a3-946f-661e6cf58c04
-Detail: TestDetail
-DlTable: a0dc9df789bd4c2cac81bc7fbc54ff96
-TmCreate: 2015-12-09 19:12:51.753941
+Uuid: 9e2f750f-82e4-42c3-a06f-41b55056fdb0
+Name: &lt;unknown&gt;
+Detail: &lt;unknown&gt;
+DlTable: 9e2f750f_82e4_42c3_a06f_41b55056fdb0
+TmCreate: 2016-10-24T00:07:59.767803436Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -311,7 +409,21 @@ TmUpdate: &lt;unknown&gt;
 </div>
 <div class="section" id="id20">
 <h3>Syntax<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
-<p>Parameters</p>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaUpdate
+Uuid: &lt;value&gt;
+Name: &lt;value&gt;
+Detail: &lt;value&gt;
+DlTable: &lt;value&gt;
+TmCreate: &lt;value&gt;
+TmDelete: &lt;value&gt;
+TmUpdate: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters
+* Uuid: Dlma uuid.
+* Name: Dlma name.
+* Detail: Dlma detail info.
+* DlTable: Dlma reference table.</p>
 </div>
 <div class="section" id="id21">
 <h3>Example<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
@@ -336,7 +448,12 @@ TmUpdate: 2015-12-09 19:12:51.884059
 </div>
 <div class="section" id="id23">
 <h3>Syntax<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
-<p>Parameters</p>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDlmaDelete
+Uuid: &lt;value&gt;
+</pre></div>
+</div>
+<p>Parameters
+* Uuid: Dlma uuid.</p>
 </div>
 <div class="section" id="id24">
 <h3>Example<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
@@ -347,45 +464,103 @@ Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
 </div>
 </div>
 </div>
-<div class="section" id="outdialingcreate">
-<h2>OutDialingCreate<a class="headerlink" href="#outdialingcreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="outdestinationcreate">
+<h2>OutDestinationCreate<a class="headerlink" href="#outdestinationcreate" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id25">
-<h3>Description<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
-<p>Notify event message for dialing created.</p>
+<h3>Example<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationCreate
+Privilege: message,all
+Uuid: 3ff22c32-a727-4d0b-ba85-aa8aef58ddc0
+Name: test destination.
+Detail: detail test destination
+Type: 0
+Exten: &lt;unknown&gt;
+Context: &lt;unknown&gt;
+Priority: &lt;unknown&gt;
+Variable: test=good
+Variable: test1=good1
+Application: &lt;unknown&gt;
+Data: &lt;unknown&gt;
+TmCreate: 2016-10-24T00:41:39.178684973Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="outdestinationupdate">
+<h2>OutDestinationUpdate<a class="headerlink" href="#outdestinationupdate" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id26">
-<h3>Syntax<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
-<p>Parameters</p>
+<h3>Example<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationUpdate
+Privilege: message,all
+Uuid: 36612bfb-3830-4c77-b0f0-e74bb77fb3ac
+Name: update test destination
+Detail: detail test destination
+Type: 0
+Exten: &lt;unknown&gt;
+Context: &lt;unknown&gt;
+Priority: &lt;unknown&gt;
+Variable: &lt;unknown&gt;
+Application: &lt;unknown&gt;
+Data: &lt;unknown&gt;
+TmCreate: 2016-10-24T00:33:59.864623354Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-24T00:47:11.304260041Z
+</pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="outdestinationdelete">
+<h2>OutDestinationDelete<a class="headerlink" href="#outdestinationdelete" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id27">
 <h3>Example<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationDelete
+Privilege: message,all
+Uuid: 36612bfb-3830-4c77-b0f0-e74bb77fb3ac
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outdialingcreate">
+<h2>OutDialingCreate<a class="headerlink" href="#outdialingcreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id28">
+<h3>Description<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<p>Notify event message for dialing created.</p>
+</div>
+<div class="section" id="id29">
+<h3>Syntax<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id30">
+<h3>Example<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutDialingCreate
 Privilege: message,all
-Uuid: 14e8e861-232f-49fb-8101-f5ae489d94d6
+Uuid: 28863ee7-3e86-47cd-b87e-0894d328644c
 Status: 0
-CampUuid: 8cd1d05b-ad45-434f-9fde-4de801dee1c7
-PlanUuid: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
-DlmaUuid: e276d8be-a558-4546-948a-f99913a7fea2
-DlListUuid: 382b639c-9eba-11e5-a926-0800271f0a4b
-CurrentQueue: &lt;null&gt;
-CurrentAgent: &lt;null&gt;
+CampUuid: 02c4aebf-789c-46aa-817e-b7406416d211
+PlanUuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+DlmaUuid: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+DlListUuid: dc5bf351-a63c-4dda-8a1f-2bf337ce4e45
+CurrentQueue: &lt;unknown&gt;
+CurrentAgent: &lt;unknown&gt;
 DialIndex: 1
-DialAddr: 111-111-0001
-DialChannel: SIP/111-111-0001@trunk_test_1
+DialAddr: 300
+DialChannel: sip/300
 DialTryCnt: 1
-DialTimeout: 30000
-DialType: 0
-DialExten: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
-DialContext: res_outbound
-DialApplication: &lt;unknown&gt;
-DialData: &lt;unknown&gt;
+DialTimeout: 0
+DialType: 1
+DialExten: &lt;unknown&gt;
+DialContext: &lt;unknown&gt;
+DialApplication: park
+DialData:
 ChannelName: &lt;unknown&gt;
 ResDial: 0
 ResAmd: &lt;unknown&gt;
 ResAmdDetail: &lt;unknown&gt;
 ResHangup: 0
 ResHangupDetail: &lt;unknown&gt;
-TmCreate: 2015-12-09T21:17:22.209160178Z
+TmCreate: 2016-10-24T00:10:46.302114915Z
 TmUpdate: &lt;unknown&gt;
 TmDelete: &lt;unknown&gt;
 </pre></div>
@@ -394,54 +569,9 @@ TmDelete: &lt;unknown&gt;
 </div>
 <div class="section" id="outdialingupdate">
 <h2>OutDialingUpdate<a class="headerlink" href="#outdialingupdate" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id28">
-<h3>Description<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
-<p>Notify event message for dialing updated.</p>
-</div>
-<div class="section" id="id29">
-<h3>Syntax<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
-<p>Parameters</p>
-</div>
-<div class="section" id="id30">
-<h3>Example<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Event: OutDialingUpdate
-Privilege: message,all
-Uuid: 14e8e861-232f-49fb-8101-f5ae489d94d6
-Status: 1
-CampUuid: 8cd1d05b-ad45-434f-9fde-4de801dee1c7
-PlanUuid: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
-DlmaUuid: e276d8be-a558-4546-948a-f99913a7fea2
-DlListUuid: 382b639c-9eba-11e5-a926-0800271f0a4b
-CurrentQueue: &lt;null&gt;
-CurrentAgent: &lt;null&gt;
-DialIndex: 1
-DialAddr: 111-111-0001
-DialChannel: SIP/111-111-0001@trunk_test_1
-DialTryCnt: 1
-DialTimeout: 30000
-DialType: 0
-DialExten: 5ad6c7d8-535c-4cd3-b3e5-83ab420dcb56
-DialContext: res_outbound
-DialApplication: &lt;unknown&gt;
-DialData: &lt;unknown&gt;
-ChannelName: SIP/trunk_test_1-00000007
-ResDial: 0
-ResAmd: &lt;unknown&gt;
-ResAmdDetail: &lt;unknown&gt;
-ResHangup: 0
-ResHangupDetail: &lt;unknown&gt;
-TmCreate: 2015-12-09T21:17:22.209160178Z
-TmUpdate: 2015-12-09T21:17:22.249904462Z
-TmDelete: &lt;unknown&gt;
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="outdialingdelete">
-<h2>OutDialingDelete<a class="headerlink" href="#outdialingdelete" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id31">
 <h3>Description<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
-<p>Notify message for dialing deleted.</p>
+<p>Notify event message for dialing updated.</p>
 </div>
 <div class="section" id="id32">
 <h3>Syntax<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
@@ -449,32 +579,52 @@ TmDelete: &lt;unknown&gt;
 </div>
 <div class="section" id="id33">
 <h3>Example<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<p>Event: OutDialingUpdate
+Privilege: message,all
+Uuid: 28863ee7-3e86-47cd-b87e-0894d328644c
+Status: 1
+CampUuid: 02c4aebf-789c-46aa-817e-b7406416d211
+PlanUuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+DlmaUuid: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+DlListUuid: dc5bf351-a63c-4dda-8a1f-2bf337ce4e45
+CurrentQueue: &lt;unknown&gt;
+CurrentAgent: &lt;unknown&gt;
+DialIndex: 1
+DialAddr: 300
+DialChannel: sip/300
+DialTryCnt: 1
+DialTimeout: 0
+DialType: 1
+DialExten: &lt;unknown&gt;
+DialContext: &lt;unknown&gt;
+DialApplication: park
+DialData:
+ChannelName: SIP/300-00000000
+ResDial: 0
+ResAmd: &lt;unknown&gt;
+ResAmdDetail: &lt;unknown&gt;
+ResHangup: 0
+ResHangupDetail: &lt;unknown&gt;
+TmCreate: 2016-10-24T00:10:46.302114915Z
+TmUpdate: 2016-10-24T00:10:46.310483656Z
+TmDelete: &lt;unknown&gt;</p>
+</div>
+</div>
+<div class="section" id="outdialingdelete">
+<h2>OutDialingDelete<a class="headerlink" href="#outdialingdelete" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id34">
+<h3>Description<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<p>Notify message for dialing deleted.</p>
+</div>
+<div class="section" id="id35">
+<h3>Syntax<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<p>Parameters</p>
+</div>
+<div class="section" id="id36">
+<h3>Example<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutDialingDelete
 Privilege: message,all
-Uuid: 4100781e-88f6-403d-af46-9500335d5560
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="outdestinationcreate">
-<h2>OutDestinationCreate<a class="headerlink" href="#outdestinationcreate" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id34">
-<h3>Example<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Event: OutDestinationCreate
-Privilege: message,all
-Uuid: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
-Name: destination test
-Detail: test destination
-Type: 1
-Exten: &lt;unknown&gt;
-Context: &lt;unknown&gt;
-Priority: &lt;unknown&gt;
-Variable: &lt;unknown&gt;
-Application: park
-Data: &lt;unknown&gt;
-TmCreate: 2016-10-22T14:14:26.443747068Z
-TmDelete: &lt;unknown&gt;
-TmUpdate: &lt;unknown&gt;
+Uuid: 0db3d746-5185-42b9-9c5e-6bc95617ee00
 </pre></div>
 </div>
 </div>
@@ -490,7 +640,6 @@ TmUpdate: &lt;unknown&gt;
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">AMI Event</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#outcampaigncreate">OutCampaignCreate</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#syntax">Syntax</a></li>
@@ -524,7 +673,6 @@ TmUpdate: &lt;unknown&gt;
 <li><a class="reference internal" href="#outplandelete">OutPlanDelete</a><ul>
 <li><a class="reference internal" href="#id13">Description</a></li>
 <li><a class="reference internal" href="#id14">Syntax</a></li>
-<li><a class="reference internal" href="#parameters">Parameters</a></li>
 <li><a class="reference internal" href="#id15">Example</a></li>
 </ul>
 </li>
@@ -546,26 +694,34 @@ TmUpdate: &lt;unknown&gt;
 <li><a class="reference internal" href="#id24">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#outdialingcreate">OutDialingCreate</a><ul>
-<li><a class="reference internal" href="#id25">Description</a></li>
-<li><a class="reference internal" href="#id26">Syntax</a></li>
+<li><a class="reference internal" href="#outdestinationcreate">OutDestinationCreate</a><ul>
+<li><a class="reference internal" href="#id25">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdestinationupdate">OutDestinationUpdate</a><ul>
+<li><a class="reference internal" href="#id26">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outdestinationdelete">OutDestinationDelete</a><ul>
 <li><a class="reference internal" href="#id27">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#outdialingupdate">OutDialingUpdate</a><ul>
+<li><a class="reference internal" href="#outdialingcreate">OutDialingCreate</a><ul>
 <li><a class="reference internal" href="#id28">Description</a></li>
 <li><a class="reference internal" href="#id29">Syntax</a></li>
 <li><a class="reference internal" href="#id30">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#outdialingdelete">OutDialingDelete</a><ul>
+<li><a class="reference internal" href="#outdialingupdate">OutDialingUpdate</a><ul>
 <li><a class="reference internal" href="#id31">Description</a></li>
 <li><a class="reference internal" href="#id32">Syntax</a></li>
 <li><a class="reference internal" href="#id33">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#outdestinationcreate">OutDestinationCreate</a><ul>
-<li><a class="reference internal" href="#id34">Example</a></li>
+<li><a class="reference internal" href="#outdialingdelete">OutDialingDelete</a><ul>
+<li><a class="reference internal" href="#id34">Description</a></li>
+<li><a class="reference internal" href="#id35">Syntax</a></li>
+<li><a class="reference internal" href="#id36">Example</a></li>
 </ul>
 </li>
 </ul>

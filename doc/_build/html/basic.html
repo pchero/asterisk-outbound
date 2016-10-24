@@ -55,12 +55,16 @@
 <h2>Concept<a class="headerlink" href="#concept" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="principle">
 <h3>Principle<a class="headerlink" href="#principle" title="Permalink to this headline">¶</a></h3>
-<p>asterisk-outbound has a 5W1H principle.</p>
+<p>The asterisk-outbound has a 5W1H principle.</p>
+<div class="figure align-center">
+<img alt="_images/Basic_concept.png" src="_images/Basic_concept.png" />
+<p class="caption">Basic concept</p>
+</div>
 <ul class="simple">
 <li>Campaign : Determine why make a call(Why).</li>
-<li>Dial list : Determine where/what call heading for(Where/What).</li>
-<li>Destination : Determine who get a call after answer(Who).</li>
 <li>Plan : Determine how/when to make a call(How/When).</li>
+<li>Destination : Determine who get a call after answer(Who).</li>
+<li>Dial list(Dial List Master) : Determine where/what call heading for(Where/What).</li>
 </ul>
 </div>
 </div>
@@ -93,20 +97,28 @@
 </div>
 </div>
 <div class="section" id="id1">
-<h2>Plan<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>Campaign<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Determine why make a call(Why).</p>
+<p>To dial to the customer, the user need to create the campaign first and need to assign the correct resources(destination, plan, dial list master).</p>
+<p>Then the resources determine where/what/who/how/when make a call to the customer.</p>
+</div>
+<div class="section" id="id2">
+<h2>Plan<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Determine how/when to make a call(How/When).</p>
 <div class="section" id="dial-mode">
 <h3>Dial mode<a class="headerlink" href="#dial-mode" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="predictive">
 <h4>Predictive<a class="headerlink" href="#predictive" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
+<li>Predict the number of customers to dial based on the deliver application/agent&#8217;s answer rate.</li>
 <li>Predict how many call will be answered or not answered.</li>
 <li>Calculate possilbilties automatically.</li>
 </ul>
 </div>
-<div class="section" id="power">
-<h4>Power<a class="headerlink" href="#power" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="preview">
+<h4>Preview<a class="headerlink" href="#preview" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li>Make a call and play recorded message.</li>
+<li>The destination makes decision to make a call.</li>
 <li>Will be supported in a future.</li>
 </ul>
 </div>
@@ -114,13 +126,6 @@
 <h4>SMS<a class="headerlink" href="#sms" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li>Send an SMS messages</li>
-<li>Will be supported in a future.</li>
-</ul>
-</div>
-<div class="section" id="desktop">
-<h4>Desktop<a class="headerlink" href="#desktop" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li>The destination makes decision to make a call.</li>
 <li>Will be supported in a future.</li>
 </ul>
 </div>
@@ -132,6 +137,11 @@
 </ul>
 </div>
 </div>
+</div>
+<div class="section" id="id3">
+<h2>Destination<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Determine who get a call after answer(Who).</p>
+<p>Normaly, the destination suppose to be an agent. But in the asterisk system, the destination could be anything. For example, it could be extension or application(queue).</p>
 </div>
 </div>
 
@@ -155,17 +165,18 @@
 <li><a class="reference internal" href="#dial-list">Dial list</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id1">Plan</a><ul>
+<li><a class="reference internal" href="#id1">Campaign</a></li>
+<li><a class="reference internal" href="#id2">Plan</a><ul>
 <li><a class="reference internal" href="#dial-mode">Dial mode</a><ul>
 <li><a class="reference internal" href="#predictive">Predictive</a></li>
-<li><a class="reference internal" href="#power">Power</a></li>
+<li><a class="reference internal" href="#preview">Preview</a></li>
 <li><a class="reference internal" href="#sms">SMS</a></li>
-<li><a class="reference internal" href="#desktop">Desktop</a></li>
 <li><a class="reference internal" href="#fax">Fax</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id3">Destination</a></li>
 </ul>
 </li>
 </ul>

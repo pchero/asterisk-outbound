@@ -4,12 +4,9 @@
 AMI Action
 **********
 
-Overview
-========
-AMI action message for Asterisk-outbound.
-
 OutCampaignCreate
 =================
+
 Description
 -----------
 Create new campaign.
@@ -198,21 +195,23 @@ Example
 ::
 
     Action: OutCampaignShow
+    Uuid: 02c4aebf-789c-46aa-817e-b7406416d211
 
     Response: Success
     EventList: start
     Message: Campaign List will follow
 
     Event: OutCampaignEntry
-    Uuid: c82831f1-b1c2-46ca-86f9-3bd41f45773c
-    Name: test campaign 02
-    Detail: The test campaign 02
+    Uuid: 02c4aebf-789c-46aa-817e-b7406416d211
+    Name: Sales campaign
+    Detail: test campaign
     Status: 0
-    Plan: <unknown>
-    Dlma: <unknown>
-    TmCreate: 2016-10-02 14:43:33.858693
+    Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+    Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+    Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
+    TmCreate: 2016-10-22T14:34:45.33929956Z
     TmDelete: <unknown>
-    TmUpdate: <unknown>
+    TmUpdate: 2016-10-22T15:30:55.226737231Z
 
     Event: OutCampaignListComplete
     EventList: Complete
@@ -229,30 +228,49 @@ Syntax
 
 ::
 
-    Action: OutPlanCreate
-    ActionID: <value>
-    [Name:] <value>
-    [Detail:] <value>
-    [DialMode:] <value>
-    [CallerId:] <value>
-    [AnswerHandle:] <value>
-    [DlEndHandle:] <value>
-    [RetryDelay:] <value>
-    [TrunkName:] <value>
-    [TechName:] <value>
-    [QueueName:] <value>
-    [AmdMode:] <value>
-    [MaxRetry1:] <value>
-    [MaxRetry2:] <value>
-    [MaxRetry3:] <value>
-    [MaxRetry4:] <value>
-    [MaxRetry5:] <value>
-    [MaxRetry6:] <value>
-    [MaxRetry7:] <value>
-    [MaxRetry8:] <value>
+   [Name:] <value>
+   [Detail:] <value>
+   [DialMode:] <value>
+   [UuiField:] <value>
+   [DialTimeout:] <value>
+   [CallerId:] <value>
+   [DlEndHandle:] <value>
+   [RetryDelay:] <value>
+   [TrunkName:] <value>
+   [TechName:] <value>
+   [ServiceLevel:] <value>
+   [MaxRetry1:] <value>
+   [MaxRetry2:] <value>
+   [MaxRetry3:] <value>
+   [MaxRetry4:] <value>
+   [MaxRetry5:] <value>
+   [MaxRetry6:] <value>
+   [MaxRetry7:] <value>
+   [MaxRetry8:] <value>
 
 
 Parameters
+----------
+
+* Name: Plan name. Default null.
+* Detail: Detail info. Default null.
+* DialMode: Dialling mode. Default 1. See detail :ref:`dial_mode`.
+* UuiField: Customer's Uui field name.
+* DialTimeout: Ringing timeout(ms). Default 30000.
+* CallerId: Caller's id. Default null.
+* DlEndHandle: Determine behavior of when the dial list end. Default 1. See detail :ref:`dial_list_end_handling`.
+* RetryDelay: Delay time for next try(ms). Default 50000.
+* TrunkName: Trunkname for outbound dialing. Default null.
+* TechName: Tech name for outbound dialing. Default null. See detail :ref:`tech_name`.
+* ServiceLevel: Determine service level. Default 0.
+* MaxRetry1: Max retry count for number 1. Default 5
+* MaxRetry2: Max retry count for number 2. Default 5
+* MaxRetry3: Max retry count for number 3. Default 5
+* MaxRetry4: Max retry count for number 4. Default 5
+* MaxRetry5: Max retry count for number 5. Default 5
+* MaxRetry6: Max retry count for number 6. Default 5
+* MaxRetry7: Max retry count for number 7. Default 5
+* MaxRetry8: Max retry count for number 8. Default 5
 
 
 Returns
@@ -295,14 +313,14 @@ Syntax
     [Name:] <value>
     [Detail:] <value>
     [DialMode:] <value>
+    [UuiField:] <value>
+    [DialTimeout:] <value>
     [CallerId:] <value>
-    [AnswerHandle:] <value>
     [DlEndHandle:] <value>
     [RetryDelay:] <value>
     [TrunkName:] <value>
     [TechName:] <value>
-    [QueueName:] <value>
-    [AmdMode:] <value>
+    [ServiceLevel:] <value>
     [MaxRetry1:] <value>
     [MaxRetry2:] <value>
     [MaxRetry3:] <value>
@@ -312,22 +330,49 @@ Syntax
     [MaxRetry7:] <value>
     [MaxRetry8:] <value>
 
-
-
 Parameters
+----------
+
+* Name: Plan name. Default null.
+* Detail: Detail info. Default null.
+* DialMode: Dialling mode. Default 1. See detail :ref:`dial_mode`.
+* UuiField: Customer's Uui field name.
+* DialTimeout: Ringing timeout(ms). Default 30000.
+* CallerId: Caller's id. Default null.
+* DlEndHandle: Determine behavior of when the dial list end. Default 1. See detail :ref:`dial_list_end_handling`.
+* RetryDelay: Delay time for next try(ms). Default 50000.
+* TrunkName: Trunkname for outbound dialing. Default null.
+* TechName: Tech name for outbound dialing. Default null. See detail :ref:`tech_name`.
+* ServiceLevel: Determine service level. Default 0.
+* MaxRetry1: Max retry count for number 1. Default 5
+* MaxRetry2: Max retry count for number 2. Default 5
+* MaxRetry3: Max retry count for number 3. Default 5
+* MaxRetry4: Max retry count for number 4. Default 5
+* MaxRetry5: Max retry count for number 5. Default 5
+* MaxRetry6: Max retry count for number 6. Default 5
+* MaxRetry7: Max retry count for number 7. Default 5
+* MaxRetry8: Max retry count for number 8. Default 5
 
 
 Returns
 -------
 ::
 
-    empty 
+    Response: Success
+    Message: Plan updated successfully
+ 
 
 Example
 -------
 ::
 
-    empty 
+    Action: OutPlanUpdate
+    Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+    Detail: Plan update test
+
+    Response: Success
+    Message: Plan updated successfully
+ 
 
 OutPlanDelete
 =============
@@ -342,11 +387,12 @@ Syntax
 ::
 
     Action: OutPlanDelete
-    ActionID: <value>
     Uuid: <value>
-
+    [ActionID:] <value>
 
 Parameters
+----------
+* Uuid: Plan uuid.
 
 
 Returns
@@ -379,7 +425,8 @@ OutPlanShow
 
 Description
 -----------
-Show specified|all plan info
+Show specified|all plan info. 
+If no uuid given, it shows all plans info.
 
 Syntax
 ------
@@ -387,11 +434,14 @@ Syntax
 ::
 
     Action: OutPlanShow
-    ActionID: <value>
+    [ActionID:] <value>
     [Uuid:] <value>
 
 
 Parameters
+----------
+
+* Uuid: Plan uuid.
 
 
 Returns
@@ -413,44 +463,36 @@ Example
 -------
 ::
 
-   Action: OutPlanShow
+    Response: Success
+    EventList: start
+    Message: Plan List will follow
 
-   Response: Success
-   EventList: start
-   Message: Plan List will follow
-   
-   Event: OutPlanEntry
-   Uuid: 015280bf-8d46-4e42-8f16-72a22cda42d3
-   Name: <unknown>
-   Detail: <unknown>
-   DialMode: 0
-   DialTimeout: 30000
-   CallerId: <unknown>
-   AnswerHandle: 0
-   DlEndHandle: 1
-   RetryDelay: 50000
-   TrunkName: <unknown>
-   QueueName: <unknown>
-   AmdMode: 0
-   MaxRetryCnt1: 5
-   MaxRetryCnt2: 5
-   MaxRetryCnt3: 5
-   MaxRetryCnt4: 5
-   MaxRetryCnt5: 5
-   MaxRetryCnt6: 5
-   MaxRetryCnt7: 5
-   MaxRetryCnt8: 5
-   TmCreate: 2016-10-02 20:19:08.478190
-   TmDelete: <unknown>
-   TmUpdate: <unknown>
-   
-   ...
-   
-   Event: OutPlanListComplete
-   EventList: Complete
-   ListItems: 31
-   
-   
+    Event: OutPlanEntry
+    Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+    Name: sales_plan
+    Detail: simple sales plan
+    DialMode: 1
+    DialTimeout: 30000
+    CallerId: <unknown>
+    DlEndHandle: 1
+    RetryDelay: 50000
+    TrunkName: <unknown>
+    TechName: sip/
+    MaxRetryCnt1: 5
+    MaxRetryCnt2: 5
+    MaxRetryCnt3: 5
+    MaxRetryCnt4: 5
+    MaxRetryCnt5: 5
+    MaxRetryCnt6: 5
+    MaxRetryCnt7: 5
+    MaxRetryCnt8: 5
+    TmCreate: 2016-10-22T12:45:58.868877001Z
+    TmDelete: <unknown>
+    TmUpdate: <unknown>
+
+    Event: OutPlanListComplete
+    EventList: Complete
+    ListItems: 1
 
 
 OutDlmaCreate
@@ -470,9 +512,10 @@ Syntax
     [Name:] <value>
     [Detail:] <value>
 
-
 Parameters
-
+----------
+* Name: Dlma name.
+* Detail: Detail dlma info.
 
 Returns
 -------
@@ -489,16 +532,6 @@ Example
 
     Response: Success
     Message: Dlma created successfully
-
-    Event: OutDlmaCreate
-    Privilege: message,all
-    Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
-    Name: <unknown>
-    Detail: <unknown>
-    DlTable: 0853bbaa_7366_4c46_9320_fe5daf92a56b
-    TmCreate: 2016-10-02 15:40:14.939472
-    TmDelete: <unknown>
-    TmUpdate: <unknown>
 
     
 OutDlmaUpdate
@@ -521,7 +554,9 @@ Syntax
 
 
 Parameters
-
+----------
+* Name: Dlma name.
+* Detail: Detail dlma info.
 
 Returns
 -------
@@ -569,9 +604,9 @@ Syntax
     ActionID: <value>
     Uuid: <value>
 
-
 Parameters
-
+----------
+* Uuid: dlma uuid.
 
 Returns
 -------
@@ -590,11 +625,6 @@ Example
     Response: Success
     Message: Dlma deleted successfully
 
-    Event: OutDlmaDelete
-    Privilege: message,all
-    Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
-
-
 OutDlmaShow
 ===========
 
@@ -611,9 +641,8 @@ Syntax
     ActionID: <value>
     [Uuid:] <value>
 
-
 Parameters
-
+* Uuid: Dlma uuid.
 
 Returns
 -------
@@ -723,25 +752,26 @@ Syntax
 ::
 
    Action: OutDestinationCreate
-   Name: <value>
-   Detail: <value>
-   Type: <value>
-   Exten: <value>
-   Context: <value>
-   Priority: <value>
-   Variable: <var=value>
-   Application: <value>
-   Data: <value>
+   [Name:] <value>
+   [Detail:] <value>
+   [Type:] <value>
+   [Exten:] <value>
+   [Context:] <value>
+   [Priority:] <value>
+   [Variable:] <var=value>
+   [Application:] <value>
+   [Data:] <value>
 
-* Name: <optional> Destination name.
-* Detail: <optional> Detail info.
-* Type: <required> Destination type. 0:exten, 1:application
-* Exten: <optional> Extension. Type: 0(exten) only
-* Context: <optional> Conetxt. Type: 0(exten) only
-* Priority: <optional> Priority. Type: 0(exten) only
-* Variable: <optional> Set(var=val). Could be more than one. Type: 0(exten) only.
-* Application: <optional> Application name. Type: 1(application) only
-* Data: <optional> Application name. Type: 1(application) only
+Parameters
+* Name: Destination name.
+* Detail: Detail info.
+* Type: Destination type. See detail :ref:`destination_type`.
+* Exten: Extension. Type: 0(exten) only
+* Context: Conetxt. Type: 0(exten) only
+* Priority: Priority. Type: 0(exten) only
+* Variable: Set(var=val). Could be more than one. Type: 0(exten) only.
+* Application: Application name. Type: 1(application) only
+* Data: Application name. Type: 1(application) only
 
 Example
 -------
@@ -753,13 +783,15 @@ Example
    Detail: test destination
    Type: 1
    Application: park
+   Variable: var1=val1
+   Variable: var2=val2
    
    Response: Success
    Message: Destination created successfully
 
 
-OutDestUpdate
-=============
+OutDestinationUpdate
+====================
 
 Description
 -----------
@@ -770,32 +802,46 @@ Syntax
 
 ::
 
-   Action: OutDestUpdate
+   Action: OutDestinationUpdate
    Uuid: <value>
-   Name: <value>
-   Detail: <value>
-   Type: <value>
-   Exten: <value>
-   Context: <value>
-   Priority: <value>
-   Variable: <var=value>
-   Application: <value>
-   Data: <value>
+   [Name:] <value>
+   [Detail:] <value>
+   [Type:] <value>
+   [Exten:] <value>
+   [Context:] <value>
+   [Priority:] <value>
+   [Variable:] <var=value>
+   [Application:] <value>
+   [Data:] <value>
 
-* Uuid: <required> Destination uuid.
-* Name: <optional> Destination name.
-* Detail: <optional> Detail info.
-* Type: <required> Destination type. 0:exten, 1:application
-* Exten: <optional> Extension. Type: 0(exten) only
-* Context: <optional> Conetxt. Type: 0(exten) only
-* Priority: <optional> Priority. Type: 0(exten) only
-* Variable: <optional> Set(var=val). Could be more than one. Type: 0(exten) only.
-* Application: <optional> Application name. Type: 1(application) only
-* Data: <optional> Application name. Type: 1(application) only
+Parameters
+* Uuid: Destination uuid.
+* Name: Destination name.
+* Detail: Detail info.
+* Type: Destination type. See detail :ref:`destination_type`.
+* Exten: Extension. Type: 0(exten) only
+* Context: Conetxt. Type: 0(exten) only
+* Priority: Priority. Type: 0(exten) only
+* Variable: Set(var=val). Could be more than one. Type: 0(exten) only.
+* Application: Application name. Type: 1(application) only
+* Data: Application name. Type: 1(application) only
+
+Example
+-------
+
+::
+
+   Action: OutDestinationUpdate
+   Uuid: 36612bfb-3830-4c77-b0f0-e74bb77fb3ac
+   Name: update test destination
+   
+   Response: Success
+   Message: Destination updated successfully
 
 
-OutDestDelete
-=============
+
+OutDestinationDelete
+====================
 
 Description
 -----------
@@ -806,9 +852,19 @@ Syntax
 
 ::
 
-   Action: OutDestDelete
+   Action: OutDestinationDelete
    Uuid: <value>
 
+Parameters
 * Uuid: <required> Destination uuid.
    
+Example
+-------
+
+::
+
+   Action: OutDestinationDelete
+   Uuid: 36612bfb-3830-4c77-b0f0-e74bb77fb3ac
    
+   Response: Success
+   Message: Destination deleted successfully

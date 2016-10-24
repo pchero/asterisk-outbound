@@ -7,11 +7,11 @@ Structure
 Basic structures
 ================
 
-Plan dial mode
---------------
+Dial mode
+---------
 
-.. _plan_dial_mode:
-.. table:: Plan dial mode
+.. _dial_mode:
+.. table:: Dial mode
 
    ==== ==================
    Mode Detail
@@ -19,6 +19,33 @@ Plan dial mode
    0    None(No dial mode)
    1    Predictive
    ==== ==================
+   
+Dial list end handling
+----------------------
+
+.. _dial_list_end_handling:
+.. table:: Dail list end handling
+
+   ==== ==================
+   Mode Detail
+   ==== ==================
+   0    Keep current status.
+   1    Stop the campaign.
+   ==== ==================
+   
+Tech name
+---------
+
+.. _tech_name:
+.. table:: Tech name
+
+   ==== ==================
+   Mode Detail
+   ==== ==================
+   sip/ Normal sip tech
+   ...  ...
+   ==== ==================
+
 
 Campaign status
 ---------------
@@ -164,5 +191,20 @@ Hangup result
     111     Protocol error.
     127     Internetwroking.
     ======  ====================================
-   
-   
+
+Destination
+===========
+
+Destination type
+----------------
+
+.. _destination_type:
+.. table:: Destination type
+
+   ==== ==================
+   Type Detail
+   ==== ==================
+   0    Extensioin
+   1    Application
+   ==== ==================
+
