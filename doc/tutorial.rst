@@ -67,32 +67,13 @@ Assume that we have a below queue info.
    musicclass = default
    strategy = ringall
    joinempty = yes
+
    
+Basic tutorial
+==============
+Dial to the customer. After the customer answered call, the call will be transfferred to parking lot.
 
-AMI actions
-===========
-
-Login
------
-
-::
-
-   Connection closed by foreign host.
-   $ telnet localhost 5038
-   Trying 127.0.0.1...
-   Connected to localhost.
-   Escape character is '^]'.
-   Asterisk Call Manager/2.8.0
-   
-   Action: Login
-   Username: admin
-   Secret: ****
-   
-   Response: Success
-   Message: Authentication accepted
-   
-
-Create Plan
+Create plan
 -----------
 
 ::
@@ -109,19 +90,16 @@ Create Plan
    
    Event: OutPlanCreate
    Privilege: message,all
-   Uuid: d1306a32-0ec6-4389-a5f1-118153b6266e
+   Uuid: 687763ed-c977-4e5b-a30d-1221941a4d21
    Name: sales_plan
    Detail: simple sales plan
    DialMode: 1
    DialTimeout: 30000
    CallerId: <unknown>
-   AnswerHandle: 0
    DlEndHandle: 1
-   RetryDelay: 50000
+   RetryDelay: 60
    TrunkName: <unknown>
    TechName: sip/
-   QueueName: sales_1
-   AmdMode: 0
    MaxRetryCnt1: 5
    MaxRetryCnt2: 5
    MaxRetryCnt3: 5
@@ -130,26 +108,12 @@ Create Plan
    MaxRetryCnt6: 5
    MaxRetryCnt7: 5
    MaxRetryCnt8: 5
-   TmCreate: 2016-10-04 22:40:41.573445
+   TmCreate: 2016-10-24T21:36:03.702384603Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
-   
-
-Create Destination
-------------------
-::
-
-   Action: OutDestinationCreate
-   Name: destination test
-   Detail: test destination
-   Type: 1
-   Application: park
-   
-   Response: Success
-   Message: Dl list created successfully
 
 
-Create Dlma
+Create dlma
 -----------
 
 ::
@@ -163,52 +127,113 @@ Create Dlma
    
    Event: OutDlmaCreate
    Privilege: message,all
-   Uuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
+   Uuid: a6a29e7a-49c4-4339-92ff-543a121f348f
    Name: DialListMaster_Sales
    Detail: Test Dlma description
-   DlTable: 9155a63e_6577_4abc_96e4_2c7811b5f639
-   TmCreate: 2016-10-04 22:41:07.528126
+   DlTable: a6a29e7a_49c4_4339_92ff_543a121f348f
+   TmCreate: 2016-10-24T21:37:39.972064103Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
 
-Create Dl list
---------------
+Create destination
+------------------
+
+::
+
+   Action: OutDestinationCreate
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Application: park
+   
+   Response: Success
+   Message: Destination created successfully
+   
+   Event: OutDestinationCreate
+   Privilege: message,all
+   Uuid: ef355147-48bf-4170-8f88-f49b00f3ab37
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Exten: <unknown>
+   Context: <unknown>
+   Priority: <unknown>
+   Variable: <unknown>
+   Application: park
+   Data: <unknown>
+   TmCreate: 2016-10-24T21:38:35.700905321Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+
+Create dial list
+----------------
+
 ::
 
    Action: OutDlListCreate
-   DlmaUuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
+   DlmaUuid: a6a29e7a-49c4-4339-92ff-543a121f348f
    Name: client 01
    Detail: Dial to client 01
    Number1: 300
    
    Response: Success
    Message: Dl list created successfully
-   
+
+
 Create campaign
 ---------------
+
 ::
 
    Action: OutCampaignCreate
    Name: Sales campaign
    Detail: test campaign
-   Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
-   Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
+   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
    
    Response: Success
    Message: Campaign created successfully
    
    Event: OutCampaignCreate
    Privilege: message,all
-   Uuid: a3e95af9-5ffa-4f53-8908-6095ff24945c
+   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
    Name: Sales campaign
    Detail: test campaign
    Status: 0
-   Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
-   Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
-   TmCreate: 2016-10-04 22:43:22.899115
+   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+   TmCreate: 2016-10-24T21:41:24.939663006Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
+
+Update Campaign status to start
+-------------------------------
+
+::
+
+   Action: OutCampaignUpdate
+   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+   Status: 1
+   
+   Response: Success
+   Message: Campaign updated successfully
+   
+   Event: OutCampaignUpdate
+   Privilege: message,all
+   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+   Name: Sales campaign
+   Detail: test campaign
+   Status: 1
+   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
+   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
+   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+   TmCreate: 2016-10-24T21:41:24.939663006Z
+   TmDelete: <unknown>
+   TmUpdate: 2016-10-24T21:42:38.66081477Z
 
  
 Normal call distribute

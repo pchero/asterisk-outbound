@@ -259,7 +259,7 @@ Parameters
 * DialTimeout: Ringing timeout(ms). Default 30000.
 * CallerId: Caller's id. Default null.
 * DlEndHandle: Determine behavior of when the dial list end. Default 1. See detail :ref:`dial_list_end_handling`.
-* RetryDelay: Delay time for next try(ms). Default 50000.
+* RetryDelay: Delay time for next try(sec). Default 60.
 * TrunkName: Trunkname for outbound dialing. Default null.
 * TechName: Tech name for outbound dialing. Default null. See detail :ref:`tech_name`.
 * ServiceLevel: Determine service level. Default 0.
@@ -340,7 +340,7 @@ Parameters
 * DialTimeout: Ringing timeout(ms). Default 30000.
 * CallerId: Caller's id. Default null.
 * DlEndHandle: Determine behavior of when the dial list end. Default 1. See detail :ref:`dial_list_end_handling`.
-* RetryDelay: Delay time for next try(ms). Default 50000.
+* RetryDelay: Delay time for next try(sec). Default 60.
 * TrunkName: Trunkname for outbound dialing. Default null.
 * TechName: Tech name for outbound dialing. Default null. See detail :ref:`tech_name`.
 * ServiceLevel: Determine service level. Default 0.
@@ -475,7 +475,7 @@ Example
     DialTimeout: 30000
     CallerId: <unknown>
     DlEndHandle: 1
-    RetryDelay: 50000
+    RetryDelay: 60
     TrunkName: <unknown>
     TechName: sip/
     MaxRetryCnt1: 5

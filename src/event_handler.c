@@ -446,6 +446,7 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
 	int ret;
+	char* timestamp;
 
 	iter = rb_dialing_iter_init();
 	while(1) {
@@ -459,15 +460,18 @@ static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((
 		}
 
 		// create dl_list for update
-		j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O}",
+		timestamp = get_utc_timestamp();
+		j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O, s:s}",
 				"uuid",				 ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
 				"status",			   E_DL_IDLE,
 				"dialing_uuid",		 ast_json_null(),
 				"dialing_camp_uuid",	ast_json_null(),
-				"dialing_plan_uuid",	ast_json_null()
+				"dialing_plan_uuid",	ast_json_null(),
+				"tm_last_hangup",			timestamp
 				);
 		ast_json_object_set(j_tmp, "res_hangup", ast_json_ref(ast_json_object_get(dialing->j_dialing, "res_hangup")));
 		ast_json_object_set(j_tmp, "res_dial", ast_json_ref(ast_json_object_get(dialing->j_dialing, "res_dial")));
+		ast_free(timestamp);
 		if(j_tmp == NULL) {
 			ast_log(LOG_ERROR, "Could not create update dl_list json. dl_list_uuid[%s], res_hangup[%lld], res_dial[%lld]\n",
 					ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
@@ -527,6 +531,7 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 	rb_dialing* dialing;
 	struct ast_json* j_tmp;
 	int ret;
+	char* timestamp;
 
 	iter = rb_dialing_iter_init();
 	while(1) {
@@ -539,16 +544,20 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 			continue;
 		}
 
+
 		// create dl_list for update
-		j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O}",
+		timestamp = get_utc_timestamp();
+		j_tmp = ast_json_pack("{s:s, s:i, s:O, s:O, s:O, s:s}",
 				"uuid",				 ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
 				"status",			   E_DL_IDLE,
 				"dialing_uuid",		 ast_json_null(),
 				"dialing_camp_uuid",	ast_json_null(),
-				"dialing_plan_uuid",	ast_json_null()
+				"dialing_plan_uuid",	ast_json_null(),
+				"tm_last_hangup",			timestamp
 				);
 		ast_json_object_set(j_tmp, "res_hangup", ast_json_ref(ast_json_object_get(dialing->j_dialing, "res_hangup")));
 		ast_json_object_set(j_tmp, "res_dial", ast_json_ref(ast_json_object_get(dialing->j_dialing, "res_dial")));
+		ast_free(timestamp);
 		if(j_tmp == NULL) {
 			ast_log(LOG_ERROR, "Could not create update dl_list json. dl_list_uuid[%s], res_hangup[%lld], res_dial[%lld]\n",
 					ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),

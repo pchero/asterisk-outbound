@@ -184,7 +184,7 @@ Parameters
 * DialTimeout: Ringing timeout(ms).
 * CallerId: Caller's id.
 * DlEndHandle: Determine behavior of when the dial list end. See detail :ref:`dial_list_end_handling`.
-* RetryDelay: Delay time for next try(ms).
+* RetryDelay: Delay time for next try(sec).
 * TrunkName: Trunkname for outbound dialing.
 * TechName: Tech name for outbound dialing. See detail :ref:`tech_name`.
 * ServiceLevel: Determine service level.
@@ -211,7 +211,7 @@ Example
    DialTimeout: 30000
    CallerId: <unknown>
    DlEndHandle: 1
-   RetryDelay: 50000
+   RetryDelay: 60
    TrunkName: <unknown>
    TechName: sip/
    MaxRetryCnt1: 5
@@ -270,7 +270,7 @@ Parameters
 * DialTimeout: Ringing timeout(ms).
 * CallerId: Caller's id.
 * DlEndHandle: Determine behavior of when the dial list end. See detail :ref:`dial_list_end_handling`.
-* RetryDelay: Delay time for next try(ms).
+* RetryDelay: Delay time for next try(sec).
 * TrunkName: Trunkname for outbound dialing.
 * TechName: Tech name for outbound dialing. See detail :ref:`tech_name`.
 * ServiceLevel: Determine service level.
@@ -297,7 +297,7 @@ Example
    DialTimeout: 30000
    CallerId: <unknown>
    DlEndHandle: 1
-   RetryDelay: 50000
+   RetryDelay: 60
    TrunkName: <unknown>
    TechName: sip/
    MaxRetryCnt1: 5

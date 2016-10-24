@@ -27,97 +27,39 @@ static char* create_view_name(const char* uuid);
 static bool create_dlma_view(const char* uuid, const char* view_name);
 static struct ast_json* create_dial_dl_info(struct ast_json* j_dl_list, struct ast_json* j_plan);
 static bool check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan);
-
+static bool is_over_retry_delay(struct ast_json* j_dlma, struct ast_json* j_dl, struct ast_json* j_plan);
+static struct ast_json* get_dl_available(struct ast_json* j_dlma, struct ast_json* j_plan);
 
 /**
- * Get dl_list from database.
- * @param j_dlma
- * @param j_plan
- * @return
+ * Get dl_list for predictive dialing.
+ * \param j_dlma
+ * \param j_plan
+ * \return
  */
 struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast_json* j_plan)
 {
-	char* sql;
-	db_res_t* db_res;
-	struct ast_json* j_res;
+	struct ast_json* j_dl;
+	int ret;
 
-	ast_asprintf(&sql, "select *, "
-			"(trycnt_1 + trycnt_2 + trycnt_3 + trycnt_4 + trycnt_5 + trycnt_6 + trycnt_7 + trycnt_8) as trycnt"
-			" from `%s` where ("
-			"(number_1 is not null and trycnt_1 < %lld)"
-			" or (number_2 is not null and trycnt_2 < %lld)"
-			" or (number_3 is not null and trycnt_3 < %lld)"
-			" or (number_4 is not null and trycnt_4 < %lld)"
-			" or (number_5 is not null and trycnt_5 < %lld)"
-			" or (number_6 is not null and trycnt_6 < %lld)"
-			" or (number_7 is not null and trycnt_7 < %lld)"
-			" or (number_8 is not null and trycnt_8 < %lld)"
-			")"
-			" and res_hangup != %d"
-			" and status = %d"
-			" order by trycnt asc"
-			" limit 1"
-			";",
-			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
-			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
-			AST_CAUSE_NORMAL_CLEARING,
-			E_DL_IDLE
-			);
-
-
-//	ast_asprintf(&sql, "select "
-//			"*, "
-//			"trycnt_1 + trycnt_2 + trycnt_3 + trycnt_4 + trycnt_5 + trycnt_6 + trycnt_7 + trycnt_8 as trycnt, "
-//			"case when number_1 is null then 0 when trycnt_1 < %d then 1 else 0 end as num_1, "
-//			"case when number_2 is null then 0 when trycnt_2 < %d then 1 else 0 end as num_2, "
-//			"case when number_3 is null then 0 when trycnt_3 < %d then 1 else 0 end as num_3, "
-//			"case when number_4 is null then 0 when trycnt_4 < %d then 1 else 0 end as num_4, "
-//			"case when number_5 is null then 0 when trycnt_5 < %d then 1 else 0 end as num_5, "
-//			"case when number_6 is null then 0 when trycnt_6 < %d then 1 else 0 end as num_6, "
-//			"case when number_7 is null then 0 when trycnt_7 < %d then 1 else 0 end as num_7, "
-//			"case when number_8 is null then 0 when trycnt_8 < %d then 1 else 0 end as num_8 "
-//			"from `%s` "
-//			"having "
-//			"status = %d "
-//			"and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
-//			"and res_hangup != %d "
-//			"order by trycnt asc "
-//			"limit 1"
-//			";",
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
-//			(int)ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
-//			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
-//			E_DL_IDLE,
-//			AST_CAUSE_NORMAL_CLEARING
-//			);
-
-	db_res = db_query(sql);
-	ast_free(sql);
-	if(db_res == NULL) {
-		ast_log(LOG_ERROR, "Could not get dial list info.");
+	if((j_dlma == NULL) || (j_plan == NULL)) {
+		ast_log(LOG_WARNING, "Wrong input parameters.\n");
 		return NULL;
 	}
 
-	j_res = db_get_record(db_res);
-	db_free(db_res);
-	if(j_res == NULL) {
+	// get available dl.
+	j_dl = get_dl_available(j_dlma, j_plan);
+	if(j_dl == NULL) {
 		return NULL;
 	}
 
-	return j_res;
+	// check retry delay
+	ret = is_over_retry_delay(j_dlma, j_dl, j_plan);
+	if(ret == false) {
+		AST_JSON_UNREF(j_dl);
+		return NULL;
+	}
+
+	return j_dl;
 }
 
 static bool check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
@@ -1006,4 +948,119 @@ bool is_endable_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
 	}
 
 	return true;
+}
+
+/**
+ * Check is the given dl is older than given plan's retry delay time.
+ * @param j_dlma
+ * @param j_dl
+ * @param j_plan
+ * @return
+ */
+static bool is_over_retry_delay(struct ast_json* j_dlma, struct ast_json* j_dl, struct ast_json* j_plan)
+{
+	struct ast_json* j_tmp;
+	const char* tm_last_hangup;
+	int retry_delay;
+	char* sql;
+	db_res_t* db_res;
+
+	if((j_dlma == NULL) || (j_dl == NULL) || (j_plan == NULL)) {
+		ast_log(LOG_WARNING, "Wrong input parameters.\n");
+		return false;
+	}
+
+	// check last hangup timestamp.
+	// if there's no tm_last_hangup, then it's first try.
+	tm_last_hangup = ast_json_string_get(ast_json_object_get(j_dl, "tm_last_hangup"));
+	if((tm_last_hangup == NULL) || (strlen(tm_last_hangup) == 0)) {
+		return true;
+	}
+
+	retry_delay = ast_json_integer_get(ast_json_object_get(j_plan, "retry_delay"));
+
+	ast_log(LOG_VERBOSE, "Check value. tm_last_hangup[%s], retry_delay[%d]\n",
+			tm_last_hangup,
+			retry_delay
+			);
+
+	ast_asprintf(&sql, "select * from %s where uuid = '%s' and ((strftime('%%s', 'now') - strftime('%%s', tm_last_hangup)) > %d);",
+			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+			ast_json_string_get(ast_json_object_get(j_dl, "uuid")),
+			retry_delay
+			);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+
+	if(db_res == NULL) {
+		return false;
+	}
+
+	j_tmp = db_get_record(db_res);
+	db_free(db_res);
+	if(j_tmp == NULL) {
+		return false;
+	}
+	AST_JSON_UNREF(j_tmp);
+
+	return true;
+}
+
+/**
+ * Get available dl_list from database.
+ * @param j_dlma
+ * @param j_plan
+ * @return
+ */
+static struct ast_json* get_dl_available(struct ast_json* j_dlma, struct ast_json* j_plan)
+{
+	char* sql;
+	db_res_t* db_res;
+	struct ast_json* j_res;
+
+	ast_asprintf(&sql, "select *, "
+			"(trycnt_1 + trycnt_2 + trycnt_3 + trycnt_4 + trycnt_5 + trycnt_6 + trycnt_7 + trycnt_8) as trycnt"
+			" from `%s` where ("
+			"(number_1 is not null and trycnt_1 < %lld)"
+			" or (number_2 is not null and trycnt_2 < %lld)"
+			" or (number_3 is not null and trycnt_3 < %lld)"
+			" or (number_4 is not null and trycnt_4 < %lld)"
+			" or (number_5 is not null and trycnt_5 < %lld)"
+			" or (number_6 is not null and trycnt_6 < %lld)"
+			" or (number_7 is not null and trycnt_7 < %lld)"
+			" or (number_8 is not null and trycnt_8 < %lld)"
+			")"
+			" and res_hangup != %d"
+			" and status = %d"
+			" order by trycnt asc"
+			" limit 1"
+			";",
+			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
+			AST_CAUSE_NORMAL_CLEARING,
+			E_DL_IDLE
+			);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_ERROR, "Could not get dial list info.");
+		return NULL;
+	}
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+	if(j_res == NULL) {
+		return NULL;
+	}
+
+	return j_res;
 }
