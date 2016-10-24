@@ -26,7 +26,7 @@ static const char* g_sql_plan =
 "    dial_timeout    int default 30000,"          	// no answer hangup timeout(30000 ms = 30 second)"
 "    caller_id       varchar(255) default null,"		// caller name(from)"
 "    dl_end_handle   int default 1,"              	// stratery when it running out dial list(keep_running, stop)"
-"    retry_delay     int default 50000,"          	// retry delaytime(ms)"
+"    retry_delay     int default 60,"          			// retry delaytime(sec)"
 "    trunk_name      varchar(255) default null,"  	// trunk name"
 "    tech_name       varchar(255) default null,"  		// tech name"
 "    service_level   int unsigned default 0,"     // service level. determine how many calls can going out campare to available agents."
@@ -125,7 +125,8 @@ static const char* g_db_sql_dial_list =
 "    tm_create       datetime(6),"   // create time"
 "    tm_delete       datetime(6),"   // delete time"
 "    tm_update       datetime(6),"   // last update time"
-"    tm_last_dial    datetime(6),"   // last tried dial time"
+"    tm_last_dial    datetime(6),"   // last dial time"
+"    tm_last_hangup  datetime(6),"   // last hangup time"
 
 "    primary key(uuid)"
 ");";
