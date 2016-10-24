@@ -12,7 +12,7 @@ This module makes easy to managing the outbound calls.
 * Asterisk CLI support.
 
 ## Requirements
-* Asterisk-13.6
+* Asterisk-13.6 or later
 * Asterisk-manager module
 * Sqlite3
 * Libevent2
