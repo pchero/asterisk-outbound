@@ -274,3 +274,30 @@ struct ast_json* create_dial_plan_info(struct ast_json* j_plan)
 	return j_res;
 
 }
+
+/**
+ * Return the is stoppable plan or not.
+ * \param j_plan
+ * \return
+ */
+bool is_endable_plan(struct ast_json* j_plan)
+{
+	int ret;
+
+	if(j_plan == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return true;
+	}
+
+	ret = ast_json_integer_get(ast_json_object_get(j_plan, "dl_end_handle"));
+	if(ret == E_PLAN_DL_END_NONSTOP) {
+		ast_log(LOG_VERBOSE, "The plan dl_end_handle is nonstop. plan_uuid[%s], dl_end_handle[%d]\n",
+				ast_json_string_get(ast_json_object_get(j_plan, "uuid"))? : "",
+				ret
+				);
+		return false;
+	}
+
+	return true;
+}
+

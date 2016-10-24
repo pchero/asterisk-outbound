@@ -26,6 +26,7 @@ static char* get_dial_number(struct ast_json* j_dlist, const int cnt);
 static char* create_view_name(const char* uuid);
 static bool create_dlma_view(const char* uuid, const char* view_name);
 static struct ast_json* create_dial_dl_info(struct ast_json* j_dl_list, struct ast_json* j_plan);
+static bool check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan);
 
 
 /**
@@ -119,7 +120,7 @@ struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast
 	return j_res;
 }
 
-int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
+static bool check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
 {
 	struct ast_json* j_res;
 	db_res_t* db_res;
@@ -149,33 +150,6 @@ int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
 			AST_CAUSE_NORMAL_CLEARING
 			);
 
-//	ast_asprintf(&sql, "select *, "
-//			"case when number_1 is null then 0 when trycnt_1 < %lld then 1 else 0 end as num_1, "
-//			"case when number_2 is null then 0 when trycnt_2 < %lld then 1 else 0 end as num_2, "
-//			"case when number_3 is null then 0 when trycnt_3 < %lld then 1 else 0 end as num_3, "
-//			"case when number_4 is null then 0 when trycnt_4 < %lld then 1 else 0 end as num_4, "
-//			"case when number_5 is null then 0 when trycnt_5 < %lld then 1 else 0 end as num_5, "
-//			"case when number_6 is null then 0 when trycnt_6 < %lld then 1 else 0 end as num_6, "
-//			"case when number_7 is null then 0 when trycnt_7 < %lld then 1 else 0 end as num_7, "
-//			"case when number_8 is null then 0 when trycnt_8 < %lld then 1 else 0 end as num_8 "
-//			"from `%s` "
-//			"having "
-//			"res_hangup != %d "
-//			"and num_1 + num_2 + num_3 + num_4 + num_5 + num_6 + num_7 + num_8 > 0 "
-//			";",
-//
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
-//			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
-//			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
-//			AST_CAUSE_NORMAL_CLEARING
-//			);
-//	ast_log(LOG_DEBUG, "Check sql. sql[%s]\n", sql);
 	db_res = db_query(sql);
 	ast_free(sql);
 	if(db_res == NULL) {
@@ -1013,4 +987,23 @@ static struct ast_json* create_dial_dl_info(struct ast_json* j_dl_list, struct a
 	ast_free(other_channel_id);
 
 	return j_res;
+}
+
+/**
+ * Return is this endable dl list.
+ * \param j_dlma
+ * \param j_plan
+ * \return
+ */
+bool is_endable_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
+{
+	int ret;
+
+	// check is there dial-able dl list.
+	ret = check_more_dl_list(j_dlma, j_plan);
+	if(ret == true) {
+		return false;
+	}
+
+	return true;
 }

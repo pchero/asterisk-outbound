@@ -35,5 +35,6 @@ struct ast_json* get_plan(const char* uuid);
 struct ast_json* get_plans_all(void);
 
 struct ast_json* create_dial_plan_info(struct ast_json* j_plan);
+bool is_endable_plan(struct ast_json* j_plan);
 
 #endif /* SRC_PLAN_HANDLER_H_ */

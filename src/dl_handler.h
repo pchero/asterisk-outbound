@@ -41,7 +41,7 @@ struct ast_json* get_dl_lists_(struct ast_json* j_dlma, int count);
 struct ast_json* get_dl_list(const char* uuid);
 struct ast_json* get_dl_lists(const char* dlma_uuid, int count);
 struct ast_json* get_dl_available_predictive(struct ast_json* j_dlma, struct ast_json* j_plan);
-int check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan);
+bool is_endable_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan);
 void clear_dl_list_dialing(const char* uuid);
 
 struct ast_json* create_dial_info(struct ast_json* j_plan, struct ast_json* j_dl_list, struct ast_json* j_dest);
