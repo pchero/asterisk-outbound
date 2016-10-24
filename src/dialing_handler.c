@@ -15,6 +15,7 @@
 #include "event_handler.h"
 #include "cli_handler.h"
 #include "utils.h"
+#include "res_outbound.h"
 
 AST_MUTEX_DEFINE_STATIC(g_rb_dialing_mutex);
 
@@ -326,8 +327,22 @@ bool rb_dialing_update_name(rb_dialing* dialing, const char* name)
 
 bool rb_dialing_update_events_append(rb_dialing* dialing, struct ast_json* j_evt)
 {
+	const char* tmp_const;
+	int ret;
+
 	if((dialing == NULL) || (j_evt == NULL)) {
 		return false;
+	}
+
+	// debug only.
+	tmp_const = ast_json_string_get(ast_json_object_get(ast_json_object_get(g_app->j_conf, "general"), "ami_event_debug"));
+	if(tmp_const == NULL) {
+		return true;
+	}
+
+	ret = atoi(tmp_const);
+	if(ret != 1) {
+		return true;
 	}
 
 	ast_mutex_lock(&g_rb_dialing_mutex);
