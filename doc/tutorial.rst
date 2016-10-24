@@ -32,8 +32,8 @@ Assume that we have below agent info.
    secret=8b14c86a-89b1-11e6-aa09-f39f39e5592b
    host=dynamic
    
-Add the client(sip) info
-------------------------
+Add the client/customer(sip) info
+---------------------------------
 Add the client info to the /etc/asterisk/sip.conf
 
 This sip info is act like an client(customer).
@@ -42,23 +42,23 @@ Assume that we have a below client info.
 
 ::
 
-   [client-01]
+   [300]
    type=friend
-   secret=6d1a5096-89b1-11e6-b0fc-d30be6e4489f
+   secret=beb398d1-bf46-4895-a703-544679423e58
    host=dynamic
    
-   [client-02]
+   [301]
    type=friend
-   secret=8fd6f80a-89b1-11e6-9839-fb2a82d0d524
+   secret=573958ec-862c-4ba3-b73d-3c281277f551
    host=dynamic
    
-   [client-03]
+   [302]
    type=friend
-   secret=946e8c20-89b1-11e6-80d6-f3e7376cf70f
+   secret=c3c3b964-cf44-421b-9529-4cb9f0b3e277
    host=dynamic
 
 Create a queue
---------------d
+--------------
 Assume that we have a below queue info.
 
 ::
@@ -210,4 +210,104 @@ Create campaign
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
-   
+ 
+Normal call distribute
+======================
+
+Dial to the customer. After the customer answered call, the call will be distributed to the waiting agents.
+
+
+Create a queue
+--------------
+Assume that we have a below queue info.
+
+::
+
+   /etc/asterisk/queues.conf
+
+   [sales_1]
+   musicclass = default
+   strategy = ringall
+   joinempty = yes
+
+
+Add members
+-----------
+
+Create plan
+-----------
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
+Power dialing
+=============
+Dial to the customer. After the customer answered call, the recorded message will be played.
+
+Create plan
+-----------
+Set application Playback with data.
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
+Transfer to the dialplan
+========================
+Dial to the customer. If the customer answered call, the call will be transferred to the designated dialplan.
+
+Create plan
+-----------
+Set dialplan context, extension.
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
+Transfer to the dialplan check Human/Machine
+============================================
+Dial to the customer. If the customer answered call, the call will be transferred to the designated dialplan.
+
+Then check the who is answered it(Human/Machine).
+
+Create plan
+-----------
+Set dialplan context, extension. AMD() application.
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
