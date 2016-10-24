@@ -354,12 +354,12 @@ static void cb_campaign_stopping(__attribute__((unused)) int fd, __attribute__((
 	for(i = 0; i < size; i++) {
 		j_camp = ast_json_array_get(j_camps, i);
 
-		// check stoppable
+		// check stoppable campaign
 		ret = is_stoppable_campgain(j_camp);
 		if(ret == false) {
 			continue;
 		}
-
+		
 		// update status to stop
 		ast_log(LOG_NOTICE, "Update campaign status to stop. camp_uuid[%s], camp_name[%s]\n",
 				ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
@@ -598,7 +598,12 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 	return;
 }
 
-
+/**
+ * Check ended campaign. If the campaign is end-able, set the status to STOPPING.
+ * \param fd
+ * \param event
+ * \param arg
+ */
 static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
 {
 	struct ast_json* j_camps;
@@ -630,49 +635,22 @@ static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__(
 			continue;
 		}
 
-		// check_more_list(j_dlma, j_plan)
-		// check_dial
-		ret = check_more_dl_list(j_dlma, j_plan);
-		if(ret == false) {
-			ast_log(LOG_NOTICE, "No more dial list. Stopping campaign. uuid[%s], name[%s]\n",
+		// check end-able.
+		ret = is_endable_plan(j_plan);
+		ret &= is_endable_dl_list(j_dlma, j_plan);
+		if(ret == true) {
+			ast_log(LOG_NOTICE, "The campaign ended. Stopping campaign. uuid[%s], name[%s]\n",
 					ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
 					ast_json_string_get(ast_json_object_get(j_camp, "name"))
 					);
 			update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
 		}
-
 		AST_JSON_UNREF(j_plan);
 		AST_JSON_UNREF(j_dlma);
 	}
 	AST_JSON_UNREF(j_camps);
 	return;
 }
-
-//static struct ast_json* get_queue_info(const char* uuid)
-//{
-//	char* sql;
-//	struct ast_json* j_res;
-//	db_res_t* db_res;
-//
-//	if(uuid == NULL) {
-//		ast_log(LOG_WARNING, "Invalid input parameters.\n");
-//		return NULL;
-//	}
-//
-//	ast_asprintf(&sql, "select * from queue where uuid=\"%s\" and in_use=1;", uuid);
-//
-//	db_res = db_query(sql);
-//	ast_free(sql);
-//	if(db_res == NULL) {
-//		ast_log(LOG_ERROR, "Could not get queue info. uuid[%s]\n", uuid);
-//		return NULL;
-//	}
-//
-//	j_res = db_get_record(db_res);
-//	db_free(db_res);
-//
-//	return j_res;
-//}
 
 /**
  *
