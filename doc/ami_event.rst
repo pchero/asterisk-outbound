@@ -176,9 +176,10 @@ Syntax
    TmUpdate: <value>
 
 Parameters
-* Name: Plan name..
+
+* Name: Plan name.
 * Detail: Detail info.
-* DialMode: Dialling mode. See detail :ref:`plan_dial_mode`.
+* DialMode: Dialling mode. See detail :ref:`dial_mode`.
 * UuiField: Customer's Uui field name.
 * DialTimeout: Ringing timeout(ms).
 * CallerId: Caller's id.
@@ -261,9 +262,10 @@ Syntax
    TmUpdate: <value>
 
 Parameters
-* Name: Plan name..
+
+* Name: Plan name.
 * Detail: Detail info.
-* DialMode: Dialling mode. See detail :ref:`plan_dial_mode`.
+* DialMode: Dialling mode. See detail :ref:`dial_mode`.
 * UuiField: Customer's Uui field name.
 * DialTimeout: Ringing timeout(ms).
 * CallerId: Caller's id.
@@ -327,6 +329,7 @@ Syntax
    Uuid: <value>
 
 Parameters
+
 * Uuid: Plan uuid.
 
 Example
@@ -361,6 +364,7 @@ Syntax
    TmUpdate: <value>
 
 Parameters
+
 * Uuid: Dlma uuid.
 * Name: Dlma name.
 * Detail: Dlma detail info.
@@ -403,6 +407,7 @@ Syntax
    TmUpdate: <value>
 
 Parameters
+
 * Uuid: Dlma uuid.
 * Name: Dlma name.
 * Detail: Dlma detail info.
@@ -440,6 +445,7 @@ Syntax
    Uuid: <value>
 
 Parameters
+
 * Uuid: Dlma uuid.
 
 Example
@@ -580,35 +586,35 @@ Example
 
 ::
 
-Event: OutDialingUpdate
-Privilege: message,all
-Uuid: 28863ee7-3e86-47cd-b87e-0894d328644c
-Status: 1
-CampUuid: 02c4aebf-789c-46aa-817e-b7406416d211
-PlanUuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
-DlmaUuid: acc994d2-04d9-4a53-bfcf-50c96ff924bc
-DlListUuid: dc5bf351-a63c-4dda-8a1f-2bf337ce4e45
-CurrentQueue: <unknown>
-CurrentAgent: <unknown>
-DialIndex: 1
-DialAddr: 300
-DialChannel: sip/300
-DialTryCnt: 1
-DialTimeout: 0
-DialType: 1
-DialExten: <unknown>
-DialContext: <unknown>
-DialApplication: park
-DialData: 
-ChannelName: SIP/300-00000000
-ResDial: 0
-ResAmd: <unknown>
-ResAmdDetail: <unknown>
-ResHangup: 0
-ResHangupDetail: <unknown>
-TmCreate: 2016-10-24T00:10:46.302114915Z
-TmUpdate: 2016-10-24T00:10:46.310483656Z
-TmDelete: <unknown>
+   Event: OutDialingUpdate
+   Privilege: message,all
+   Uuid: 28863ee7-3e86-47cd-b87e-0894d328644c
+   Status: 1
+   CampUuid: 02c4aebf-789c-46aa-817e-b7406416d211
+   PlanUuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
+   DlmaUuid: acc994d2-04d9-4a53-bfcf-50c96ff924bc
+   DlListUuid: dc5bf351-a63c-4dda-8a1f-2bf337ce4e45
+   CurrentQueue: <unknown>
+   CurrentAgent: <unknown>
+   DialIndex: 1
+   DialAddr: 300
+   DialChannel: sip/300
+   DialTryCnt: 1
+   DialTimeout: 0
+   DialType: 1
+   DialExten: <unknown>
+   DialContext: <unknown>
+   DialApplication: park
+   DialData: 
+   ChannelName: SIP/300-00000000
+   ResDial: 0
+   ResAmd: <unknown>
+   ResAmdDetail: <unknown>
+   ResHangup: 0
+   ResHangupDetail: <unknown>
+   TmCreate: 2016-10-24T00:10:46.302114915Z
+   TmUpdate: 2016-10-24T00:10:46.310483656Z
+   TmDelete: <unknown>
 
 
 OutDialingDelete
@@ -621,7 +627,15 @@ Notify message for dialing deleted.
 Syntax
 ------
 
+::
+
+   Event: OutDialingDelete
+   Uuid: <value>
+
+
 Parameters
+
+* Uuid: Dialing uuid.
 
 Example
 -------

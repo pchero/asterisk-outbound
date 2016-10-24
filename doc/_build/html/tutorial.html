@@ -8,7 +8,7 @@
     
     <title>Tutorial &mdash; asterisk-outbound 0.0.1 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,8 +27,8 @@
     <link rel="next" title="Basic" href="basic.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,14 +40,14 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
@@ -58,20 +58,20 @@
 <p>Add the agent info to the /etc/asterisk/sip.conf</p>
 <p>This sip info is act like an agent.</p>
 <p>Assume that we have below agent info.</p>
-<div class="highlight-python"><div class="highlight"><pre>[agent-01]
-type=friend
-secret=83f8c590-89b1-11e6-9d93-eba8dc621725
-host=dynamic
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">agent</span><span class="o">-</span><span class="mi">01</span><span class="p">]</span>
+<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
+<span class="n">secret</span><span class="o">=</span><span class="mi">83</span><span class="n">f8c590</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="mi">9</span><span class="n">d93</span><span class="o">-</span><span class="n">eba8dc621725</span>
+<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
 
-[agent-02]
-type=friend
-secret=876054be-89b1-11e6-b7b7-cfb4ed95428e
-host=dynamic
+<span class="p">[</span><span class="n">agent</span><span class="o">-</span><span class="mi">02</span><span class="p">]</span>
+<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
+<span class="n">secret</span><span class="o">=</span><span class="mi">876054</span><span class="n">be</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="n">b7b7</span><span class="o">-</span><span class="n">cfb4ed95428e</span>
+<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
 
-[agent-03]
-type=friend
-secret=8b14c86a-89b1-11e6-aa09-f39f39e5592b
-host=dynamic
+<span class="p">[</span><span class="n">agent</span><span class="o">-</span><span class="mi">03</span><span class="p">]</span>
+<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
+<span class="n">secret</span><span class="o">=</span><span class="mi">8</span><span class="n">b14c86a</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="n">aa09</span><span class="o">-</span><span class="n">f39f39e5592b</span>
+<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
 </pre></div>
 </div>
 </div>
@@ -80,26 +80,26 @@ host=dynamic
 <p>Add the client info to the /etc/asterisk/sip.conf</p>
 <p>This sip info is act like an client(customer).</p>
 <p>Assume that we have a below client info.</p>
-<div class="highlight-python"><div class="highlight"><pre>[client-01]
-type=friend
-secret=6d1a5096-89b1-11e6-b0fc-d30be6e4489f
-host=dynamic
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">client</span><span class="o">-</span><span class="mi">01</span><span class="p">]</span>
+<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
+<span class="n">secret</span><span class="o">=</span><span class="mi">6</span><span class="n">d1a5096</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="n">b0fc</span><span class="o">-</span><span class="n">d30be6e4489f</span>
+<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
 
-[client-02]
-type=friend
-secret=8fd6f80a-89b1-11e6-9839-fb2a82d0d524
-host=dynamic
+<span class="p">[</span><span class="n">client</span><span class="o">-</span><span class="mi">02</span><span class="p">]</span>
+<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
+<span class="n">secret</span><span class="o">=</span><span class="mi">8</span><span class="n">fd6f80a</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="mi">9839</span><span class="o">-</span><span class="n">fb2a82d0d524</span>
+<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
 
-[client-03]
-type=friend
-secret=946e8c20-89b1-11e6-80d6-f3e7376cf70f
-host=dynamic
+<span class="p">[</span><span class="n">client</span><span class="o">-</span><span class="mi">03</span><span class="p">]</span>
+<span class="nb">type</span><span class="o">=</span><span class="n">friend</span>
+<span class="n">secret</span><span class="o">=</span><span class="mi">946</span><span class="n">e8c20</span><span class="o">-</span><span class="mi">89</span><span class="n">b1</span><span class="o">-</span><span class="mi">11</span><span class="n">e6</span><span class="o">-</span><span class="mi">80</span><span class="n">d6</span><span class="o">-</span><span class="n">f3e7376cf70f</span>
+<span class="n">host</span><span class="o">=</span><span class="n">dynamic</span>
 </pre></div>
 </div>
 <p>Create a queue
 &#8212;&#8212;&#8212;&#8212;&#8211;d
 Assume that we have a below queue info.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">sales_1</span><span class="p">]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">sales_1</span><span class="p">]</span>
 <span class="n">musicclass</span> <span class="o">=</span> <span class="n">default</span>
 <span class="n">strategy</span> <span class="o">=</span> <span class="n">ringall</span>
 <span class="n">joinempty</span> <span class="o">=</span> <span class="n">yes</span>
@@ -111,7 +111,7 @@ Assume that we have a below queue info.</p>
 <h2>AMI actions<a class="headerlink" href="#ami-actions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="login">
 <h3>Login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Connection closed by foreign host.
+<div class="highlight-default"><div class="highlight"><pre><span></span>Connection closed by foreign host.
 $ telnet localhost 5038
 Trying 127.0.0.1...
 Connected to localhost.
@@ -129,114 +129,114 @@ Message: Authentication accepted
 </div>
 <div class="section" id="create-plan">
 <h3>Create Plan<a class="headerlink" href="#create-plan" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
-Name: sales_plan
-Detail: simple sales plan
-DialMode: 1
-QueueName: sales_1
-TechName: sip/
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutPlanCreate</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">sales_plan</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">simple</span> <span class="n">sales</span> <span class="n">plan</span>
+<span class="n">DialMode</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">QueueName</span><span class="p">:</span> <span class="n">sales_1</span>
+<span class="n">TechName</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span>
 
-Response: Success
-Message: Plan created successfully
+<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
+<span class="n">Message</span><span class="p">:</span> <span class="n">Plan</span> <span class="n">created</span> <span class="n">successfully</span>
 
-Event: OutPlanCreate
-Privilege: message,all
-Uuid: d1306a32-0ec6-4389-a5f1-118153b6266e
-Name: sales_plan
-Detail: simple sales plan
-DialMode: 1
-DialTimeout: 30000
-CallerId: &lt;unknown&gt;
-AnswerHandle: 0
-DlEndHandle: 1
-RetryDelay: 50000
-TrunkName: &lt;unknown&gt;
-TechName: sip/
-QueueName: sales_1
-AmdMode: 0
-MaxRetryCnt1: 5
-MaxRetryCnt2: 5
-MaxRetryCnt3: 5
-MaxRetryCnt4: 5
-MaxRetryCnt5: 5
-MaxRetryCnt6: 5
-MaxRetryCnt7: 5
-MaxRetryCnt8: 5
-TmCreate: 2016-10-04 22:40:41.573445
-TmDelete: &lt;unknown&gt;
-TmUpdate: &lt;unknown&gt;
+<span class="n">Event</span><span class="p">:</span> <span class="n">OutPlanCreate</span>
+<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
+<span class="n">Uuid</span><span class="p">:</span> <span class="n">d1306a32</span><span class="o">-</span><span class="mi">0</span><span class="n">ec6</span><span class="o">-</span><span class="mi">4389</span><span class="o">-</span><span class="n">a5f1</span><span class="o">-</span><span class="mi">118153</span><span class="n">b6266e</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">sales_plan</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">simple</span> <span class="n">sales</span> <span class="n">plan</span>
+<span class="n">DialMode</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">DialTimeout</span><span class="p">:</span> <span class="mi">30000</span>
+<span class="n">CallerId</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<span class="n">AnswerHandle</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">DlEndHandle</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">RetryDelay</span><span class="p">:</span> <span class="mi">50000</span>
+<span class="n">TrunkName</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<span class="n">TechName</span><span class="p">:</span> <span class="n">sip</span><span class="o">/</span>
+<span class="n">QueueName</span><span class="p">:</span> <span class="n">sales_1</span>
+<span class="n">AmdMode</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">MaxRetryCnt1</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">MaxRetryCnt2</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">MaxRetryCnt3</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">MaxRetryCnt4</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">MaxRetryCnt5</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">MaxRetryCnt6</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">MaxRetryCnt7</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">MaxRetryCnt8</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">04</span> <span class="mi">22</span><span class="p">:</span><span class="mi">40</span><span class="p">:</span><span class="mf">41.573445</span>
+<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="create-destination">
 <h3>Create Destination<a class="headerlink" href="#create-destination" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Action: OutDestinationCreate
-Name: destination test
-Detail: test destination
-Type: 1
-Application: park
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutDestinationCreate</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">destination</span> <span class="n">test</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">test</span> <span class="n">destination</span>
+<span class="n">Type</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">Application</span><span class="p">:</span> <span class="n">park</span>
 
-Response: Success
-Message: Dl list created successfully
+<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
+<span class="n">Message</span><span class="p">:</span> <span class="n">Dl</span> <span class="nb">list</span> <span class="n">created</span> <span class="n">successfully</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="create-dlma">
 <h3>Create Dlma<a class="headerlink" href="#create-dlma" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaCreate
-Name: DialListMaster_Sales
-Detail: Test Dlma description
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutDlmaCreate</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">DialListMaster_Sales</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">Test</span> <span class="n">Dlma</span> <span class="n">description</span>
 
-Response: Success
-Message: Dlma created successfully
+<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
+<span class="n">Message</span><span class="p">:</span> <span class="n">Dlma</span> <span class="n">created</span> <span class="n">successfully</span>
 
-Event: OutDlmaCreate
-Privilege: message,all
-Uuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
-Name: DialListMaster_Sales
-Detail: Test Dlma description
-DlTable: 9155a63e_6577_4abc_96e4_2c7811b5f639
-TmCreate: 2016-10-04 22:41:07.528126
-TmDelete: &lt;unknown&gt;
-TmUpdate: &lt;unknown&gt;
+<span class="n">Event</span><span class="p">:</span> <span class="n">OutDlmaCreate</span>
+<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
+<span class="n">Uuid</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">DialListMaster_Sales</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">Test</span> <span class="n">Dlma</span> <span class="n">description</span>
+<span class="n">DlTable</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e_6577_4abc_96e4_2c7811b5f639</span>
+<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">04</span> <span class="mi">22</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">07.528126</span>
+<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="create-dl-list">
 <h3>Create Dl list<a class="headerlink" href="#create-dl-list" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
-DlmaUuid: 9155a63e-6577-4abc-96e4-2c7811b5f639
-Name: client 01
-Detail: Dial to client 01
-Number1: 300
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutDlListCreate</span>
+<span class="n">DlmaUuid</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">client</span> <span class="mi">01</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">Dial</span> <span class="n">to</span> <span class="n">client</span> <span class="mi">01</span>
+<span class="n">Number1</span><span class="p">:</span> <span class="mi">300</span>
 
-Response: Success
-Message: Dl list created successfully
+<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
+<span class="n">Message</span><span class="p">:</span> <span class="n">Dl</span> <span class="nb">list</span> <span class="n">created</span> <span class="n">successfully</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="create-campaign">
 <h3>Create campaign<a class="headerlink" href="#create-campaign" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
-Name: Sales campaign
-Detail: test campaign
-Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
-Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Action</span><span class="p">:</span> <span class="n">OutCampaignCreate</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">Sales</span> <span class="n">campaign</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">test</span> <span class="n">campaign</span>
+<span class="n">Plan</span><span class="p">:</span> <span class="n">d1306a32</span><span class="o">-</span><span class="mi">0</span><span class="n">ec6</span><span class="o">-</span><span class="mi">4389</span><span class="o">-</span><span class="n">a5f1</span><span class="o">-</span><span class="mi">118153</span><span class="n">b6266e</span>
+<span class="n">Dlma</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
 
-Response: Success
-Message: Campaign created successfully
+<span class="n">Response</span><span class="p">:</span> <span class="n">Success</span>
+<span class="n">Message</span><span class="p">:</span> <span class="n">Campaign</span> <span class="n">created</span> <span class="n">successfully</span>
 
-Event: OutCampaignCreate
-Privilege: message,all
-Uuid: a3e95af9-5ffa-4f53-8908-6095ff24945c
-Name: Sales campaign
-Detail: test campaign
-Status: 0
-Plan: d1306a32-0ec6-4389-a5f1-118153b6266e
-Dlma: 9155a63e-6577-4abc-96e4-2c7811b5f639
-TmCreate: 2016-10-04 22:43:22.899115
-TmDelete: &lt;unknown&gt;
-TmUpdate: &lt;unknown&gt;
+<span class="n">Event</span><span class="p">:</span> <span class="n">OutCampaignCreate</span>
+<span class="n">Privilege</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span><span class="nb">all</span>
+<span class="n">Uuid</span><span class="p">:</span> <span class="n">a3e95af9</span><span class="o">-</span><span class="mi">5</span><span class="n">ffa</span><span class="o">-</span><span class="mi">4</span><span class="n">f53</span><span class="o">-</span><span class="mi">8908</span><span class="o">-</span><span class="mi">6095</span><span class="n">ff24945c</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">Sales</span> <span class="n">campaign</span>
+<span class="n">Detail</span><span class="p">:</span> <span class="n">test</span> <span class="n">campaign</span>
+<span class="n">Status</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Plan</span><span class="p">:</span> <span class="n">d1306a32</span><span class="o">-</span><span class="mi">0</span><span class="n">ec6</span><span class="o">-</span><span class="mi">4389</span><span class="o">-</span><span class="n">a5f1</span><span class="o">-</span><span class="mi">118153</span><span class="n">b6266e</span>
+<span class="n">Dlma</span><span class="p">:</span> <span class="mi">9155</span><span class="n">a63e</span><span class="o">-</span><span class="mi">6577</span><span class="o">-</span><span class="mi">4</span><span class="n">abc</span><span class="o">-</span><span class="mi">96</span><span class="n">e4</span><span class="o">-</span><span class="mi">2</span><span class="n">c7811b5f639</span>
+<span class="n">TmCreate</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">04</span> <span class="mi">22</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mf">22.899115</span>
+<span class="n">TmDelete</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
+<span class="n">TmUpdate</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">unknown</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -247,7 +247,7 @@ TmUpdate: &lt;unknown&gt;
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -276,29 +276,28 @@ TmUpdate: &lt;unknown&gt;
   <h4>Next topic</h4>
   <p class="topless"><a href="basic.html"
                         title="next chapter">Basic</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/tutorial.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tutorial.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -310,12 +309,12 @@ TmUpdate: &lt;unknown&gt;
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2016, pchero.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
     </div>
   </body>
 </html>
