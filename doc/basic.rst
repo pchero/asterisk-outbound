@@ -69,24 +69,78 @@ Predictive
 Preview
 +++++++
 * The destination makes decision to make a call.
-* Will be supported in a future.
+* Developing.
 
 SMS
 +++
 * Send an SMS messages
-* Will be supported in a future.
+* Developing.
 
 Fax
 +++
 * Send a fax
-* Will be supported in a future.
+* Developing.
 
+
+Service level
+-------------
+Service level controling the amount of dailing.
+
+
+.. _service_level:
+
+::
+
+   (Max available outbound call count) - (Current outbound call count) + (Service level) = (Available call count)
+
+   If the (Available call count) is bigger than 0, make a call.
+
+
+Max available outbound call count
+++++++++++++++++++++++++++++++++++
+
+The max available outbound call count is depends on the destination.
+
+See detail :ref:`destination`.
+
+
+.. _destination:
 
 Destination
 ===========
-Determine who get a call after answer(Who).
+Determine who get a call after answer(Who). And it determine the max available outbound call count.
 
 Normaly, the destination suppose to be an agent. But in the asterisk system, the destination could be anything. For example, it could be extension or application(queue).
+
+If the destination type is application, then the res_outbound calcaulate applciation's availablity.
+
+Destination type
+----------------
+
+.. _destination_type:
+.. table:: Destination type
+
+   ==== ==================
+   Type Detail
+   ==== ==================
+   0    Extensioin
+   1    Application
+   ==== ==================
+
+
+Application availability
+++++++++++++++++++++++++
+
+.. _application_availability
+.. table:: Application availability
+
+   =========== =========================
+   Application Detail
+   =========== =========================
+   queue       QueueSummary's Available.
+   park        Unlimited.
+   others      Unlimited.
+   =========== =========================
 
 
 Result

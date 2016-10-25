@@ -57,6 +57,22 @@ Assume that we have a below client info.
    secret=c3c3b964-cf44-421b-9529-4cb9f0b3e277
    host=dynamic
 
+
+Settings
+--------
+
+::
+
+   pluto*CLI> sip show peers
+   Name/username             Host                                    Dyn Forcerport Comedia    ACL Port     Status      Description                      
+   300/300                   192.168.118.100                          D  Auto (No)  No             5060     Unmonitored                                  
+   301/301                   192.168.118.100                          D  Auto (No)  No             5060     Unmonitored                                  
+   302/302                   192.168.118.100                          D  Auto (No)  No             5060     Unmonitored                                  
+   agent-01/agent-01         192.168.118.100                          D  Auto (No)  No             5060     Unmonitored                                  
+   agent-02/agent-02         192.168.118.100                          D  Auto (No)  No             5060     Unmonitored                                  
+   agent-03/agent-03         192.168.118.100                          D  Auto (No)  No             5060     Unmonitored                                  
+   6  sip peers [Monitored: 0 online, 0 offline Unmonitored: 6 online, 0 offline]
+
    
 Basic tutorial
 ==============
@@ -638,4 +654,33 @@ Create campaign and status update
 
 Check result
 ------------
+
+
+Outbound with trunk
+===================
+
+Dial to the customer with trunk.
+
+With correct trunk setting, it could call to the PSTN/Mobile.
+
+Set/Check trunk info
+--------------------
+
+Create plan
+-----------
+Set dialplan context, extension, trunk name.
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Create campaign and status update
+---------------------------------
+
+Check result
+------------
+
+
 

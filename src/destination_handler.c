@@ -390,7 +390,7 @@ static int get_avail_cnt_app_queue(const char* name)
 	AST_JSON_UNREF(j_tmp);
 
 	if(loggedin < 10) {
-		ast_log(LOG_NOTICE, "Not many people logged in. Ignore perf calculate. loggenin[%d], avail[%d]\n", loggedin, avail);
+		ast_log(LOG_DEBUG, "Not many people logged in. Ignore perf calculate. loggenin[%d], avail[%d]\n", loggedin, avail);
 		return avail;
 	}
 
