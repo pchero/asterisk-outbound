@@ -128,6 +128,10 @@ static int load_module(void)
 {
 	int ret;
 
+	if(g_app != NULL) {
+		AST_JSON_UNREF(g_app->j_conf);
+		ast_free(g_app);
+	}
 	g_app = ast_malloc(sizeof(app));
 	g_app->j_conf = NULL;
 
@@ -179,19 +183,8 @@ static int load_module(void)
 
 static int reload_module(void)
 {
-	int ret;
-
-	ret = unload_module();
-	if(ret == false) {
-		return AST_MODULE_LOAD_DECLINE;
-	}
-
-	ret = load_module();
-	if(ret == false) {
-		return AST_MODULE_LOAD_DECLINE;
-	}
-
-	return AST_MODULE_LOAD_SUCCESS;
+	ast_log(LOG_NOTICE, "res_outbound doesn't support reload. Please do unload/load manualy.\n");
+	return AST_MODULE_RELOAD_SUCCESS;
 }
 
 

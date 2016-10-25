@@ -9,7 +9,7 @@
 #define SRC_DB_SQL_CREATE_H_
 
 // plan
-static const char* g_sql_plan =
+static const char* g_db_sql_plan =
 "create table plan( "
 
 // identity
@@ -30,6 +30,8 @@ static const char* g_sql_plan =
 "    trunk_name      varchar(255) default null,"  	// trunk name"
 "    tech_name       varchar(255) default null,"  		// tech name"
 "    service_level   int unsigned default 0,"     // service level. determine how many calls can going out campare to available agents."
+"    early_media     varchar(255) default null,"
+"    codecs          varchar(255) default null,"
 
 // retry count"
 "    max_retry_cnt_1     int default 5,"  // max retry count for dial number 1"
@@ -134,7 +136,7 @@ static const char* g_db_sql_dial_list =
 // dl_list_ma
 // dial list"
 // manage all of dial list tables"
-static const char* g_sql_dl_list_ma =
+static const char* g_db_sql_dl_list_ma =
 "create table dl_list_ma("
 
 // row identity"
@@ -188,7 +190,7 @@ static const char* g_db_sql_destination =
 
 
 // campaign
-static const char* g_sql_campaign =
+static const char* g_db_sql_campaign =
 "create table campaign("
 
 // identity"

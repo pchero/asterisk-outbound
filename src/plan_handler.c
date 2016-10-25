@@ -264,7 +264,7 @@ struct ast_json* create_dial_plan_info(struct ast_json* j_plan)
 	}
 
 	j_res = ast_json_pack("{s:i}",
-			"timeout", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout"))
+			"dial_timeout", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout"))
 			);
 
 	if(ast_json_string_get(ast_json_object_get(j_plan, "caller_id")) != NULL) {
@@ -273,6 +273,27 @@ struct ast_json* create_dial_plan_info(struct ast_json* j_plan)
 
 	return j_res;
 
+}
+
+/**
+ * Return the is nonstop dl handle
+ * \param j_plan
+ * \return
+ */
+bool is_nonstop_dl_handle(struct ast_json* j_plan)
+{
+	int ret;
+
+	if(j_plan == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return true;
+	}
+
+	ret = ast_json_integer_get(ast_json_object_get(j_plan, "dl_end_handle"));
+	if(ret == E_PLAN_DL_END_NONSTOP) {
+		return true;
+	}
+	return false;
 }
 
 /**
@@ -289,8 +310,8 @@ bool is_endable_plan(struct ast_json* j_plan)
 		return true;
 	}
 
-	ret = ast_json_integer_get(ast_json_object_get(j_plan, "dl_end_handle"));
-	if(ret == E_PLAN_DL_END_NONSTOP) {
+	ret = is_nonstop_dl_handle(j_plan);
+	if(ret == true) {
 		ast_log(LOG_VERBOSE, "The plan dl_end_handle is nonstop. plan_uuid[%s], dl_end_handle[%d]\n",
 				ast_json_string_get(ast_json_object_get(j_plan, "uuid"))? : "",
 				ret

@@ -147,7 +147,6 @@ rb_dialing* rb_dialing_create(
 {
 	rb_dialing* dialing;
 	char* tmp;
-	const char* tmp_const;
 
 	if((dialing_uuid == NULL)
 			|| (j_camp == NULL)
@@ -193,36 +192,16 @@ rb_dialing* rb_dialing_create(
 
 	// dial info
 	// dial_channel
-	ast_json_object_set(dialing->j_dialing, "dial_channel", ast_json_ref(ast_json_object_get(j_dial, "dial_channel")));
-	ast_json_object_set(dialing->j_dialing, "dial_addr", ast_json_ref(ast_json_object_get(j_dial, "dial_addr")));
-	ast_json_object_set(dialing->j_dialing, "dial_index", ast_json_ref(ast_json_object_get(j_dial, "dial_index")));
-	ast_json_object_set(dialing->j_dialing, "dial_trycnt", ast_json_ref(ast_json_object_get(j_dial, "dial_trycnt")));
-	tmp_const = ast_json_string_get(ast_json_object_get(j_dial, "timeout"));
-	ast_log(LOG_DEBUG, "Check value. timeout[%s]\n", tmp_const);
-	if(tmp_const != NULL) {
-		ast_json_object_set(dialing->j_dialing, "dial_timeout", ast_json_integer_create(atoi(tmp_const)));
-	}
-	ast_json_object_set(dialing->j_dialing, "dial_type", ast_json_ref(ast_json_object_get(j_dial, "dial_type")));
-	if(ast_json_object_get(j_dial, "dial_exten") != NULL) {
-		ast_json_object_set(dialing->j_dialing, "dial_exten", ast_json_ref(ast_json_object_get(j_dial, "dial_exten")));
-	}
-	if(ast_json_object_get(j_dial, "dial_context") != NULL) {
-			ast_json_object_set(dialing->j_dialing, "dial_context", ast_json_ref(ast_json_object_get(j_dial, "dial_context")));
-	}
-	if(ast_json_object_get(j_dial, "dial_application") != NULL) {
-			ast_json_object_set(dialing->j_dialing, "dial_application", ast_json_ref(ast_json_object_get(j_dial, "dial_application")));
-	}
-	if(ast_json_object_get(j_dial, "dial_data") != NULL) {
-			ast_json_object_set(dialing->j_dialing, "dial_data", ast_json_ref(ast_json_object_get(j_dial, "dial_data")));
-	}
-	ast_log(LOG_DEBUG, "Check value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s]\n",
-			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_channel")),
-			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_addr")),
+	ast_json_object_update(dialing->j_dialing, j_dial);
+	ast_log(LOG_DEBUG, "Check value. dial_channel[%s], dial_addr[%s], dial_index[%lld], dial_trycnt[%lld], dial_timeout[%lld], dial_type[%lld], dial_exten[%s], dial_application[%s]\n",
+			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_channel"))? : "",
+			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_addr"))? : "",
 			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")),
 			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_trycnt")),
 			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_timeout")),
 			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_type")),
-			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_exten"))
+			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_exten"))? : "",
+			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_application"))? : ""
 			);
 
 	// timestamp
