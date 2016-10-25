@@ -300,6 +300,7 @@ static int get_avail_cnt_exten(struct ast_json* j_dest)
 static int get_avail_cnt_app(struct ast_json* j_dest)
 {
 	const char* application;
+	const char* data;
 	int ret;
 
 	if(j_dest == NULL) {
@@ -315,10 +316,12 @@ static int get_avail_cnt_app(struct ast_json* j_dest)
 		return 0;
 	}
 
+	data = ast_json_string_get(ast_json_object_get(j_dest, "data"));
+
 	if(strcasecmp(application, "queue") == 0) {
-		ret = get_avail_cnt_app_queue(application);
+		ret = get_avail_cnt_app_queue(data);
 	}
-	if(strcasecmp(application, "park") == 0) {
+	else if(strcasecmp(application, "park") == 0) {
 		ret = get_avail_cnt_app_park();
 	}
 	else {

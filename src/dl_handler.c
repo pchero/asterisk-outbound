@@ -9,6 +9,7 @@
 #include "asterisk/causes.h"
 #include "asterisk/logger.h"
 #include "asterisk/utils.h"
+#include "asterisk/frame.h"
 
 #include "db_handler.h"
 #include "dl_handler.h"
@@ -78,7 +79,7 @@ static bool check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
 			" or (number_7 is not null and trycnt_7 < %lld)"
 			" or (number_8 is not null and trycnt_8 < %lld)"
 			")"
-			" and res_hangup != %d"
+			" and res_dial != %d"
 			";",
 			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
@@ -89,7 +90,7 @@ static bool check_more_dl_list(struct ast_json* j_dlma, struct ast_json* j_plan)
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
-			AST_CAUSE_NORMAL_CLEARING
+			AST_CONTROL_ANSWER
 			);
 
 	db_res = db_query(sql);
@@ -979,12 +980,7 @@ static bool is_over_retry_delay(struct ast_json* j_dlma, struct ast_json* j_dl, 
 
 	retry_delay = ast_json_integer_get(ast_json_object_get(j_plan, "retry_delay"));
 
-	ast_log(LOG_VERBOSE, "Check value. tm_last_hangup[%s], retry_delay[%d]\n",
-			tm_last_hangup,
-			retry_delay
-			);
-
-	ast_asprintf(&sql, "select * from %s where uuid = '%s' and ((strftime('%%s', 'now') - strftime('%%s', tm_last_hangup)) > %d);",
+	ast_asprintf(&sql, "select * from '%s' where uuid = '%s' and ((strftime('%%s', 'now') - strftime('%%s', tm_last_hangup)) > %d);",
 			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
 			ast_json_string_get(ast_json_object_get(j_dl, "uuid")),
 			retry_delay
@@ -1031,7 +1027,7 @@ static struct ast_json* get_dl_available(struct ast_json* j_dlma, struct ast_jso
 			" or (number_7 is not null and trycnt_7 < %lld)"
 			" or (number_8 is not null and trycnt_8 < %lld)"
 			")"
-			" and res_hangup != %d"
+			" and res_dial != %d"
 			" and status = %d"
 			" order by trycnt asc"
 			" limit 1"
@@ -1045,7 +1041,7 @@ static struct ast_json* get_dl_available(struct ast_json* j_dlma, struct ast_jso
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
-			AST_CAUSE_NORMAL_CLEARING,
+			AST_CONTROL_ANSWER,
 			E_DL_IDLE
 			);
 
