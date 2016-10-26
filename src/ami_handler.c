@@ -203,7 +203,9 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 		if(ret == 0) {
 			tmp_const = ast_json_string_get(j_val);
 			tmp = get_variables_info_ami_str_from_string(tmp_const);
-			sprintf(str_cmd, "%s%s\n", str_cmd, tmp);
+			if(tmp != NULL) {
+				sprintf(str_cmd, "%s%s\n", str_cmd, tmp);
+			}
 			ast_free(tmp);
 			continue;
 		}
