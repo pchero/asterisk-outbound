@@ -283,13 +283,12 @@ int get_destination_available_count(struct ast_json* j_dest)
 }
 
 /**
- * TODO:
  * \param j_dest
  * \return
  */
 static int get_avail_cnt_exten(struct ast_json* j_dest)
 {
-	return 0;
+	return DEF_DESTINATION_AVAIL_CNT_UNLIMITED;
 }
 
 /**
@@ -524,9 +523,11 @@ static struct ast_json* create_destination_exten(struct ast_json* j_dest)
 		return NULL;
 	}
 
-	j_res = ast_json_pack("{s:s, s:s}",
-			"dial_exten",		ast_json_string_get(ast_json_object_get(j_dest, "exten"))? : "",
-			"dial_context",	ast_json_string_get(ast_json_object_get(j_dest, "context"))? : ""
+	j_res = ast_json_pack("{s:s, s:s, s:s, s:s}",
+			"dial_exten",			ast_json_string_get(ast_json_object_get(j_dest, "exten"))? : "",
+			"dial_context",		ast_json_string_get(ast_json_object_get(j_dest, "context"))? : "",
+			"dial_priority",	ast_json_string_get(ast_json_object_get(j_dest, "priority"))? : "",
+			"dest_variables",	ast_json_string_get(ast_json_object_get(j_dest, "variables"))? : ""
 			);
 
 	return j_res;
@@ -541,9 +542,10 @@ static struct ast_json* create_dial_destination_application(struct ast_json* j_d
 		return NULL;
 	}
 
-	j_res = ast_json_pack("{s:s, s:s}",
+	j_res = ast_json_pack("{s:s, s:s, s:s}",
 			"dial_application",		ast_json_string_get(ast_json_object_get(j_dest, "application"))? : "",
-			"dial_data",					ast_json_string_get(ast_json_object_get(j_dest, "data"))? : ""
+			"dial_data",					ast_json_string_get(ast_json_object_get(j_dest, "data"))? : "",
+			"dest_variables",			ast_json_string_get(ast_json_object_get(j_dest, "variables"))? : ""
 			);
 
 	return j_res;

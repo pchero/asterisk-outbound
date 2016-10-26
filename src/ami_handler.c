@@ -162,13 +162,15 @@ static struct ast_json* parse_ami_msg(char* msg)
 struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 {
 	int ret;
-	struct ast_json* j_tmp;
+	struct ast_json* j_val;
 	struct ast_json* j_res;
-	const char*	 tmp_const;
+	const char*	 key;
 	struct manager_custom_hook* hook;
 	char str_cmd[10240];
 	struct ast_json_iter* j_iter;
 	int type;
+	char* tmp;
+	const char* tmp_const;
 
 	// just for log
 	if(j_cmd == NULL) {
@@ -176,43 +178,65 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 	}
 
 	// Get action
-	j_tmp = ast_json_object_get(j_cmd, "Action");
-	if(j_tmp == NULL) {
+	j_val = ast_json_object_get(j_cmd, "Action");
+	if(j_val == NULL) {
 		ast_log(AST_LOG_ERROR, " not get the action.\n");
 		return NULL;
 	}
 
 	memset(str_cmd, 0x00, sizeof(str_cmd));
-	sprintf(str_cmd, "Action: %s\n", ast_json_string_get(j_tmp));
-	ast_log(LOG_DEBUG, "AMI Action command. action[%s]\n", ast_json_string_get(j_tmp));
+	sprintf(str_cmd, "Action: %s\n", ast_json_string_get(j_val));
+	ast_log(LOG_DEBUG, "AMI Action command. action[%s]\n", ast_json_string_get(j_val));
 	for(j_iter = ast_json_object_iter(j_cmd);
 			j_iter != NULL;
 			j_iter = ast_json_object_iter_next(j_cmd, j_iter))
 	{
-		tmp_const = ast_json_object_iter_key(j_iter);
-		ret = strcmp(tmp_const, "Action");
+		j_val = ast_json_object_iter_value(j_iter);
+		key = ast_json_object_iter_key(j_iter);
+
+		ret = strcmp(key, "Action");
 		if(ret == 0) {
 			continue;
 		}
-		j_tmp = ast_json_object_iter_value(j_iter);
 
-		type = ast_json_typeof(j_tmp);
+		ret = strcmp(key, "Variables");
+		if(ret == 0) {
+			tmp_const = ast_json_string_get(j_val);
+			tmp = get_variables_info_ami_str_from_string(tmp_const);
+			if(tmp != NULL) {
+				sprintf(str_cmd, "%s%s\n", str_cmd, tmp);
+			}
+			ast_free(tmp);
+			continue;
+		}
+
+		type = ast_json_typeof(j_val);
 		switch(type) {
 			case AST_JSON_REAL:
 			case AST_JSON_INTEGER:
 			{
-				sprintf(str_cmd, "%s%s: %lld\n", str_cmd, tmp_const, ast_json_integer_get(j_tmp));
+				sprintf(str_cmd, "%s%s: %lld\n", str_cmd, key, ast_json_integer_get(j_val));
+			}
+			break;
+
+			case AST_JSON_FALSE:
+			case AST_JSON_TRUE:
+			case AST_JSON_STRING:
+			{
+				sprintf(str_cmd, "%s%s: %s\n", str_cmd, key, ast_json_string_get(j_val));
 			}
 			break;
 
 			default:
 			{
-				sprintf(str_cmd, "%s%s: %s\n", str_cmd, tmp_const, ast_json_string_get(j_tmp));
+				ast_log(LOG_WARNING, "Invalid type. type[%d]\n", type);
+
 			}
 			break;
+
 		}
 
-		sprintf(str_cmd, "%s%s: %s\n", str_cmd, tmp_const, ast_json_string_get(j_tmp));
+		sprintf(str_cmd, "%s%s: %s\n", str_cmd, key, ast_json_string_get(j_val));
 	}
 
 	// Set hook
@@ -370,6 +394,12 @@ bool ami_is_response_success(struct ast_json* j_ami)
 		if(ret == 0) {
 			return true;
 		}
+
+		ast_log(LOG_DEBUG, "Could not success ami action. response[%s], message[%s]\n",
+				ast_json_string_get(ast_json_object_get(j_tmp, "Response"))? : "",
+				ast_json_string_get(ast_json_object_get(j_tmp, "Message"))? : ""
+				);
+		return false;
 	}
 
 	return false;
@@ -465,20 +495,44 @@ struct ast_json* ami_cmd_originate_to_application(struct ast_json* j_dial)
 	//	ChannelId: <value>
 	//	OtherChannelId: <value>
 	j_cmd = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
-			"Action",	   "Originate",
-			"Channel",	  ast_json_string_get(ast_json_object_get(j_dial, "dial_channel")),
-			"Async",		"true",
-			"Application",  ast_json_string_get(ast_json_object_get(j_dial, "dial_application")),
-			"Data",		 ast_json_string_get(ast_json_object_get(j_dial, "dial_data"))
+			"Action",				"Originate",
+			"Channel",			ast_json_string_get(ast_json_object_get(j_dial, "dial_channel")),
+			"Async",				"true",
+			"Application",	ast_json_string_get(ast_json_object_get(j_dial, "dial_application")),
+			"Data",					ast_json_string_get(ast_json_object_get(j_dial, "dial_data"))
 			);
-	if(ast_json_object_get(j_dial, "timeout") != NULL)		ast_json_object_set(j_cmd, "Timeout", ast_json_ref(ast_json_object_get(j_dial, "timeout")));
-	if(ast_json_object_get(j_dial, "callerid") != NULL)	   ast_json_object_set(j_cmd, "CallerID", ast_json_ref(ast_json_object_get(j_dial, "callerid")));
-	if(ast_json_object_get(j_dial, "variable") != NULL)	   ast_json_object_set(j_cmd, "Variable", ast_json_ref(ast_json_object_get(j_dial, "variable")));
-	if(ast_json_object_get(j_dial, "account") != NULL)		ast_json_object_set(j_cmd, "Account", ast_json_ref(ast_json_object_get(j_dial, "account")));
-	if(ast_json_object_get(j_dial, "earlymedia") != NULL)	 ast_json_object_set(j_cmd, "EarlyMedia", ast_json_ref(ast_json_object_get(j_dial, "earlymedia")));
-	if(ast_json_object_get(j_dial, "codecs") != NULL)		 ast_json_object_set(j_cmd, "Codecs", ast_json_ref(ast_json_object_get(j_dial, "codecs")));
-	if(ast_json_object_get(j_dial, "channelid") != NULL)	  ast_json_object_set(j_cmd, "ChannelId", ast_json_ref(ast_json_object_get(j_dial, "channelid")));
-	if(ast_json_object_get(j_dial, "otherchannelid") != NULL) ast_json_object_set(j_cmd, "OtherChannelId", ast_json_ref(ast_json_object_get(j_dial, "otherchannelid")));
+
+	if(ast_json_object_get(j_dial, "dial_timeout") != NULL) {
+		ast_json_object_set(j_cmd, "Timeout", ast_json_ref(ast_json_object_get(j_dial, "dial_timeout")));
+	}
+
+	if(ast_json_object_get(j_dial, "callerid") != NULL) {
+		ast_json_object_set(j_cmd, "CallerID", ast_json_ref(ast_json_object_get(j_dial, "callerid")));
+	}
+
+	if(ast_json_object_get(j_dial, "variable") != NULL) {
+		ast_json_object_set(j_cmd, "Variable", ast_json_ref(ast_json_object_get(j_dial, "variable")));
+	}
+
+	if(ast_json_object_get(j_dial, "account") != NULL) {
+		ast_json_object_set(j_cmd, "Account", ast_json_ref(ast_json_object_get(j_dial, "account")));
+	}
+
+	if(ast_json_object_get(j_dial, "early_media") != NULL) {
+		ast_json_object_set(j_cmd, "EarlyMedia", ast_json_ref(ast_json_object_get(j_dial, "early_media")));
+	}
+
+	if(ast_json_object_get(j_dial, "codecs") != NULL) {
+		ast_json_object_set(j_cmd, "Codecs", ast_json_ref(ast_json_object_get(j_dial, "codecs")));
+	}
+
+	if(ast_json_object_get(j_dial, "channelid") != NULL) {
+		ast_json_object_set(j_cmd, "ChannelId", ast_json_ref(ast_json_object_get(j_dial, "channelid")));
+	}
+
+	if(ast_json_object_get(j_dial, "otherchannelid") != NULL) {
+		ast_json_object_set(j_cmd, "OtherChannelId", ast_json_ref(ast_json_object_get(j_dial, "otherchannelid")));
+	}
 
 	if(j_cmd == NULL) {
 		ast_log(LOG_ERROR, "Could not create ami json.\n");
@@ -533,21 +587,47 @@ struct ast_json* ami_cmd_originate_to_exten(struct ast_json* j_dial)
 	//	Codecs: <value>
 	//	ChannelId: <value>
 	//	OtherChannelId: <value>
-	j_cmd = ast_json_pack("{s:s, s:s, s:s, s:s, s:s}",
-			"Action",	   "Originate",
-			"Channel",	  ast_json_string_get(ast_json_object_get(j_dial, "dial_channel")),
+	j_cmd = ast_json_pack("{s:s, s:s, s:s, s:s, s:s, s:s}",
+			"Action",		"Originate",
+			"Channel",	ast_json_string_get(ast_json_object_get(j_dial, "dial_channel")),
 			"Async",		"true",
 			"Exten",		ast_json_string_get(ast_json_object_get(j_dial, "dial_exten")),
-			"Context",	  ast_json_string_get(ast_json_object_get(j_dial, "dial_context"))
+			"Context",	ast_json_string_get(ast_json_object_get(j_dial, "dial_context")),
+			"Priority",	ast_json_string_get(ast_json_object_get(j_dial, "dial_priority"))
 			);
-	if(ast_json_object_get(j_dial, "timeout") != NULL)		ast_json_object_set(j_cmd, "Timeout", ast_json_ref(ast_json_object_get(j_dial, "timeout")));
-	if(ast_json_object_get(j_dial, "callerid") != NULL)	   ast_json_object_set(j_cmd, "CallerID", ast_json_ref(ast_json_object_get(j_dial, "callerid")));
-	if(ast_json_object_get(j_dial, "variable") != NULL)	   ast_json_object_set(j_cmd, "Variable", ast_json_ref(ast_json_object_get(j_dial, "variable")));
-	if(ast_json_object_get(j_dial, "account") != NULL)		ast_json_object_set(j_cmd, "Account", ast_json_ref(ast_json_object_get(j_dial, "account")));
-	if(ast_json_object_get(j_dial, "earlymedia") != NULL)	 ast_json_object_set(j_cmd, "EarlyMedia", ast_json_ref(ast_json_object_get(j_dial, "earlymedia")));
-	if(ast_json_object_get(j_dial, "codecs") != NULL)		 ast_json_object_set(j_cmd, "Codecs", ast_json_ref(ast_json_object_get(j_dial, "codecs")));
-	if(ast_json_object_get(j_dial, "channelid") != NULL)	  ast_json_object_set(j_cmd, "ChannelId", ast_json_ref(ast_json_object_get(j_dial, "channelid")));
-	if(ast_json_object_get(j_dial, "otherchannelid") != NULL) ast_json_object_set(j_cmd, "OtherChannelId", ast_json_ref(ast_json_object_get(j_dial, "otherchannelid")));
+
+	if(ast_json_object_get(j_dial, "dial_timeout") != NULL) {
+		ast_json_object_set(j_cmd, "Timeout", ast_json_ref(ast_json_object_get(j_dial, "dial_timeout")));
+	}
+
+	if(ast_json_object_get(j_dial, "callerid") != NULL) {
+		ast_json_object_set(j_cmd, "CallerID", ast_json_ref(ast_json_object_get(j_dial, "callerid")));
+	}
+
+	if(ast_json_object_get(j_dial, "account") != NULL) {
+		ast_json_object_set(j_cmd, "Account", ast_json_ref(ast_json_object_get(j_dial, "account")));
+	}
+
+	if(ast_json_object_get(j_dial, "early_media") != NULL) {
+		ast_json_object_set(j_cmd, "EarlyMedia", ast_json_ref(ast_json_object_get(j_dial, "early_media")));
+	}
+
+	if(ast_json_object_get(j_dial, "codecs") != NULL) {
+		ast_json_object_set(j_cmd, "Codecs", ast_json_ref(ast_json_object_get(j_dial, "codecs")));
+	}
+
+	if(ast_json_object_get(j_dial, "channelid") != NULL) {
+		ast_json_object_set(j_cmd, "ChannelId", ast_json_ref(ast_json_object_get(j_dial, "channelid")));
+	}
+
+	if(ast_json_object_get(j_dial, "otherchannelid") != NULL) {
+		ast_json_object_set(j_cmd, "OtherChannelId", ast_json_ref(ast_json_object_get(j_dial, "otherchannelid")));
+	}
+
+	// Variables
+	if(ast_json_object_get(j_dial, "variables") != NULL) {
+		ast_json_object_set(j_cmd, "Variables", ast_json_ref(ast_json_object_get(j_dial, "variables")));
+	}
 
 	if(j_cmd == NULL) {
 		ast_log(LOG_ERROR, "Could not create ami json.\n");

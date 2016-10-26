@@ -764,7 +764,7 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 			ast_json_string_get(ast_json_object_get(j_camp, "name")),
 			ast_json_string_get(ast_json_object_get(j_dial, "dial_channel")),
 			ast_json_string_get(ast_json_object_get(j_dial, "channelid")),
-			ast_json_integer_get(ast_json_object_get(j_dial, "timeout")),
+			ast_json_integer_get(ast_json_object_get(j_dial, "dial_timeout")),
 			ast_json_integer_get(ast_json_object_get(j_dial, "dial_index")),
 			ast_json_integer_get(ast_json_object_get(j_dial, "dial_trycnt")),
 			ast_json_integer_get(ast_json_object_get(j_dial, "dial_type"))

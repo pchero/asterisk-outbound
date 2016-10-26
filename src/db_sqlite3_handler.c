@@ -79,7 +79,7 @@ bool db_sqlite3_init(void)
 	ast_log(LOG_NOTICE, "Could not find correct table info. Create tables.\n");
 
 	// plan
-	ret = db_sqlite3_exec(g_sql_plan);
+	ret = db_sqlite3_exec(g_db_sql_plan);
 	if(ret == false) {
 		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "plan");
 		return false;
@@ -100,14 +100,14 @@ bool db_sqlite3_init(void)
 	}
 
 	// dial_list_ma
-	ret = db_sqlite3_exec(g_sql_dl_list_ma);
+	ret = db_sqlite3_exec(g_db_sql_dl_list_ma);
 	if(ret == false) {
 		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "dl_list_ma");
 		return false;
 	}
 
 	// campaign
-	ret = db_sqlite3_exec(g_sql_campaign);
+	ret = db_sqlite3_exec(g_db_sql_campaign);
 	if(ret == false) {
 		ast_log(LOG_ERROR, "Could not create table. table[%s]\n", "campaign");
 		return false;

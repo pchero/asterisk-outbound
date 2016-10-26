@@ -892,10 +892,14 @@ static char* get_campaign_str(struct ast_json* j_camp)
 static char* get_plan_str(struct ast_json* j_plan)
 {
 	char* tmp;
+	char* variables;
 
 	if(j_plan == NULL) {
 		return NULL;
 	}
+
+	// get variables
+	variables = get_variables_info_ami_str(j_plan, "variables");
 
 	ast_asprintf(&tmp,
 			"Uuid: %s\r\n"
@@ -908,8 +912,8 @@ static char* get_plan_str(struct ast_json* j_plan)
 			"DlEndHandle: %lld\r\n"
 			"RetryDelay: %lld\r\n"
 			"TrunkName: %s\r\n"
-
 			"TechName: %s\r\n"
+			"%s"// Variables
 
 			"MaxRetryCnt1: %lld\r\n"
 			"MaxRetryCnt2: %lld\r\n"
@@ -933,8 +937,8 @@ static char* get_plan_str(struct ast_json* j_plan)
 			ast_json_integer_get(ast_json_object_get(j_plan, "dl_end_handle")),
 			ast_json_integer_get(ast_json_object_get(j_plan, "retry_delay")),
 			ast_json_string_get(ast_json_object_get(j_plan, "trunk_name"))? : "<unknown>",
-
 			ast_json_string_get(ast_json_object_get(j_plan, "tech_name"))? : "<unknown>",
+			variables? : "Variable: <unknown>\r\n",
 
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
 			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
@@ -949,6 +953,8 @@ static char* get_plan_str(struct ast_json* j_plan)
 			ast_json_string_get(ast_json_object_get(j_plan, "tm_delete"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_plan, "tm_update"))? : "<unknown>"
 			);
+	ast_free(variables);
+
 	ast_log(LOG_VERBOSE, "Value check. created plan string. str[%s]\n", tmp);
 	return tmp;
 }
@@ -1012,10 +1018,13 @@ static char* get_queue_str(struct ast_json* j_queue)
 static char* get_dialing_str(const rb_dialing* dialing)
 {
 	char* tmp;
+	char* variables;
 
 	if(dialing == NULL) {
 		return NULL;
 	}
+
+	variables = get_variables_info_ami_str(dialing->j_dialing, "variables");
 
 	ast_asprintf(&tmp,
 			// identity
@@ -1040,6 +1049,7 @@ static char* get_dialing_str(const rb_dialing* dialing)
 			"DialContext: %s\r\n"
 			"DialApplication: %s\r\n"
 			"DialData: %s\r\n"
+			"%s"// Variables
 
 			// channel info
 			"ChannelName: %s\r\n"
@@ -1076,6 +1086,7 @@ static char* get_dialing_str(const rb_dialing* dialing)
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_context"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_application"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dial_data"))? : "<unknown>",
+			variables? : "Variable: <unknown>\r\n",
 
 			// channel info
 			ast_json_string_get(ast_json_object_get(dialing->j_dialing, "channel_name"))? : "<unknown>",
@@ -1090,6 +1101,8 @@ static char* get_dialing_str(const rb_dialing* dialing)
 			dialing->tm_update? : "<unknown>",
 			dialing->tm_delete? : "<unknown>"
 			);
+	ast_free(variables);
+
 	return tmp;
 }
 
@@ -1112,10 +1125,14 @@ static char* get_dialing_summary_str(void)
 static char* get_dl_list_str(struct ast_json* j_dl)
 {
 	char* tmp;
+	char* variables;
 
 	if(j_dl == NULL) {
 		return NULL;
 	}
+
+	// get variables
+	variables = get_variables_info_ami_str(j_dl, "variables");
 
 	ast_asprintf(&tmp,
 			"Uuid: %s\r\n"
@@ -1126,6 +1143,7 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 
 			"UKey: %s\r\n"
 			"UData: %s\r\n"
+			"%s"// Variables
 
 			"DialingUuid: %s\r\n"
 			"DialingCampUuid: %s\r\n"
@@ -1167,6 +1185,7 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 
 			ast_json_string_get(ast_json_object_get(j_dl, "ukey"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dl, "udata"))? : "<unknown>",
+			variables? : "Variable: <unknown>\r\n",
 
 			ast_json_string_get(ast_json_object_get(j_dl, "dialing_uuid"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dl, "dialing_camp_uuid"))? : "<unknown>",
@@ -1201,6 +1220,8 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 			ast_json_string_get(ast_json_object_get(j_dl, "tm_delete"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dl, "tm_update"))? : "<unknown>"
 			);
+	ast_free(variables);
+
 	return tmp;
 }
 
@@ -1212,38 +1233,15 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 static char* get_destination_str(struct ast_json* j_dest)
 {
 	char* tmp;
-	const char* tmp_const;
-	struct ast_json* j_tmp;
-	struct ast_json_iter* iter;
 	char* variables;
-	char* variable;
 
 
 	if(j_dest == NULL) {
 		return NULL;
 	}
 
-	// create Setvar string
-	variables = NULL;
-	tmp_const = ast_json_string_get(ast_json_object_get(j_dest, "variables"));
-	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
-		j_tmp = ast_json_load_string(tmp_const, NULL);
-
-		for(iter = ast_json_object_iter(j_tmp);
-				iter != NULL;
-				iter = ast_json_object_iter_next(j_tmp, iter))
-		{
-			ast_asprintf(&variable, "%sVariable: %s=%s\r\n",
-					variables? : "",
-					ast_json_object_iter_key(iter)? : "",
-					ast_json_string_get(ast_json_object_iter_value(iter))? : ""
-					);
-			if(variables != NULL) {
-				ast_free(variables);
-			}
-			variables = variable;
-		}
-	}
+	// get variables
+	variables = get_variables_info_ami_str(j_dest, "variables");
 
 	ast_asprintf(&tmp,
 			"Uuid: %s\r\n"
@@ -1292,6 +1290,7 @@ static struct ast_json* create_json_plan(const struct message* m)
 {
 	const char* tmp_const;
 	struct ast_json* j_tmp;
+	char* tmp;
 
 	if(m == NULL) {
 		return NULL;
@@ -1394,6 +1393,12 @@ static struct ast_json* create_json_plan(const struct message* m)
 		ast_json_object_set(j_tmp, "max_retry_cnt_8", ast_json_integer_create(atoi(tmp_const)));
 	}
 
+	// Variable
+	tmp = get_variables(m);
+	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
+	ast_free(tmp);
+
+
 	return j_tmp;
 }
 
@@ -1401,6 +1406,7 @@ static struct ast_json* create_json_dl_list(const struct message* m)
 {
 	struct ast_json* j_tmp;
 	const char* tmp_const;
+	char* tmp;
 
 	j_tmp = ast_json_object_create();
 
@@ -1454,6 +1460,11 @@ static struct ast_json* create_json_dl_list(const struct message* m)
 
 	tmp_const = astman_get_header(m, "res_hangup_detail");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "res_hangup_detail", ast_json_string_create(tmp_const));}
+
+	// Variables
+	tmp = get_variables(m);
+	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
+	ast_free(tmp);
 
 	return j_tmp;
 }
