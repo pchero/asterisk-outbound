@@ -20,7 +20,6 @@ static const char* g_db_sql_plan =
 
 // resource
 "    variables   text,"															// string of json object. "{"var1":"value1", "var2":"value2", ... }"
-"    uui_field   varchar(255)    default null,"   	// x-header name for UUI(later)"
 
 // strategy"
 "    dial_mode       int default 1,"              	// dial mode(desktop, power, predictive, email, fax, sms)"
@@ -88,7 +87,6 @@ static const char* g_db_sql_dial_list =
 
 // custom define data"
 "    ukey            text,"   // user define key"
-"    udata           text,"   // user define data"
 "    variables       text,"		// string of json object. "{"var1":"value1", "var2":"value2", ... }"
 
 

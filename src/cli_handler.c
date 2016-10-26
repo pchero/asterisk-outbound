@@ -1142,7 +1142,6 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 			"Status: %lld\r\n"
 
 			"UKey: %s\r\n"
-			"UData: %s\r\n"
 			"%s"// Variables
 
 			"DialingUuid: %s\r\n"
@@ -1184,7 +1183,6 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 			ast_json_integer_get(ast_json_object_get(j_dl, "status")),
 
 			ast_json_string_get(ast_json_object_get(j_dl, "ukey"))? : "<unknown>",
-			ast_json_string_get(ast_json_object_get(j_dl, "udata"))? : "<unknown>",
 			variables? : "Variable: <unknown>\r\n",
 
 			ast_json_string_get(ast_json_object_get(j_dl, "dialing_uuid"))? : "<unknown>",
@@ -1313,11 +1311,6 @@ static struct ast_json* create_json_plan(const struct message* m)
 		ast_json_object_set(j_tmp, "dial_mode", ast_json_integer_create(atoi(tmp_const)));
 	}
 
-	tmp_const = astman_get_header(m, "UuiField");
-	if(strcmp(tmp_const, "") != 0) {
-		ast_json_object_set(j_tmp, "uui_field", ast_json_string_create(tmp_const));
-	}
-
 	tmp_const = astman_get_header(m, "DialTimeout");
 	if(strcmp(tmp_const, "") != 0) {
 		ast_json_object_set(j_tmp, "dial_timeout", ast_json_integer_create(atoi(tmp_const)));
@@ -1421,9 +1414,6 @@ static struct ast_json* create_json_dl_list(const struct message* m)
 
 	tmp_const = astman_get_header(m, "UKey");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "ukey", ast_json_string_create(tmp_const));}
-
-	tmp_const = astman_get_header(m, "UData");
-	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "udata", ast_json_string_create(tmp_const));}
 
 	tmp_const = astman_get_header(m, "Number1");
 	if(strcmp(tmp_const, "") != 0) {ast_json_object_set(j_tmp, "number_1", ast_json_string_create(tmp_const));}
