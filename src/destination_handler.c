@@ -20,6 +20,8 @@
 
 #include "destination_handler.h"
 
+static struct ast_json* get_destination_deleted(const char* uuid);
+
 static int get_avail_cnt_exten(struct ast_json* j_dest);
 static int get_avail_cnt_app(struct ast_json* j_dest);
 static int get_avail_cnt_app_park(void);
@@ -101,7 +103,7 @@ bool delete_destination(const char* uuid)
 
 	tmp = db_get_update_str(j_tmp);
 	AST_JSON_UNREF(j_tmp);
-	ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\";", tmp, uuid);
+	ast_asprintf(&sql, "update destination set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 
 	ret = db_exec(sql);
@@ -112,7 +114,9 @@ bool delete_destination(const char* uuid)
 	}
 
 	// send notification
-	send_manager_evt_out_destination_delete(uuid);
+	j_tmp = get_destination_deleted(uuid);
+	send_manager_evt_out_destination_delete(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -148,6 +152,39 @@ struct ast_json* get_destination(const char* uuid)
 
 	return j_res;
 }
+
+/**
+ * Get specified destination
+ * @return
+ */
+static struct ast_json* get_destination_deleted(const char* uuid)
+{
+	struct ast_json* j_res;
+	db_res_t* db_res;
+	char* sql;
+
+	if(uuid == NULL) {
+		ast_log(LOG_ERROR, "Wrong input parameter.\n");
+		return NULL;
+	}
+	ast_log(LOG_DEBUG, "Get destination info. uuid[%s]\n", uuid);
+
+	// get specified destination
+	ast_asprintf(&sql, "select * from destination where uuid=\"%s\" and in_use=0;", uuid);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_WARNING, "Could not get destination info.\n");
+		return NULL;
+	}
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+
+	return j_res;
+}
+
 
 
 /**
