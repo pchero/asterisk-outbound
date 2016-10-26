@@ -587,6 +587,11 @@ struct ast_json* create_dial_info(
 	struct ast_json* j_dial_dest;
 	struct ast_json* j_dial_dl;
 	struct ast_json* j_dial_plan;
+	struct ast_json* j_variables;
+	struct ast_json* j_tmp;
+	const char* tmp_const;
+	char* tmp;
+
 
 	if((j_plan == NULL) || (j_dl_list == NULL) || (j_dest == NULL)) {
 		ast_log(LOG_WARNING, "Wrong input parameter.\n");
@@ -621,10 +626,44 @@ struct ast_json* create_dial_info(
 	ast_json_object_update(j_dial, j_dial_dest);
 	ast_json_object_update(j_dial, j_dial_dl);
 	ast_json_object_update(j_dial, j_dial_plan);
-
 	AST_JSON_UNREF(j_dial_dest);
 	AST_JSON_UNREF(j_dial_dl);
 	AST_JSON_UNREF(j_dial_plan);
+
+	// update variables
+	j_variables = ast_json_object_create();
+
+	tmp_const = ast_json_string_get(ast_json_object_get(j_dial, "plan_variables"));
+	if((tmp_const != NULL) || (strlen(tmp_const) != 0)) {
+		j_tmp = ast_json_load_string(tmp_const, NULL);
+		if(j_tmp != NULL) {
+			ast_json_object_update(j_variables, j_tmp);
+		}
+		AST_JSON_UNREF(j_tmp);
+	}
+
+	tmp_const = ast_json_string_get(ast_json_object_get(j_dial, "dest_variables"));
+	if((tmp_const != NULL) || (strlen(tmp_const) != 0)) {
+		j_tmp = ast_json_load_string(tmp_const, NULL);
+		if(j_tmp != NULL) {
+			ast_json_object_update(j_variables, j_tmp);
+		}
+		AST_JSON_UNREF(j_tmp);
+	}
+
+	tmp_const = ast_json_string_get(ast_json_object_get(j_dial, "dl_variables"));
+	if((tmp_const != NULL) || (strlen(tmp_const) != 0)) {
+		j_tmp = ast_json_load_string(tmp_const, NULL);
+		if(j_tmp != NULL) {
+			ast_json_object_update(j_variables, j_tmp);
+		}
+		AST_JSON_UNREF(j_tmp);
+	}
+
+	tmp = ast_json_dump_string(j_variables);
+	ast_json_object_set(j_dial, "variables", ast_json_string_create(tmp?:""));
+	ast_json_free(tmp);
+	AST_JSON_UNREF(j_variables);
 
 	return j_dial;
 }
@@ -910,7 +949,7 @@ static struct ast_json* create_dial_dl_info(struct ast_json* j_dl_list, struct a
 	j_res = ast_json_pack(
 			"{"
 			"s:s, "
-			"s:s, s:s, s:i, s:i,"
+			"s:s, s:s, s:i, s:i, s:s, "
 			"s:s, s:s"
 			"}",
 
@@ -920,6 +959,7 @@ static struct ast_json* create_dial_dl_info(struct ast_json* j_dl_list, struct a
 			"dial_addr",			addr,
 			"dial_index",			index,
 			"dial_trycnt",		count,
+			"dl_variables",	  ast_json_string_get(ast_json_object_get(j_dl_list, "variables"))? : "",
 
 			"channelid",			channel_id,
 			"otherchannelid",	other_channel_id

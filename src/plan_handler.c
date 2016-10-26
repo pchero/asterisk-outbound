@@ -263,8 +263,9 @@ struct ast_json* create_dial_plan_info(struct ast_json* j_plan)
 		return NULL;
 	}
 
-	j_res = ast_json_pack("{s:i}",
-			"dial_timeout", ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout"))
+	j_res = ast_json_pack("{s:I, s:s}",
+			"dial_timeout", 	ast_json_integer_get(ast_json_object_get(j_plan, "dial_timeout")),
+			"plan_variables",	ast_json_string_get(ast_json_object_get(j_plan, "variables"))? : ""
 			);
 
 	if(ast_json_string_get(ast_json_object_get(j_plan, "caller_id")) != NULL) {
@@ -312,7 +313,7 @@ bool is_endable_plan(struct ast_json* j_plan)
 
 	ret = is_nonstop_dl_handle(j_plan);
 	if(ret == true) {
-		ast_log(LOG_VERBOSE, "The plan dl_end_handle is nonstop. plan_uuid[%s], dl_end_handle[%d]\n",
+		ast_log(LOG_VERBOSE, "The plan dl_end_handle is nonstop. plan_uuid[%s], is_nonstop[%d]\n",
 				ast_json_string_get(ast_json_object_get(j_plan, "uuid"))? : "",
 				ret
 				);

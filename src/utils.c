@@ -10,6 +10,7 @@
 
 #include "asterisk/uuid.h"
 #include "asterisk/utils.h"
+#include "asterisk/json.h"
 
 #include "utils.h"
 
@@ -72,4 +73,131 @@ char* get_utc_timestamp_using_timespec(struct timespec timeptr)
 	ast_asprintf(&res, "%s.%ldZ", timestr, timeptr.tv_nsec);
 
 	return res;
+}
+
+char* get_variables_info_ami_str_from_string(const char* str)
+{
+	struct ast_json* j_tmp;
+	struct ast_json_iter* iter;
+	char* variable;
+	char* variables;
+
+	if((str == NULL) || (strlen(str) == 0)) {
+		return NULL;
+	}
+
+	j_tmp = ast_json_load_string(str, NULL);
+
+	variables = NULL;
+	for(iter = ast_json_object_iter(j_tmp);
+			iter != NULL;
+			iter = ast_json_object_iter_next(j_tmp, iter))
+	{
+		ast_asprintf(&variable, "%sVariable: %s=%s\r\n",
+				variables? : "",
+				ast_json_object_iter_key(iter)? : "",
+				ast_json_string_get(ast_json_object_iter_value(iter))? : ""
+				);
+		if(variables != NULL) {
+			ast_free(variables);
+		}
+		variables = variable;
+	}
+
+	return variables;
+}
+
+char* get_variables_info_ami_str(struct ast_json* j_obj, const char* name)
+{
+	const char* tmp_const;
+	char* variables;
+
+
+	if((j_obj == NULL) || (name == NULL)) {
+		return NULL;
+	}
+
+	tmp_const = ast_json_string_get(ast_json_object_get(j_obj, name));
+	if((tmp_const == NULL) || (strlen(tmp_const) == 0)) {
+		return NULL;
+	}
+
+	variables = get_variables_info_ami_str_from_string(tmp_const);
+
+	return variables;
+
+}
+
+struct ast_json* get_variables_info_json_object(struct ast_json* j_obj, const char* name)
+{
+	const char* tmp_const;
+	struct ast_json* j_res;
+
+	if((j_obj == NULL) || (name == NULL)) {
+		return NULL;
+	}
+
+	tmp_const = ast_json_string_get(ast_json_object_get(j_obj, name));
+	if((tmp_const == NULL) || (strlen(tmp_const) == 0)) {
+		return NULL;
+	}
+
+	j_res = ast_json_load_string(tmp_const, NULL);
+
+	return j_res;
+}
+
+char* get_variables_info_ami_str_from_json_array(struct ast_json* j_arr)
+{
+	int ret;
+	int i;
+	int size;
+	const char* tmp_const;
+	struct ast_json* j_tmp;
+
+	char* variable;
+	char* variables;
+	char* tmp;
+
+	if(j_arr == NULL) {
+		return NULL;
+	}
+
+	ret = ast_json_typeof(j_arr);
+	if(ret != AST_JSON_ARRAY) {
+		return NULL;
+	}
+
+	variables = NULL;
+	variable = NULL;
+	size = ast_json_array_size(j_arr);
+	for(i = 0; i < size; i++) {
+		j_tmp = ast_json_array_get(j_arr, i);
+		if(j_tmp == NULL) {
+			continue;
+		}
+
+		// string only
+		ret = ast_json_typeof(j_tmp);
+		if(ret != AST_JSON_STRING) {
+			continue;
+		}
+
+		tmp_const = ast_json_string_get(j_tmp);
+
+		tmp = get_variables_info_ami_str_from_string(tmp_const);
+		if(tmp == NULL) {
+			continue;
+		}
+
+		ast_asprintf(&variable, "%s\r\n%s",
+				variables?:"",
+				tmp
+				);
+		ast_free(tmp);
+		ast_free(variables);
+		variables = variable;
+	}
+	return variables;
+
 }
