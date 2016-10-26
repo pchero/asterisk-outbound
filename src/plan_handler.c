@@ -21,6 +21,8 @@
 #include "ami_handler.h"
 #include "utils.h"
 
+static struct ast_json* get_plan_deleted(const char* uuid);
+
 /**
  *
  * @return
@@ -118,7 +120,9 @@ bool delete_plan(const char* uuid)
 	}
 
 	// send notification
-	send_manager_evt_out_plan_delete(uuid);
+	j_tmp = get_plan_deleted(uuid);
+	send_manager_evt_out_plan_delete(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -140,6 +144,36 @@ struct ast_json* get_plan(const char* uuid)
 		return NULL;
 	}
 	ast_asprintf(&sql, "select * from plan where in_use=1 and uuid=\"%s\";", uuid);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_ERROR, "Could not get plan info. uuid[%s]\n", uuid);
+		return NULL;
+	}
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+
+	return j_res;
+}
+
+/**
+ * Get deleted plan info.
+ * @param uuid
+ * @return
+ */
+static struct ast_json* get_plan_deleted(const char* uuid)
+{
+	char* sql;
+	struct ast_json* j_res;
+	db_res_t* db_res;
+
+	if(uuid == NULL) {
+		ast_log(LOG_WARNING, "Invalid input parameters.\n");
+		return NULL;
+	}
+	ast_asprintf(&sql, "select * from plan where in_use=0 and uuid=\"%s\";", uuid);
 
 	db_res = db_query(sql);
 	ast_free(sql);

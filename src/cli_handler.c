@@ -1503,21 +1503,21 @@ void send_manager_evt_out_campaign_create(struct ast_json* j_camp)
  * Event: OutCampaignDelete
  * @param j_camp
  */
-void send_manager_evt_out_campaign_delete(const char* uuid)
+void send_manager_evt_out_campaign_delete(struct ast_json* j_camp)
 {
 	char* tmp;
 
 	ast_log(LOG_VERBOSE, "AMI event. OutCampaignDelete.\n");
-	if(uuid == NULL) {
+	if(j_camp == NULL) {
 		// nothing to send.
 		ast_log(LOG_WARNING, "AMI event. OutCampaignDelete. Failed.\n");
 		return;
 	}
 
-	ast_asprintf(&tmp,
-			"Uuid: %s\r\n",
-			uuid
-			);
+	tmp = get_campaign_str(j_camp);
+	if(tmp == NULL) {
+		return;
+	}
 	manager_event(EVENT_FLAG_MESSAGE, "OutCampaignDelete", "%s\r\n", tmp);
 	ast_free(tmp);
 	ast_log(LOG_VERBOSE, "AMI event. OutCampaignDelete. Succeed.\n");
@@ -1589,22 +1589,19 @@ void send_manager_evt_out_plan_create(struct ast_json* j_plan)
  * Event: OutPlanDelete
  * @param j_camp
  */
-void send_manager_evt_out_plan_delete(const char* uuid)
+void send_manager_evt_out_plan_delete(struct ast_json* j_plan)
 {
 	char* tmp;
 
 	ast_log(LOG_VERBOSE, "AMI event. OutPlanDelete.\n");
 
-	if(uuid == NULL) {
+	if(j_plan == NULL) {
 		// nothing to send.
 		ast_log(LOG_WARNING, "AMI event. OutPlanDelete. Failed.\n");
 		return;
 	}
 
-	ast_asprintf(&tmp,
-			"Uuid: %s\r\n",
-			uuid
-			);
+	tmp = get_plan_str(j_plan);
 	manager_event(EVENT_FLAG_MESSAGE, "OutPlanDelete", "%s\r\n", tmp);
 	ast_free(tmp);
 	ast_log(LOG_VERBOSE, "AMI event. OutPlanDelete. Succeed.\n");
@@ -1920,22 +1917,19 @@ void send_manager_evt_out_destination_update(struct ast_json* j_dest)
  * Event: OutDestinationDelete
  * @param j_camp
  */
-void send_manager_evt_out_destination_delete(const char* uuid)
+void send_manager_evt_out_destination_delete(struct ast_json* j_dest)
 {
 	char* tmp;
 
 	ast_log(LOG_VERBOSE, "AMI event. OutDestinationDelete.\n");
 
-	if(uuid == NULL) {
+	if(j_dest == NULL) {
 		// nothing to send.
 		ast_log(LOG_WARNING, "AMI event. OutDestinationDelete. Failed.\n");
 		return;
 	}
 
-	ast_asprintf(&tmp,
-			"Uuid: %s\r\n",
-			uuid
-			);
+	tmp = get_destination_str(j_dest);
 	manager_event(EVENT_FLAG_MESSAGE, "OutDestinationDelete", "%s\r\n", tmp);
 	ast_free(tmp);
 	ast_log(LOG_VERBOSE, "AMI event. OutDestinationDelete. Succeed.\n");
@@ -2006,10 +2000,7 @@ void send_manager_evt_out_dialing_delete(rb_dialing* dialing)
 		return;
 	}
 
-	ast_asprintf(&tmp,
-			"Uuid: %s\r\n",
-			dialing->uuid
-			);
+	tmp = get_dialing_str(dialing);
 	manager_event(EVENT_FLAG_MESSAGE, "OutDialingDelete", "%s\r\n", tmp);
 	ast_free(tmp);
 	ast_log(LOG_VERBOSE, "AMI event. OutDialingDelete. Succeed.\n");

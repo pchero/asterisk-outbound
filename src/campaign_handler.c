@@ -19,6 +19,9 @@
 #include "event_handler.h"
 #include "utils.h"
 
+static struct ast_json* get_campaign_deleted(const char* uuid);
+
+
 /**
  * Create campaign.
  * @param j_camp
@@ -70,7 +73,7 @@ bool create_campaign(const struct ast_json* j_camp)
  */
 bool delete_campaign(const char* uuid)
 {
-	struct ast_json* j_camp;
+	struct ast_json* j_tmp;
 	char* tmp;
 	char* sql;
 	int ret;
@@ -80,15 +83,15 @@ bool delete_campaign(const char* uuid)
 		return false;
 	}
 
-	j_camp = ast_json_object_create();
+	j_tmp = ast_json_object_create();
 	tmp = get_utc_timestamp();
-	ast_json_object_set(j_camp, "status", ast_json_integer_create(E_CAMP_STOP));
-	ast_json_object_set(j_camp, "tm_delete", ast_json_string_create(tmp));
-	ast_json_object_set(j_camp, "in_use", ast_json_integer_create(0));
+	ast_json_object_set(j_tmp, "status", ast_json_integer_create(E_CAMP_STOP));
+	ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
+	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
 	ast_free(tmp);
 
-	tmp = db_get_update_str(j_camp);
-	AST_JSON_UNREF(j_camp);
+	tmp = db_get_update_str(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 	ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\";", tmp, uuid);
 	ast_free(tmp);
 
@@ -100,7 +103,9 @@ bool delete_campaign(const char* uuid)
 	}
 
 	// send notification
-	send_manager_evt_out_campaign_delete(uuid);
+	j_tmp = get_campaign_deleted(uuid);
+	send_manager_evt_out_campaign_delete(j_tmp);
+	AST_JSON_UNREF(j_tmp);
 
 	return true;
 }
@@ -135,6 +140,38 @@ struct ast_json* get_campaign(const char* uuid)
 
 	return j_res;
 }
+
+/**
+ * Get deleted campaign.
+ * @return
+ */
+static struct ast_json* get_campaign_deleted(const char* uuid)
+{
+	struct ast_json* j_res;
+	db_res_t* db_res;
+	char* sql;
+
+	if(uuid == NULL) {
+		return NULL;
+	}
+	ast_log(LOG_DEBUG, "Get deleted campaign info. uuid[%s]\n", uuid);
+
+	// get specified campaign
+	ast_asprintf(&sql, "select * from campaign where uuid=\"%s\" and in_use=0;", uuid);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_WARNING, "Could not get campaign info.\n");
+		return NULL;
+	}
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+
+	return j_res;
+}
+
 
 /**
  * Get all campaigns
