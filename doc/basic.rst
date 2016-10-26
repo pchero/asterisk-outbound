@@ -21,6 +21,91 @@ The asterisk-outbound has a 5W1H principle.
 * Destination : Determine who get a call after answer(Who).
 * Dial list(Dial List Master) : Determine where/what call heading for(Where/What).
 
+
+Features
+========
+
+Call balancing
+--------------
+The res_outbound supports call balancing.
+
+With this feature, the res_outbound can managing the amount of outbound call depends on the destination's condition.
+
+For example, if the destination is queue, it calculate waiting agent's number and queue's performance.
+
+
+Stratigical retrying
+--------------------
+The res_outbound supports the stratigical retrying.
+
+The user can set retry counts and retry delay time for each call.
+
+
+Customer based dial list
+-------------------------
+The res_outbound supports customer based dial list.
+
+The user can set the customer's detail info such as name, detail, database key, email, ... not only for numbers
+And supports several types of numbers.
+
+
+Call capsulization
+------------------
+The res_outbound supports the call capsulization.
+
+When the res_outbound making a call, the call kept all the resource info itself. So, if the other resources chagned later, it doesn't affect to the existing call.
+
+It makes call-capsulization.
+
+
+Dynamic resource management
+---------------------------
+The res_outbound supports the dynamic resource management.
+
+
+Campaign scheduling
+-------------------
+The res_outbound supports the campaign scheduling.
+
+The user can set the auto-start, auto-end.
+
+
+Set variables
+--------------
+The res_outbound supports variables setting.
+
+The user can set the variables for each resources.
+
+It can deliver to the dialplan or SIP headers.
+
+
+Monitoring
+----------
+
+
+AMI action
+----------
+
+
+AMI event
+---------
+
+
+Asterisk cli
+------------
+
+
+Dialplan application
+--------------------
+
+
+Result
+------
+The res_outbound supports the detail dial result.
+
+In the result, the user can check the all the call info(original info, dialing info, result info).
+
+
 Resources
 =========
 
@@ -52,6 +137,19 @@ Determine why make a call(Why).
 To dial to the customer, the user need to create the campaign first and need to assign the correct resources(destination, plan, dial list master).
 
 Then the resources determine where/what/who/how/when make a call to the customer.
+
+Status
+------
+
+
+Scheduling
+----------
+
+Reference
+---------
+
+The campaign does nothing by itself. Because of the campaign is working with 3 different type of resources. So, the campaign just keep the references of them.
+
 
 Plan
 ====
