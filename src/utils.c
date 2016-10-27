@@ -75,6 +75,50 @@ char* get_utc_timestamp_using_timespec(struct timespec timeptr)
 	return res;
 }
 
+/**
+ * return utc time.
+ * YYYY-MM-DD
+ * @return
+ */
+char* get_utc_timestamp_date(void)
+{
+	char	timestr[128];
+	char*   res;
+	struct  timespec timeptr;
+	time_t  tt;
+	struct tm *t;
+
+	clock_gettime(CLOCK_REALTIME, &timeptr);
+	tt = (time_t)timeptr.tv_sec;
+	t = gmtime(&tt);
+
+	strftime(timestr, sizeof(timestr), "%Y-%m-%d", t);
+	ast_asprintf(&res, "%s", timestr);
+
+	return res;
+}
+
+/**
+ * return utc day.
+ * 0=Sunday, 1=Monday, ..., 6=Saturday
+ * @return
+ */
+int get_utc_timestamp_day(void)
+{
+	struct tm tm;
+	time_t time;
+	char* tmp;
+
+	tmp = get_utc_timestamp_date();
+	if(strptime(tmp, "%Y-%m-%d", &tm) == NULL) {
+		ast_free(tmp);
+		return -1;
+	}
+	ast_free(tmp);
+
+	return localtime(&time)->tm_wday;
+}
+
 char* get_variables_info_ami_str_from_string(const char* str)
 {
 	struct ast_json* j_tmp;
