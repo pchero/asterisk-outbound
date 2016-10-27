@@ -41,8 +41,8 @@ The res_outbound supports the stratigical retrying.
 The user can set retry counts and retry delay time for each call.
 
 
-Customer based dial list
--------------------------
+Customer info based dial list
+-----------------------------
 The res_outbound supports customer based dial list.
 
 The user can set the customer's detail info such as name, detail, database key, email, ... not only for numbers
@@ -71,7 +71,7 @@ The user can set the auto-start, auto-end.
 
 
 Set variables
---------------
+-------------
 The res_outbound supports variables setting.
 
 The user can set the variables for each resources.
@@ -99,8 +99,8 @@ Dialplan application
 --------------------
 
 
-Result
-------
+Detail dial result
+------------------
 The res_outbound supports the detail dial result.
 
 In the result, the user can check the all the call info(original info, dialing info, result info).
@@ -195,7 +195,7 @@ Service level controling the amount of dailing.
 
 
 Max available outbound call count
-++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++
 
 The max available outbound call count is depends on the destination.
 
