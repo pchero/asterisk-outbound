@@ -48,6 +48,8 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 static void cb_check_campaign_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_campaign_schedule_start(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
 static void cb_check_campaign_schedule_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+//static void cb_campaign_schedule_stopping(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg);
+
 
 
 //static struct ast_json* get_queue_info(const char* uuid);
@@ -134,14 +136,17 @@ int run_outbound(void)
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_campaign_end, NULL);
 	event_add(ev, &tm_slow);
 
-	// check campaign scheduling for start
+	// check campaign scheduling start
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_campaign_schedule_start, NULL);
 	event_add(ev, &tm_slow);
 
-	// check campaign scheduling for stop
+	// check campaign scheduling end
 	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_check_campaign_schedule_end, NULL);
 	event_add(ev, &tm_slow);
 
+//	// check campaign scheduling for stop
+//	ev = event_new(g_base, -1, EV_TIMEOUT | EV_PERSIST, cb_campaign_schedule_stopping, NULL);
+//	event_add(ev, &tm_slow);
 
 	event_base_loop(g_base, 0);
 
@@ -480,6 +485,55 @@ static void cb_campaign_stopping_force(__attribute__((unused)) int fd, __attribu
 	AST_JSON_UNREF(j_camps);
 }
 
+
+///**
+// * Check Stopping status campaign, and update to stop.
+// * @param fd
+// * @param event
+// * @param arg
+// */
+//static void cb_campaign_schedule_stopping(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
+//{
+//	struct ast_json* j_camps;
+//	struct ast_json* j_camp;
+//	int i;
+//	int size;
+//	int ret;
+//
+//	j_camps = get_campaigns_by_status(E_CAMP_SCHEDULE_STOPPING);
+//	if(j_camps == NULL) {
+//		// Nothing.
+//		return;
+//	}
+//
+//	size = ast_json_array_size(j_camps);
+//	for(i = 0; i < size; i++) {
+//		j_camp = ast_json_array_get(j_camps, i);
+//
+//		// check stoppable campaign
+//		ret = is_stoppable_campgain(j_camp);
+//		if(ret == false) {
+//			continue;
+//		}
+//
+//		// update status to stop
+//		ast_log(LOG_NOTICE, "Update campaign status to schedule stop. camp_uuid[%s], camp_name[%s]\n",
+//				ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+//				ast_json_string_get(ast_json_object_get(j_camp, "name"))
+//				);
+//		ret = update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_SCHEDULE_STOP);
+//		if(ret == false) {
+//			ast_log(LOG_ERROR, "Could not update campaign status to schedule_stop. camp_uuid[%s], camp_name[%s]\n",
+//				ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
+//				ast_json_string_get(ast_json_object_get(j_camp, "name"))
+//				);
+//		}
+//	}
+//
+//	AST_JSON_UNREF(j_camps);
+//
+//}
+
 static void cb_check_dialing_end(__attribute__((unused)) int fd, __attribute__((unused)) short event, __attribute__((unused)) void *arg)
 {
 	struct ao2_iterator iter;
@@ -724,14 +778,14 @@ static void cb_check_campaign_schedule_start(__attribute__((unused)) int fd, __a
 		}
 
 		ast_log(LOG_NOTICE, "Update campaign status to starting by scheduling. camp_uuid[%s], camp_name[%s]\n",
-				ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-				ast_json_string_get(ast_json_object_get(j_camp, "name"))
+				ast_json_string_get(ast_json_object_get(j_camp, "uuid"))? : "",
+				ast_json_string_get(ast_json_object_get(j_camp, "name"))? : ""
 				);
 		ret = update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STARTING);
 		if(ret == false) {
 			ast_log(LOG_ERROR, "Could not update campaign status to starting. camp_uuid[%s], camp_name[%s]\n",
-					ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
-					ast_json_string_get(ast_json_object_get(j_camp, "name"))
+					ast_json_string_get(ast_json_object_get(j_camp, "uuid"))? : "",
+					ast_json_string_get(ast_json_object_get(j_camp, "name"))? : ""
 					);
 		}
 	}
@@ -767,7 +821,7 @@ static void cb_check_campaign_schedule_end(__attribute__((unused)) int fd, __att
 				);
 		ret = update_campaign_status(ast_json_string_get(ast_json_object_get(j_camp, "uuid")), E_CAMP_STOPPING);
 		if(ret == false) {
-			ast_log(LOG_ERROR, "Could not update campaign status to stopping. camp_uuid[%s], camp_name[%s]\n",
+			ast_log(LOG_ERROR, "Could not update campaign status to schedule_stopping. camp_uuid[%s], camp_name[%s]\n",
 					ast_json_string_get(ast_json_object_get(j_camp, "uuid")),
 					ast_json_string_get(ast_json_object_get(j_camp, "name"))
 					);

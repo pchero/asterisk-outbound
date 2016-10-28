@@ -210,6 +210,7 @@ static const char* g_db_sql_campaign =
 "    dest    varchar(255),"                       // destination uuid
 
 // schedule
+"    sc_mode              int      default 0,"	// scheduling mode. 0:off, 1:on
 "    sc_date_start        date,"		// start date(YYYY-MM-DD)
 "    sc_date_end          date,"		// end date(YYYY-MM-DD)
 "    sc_date_list         text,"		// "YYYY-MM-DD, YYYY-MM-DD, ..."

@@ -80,6 +80,29 @@ char* get_utc_timestamp_using_timespec(struct timespec timeptr)
  * YYYY-MM-DD
  * @return
  */
+char* get_utc_timestamp_time(void)
+{
+	char	timestr[128];
+	char*   res;
+	struct  timespec timeptr;
+	time_t  tt;
+	struct tm *t;
+
+	clock_gettime(CLOCK_REALTIME, &timeptr);
+	tt = (time_t)timeptr.tv_sec;
+	t = gmtime(&tt);
+
+	strftime(timestr, sizeof(timestr), "%H:%M:%S", t);
+	ast_asprintf(&res, "%s", timestr);
+
+	return res;
+}
+
+/**
+ * return utc time.
+ * YYYY-MM-DD
+ * @return
+ */
 char* get_utc_timestamp_date(void)
 {
 	char	timestr[128];
@@ -243,5 +266,25 @@ char* get_variables_info_ami_str_from_json_array(struct ast_json* j_arr)
 		variables = variable;
 	}
 	return variables;
+}
 
+const char* message_get_header(const struct message *m, char *var)
+{
+	int x, l = strlen(var);
+	const char *result = NULL;
+
+	if (!m) {
+		return result;
+	}
+
+	for (x = 0; x < m->hdrcount; x++) {
+		const char *h = m->headers[x];
+		if (!strncasecmp(var, h, l) && h[l] == ':') {
+			const char *value = h + l + 1;
+			value = ast_skip_blanks(value); /* ignore leading spaces in the value */
+			return value;
+		}
+	}
+
+	return result;
 }

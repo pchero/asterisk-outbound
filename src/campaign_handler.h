@@ -19,15 +19,23 @@ typedef enum _E_CAMP_STATUS_T
 	E_CAMP_STOP	 = 0,
 	E_CAMP_START	= 1,
 	E_CAMP_PAUSE	= 2,
+//	E_CAMP_SCHEDULE_STOP = 3,
 
 	// on going status
 	E_CAMP_STOPPING = 10,
 	E_CAMP_STARTING = 11,
 	E_CAMP_PAUSING  = 12,
+//	E_CAMP_SCHEDULE_STOPPING  = 13,
 
 	// force status
 	E_CAMP_STOPPING_FORCE = 30,
 } E_CAMP_STATUS_T;
+
+typedef enum _E_CAMP_SCHEDULE_MODE
+{
+	E_CAMP_SCHEDULE_OFF = 0,
+	E_CAMP_SCHEDULE_ON  = 1,
+} E_CAMP_SCHEDULE_MODE;
 
 bool create_campaign(const struct ast_json* j_camp);
 bool delete_campaign(const char* uuid);

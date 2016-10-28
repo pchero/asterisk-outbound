@@ -21,13 +21,11 @@
 
 static struct ast_json* get_campaign_deleted(const char* uuid);
 
-static bool is_startable_campaign_schedule_day_date_list(struct ast_json* j_camp);
+static bool is_startable_campaign_schedule(struct ast_json* j_camp);
 static bool is_startable_campaign_schedule_day(struct ast_json* j_camp, int day);
-static bool is_startable_campaign_schedule_date_list(struct ast_json* j_camp, const char* date);
-
+static bool is_startable_campaign_schedule_check(struct ast_json* j_camp, const char* cur_date, const char* cur_time, int cur_day);
 static bool is_stopable_campaign_schedule_day_date_list(struct ast_json* j_camp);
-static bool is_stopable_campaign_schedule_date_list(struct ast_json* j_camp, const char* date);
-static bool is_stopable_campaign_schedule_day(struct ast_json* j_camp, int day);
+static bool is_stoppable_campaign_schedule_check(struct ast_json* j_camp, const char* cur_date, const char* cur_time, int cur_day);
 
 
 /**
@@ -227,29 +225,9 @@ struct ast_json* get_campaigns_schedule_start(void)
 	db_res_t* db_res;
 	int ret;
 
-	ast_asprintf(&sql, "select * from campaign where"
-			" status == %d"
-			" and ("	// time start
-			"		(sc_time_start is not null)"
-			"		and (sc_time_start != '')"
-			"		and (sc_time_start <= time('now'))"
-			" )"
-			" and ("	// time end
-			"		(sc_time_end is not null)"
-			"		and (sc_time_end != '')"
-			"		and (sc_time_end >= time('now'))"
-			" )"
-			" and (" // date start
-			"		(sc_date_start is not null)"
-			"		and (sc_date_start != '')"
-			"		and (sc_date_start <= date('now'))"
-			" )"
-			" and ("	// date end
-			"		(sc_date_end is not null)"
-			"		and (sc_date_end != '')"
-			"		and (sc_date_end >= date('now'))"
-			" );",
-			E_CAMP_STOP
+	ast_asprintf(&sql, "select * from campaign where status == %d and sc_mode == %d;",
+			E_CAMP_STOP,
+			E_CAMP_SCHEDULE_ON
 			);
 
 	db_res = db_query(sql);
@@ -265,7 +243,7 @@ struct ast_json* get_campaigns_schedule_start(void)
 			break;
 		}
 
-		ret = is_startable_campaign_schedule_day_date_list(j_tmp);
+		ret = is_startable_campaign_schedule(j_tmp);
 		if(ret == false) {
 			AST_JSON_UNREF(j_tmp);
 			continue;
@@ -290,29 +268,9 @@ struct ast_json* get_campaigns_schedule_end(void)
 	db_res_t* db_res;
 	int ret;
 
-	ast_asprintf(&sql, "select * from campaign where"
-			" status == %d"
-			" and ("	// time start
-			"		(sc_time_start is not null)"
-			"		and (sc_time_start != '')"
-			"		and (sc_time_start > time('now'))"
-			" )"
-			" and ("	// time end
-			"		(sc_time_end is not null)"
-			"		and (sc_time_end != '')"
-			"		and (sc_time_end < time('now'))"
-			" )"
-			" and (" // date start
-			"		(sc_date_start is not null)"
-			"		and (sc_date_start != '')"
-			"		and (sc_date_start < date('now'))"
-			" )"
-			" and ("	// date end
-			"		(sc_date_end is not null)"
-			"		and (sc_date_end != '')"
-			"		and (sc_date_end < date('now'))"
-			" );",
-			E_CAMP_START
+	ast_asprintf(&sql, "select * from campaign where status == %d and sc_mode == %d;",
+			E_CAMP_START,
+			E_CAMP_SCHEDULE_ON
 			);
 
 	db_res = db_query(sql);
@@ -427,6 +385,8 @@ bool update_campaign_status(const char* uuid, E_CAMP_STATUS_T status)
 	else if(status == E_CAMP_STARTING)  tmp_status = "running";
 	else if(status == E_CAMP_STOPPING)  tmp_status = "stopping";
 	else if(status == E_CAMP_PAUSING)   tmp_status = "pausing";
+//	else if(status == E_CAMP_SCHEDULE_STOP)   		tmp_status = "schedule_stop";
+//	else if(status == E_CAMP_SCHEDULE_STOPPING)   tmp_status = "schedule_stopping";
 	else {
 		ast_log(LOG_WARNING, "Invalid input parameters.\n");
 		return false;
@@ -580,9 +540,10 @@ bool is_stoppable_campgain(struct ast_json* j_camp)
 	return true;
 }
 
-static bool is_startable_campaign_schedule_day_date_list(struct ast_json* j_camp)
+static bool is_startable_campaign_schedule(struct ast_json* j_camp)
 {
 	char* cur_date;
+	char* cur_time;
 	int cur_day;
 	int ret;
 
@@ -591,17 +552,13 @@ static bool is_startable_campaign_schedule_day_date_list(struct ast_json* j_camp
 	}
 
 	cur_date = get_utc_timestamp_date();
+	cur_time = get_utc_timestamp_time();
 	cur_day = get_utc_timestamp_day();
 
 	// check startable date
-	ret = is_startable_campaign_schedule_date_list(j_camp, cur_date);
+	ret = is_startable_campaign_schedule_check(j_camp, cur_date, cur_time, cur_day);
 	ast_free(cur_date);
-	if(ret == true) {
-		return true;
-	}
-
-	// check startable day
-	ret = is_startable_campaign_schedule_day(j_camp, cur_day);
+	ast_free(cur_time);
 	if(ret == true) {
 		return true;
 	}
@@ -609,41 +566,93 @@ static bool is_startable_campaign_schedule_day_date_list(struct ast_json* j_camp
 	return false;
 }
 
-static bool is_startable_campaign_schedule_date_list(struct ast_json* j_camp, const char* date)
+static bool is_startable_campaign_schedule_check(
+		struct ast_json* j_camp,
+		const char* cur_date,
+		const char* cur_time,
+		int cur_day
+		)
 {
 	const char* date_list;
 	const char* date_except;
 	char* tmp;
+	const char* tmp_const;
+	int ret;
 
-	if((j_camp == NULL) || (date == NULL)) {
+	if((j_camp == NULL) || (cur_date == NULL) || (cur_time == NULL)) {
 		return false;
 	}
 
-	// check except date or not.
+	// check except date. If there's except date, return false
 	date_except = ast_json_string_get(ast_json_object_get(j_camp, "sc_date_list_except"));
-	if((date_except != NULL) || (strlen(date_except) != 0)) {
-		if(strstr(date_except, date) != NULL) {
+	if(date_except != NULL) {
+		tmp = strstr(date_except, cur_date);
+		if(tmp != NULL) {
 			return false;
 		}
 	}
 
-	// if it doesn't set, just return true.
+	// check date_list. If there's current date, return true
 	date_list = ast_json_string_get(ast_json_object_get(j_camp, "sc_date_list"));
-	if((date_list == NULL) || (strlen(date_list) == 0)) {
-		return true;
+	if(date_list != NULL) {
+		tmp = strstr(date_list, cur_date);
+		if(tmp != NULL) {
+			return true;
+		}
 	}
 
-	// check date_list. If there's no current date, return false
-	tmp = strstr(date_list, date);
-	if(tmp == NULL) {
+	// check start date.
+	// if start date is in the future, return false
+	tmp_const = ast_json_string_get(ast_json_object_get(j_camp, "sc_date_start"));
+	if(tmp_const != NULL) {
+		ret = strcmp(tmp_const, cur_date);
+		if(ret > 0) {
+			return false;
+		}
+	}
+
+	// check end date.
+	// if end date is in the fast, return false
+	tmp_const = ast_json_string_get(ast_json_object_get(j_camp, "sc_date_end"));
+	if(tmp_const != NULL) {
+		ret = strcmp(tmp_const, cur_date);
+		if(ret < 0) {
+			return false;
+		}
+	}
+
+	// check startable day
+	ret = is_startable_campaign_schedule_day(j_camp, cur_day);
+	if(ret == false) {
 		return false;
 	}
+
+	// check end time
+	// if end time is in the fast, return false
+	tmp_const = ast_json_string_get(ast_json_object_get(j_camp, "sc_time_end"));
+	if(tmp_const != NULL) {
+		ret = strcmp(tmp_const, cur_time);
+		if(ret < 0) {
+			return false;
+		}
+	}
+
+	// check start time
+	// if start time is in the future, return false
+	tmp_const = ast_json_string_get(ast_json_object_get(j_camp, "sc_time_start"));
+	if(tmp_const != NULL) {
+		ret = strcmp(tmp_const, cur_time);
+		if(ret > 0) {
+			return false;
+		}
+	}
+
 	return true;
 }
 
 static bool is_startable_campaign_schedule_day(struct ast_json* j_camp, int day)
 {
-	const char* date_list;
+	const char* day_list;
 	char* tmp;
 	char 	day_str[2];
 
@@ -653,14 +662,14 @@ static bool is_startable_campaign_schedule_day(struct ast_json* j_camp, int day)
 	}
 
 	// if it doesn't set, just return true.
-	date_list = ast_json_string_get(ast_json_object_get(j_camp, "sc_day_list"));
-	if((date_list == NULL) || (strlen(date_list) == 0)) {
+	day_list = ast_json_string_get(ast_json_object_get(j_camp, "sc_day_list"));
+	if((day_list == NULL) || (strlen(day_list) == 0)) {
 		return true;
 	}
 
 	// check date_list. If there's no current date, return false
 	snprintf(day_str, sizeof(day_str), "%d", day);
-	tmp = strstr(date_list, day_str);
+	tmp = strstr(day_list, day_str);
 	if(tmp == NULL) {
 		return false;
 	}
@@ -671,6 +680,7 @@ static bool is_startable_campaign_schedule_day(struct ast_json* j_camp, int day)
 static bool is_stopable_campaign_schedule_day_date_list(struct ast_json* j_camp)
 {
 	char* cur_date;
+	char* cur_time;
 	int cur_day;
 	int ret;
 
@@ -679,17 +689,13 @@ static bool is_stopable_campaign_schedule_day_date_list(struct ast_json* j_camp)
 	}
 
 	cur_date = get_utc_timestamp_date();
+	cur_time = get_utc_timestamp_time();
 	cur_day = get_utc_timestamp_day();
 
 	// check startable date
-	ret = is_stopable_campaign_schedule_date_list(j_camp, cur_date);
+	ret = is_stoppable_campaign_schedule_check(j_camp, cur_date, cur_time, cur_day);
 	ast_free(cur_date);
-	if(ret == true) {
-		return true;
-	}
-
-	// check startable day
-	ret = is_stopable_campaign_schedule_day(j_camp, cur_day);
+	ast_free(cur_time);
 	if(ret == true) {
 		return true;
 	}
@@ -697,28 +703,14 @@ static bool is_stopable_campaign_schedule_day_date_list(struct ast_json* j_camp)
 	return false;
 }
 
-static bool is_stopable_campaign_schedule_date_list(struct ast_json* j_camp, const char* date)
+static bool is_stoppable_campaign_schedule_check(struct ast_json* j_camp, const char* cur_date, const char* cur_time, int cur_day)
 {
 	int ret;
 
-	ret = is_startable_campaign_schedule_date_list(j_camp, date);
+	ret = is_startable_campaign_schedule_check(j_camp, cur_date, cur_time, cur_day);
 	if(ret == true) {
 		return false;
 	}
 
 	return true;
 }
-
-static bool is_stopable_campaign_schedule_day(struct ast_json* j_camp, int day)
-{
-	int ret;
-
-	ret = is_startable_campaign_schedule_day(j_camp, day);
-	if(ret == true) {
-		return false;
-	}
-
-	return true;
-}
-
-
