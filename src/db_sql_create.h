@@ -209,6 +209,16 @@ static const char* g_db_sql_campaign =
 "    dlma    varchar(255),"                       // dial_list_ma uuid"
 "    dest    varchar(255),"                       // destination uuid
 
+// schedule
+"    sc_mode              int      default 0,"	// scheduling mode. 0:off, 1:on
+"    sc_date_start        date,"		// start date(YYYY-MM-DD)
+"    sc_date_end          date,"		// end date(YYYY-MM-DD)
+"    sc_date_list         text,"		// "YYYY-MM-DD, YYYY-MM-DD, ..."
+"    sc_date_list_except  text,"		// "YYYY-MM-DD, YYYY-MM-DD, ..."
+"    sc_time_start        time,"		// "HH:MM:SS"
+"    sc_time_end          time,"		// "HH:MM:SS"
+"    sc_day_list          text,"		// "0, 1, ..., 6" 0=Sunday, 1=Monday, ... 6=Saturday
+
 // timestamp. UTC."
 "    tm_create           datetime(6),"   // create time."
 "    tm_delete           datetime(6),"   // delete time."

@@ -1003,4 +1003,24 @@ Check result
 ------------
 
 
+Sending an SMS/Fax/Email
+========================
+Using variables and dialplan, we can send an SMS/Fax/Email to the customers.
+
+Setting dialplan
+----------------
+
+Create plan
+-----------
+
+Create destination
+------------------
+
+Create dlma and dial list
+-------------------------
+
+Check result
+------------
+
+
 
