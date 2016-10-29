@@ -688,7 +688,6 @@ static void cb_check_dialing_error(__attribute__((unused)) int fd, __attribute__
 				ast_json_string_get(ast_json_object_get(j_tmp, "res_hangup_detail"))
 				);
 
-//		db_insert("dl_result", j_tmp);
 		ret = write_result_json(j_tmp);
 		AST_JSON_UNREF(j_tmp);
 
