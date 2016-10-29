@@ -2177,7 +2177,7 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 	ast_log(LOG_VERBOSE, "AMI request. OutDlListShow.\n");
 
 	tmp_const = message_get_header(m, "ActionID");
-	if(strlen(tmp_const) != 0) {
+	if((tmp_const != NULL) && (strlen(tmp_const)) != 0) {
 		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
 	}
 	else {
@@ -2185,10 +2185,15 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 	}
 
 	// uuid
-	if(strcmp((tmp_const = message_get_header(m, "Uuid")), "") != 0) {
+	if((tmp_const = message_get_header(m, "Uuid")) != NULL) {
 		ast_log(LOG_DEBUG, "Finding dl_list. uuid[%s]\n", tmp_const);
 
 		j_tmp = get_dl_list(tmp_const);
+		if(j_tmp == NULL) {
+			astman_send_error(s, m, "No such dl_list");
+			ast_free(action_id);
+			return 0;
+		}
 
 		astman_send_listack(s, m, "Dl List will follow", "start");
 
@@ -2198,7 +2203,7 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 		astman_send_list_complete_start(s, m, "OutDlListComplete", 1);
 		astman_send_list_complete_end(s);
 	}
-	else if(strcmp(tmp_const = (message_get_header(m, "DlmaUuid")), "") != 0){
+	else if ((tmp_const = message_get_header(m, "DlmaUuid")) != NULL) {
 		tmp_count = message_get_header(m, "Count");
 		count = 100;	// default
 		if(strcmp(tmp_count, "") != 0) {
@@ -2221,7 +2226,6 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 		AST_JSON_UNREF(j_arr);
 		astman_send_list_complete_start(s, m, "OutDlListComplete", size);
 		astman_send_list_complete_end(s);
-		return 0;
 	}
 
 	ast_free(action_id);
@@ -2270,6 +2274,28 @@ void manager_out_dlma_entry(struct mansession *s, const struct message *m, struc
 	}
 	ast_free(tmp);
 }
+
+/**
+ * OutDestinationEntry
+ * @param s
+ * @param m
+ * @param j_dl
+ */
+void manager_out_destination_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp, char* action_id)
+{
+	char* tmp;
+
+	tmp = get_destination_str(j_tmp);
+
+	if(s != NULL) {
+		astman_append(s, "Event: OutDestinationEntry\r\n%s%s\r\n", action_id, tmp);
+	}
+	else {
+		manager_event(EVENT_FLAG_MESSAGE, "OutDestinationEntry", "%s\r\n", tmp);
+	}
+	ast_free(tmp);
+}
+
 
 /**
  * OutQueueEntry
@@ -2518,7 +2544,7 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
 	ast_log(LOG_VERBOSE, "AMI request. OutCampaignShow.\n");
 
 	tmp_const = message_get_header(m, "ActionID");
-	if(strlen(tmp_const) != 0) {
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
 		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
 	}
 	else {
@@ -2529,8 +2555,7 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
 	if(tmp_const != NULL) {
 		j_tmp = get_campaign(tmp_const);
 		if(j_tmp == NULL) {
-			astman_send_error(s, m, "Error encountered while show campaign");
-			ast_log(LOG_WARNING, "OutCampaignShow failed.\n");
+			astman_send_error(s, m, "No such campaign");
 			ast_free(action_id);
 			return 0;
 		}
@@ -2686,7 +2711,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
 	ast_log(LOG_VERBOSE, "AMI request. OutPlanShow.\n");
 
 	tmp_const = message_get_header(m, "ActionID");
-	if(strlen(tmp_const) != 0) {
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
 		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
 	}
 	else {
@@ -2697,8 +2722,7 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
 	if(tmp_const != NULL) {
 		j_tmp = get_plan(tmp_const);
 		if(j_tmp == NULL) {
-			astman_send_error(s, m, "Error encountered while show plan");
-			ast_log(LOG_WARNING, "OutPlanShow failed.\n");
+			astman_send_error(s, m, "No such plan");
 			ast_free(action_id);
 			return 0;
 		}
@@ -2837,7 +2861,7 @@ static int manager_out_dlma_delete(struct mansession *s, const struct message *m
 }
 
 /**
- * OutPlanShow AMI message handle.
+ * OutDlmaShow AMI message handle.
  * @param s
  * @param m
  * @return
@@ -2852,7 +2876,7 @@ static int manager_out_dlma_show(struct mansession *s, const struct message *m)
 	char* action_id;
 
 	tmp_const = message_get_header(m, "ActionID");
-	if(strlen(tmp_const) != 0) {
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
 		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
 	}
 	else {
@@ -2863,7 +2887,7 @@ static int manager_out_dlma_show(struct mansession *s, const struct message *m)
 	if(tmp_const != NULL) {
 		j_tmp = get_dlma(tmp_const);
 		if(j_tmp == NULL) {
-			astman_send_error(s, m, "Error encountered while show dlma");
+			astman_send_error(s, m, "No such dlma");
 			ast_free(action_id);
 			return 0;
 		}
@@ -3009,7 +3033,7 @@ static int manager_out_queue_show(struct mansession *s, const struct message *m)
 	char* action_id;
 
 	tmp_const = message_get_header(m, "ActionID");
-	if(strlen(tmp_const) != 0) {
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
 		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
 	}
 	else {
@@ -3070,7 +3094,7 @@ static int manager_out_dialing_show(struct mansession *s, const struct message *
 	ast_log(LOG_VERBOSE, "AMI request. OutDialingShow.\n");
 
 	tmp_const = message_get_header(m, "ActionID");
-	if(strlen(tmp_const) != 0) {
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
 		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
 	}
 	else {
@@ -3081,7 +3105,7 @@ static int manager_out_dialing_show(struct mansession *s, const struct message *
 	if(tmp_const != NULL) {
 		dialing = rb_dialing_find_chan_uuid(tmp_const);
 		if(dialing == NULL) {
-			astman_send_error(s, m, "Error encountered while show dialing");
+			astman_send_error(s, m, "No such dialing");
 			ast_log(LOG_WARNING, "OutDialingShow failed.\n");
 			ast_free(action_id);
 			return 0;
@@ -3126,7 +3150,7 @@ static int manager_out_dialing_summary(struct mansession *s, const struct messag
    ast_log(LOG_VERBOSE, "AMI request. OutDialingSummary.\n");
 
    tmp_const = message_get_header(m, "ActionID");
-   if(strlen(tmp_const) != 0) {
+   if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
 	   ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
    }
    else {
@@ -3302,6 +3326,66 @@ static int manager_out_destination_delete(struct mansession *s, const struct mes
 }
 
 /**
+ * OutDestinationShow AMI message handle.
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_destination_show(struct mansession *s, const struct message *m)
+{
+	const char* tmp_const;
+	struct ast_json* j_tmp;
+	struct ast_json* j_arr;
+	int i;
+	int size;
+	char* action_id;
+
+	tmp_const = message_get_header(m, "ActionID");
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
+		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
+	}
+	else {
+		ast_asprintf(&action_id, "%s", "");
+	}
+
+	tmp_const = message_get_header(m, "Uuid");
+	if(tmp_const != NULL) {
+		j_tmp = get_destination(tmp_const);
+		if(j_tmp == NULL) {
+			astman_send_error(s, m, "No such destination");
+			ast_free(action_id);
+			return 0;
+		}
+
+		astman_send_listack(s, m, "Destination List will follow", "start");
+
+		manager_out_destination_entry(s, m, j_tmp, action_id);
+		AST_JSON_UNREF(j_tmp);
+
+		astman_send_list_complete_start(s, m, "OutDestinationListComplete", 1);
+		astman_send_list_complete_end(s);
+	}
+	else {
+		j_arr = get_destinations_all();
+		size = ast_json_array_size(j_arr);
+
+		astman_send_listack(s, m, "Destination List will follow", "start");
+		for(i = 0; i < size; i++) {
+			j_tmp = ast_json_array_get(j_arr, i);
+			if(j_tmp == NULL) {
+				continue;
+			}
+			manager_out_destination_entry(s, m, j_tmp, action_id);
+		}
+		astman_send_list_complete_start(s, m, "OutDestinationListComplete", size);
+		astman_send_list_complete_end(s);
+		AST_JSON_UNREF(j_arr);
+	}
+	ast_free(action_id);
+	return 0;
+}
+
+/**
  * Parsing the AMI message
  * Return the json string
  *
@@ -3401,6 +3485,7 @@ int init_cli_handler(void)
 	err |= ast_manager_register2("OutDestinationCreate", EVENT_FLAG_COMMAND, manager_out_destination_create, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutDestinationDelete", EVENT_FLAG_COMMAND, manager_out_destination_delete, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutDestinationUpdate", EVENT_FLAG_COMMAND, manager_out_destination_update, NULL, NULL, NULL);
+	err |= ast_manager_register2("OutDestinationShow", EVENT_FLAG_COMMAND, manager_out_destination_show, NULL, NULL, NULL);
 
 
 	if(err != 0) {
@@ -3440,6 +3525,7 @@ void term_cli_handler(void)
 	ast_manager_unregister("OutDestinationCreate");
 	ast_manager_unregister("OutDestinationUpdate");
 	ast_manager_unregister("OutDestinationDelete");
+	ast_manager_unregister("OutDestinationShow");
 
 
 	return;

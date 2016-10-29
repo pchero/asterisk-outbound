@@ -250,7 +250,6 @@ Syntax
 
 
 Parameters
-----------
 
 * Name: Plan name. Default null.
 * Detail: Detail info. Default null.
@@ -331,7 +330,6 @@ Syntax
     [MaxRetry8:] <value>
 
 Parameters
-----------
 
 * Name: Plan name. Default null.
 * Detail: Detail info. Default null.
@@ -391,7 +389,7 @@ Syntax
     [ActionID:] <value>
 
 Parameters
-----------
+
 * Uuid: Plan uuid.
 
 
@@ -439,7 +437,6 @@ Syntax
 
 
 Parameters
-----------
 
 * Uuid: Plan uuid.
 
@@ -513,7 +510,7 @@ Syntax
     [Detail:] <value>
 
 Parameters
-----------
+
 * Name: Dlma name.
 * Detail: Detail dlma info.
 
@@ -552,9 +549,8 @@ Syntax
     [Name:] <value>
     [Detail:] <value>
 
-
 Parameters
-----------
+
 * Name: Dlma name.
 * Detail: Detail dlma info.
 
@@ -605,8 +601,8 @@ Syntax
     Uuid: <value>
 
 Parameters
-----------
-* Uuid: dlma uuid.
+
+* Uuid: Dlma uuid.
 
 Returns
 -------
@@ -642,6 +638,7 @@ Syntax
     [Uuid:] <value>
 
 Parameters
+
 * Uuid: Dlma uuid.
 
 Returns
@@ -744,7 +741,7 @@ OutDestinationCreate
 
 Description
 -----------
-Create Destination for dialing.
+Create Destination.
 
 Syntax
 ------
@@ -763,6 +760,7 @@ Syntax
    [Data:] <value>
 
 Parameters
+
 * Name: Destination name.
 * Detail: Detail info.
 * Type: Destination type. See detail :ref:`destination_type`.
@@ -795,7 +793,7 @@ OutDestinationUpdate
 
 Description
 -----------
-Update Destination for dialing.
+Update Destination.
 
 Syntax
 ------
@@ -815,6 +813,7 @@ Syntax
    [Data:] <value>
 
 Parameters
+
 * Uuid: Destination uuid.
 * Name: Destination name.
 * Detail: Detail info.
@@ -839,13 +838,12 @@ Example
    Message: Destination updated successfully
 
 
-
 OutDestinationDelete
 ====================
 
 Description
 -----------
-Delete Destination for dialing.
+Delete Destination.
 
 Syntax
 ------
@@ -856,6 +854,7 @@ Syntax
    Uuid: <value>
 
 Parameters
+
 * Uuid: <required> Destination uuid.
    
 Example
@@ -868,3 +867,56 @@ Example
    
    Response: Success
    Message: Destination deleted successfully
+
+   
+OutDestinationShow
+==================
+
+Description
+-----------
+Show the info of one or all of the destinations.
+
+Retrieves the information of one or all of the destinations.  If no uuid is
+specified, all of the destinations will be retrieved.
+
+Syntax
+------
+
+::
+
+   Action: OutDestinationShow
+   [Uuid:] <value>
+
+Parameters
+
+* Uuid: <required> Destination uuid.
+   
+Example
+-------
+
+::
+
+   Action: OutDestinationShow
+   
+   Response: Success
+   EventList: start
+   Message: Destination List will follow
+   
+   Event: OutDestinationEntry
+   Uuid: bc1fc21e-3369-46c7-bc8f-173b6b37f73b
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Exten: <unknown>
+   Context: <unknown>
+   Priority: <unknown>
+   Variable: <unknown>
+   Application: park
+   Data: <unknown>
+   TmCreate: 2016-10-28T00:30:39.874584969Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+   
+   Event: OutDestinationListComplete
+   EventList: Complete
+   ListItems: 1
