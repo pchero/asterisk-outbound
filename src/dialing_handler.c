@@ -314,7 +314,7 @@ bool rb_dialing_update_events_append(rb_dialing* dialing, struct ast_json* j_evt
 	}
 
 	// debug only.
-	tmp_const = ast_json_string_get(ast_json_object_get(ast_json_object_get(g_app->j_conf, "general"), "ami_event_debug"));
+	tmp_const = ast_json_string_get(ast_json_object_get(ast_json_object_get(g_app->j_conf, "general"), "history_events_enable"));
 	if(tmp_const == NULL) {
 		return true;
 	}

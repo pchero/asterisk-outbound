@@ -19,6 +19,7 @@
 #include "utils.h"
 #include "destination_handler.h"
 #include "plan_handler.h"
+#include "res_outbound.h"
 
 #include <stdbool.h>
 
@@ -744,6 +745,8 @@ static char* get_dial_number(struct ast_json* j_dlist, const int cnt)
 struct ast_json* create_json_for_dl_result(rb_dialing* dialing)
 {
 	struct ast_json* j_res;
+	const char* tmp_const;
+
 
 	j_res = ast_json_deep_copy(dialing->j_dialing);
 
@@ -755,8 +758,29 @@ struct ast_json* create_json_for_dl_result(rb_dialing* dialing)
 			ast_json_string_get(ast_json_object_get(j_res, "dl_list_uuid"))
 			);
 
-	// info_events
-	ast_json_object_set(j_res, "info_events", ast_json_ref(dialing->j_events));
+	// result_info_enable
+	tmp_const = ast_json_string_get(ast_json_object_get(ast_json_object_get(g_app->j_conf, "general"), "result_info_enable"));
+	if((tmp_const != NULL) && (atoi(tmp_const) == 1)) {
+		// write info
+		// already copied it.
+	}
+	else {
+		// otherwise, remove
+		ast_json_object_del(j_res, "info_camp");
+		ast_json_object_del(j_res, "info_dial");
+		ast_json_object_del(j_res, "info_plan");
+		ast_json_object_del(j_res, "info_dest");
+		ast_json_object_del(j_res, "info_dlma");
+		ast_json_object_del(j_res, "info_dl_list");
+		ast_json_object_del(j_res, "info_events");
+	}
+
+	// check history options.
+	tmp_const = ast_json_string_get(ast_json_object_get(ast_json_object_get(g_app->j_conf, "general"), "result_history_events_enable"));
+	if((tmp_const != NULL) && (atoi(tmp_const) == 1)) {
+		// write info
+		ast_json_object_set(j_res, "history_events", ast_json_ref(dialing->j_events));
+	}
 
 	return j_res;
 }
