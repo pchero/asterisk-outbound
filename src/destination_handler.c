@@ -199,7 +199,7 @@ struct ast_json* get_destinations_all(void)
 	char* sql;
 
 	// get all campaigns
-	ast_asprintf(&sql, "%s", "select * from destination where in_use=1");
+	ast_asprintf(&sql, "%s", "select * from destination where in_use=1;");
 
 	db_res = db_query(sql);
 	ast_free(sql);

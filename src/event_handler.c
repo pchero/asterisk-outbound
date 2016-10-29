@@ -60,8 +60,8 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 static void dial_robo(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 static void dial_redirect(const struct ast_json* j_camp, const struct ast_json* j_plan, const struct ast_json* j_dlma);
 
-struct ast_json* get_queue_summary(const char* name);
-struct ast_json* get_queue_param(const char* name);
+//struct ast_json* get_queue_summary(const char* name);
+//struct ast_json* get_queue_param(const char* name);
 
 static bool write_result_json(struct ast_json* j_res);
 
