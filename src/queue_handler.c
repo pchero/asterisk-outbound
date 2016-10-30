@@ -15,7 +15,7 @@
 #include "campaign_handler.h"
 #include "cli_handler.h"
 #include "utils.h"
-
+#include "dl_handler.h"
 
 #include <stdbool.h>
 
@@ -68,7 +68,7 @@ int delete_queue(const char* uuid)
 	j_tmp = ast_json_object_create();
 	tmp = get_utc_timestamp();
 	ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
-	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
+	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(E_DL_USE_NO));
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
@@ -99,7 +99,7 @@ struct ast_json* get_queue(const char* uuid)
 		ast_log(LOG_WARNING, "Invalid input parameters.\n");
 		return NULL;
 	}
-	ast_asprintf(&sql, "select * from queue where in_use=1 and uuid=\"%s\";", uuid);
+	ast_asprintf(&sql, "select * from queue where in_use=%d and uuid=\"%s\";", E_DL_USE_OK, uuid);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -121,7 +121,7 @@ struct ast_json* get_queues_all(void)
 	struct ast_json* j_tmp;
 	db_res_t* db_res;
 
-	ast_asprintf(&sql, "%s", "select * queue where in_use=1;");
+	ast_asprintf(&sql, "select * queue where in_use=%d;", E_DL_USE_OK);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -163,7 +163,7 @@ int update_queue(struct ast_json* j_queue)
 		return false;
 	}
 
-	ast_asprintf(&sql, "update queue set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
+	ast_asprintf(&sql, "update queue set %s where in_use=%d and uuid=\"%s\";", tmp, E_DL_USE_OK, uuid);
 	ast_free(tmp);
 
 	ret = db_exec(sql);

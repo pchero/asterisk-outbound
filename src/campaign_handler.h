@@ -48,6 +48,8 @@ struct ast_json* get_campaigns_schedule_end(void);
 struct ast_json* get_campaign(const char* uuid);
 struct ast_json* get_campaigns_by_status(E_CAMP_STATUS_T status);
 struct ast_json* get_campaign_for_dialing(void);
+struct ast_json* get_campaign_stat(const char* uuid);
+struct ast_json* get_campaigns_stat_all(void);
 
 bool is_stoppable_campgain(struct ast_json* j_camp);
 bool is_startable_campgain(struct ast_json* j_camp);

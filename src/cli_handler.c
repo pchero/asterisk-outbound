@@ -906,6 +906,41 @@ static char* get_campaign_str(struct ast_json* j_camp)
 }
 
 /**
+ * Create AMI string for campaign
+ * @param j_camp
+ * @return
+ */
+static char* get_campaign_stat_str(struct ast_json* j_stat)
+{
+	char* tmp;
+
+	if(j_stat == NULL) {
+		return NULL;
+	}
+
+	ast_asprintf(&tmp,
+			"Uuid: %s\r\n"
+
+			"DlTotalCount: %lld\r\n"
+			"DlFinishedCount: %lld\r\n"
+			"DlAvailableCount: %lld\r\n"
+			"DlDialingCount: %lld\r\n"
+			"DlCalledCount: %lld\r\n",
+
+			ast_json_string_get(ast_json_object_get(j_stat, "uuid"))? : "<unknown>",
+
+			ast_json_integer_get(ast_json_object_get(j_stat, "dial_total_count")),
+			ast_json_integer_get(ast_json_object_get(j_stat, "dial_finished_count")),
+			ast_json_integer_get(ast_json_object_get(j_stat, "dial_available_count")),
+			ast_json_integer_get(ast_json_object_get(j_stat, "dial_dialing_count")),
+			ast_json_integer_get(ast_json_object_get(j_stat, "dial_called_count"))
+			);
+
+	ast_log(LOG_VERBOSE, "Value check. created campaign stat string. str[%s]\n", tmp);
+	return tmp;
+}
+
+/**
  * Create AMI string for plan
  * @param j_plan
  * @return
@@ -2349,6 +2384,30 @@ void manager_out_campaign_entry(struct mansession *s, const struct message *m, s
 }
 
 /**
+ * AMI Event handler
+ * Event: OutCampaignStatEntry
+ * @param s
+ * @param m
+ * @param j_tmp
+ * @param action_id
+ */
+void manager_out_campaign_stat_entry(struct mansession *s, const struct message *m, struct ast_json* j_tmp, char* action_id)
+{
+	char* tmp;
+
+	tmp = get_campaign_stat_str(j_tmp);
+
+	if(s != NULL) {
+		astman_append(s, "Event: OutCampaignStatEntry\r\n%s%s\r\n", action_id, tmp);
+	}
+	else {
+		manager_event(EVENT_FLAG_MESSAGE, "OutCampaignStatEntry", "%s\r\n", tmp);
+	}
+	ast_free(tmp);
+}
+
+
+/**
  * AMI Action handler
  * Action: OutCampaignCreate
  * @param s
@@ -2589,6 +2648,72 @@ static int manager_out_campaign_show(struct mansession *s, const struct message 
 	ast_free(action_id);
 	return 0;
 }
+
+/**
+ * AMI Action handler
+ * Action: OutCampaignStatShow
+ * @param s
+ * @param m
+ * @return
+ */
+static int manager_out_campaign_stat_show(struct mansession *s, const struct message *m)
+{
+	const char* tmp_const;
+	struct ast_json* j_tmp;
+	struct ast_json* j_arr;
+	int i;
+	int size;
+	char* action_id;
+
+	ast_log(LOG_VERBOSE, "AMI request. OutCampaignStatShow.\n");
+
+	tmp_const = message_get_header(m, "ActionID");
+	if((tmp_const != NULL) && (strlen(tmp_const) != 0)) {
+		ast_asprintf(&action_id, "ActionID: %s\r\n", tmp_const);
+	}
+	else {
+		ast_asprintf(&action_id, "%s", "");
+	}
+
+	tmp_const = message_get_header(m, "Uuid");
+	if(tmp_const != NULL) {
+		j_tmp = get_campaign_stat(tmp_const);
+		if(j_tmp == NULL) {
+			astman_send_error(s, m, "No such campaign");
+			ast_free(action_id);
+			return 0;
+		}
+
+		astman_send_listack(s, m, "Campaign Stat List will follow", "start");
+
+		manager_out_campaign_stat_entry(s, m, j_tmp, action_id);
+		AST_JSON_UNREF(j_tmp);
+
+		astman_send_list_complete_start(s, m, "OutCampaignStatListComplete", 1);
+		astman_send_list_complete_end(s);
+	}
+	else {
+		j_arr = get_campaigns_stat_all();
+		size = ast_json_array_size(j_arr);
+
+		astman_send_listack(s, m, "Campaign Stat List will follow", "start");
+		for(i = 0; i < size; i++) {
+			j_tmp = ast_json_array_get(j_arr, i);
+			if(j_tmp == NULL) {
+				continue;
+			}
+			manager_out_campaign_stat_entry(s, m, j_tmp, action_id);
+		}
+		astman_send_list_complete_start(s, m, "OutCampaignStatListComplete", size);
+		astman_send_list_complete_end(s);
+		AST_JSON_UNREF(j_arr);
+	}
+
+	ast_log(LOG_NOTICE, "OutCampaignStatShow succeed.\n");
+	ast_free(action_id);
+	return 0;
+}
+
 
 /**
  * AMI Action handler
@@ -3464,6 +3589,7 @@ int init_cli_handler(void)
 	err |= ast_manager_register2("OutCampaignDelete", EVENT_FLAG_COMMAND, manager_out_campaign_delete, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutCampaignUpdate", EVENT_FLAG_COMMAND, manager_out_campaign_update, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutCampaignShow", EVENT_FLAG_COMMAND, manager_out_campaign_show, NULL, NULL, NULL);
+	err |= ast_manager_register2("OutCampaignStatShow", EVENT_FLAG_COMMAND, manager_out_campaign_stat_show, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutPlanCreate", EVENT_FLAG_COMMAND, manager_out_plan_create, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutPlanDelete", EVENT_FLAG_COMMAND, manager_out_plan_delete, NULL, NULL, NULL);
 	err |= ast_manager_register2("OutPlanUpdate", EVENT_FLAG_COMMAND, manager_out_plan_update, NULL, NULL, NULL);
@@ -3503,6 +3629,7 @@ void term_cli_handler(void)
 	ast_manager_unregister("OutCampaignDelete");
 	ast_manager_unregister("OutCampaignUpdate");
 	ast_manager_unregister("OutCampaignShow");
+	ast_manager_unregister("OutCampaignStatShow");
 	ast_manager_unregister("OutDlListShow");
 	ast_manager_unregister("OutPlanCreate");
 	ast_manager_unregister("OutPlanDelete");

@@ -18,6 +18,8 @@
 #include "cli_handler.h"
 #include "event_handler.h"
 #include "utils.h"
+#include "dl_handler.h"
+#include "plan_handler.h"
 
 static struct ast_json* get_campaign_deleted(const char* uuid);
 
@@ -93,7 +95,7 @@ bool delete_campaign(const char* uuid)
 	tmp = get_utc_timestamp();
 	ast_json_object_set(j_tmp, "status", ast_json_integer_create(E_CAMP_STOP));
 	ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
-	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
+	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(E_DL_USE_NO));
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
@@ -132,7 +134,7 @@ struct ast_json* get_campaign(const char* uuid)
 	ast_log(LOG_DEBUG, "Get campaign info. uuid[%s]\n", uuid);
 
 	// get specified campaign
-	ast_asprintf(&sql, "select * from campaign where uuid=\"%s\" and in_use=1;", uuid);
+	ast_asprintf(&sql, "select * from campaign where uuid=\"%s\" and in_use=%d;", uuid, E_DL_USE_OK);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -163,7 +165,7 @@ static struct ast_json* get_campaign_deleted(const char* uuid)
 	ast_log(LOG_DEBUG, "Get deleted campaign info. uuid[%s]\n", uuid);
 
 	// get specified campaign
-	ast_asprintf(&sql, "select * from campaign where uuid=\"%s\" and in_use=0;", uuid);
+	ast_asprintf(&sql, "select * from campaign where uuid=\"%s\" and in_use=%d;", uuid, E_DL_USE_NO);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -190,7 +192,7 @@ struct ast_json* get_campaigns_all(void)
 	char* sql;
 
 	// get all campaigns
-	ast_asprintf(&sql, "%s", "select * from campaign where in_use=1");
+	ast_asprintf(&sql, "select * from campaign where in_use=%d", E_DL_USE_OK);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -344,7 +346,7 @@ bool update_campaign(const struct ast_json* j_camp)
 	}
 	AST_JSON_UNREF(j_tmp);
 
-	ast_asprintf(&sql, "update campaign set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
+	ast_asprintf(&sql, "update campaign set %s where uuid=\"%s\" and in_use=%d;", tmp, uuid, E_DL_USE_OK);
 	ast_free(tmp);
 
 	db_exec(sql);
@@ -426,8 +428,8 @@ struct ast_json* get_campaigns_by_status(E_CAMP_STATUS_T status)
 	char* sql;
 
 	// get "start" status campaign only.
-	ast_asprintf(&sql, "select * from campaign where status = %d and in_use=1;",
-			status
+	ast_asprintf(&sql, "select * from campaign where status = %d and in_use=%d;",
+			status, E_DL_USE_OK
 			);
 
 	db_res = db_query(sql);
@@ -461,8 +463,9 @@ struct ast_json* get_campaign_for_dialing(void)
 	char* sql;
 
 	// get "start" status campaign only.
-	ast_asprintf(&sql, "select * from campaign where status = %d and in_use = 1 order by %s limit 1;",
+	ast_asprintf(&sql, "select * from campaign where status = %d and in_use = %d order by %s limit 1;",
 			E_CAMP_START,
+			E_DL_USE_OK,
 			db_translate_function(E_FUNC_RANDOM)
 			);
 
@@ -478,6 +481,97 @@ struct ast_json* get_campaign_for_dialing(void)
 
 	return j_res;
 }
+
+/**
+ *
+ * \param uuid
+ * \return
+ */
+struct ast_json* get_campaign_stat(const char* uuid)
+{
+	struct ast_json* j_camp;
+	struct ast_json* j_plan;
+	struct ast_json* j_dlma;
+	struct ast_json* j_res;
+
+	if(uuid == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.");
+		return NULL;
+	}
+
+	// get campaign
+	j_camp = get_campaign(uuid);
+	if(j_camp == NULL) {
+		ast_log(LOG_DEBUG, "Could not get campaign info. camp_uuid[%s]\n", uuid);
+		return NULL;
+	}
+
+	// get plan
+	j_plan = get_plan(ast_json_string_get(ast_json_object_get(j_camp, "plan")));
+	j_dlma = get_dlma(ast_json_string_get(ast_json_object_get(j_camp, "dlma")));
+	if((j_plan == NULL) || (j_dlma == NULL)) {
+		ast_log(LOG_DEBUG, "Could not basic info. camp_uuid[%s], plan_uuid[%s], dlma_uuid[%s]\n",
+				uuid,
+				ast_json_string_get(ast_json_object_get(j_camp, "plan")),
+				ast_json_string_get(ast_json_object_get(j_camp, "dlma"))
+				);
+		AST_JSON_UNREF(j_camp);
+		return NULL;
+	}
+
+	// create
+	j_res = ast_json_pack("{"
+			"s:s, "
+			"s:i, s:i, s:i, s:i, s:i"
+			"}",
+
+			"uuid",									ast_json_string_get(ast_json_object_get(j_camp, "uuid"))? : "",
+
+			"dial_total_count",			get_dl_list_cnt_total(j_dlma),
+			"dial_finished_count",	get_dl_list_cnt_finshed(j_dlma, j_plan),
+			"dial_available_count",	get_dl_list_cnt_available(j_dlma, j_plan),
+			"dial_dialing_count",		get_dl_list_cnt_dialing(j_dlma),
+			"dial_called_count",		get_dl_list_cnt_tried(j_dlma)
+			);
+
+	AST_JSON_UNREF(j_camp);
+	AST_JSON_UNREF(j_plan);
+	AST_JSON_UNREF(j_dlma);
+
+	return j_res;
+}
+
+struct ast_json* get_campaigns_stat_all(void)
+{
+	struct ast_json* j_stats;
+	struct ast_json* j_stat;
+	struct ast_json* j_camps;
+	struct ast_json* j_camp;
+	int i;
+	int size;
+
+	j_camps = get_campaigns_all();
+	size = ast_json_array_size(j_camps);
+	j_stats = ast_json_array_create();
+	for(i = 0; i < size; i++) {
+		j_camp = ast_json_array_get(j_camps, i);
+		if(j_camp == NULL) {
+			continue;
+		}
+
+		j_stat = get_campaign_stat(ast_json_string_get(ast_json_object_get(j_camp, "uuid")));
+		if(j_stat == NULL) {
+			continue;
+		}
+
+		ast_json_array_append(j_stats, j_stat);
+	}
+
+	AST_JSON_UNREF(j_camps);
+
+	return j_stats;
+}
+
 
 /**
  * return the possibility of status change to start
