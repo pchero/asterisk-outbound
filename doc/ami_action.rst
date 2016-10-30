@@ -217,6 +217,70 @@ Example
     EventList: Complete
     ListItems: 1
 
+OutCampaignStatShow
+===================
+Description
+-----------
+Show specified|all campaign stat info.
+
+Syntax
+------
+
+::
+
+    Action: OutCampaignStatShow
+    ActionID: <value>
+    [Uuid:] <value>
+
+Parameters
+
+* ``Uuid``: Campaign UUID
+
+Returns
+-------
+::
+
+   Response: Success
+   EventList: start
+   Message: Campaign Stat List will follow
+
+   ...
+    
+   Event: OutCampaignStatListComplete
+   EventList: Complete
+   ListItems: 2
+
+Example
+-------
+::
+
+   Action: OutCampaignStatShow
+   
+   Response: Success
+   EventList: start
+   Message: Campaign Stat List will follow
+   
+   Event: OutCampaignStatEntry
+   Uuid: 6aea1bd8-59ea-41c5-bc13-433178ad11c8
+   DlTotalCount: 6
+   DlFinishedCount: 6
+   DlAvailableCount: 0
+   DlDialingCount: 0
+   DlCalledCount: 13
+   
+   Event: OutCampaignStatEntry
+   Uuid: 75ef9d58-15db-4d66-99bd-32e5054fe1d4
+   DlTotalCount: 6
+   DlFinishedCount: 6
+   DlAvailableCount: 0
+   DlDialingCount: 0
+   DlCalledCount: 13
+   
+   Event: OutCampaignStatListComplete
+   EventList: Complete
+   ListItems: 2
+
+
 OutPlanCreate
 =============
 Description

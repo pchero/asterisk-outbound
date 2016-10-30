@@ -294,7 +294,7 @@ struct ast_json* get_dlmas_all(void)
 	struct ast_json* j_tmp;
 	db_res_t* db_res;
 
-	ast_asprintf(&sql, "%s", "select * from dl_list_ma where in_use=1;");
+	ast_asprintf(&sql, "select * from dl_list_ma where in_use=%d;", E_DL_USE_OK);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -446,7 +446,7 @@ bool delete_dlma(const char* uuid)
 	j_tmp = ast_json_object_create();
 	tmp = get_utc_timestamp();
 	ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
-	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
+	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(E_DL_USE_NO));
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
@@ -480,11 +480,11 @@ struct ast_json* get_dlma(const char* uuid)
 	db_res_t* db_res;
 
 	if(uuid == NULL) {
-		ast_log(LOG_WARNING, "Invalid input paramters.\n");
+		ast_log(LOG_WARNING, "Invalid input parameters.\n");
 		return NULL;
 	}
 
-	ast_asprintf(&sql, "select * from dl_list_ma where uuid=\"%s\" and in_use=1;", uuid);
+	ast_asprintf(&sql, "select * from dl_list_ma where uuid=\"%s\" and in_use=%d;", uuid, E_DL_USE_OK);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -523,8 +523,9 @@ struct ast_json* get_dl_lists(const char* dlma_uuid, int count)
 		return NULL;
 	}
 
-	ast_asprintf(&sql, "select * from `%s` where in_use=1 limit %d;",
+	ast_asprintf(&sql, "select * from `%s` where in_use=%d limit %d;",
 			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+			E_DL_USE_OK,
 			count
 			);
 	AST_JSON_UNREF(j_dlma);
@@ -560,7 +561,7 @@ struct ast_json* get_dl_list(const char* uuid)
 		return NULL;
 	}
 
-	ast_asprintf(&sql, "select * from dl_list where in_use=1 and uuid=\"%s\"", uuid);
+	ast_asprintf(&sql, "select * from dl_list where in_use=%d and uuid=\"%s\"", E_DL_USE_OK, uuid);
 	db_res = db_query(sql);
 	ast_free(sql);
 
@@ -569,6 +570,232 @@ struct ast_json* get_dl_list(const char* uuid)
 
 	return j_res;
 }
+
+int get_dl_list_cnt_total(struct ast_json* j_dlma)
+{
+	char* sql;
+	db_res_t* db_res;
+	struct ast_json* j_res;
+	int ret;
+
+	if(j_dlma == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return -1;
+	}
+
+	ast_asprintf(&sql, "select count(*) from '%s' where in_use=%d;",
+			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))? : "",
+			E_DL_USE_OK
+			);
+	db_res = db_query(sql);
+	ast_free(sql);
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+
+	ret = ast_json_integer_get(ast_json_object_get(j_res, "count(*)"));
+	AST_JSON_UNREF(j_res);
+
+	return ret;
+}
+
+/**
+ * Get finished list count.
+ * \param j_dlma
+ * \param j_plan
+ * \return
+ */
+int get_dl_list_cnt_finshed(struct ast_json* j_dlma, struct ast_json* j_plan)
+{
+	char* sql;
+	db_res_t* db_res;
+	struct ast_json* j_res;
+	int ret;
+
+	ast_asprintf(&sql, "select count(*)"
+			" from `%s` where "
+			"("
+			" (number_1 is not null and trycnt_1 >= %lld)"
+			" or (number_2 is not null and trycnt_2 >= %lld)"
+			" or (number_3 is not null and trycnt_3 >= %lld)"
+			" or (number_4 is not null and trycnt_4 >= %lld)"
+			" or (number_5 is not null and trycnt_5 >= %lld)"
+			" or (number_6 is not null and trycnt_6 >= %lld)"
+			" or (number_7 is not null and trycnt_7 >= %lld)"
+			" or (number_8 is not null and trycnt_8 >= %lld)"
+			" or (res_dial == %d)"
+			")"
+			" and status = %d"
+			" and in_use = %d"
+			";",
+			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
+			AST_CONTROL_ANSWER,
+			E_DL_IDLE,
+			E_DL_USE_OK
+			);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_ERROR, "Could not get finished dial list count info.");
+		return -1;
+	}
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+	if(j_res == NULL) {
+		return -1;
+	}
+
+	ret = ast_json_integer_get(ast_json_object_get(j_res, "count(*)"));
+	return ret;
+}
+
+/**
+ * Get available list count.
+ * \param j_dlma
+ * \param j_plan
+ * \return
+ */
+int get_dl_list_cnt_available(struct ast_json* j_dlma, struct ast_json* j_plan)
+{
+	char* sql;
+	db_res_t* db_res;
+	struct ast_json* j_res;
+	int ret;
+
+	ast_asprintf(&sql, "select count(*)"
+			" from `%s` where "
+			"("
+			" (number_1 is not null and trycnt_1 < %lld)"
+			" or (number_2 is not null and trycnt_2 < %lld)"
+			" or (number_3 is not null and trycnt_3 < %lld)"
+			" or (number_4 is not null and trycnt_4 < %lld)"
+			" or (number_5 is not null and trycnt_5 < %lld)"
+			" or (number_6 is not null and trycnt_6 < %lld)"
+			" or (number_7 is not null and trycnt_7 < %lld)"
+			" or (number_8 is not null and trycnt_8 < %lld)"
+			")"
+			" and res_dial != %d"
+			" and status = %d"
+			" and in_use = %d"
+			";",
+			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_1")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_2")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_3")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_4")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_5")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_6")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_7")),
+			ast_json_integer_get(ast_json_object_get(j_plan, "max_retry_cnt_8")),
+
+			AST_CONTROL_ANSWER,
+			E_DL_IDLE,
+			E_DL_USE_OK
+			);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_ERROR, "Could not get finished dial list count info.");
+		return -1;
+	}
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+	if(j_res == NULL) {
+		return -1;
+	}
+
+	ret = ast_json_integer_get(ast_json_object_get(j_res, "count(*)"));
+	return ret;
+}
+
+/**
+ * Get dl list tryed count.
+ * \param j_dlma
+ * \param j_plan
+ * \return
+ */
+int get_dl_list_cnt_dialing(struct ast_json* j_dlma)
+{
+	char* sql;
+	db_res_t* db_res;
+	struct ast_json* j_res;
+	int ret;
+
+	if(j_dlma == NULL) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return -1;
+	}
+
+	ast_asprintf(&sql, "select count(*) from '%s' where status != %d and in_use = %d;",
+			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))? : "",
+			E_DL_IDLE,
+			E_DL_USE_OK
+			);
+	db_res = db_query(sql);
+	ast_free(sql);
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+
+	ret = ast_json_integer_get(ast_json_object_get(j_res, "count(*)"));
+	AST_JSON_UNREF(j_res);
+
+	return ret;
+}
+
+/**
+ * Get dialing list count.
+ * \param j_dlma
+ * \param j_plan
+ * \return
+ */
+int get_dl_list_cnt_tried(struct ast_json* j_dlma)
+{
+	char* sql;
+	db_res_t* db_res;
+	struct ast_json* j_res;
+	int ret;
+
+	ast_asprintf(&sql, "select "
+			" sum(trycnt_1 + trycnt_2 + trycnt_3 + trycnt_4 + trycnt_5 + trycnt_6 + trycnt_7 + trycnt_8) as trycnt"
+			" from `%s` where in_use = %d"
+			";",
+			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table")),
+			E_DL_USE_OK
+			);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_ERROR, "Could not get dial list info.");
+		return -1;
+	}
+
+	j_res = db_get_record(db_res);
+	db_free(db_res);
+	if(j_res == NULL) {
+		return -1;
+	}
+
+	ret = ast_json_integer_get(ast_json_object_get(j_res, "trycnt"));
+	AST_JSON_UNREF(j_res);
+
+	return ret;
+}
+
 
 /**
  * Create dialing json object
@@ -882,7 +1109,7 @@ bool delete_dl_list(const char* uuid)
 	j_tmp = ast_json_object_create();
 	tmp = get_utc_timestamp();
 	ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
-	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
+	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(E_DL_USE_NO));
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);

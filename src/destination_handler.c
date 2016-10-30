@@ -17,7 +17,7 @@
 #include "event_handler.h"
 #include "utils.h"
 #include "ami_handler.h"
-
+#include "dl_handler.h"
 #include "destination_handler.h"
 
 static struct ast_json* get_destination_deleted(const char* uuid);
@@ -98,7 +98,7 @@ bool delete_destination(const char* uuid)
 	j_tmp = ast_json_object_create();
 	tmp = get_utc_timestamp();
 	ast_json_object_set(j_tmp, "tm_delete", ast_json_string_create(tmp));
-	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(0));
+	ast_json_object_set(j_tmp, "in_use", ast_json_integer_create(E_DL_USE_NO));
 	ast_free(tmp);
 
 	tmp = db_get_update_str(j_tmp);
@@ -138,7 +138,7 @@ struct ast_json* get_destination(const char* uuid)
 	ast_log(LOG_DEBUG, "Get destination info. uuid[%s]\n", uuid);
 
 	// get specified destination
-	ast_asprintf(&sql, "select * from destination where uuid=\"%s\" and in_use=1;", uuid);
+	ast_asprintf(&sql, "select * from destination where uuid=\"%s\" and in_use=%d;", uuid, E_DL_USE_OK);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -170,7 +170,7 @@ static struct ast_json* get_destination_deleted(const char* uuid)
 	ast_log(LOG_DEBUG, "Get destination info. uuid[%s]\n", uuid);
 
 	// get specified destination
-	ast_asprintf(&sql, "select * from destination where uuid=\"%s\" and in_use=0;", uuid);
+	ast_asprintf(&sql, "select * from destination where uuid=\"%s\" and in_use=%d;", uuid, E_DL_USE_NO);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -199,7 +199,7 @@ struct ast_json* get_destinations_all(void)
 	char* sql;
 
 	// get all campaigns
-	ast_asprintf(&sql, "%s", "select * from destination where in_use=1;");
+	ast_asprintf(&sql, "select * from destination where in_use=%d;", E_DL_USE_OK);
 
 	db_res = db_query(sql);
 	ast_free(sql);
@@ -266,7 +266,7 @@ bool update_destination(const struct ast_json* j_dest)
 	}
 	AST_JSON_UNREF(j_tmp);
 
-	ast_asprintf(&sql, "update destination set %s where in_use=1 and uuid=\"%s\";", tmp, uuid);
+	ast_asprintf(&sql, "update destination set %s where in_use=%d and uuid=\"%s\";", tmp, E_DL_USE_OK, uuid);
 	ast_free(tmp);
 
 	db_exec(sql);
