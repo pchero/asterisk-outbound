@@ -1495,17 +1495,11 @@ static struct ast_json* create_json_dl_list(const struct message* m)
 	tmp_const = message_get_header(m, "Number8");
 	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "number_8", ast_json_string_create(tmp_const));}
 
-	tmp_const = message_get_header(m, "res_dial");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "res_dial", ast_json_integer_create(atoi(tmp_const)));}
+	tmp_const = message_get_header(m, "Email");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "email", ast_json_string_create(tmp_const));}
 
-	tmp_const = message_get_header(m, "res_dial_detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "res_dial_detail", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "res_hangup");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "res_hangup", ast_json_integer_create(atoi(tmp_const)));}
-
-	tmp_const = message_get_header(m, "res_hangup_detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "res_hangup_detail", ast_json_string_create(tmp_const));}
+	tmp_const = message_get_header(m, "UKey");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "ukey", ast_json_string_create(tmp_const));}
 
 	// Variables
 	tmp = get_variables(m);
@@ -2064,7 +2058,7 @@ void send_manager_evt_out_dialing_delete(rb_dialing* dialing)
 static int manager_out_dl_list_create(struct mansession *s, const struct message *m)
 {
 	struct ast_json* j_tmp;
-	int ret;
+	char* dl_uuid;
 
 	ast_log(LOG_VERBOSE, "AMI request. OutDlListCreate.\n");
 
@@ -2075,13 +2069,14 @@ static int manager_out_dl_list_create(struct mansession *s, const struct message
 		return 0;
 	}
 
-	ret = create_dl_list(j_tmp);
+	dl_uuid = create_dl_list(j_tmp);
 	AST_JSON_UNREF(j_tmp);
-	if(ret == false) {
+	if(dl_uuid == NULL) {
 		astman_send_error(s, m, "Error encountered while creating dl list.");
 		ast_log(LOG_NOTICE, "OutDlListCreate failed.\n");
 		return 0;
 	}
+	ast_free(dl_uuid);
 	astman_send_ack(s, m, "Dl list created successfully");
 	ast_log(LOG_NOTICE, "OutDlListCreate succeed.\n");
 

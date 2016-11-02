@@ -52,7 +52,8 @@ OBJS_res_outbound.so =  \
 	$(TARGETDIR_res_outbound.so)/queue_handler.o \
 	$(TARGETDIR_res_outbound.so)/db_sqlite3_handler.o \
 	$(TARGETDIR_res_outbound.so)/destination_handler.o \
-	$(TARGETDIR_res_outbound.so)/utils.o
+	$(TARGETDIR_res_outbound.so)/utils.o \
+	$(TARGETDIR_res_outbound.so)/application_handler.o
 	
 	
 
@@ -99,6 +100,10 @@ $(TARGETDIR_res_outbound.so)/destination_handler.o: $(TARGETDIR_res_outbound.so)
 
 $(TARGETDIR_res_outbound.so)/utils.o: $(TARGETDIR_res_outbound.so) src/utils.c 
 	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/utils.c	
+
+$(TARGETDIR_res_outbound.so)/application_handler.o: $(TARGETDIR_res_outbound.so) src/application_handler.c 
+	$(COMPILE.c) $(CFLAGS_res_outbound.so) $(CPPFLAGS_res_outbound.so) -o $@ src/application_handler.c	
+
 
 #### Clean target deletes all generated files ####
 clean:

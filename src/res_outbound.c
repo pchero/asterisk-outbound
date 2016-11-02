@@ -25,6 +25,7 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
 #include "dialing_handler.h"
 #include "cli_handler.h"
 #include "utils.h"
+#include "application_handler.h"
 
 
 #include <stdbool.h>
@@ -112,6 +113,7 @@ static int unload_module(void)
 {
 	term_ami_handle();
 	term_cli_handler();
+	term_application_handler();
 	stop_outbound();
 	usleep(10000);
 	release_module();
@@ -158,14 +160,21 @@ static int load_module(void)
 
 	ret = init_ami_handle();
 	if(ret == false) {
-		ast_log(LOG_ERROR, "Could not initiate AMI handler.\n");
+		ast_log(LOG_ERROR, "Could not initiate ami handler.\n");
 		unload_module();
 		return AST_MODULE_LOAD_DECLINE;
 	}
 
 	ret = init_cli_handler();
 	if(ret == false) {
-		ast_log(LOG_ERROR, "Could not initiate AMI handler.\n");
+		ast_log(LOG_ERROR, "Could not initiate cli handler.\n");
+		unload_module();
+		return AST_MODULE_LOAD_DECLINE;
+	}
+
+	ret = init_application_handler();
+	if(ret == false) {
+		ast_log(LOG_ERROR, "Could not initiate application handler.\n");
 		unload_module();
 		return AST_MODULE_LOAD_DECLINE;
 	}

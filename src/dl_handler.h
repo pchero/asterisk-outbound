@@ -33,7 +33,7 @@ bool create_dlma(const struct ast_json* j_dlma);
 bool update_dlma(const struct ast_json* j_dlma);
 bool delete_dlma(const char* uuid);
 
-bool create_dl_list(struct ast_json* j_dl);
+char* create_dl_list(struct ast_json* j_dl);
 bool update_dl_list(struct ast_json* j_dl);
 bool delete_dl_list(const char* uuid);
 
