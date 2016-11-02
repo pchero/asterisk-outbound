@@ -1049,7 +1049,7 @@ static char* create_view_name(const char* uuid)
  * @param j_dl
  * @return
  */
-bool create_dl_list(struct ast_json* j_dl)
+char* create_dl_list(struct ast_json* j_dl)
 {
 	int ret;
 	char* uuid;
@@ -1057,7 +1057,7 @@ bool create_dl_list(struct ast_json* j_dl)
 	struct ast_json* j_tmp;
 
 	if(j_dl == NULL) {
-		return false;
+		return NULL;
 	}
 
 	j_tmp = ast_json_deep_copy(j_dl);
@@ -1065,7 +1065,6 @@ bool create_dl_list(struct ast_json* j_dl)
 	// uuid
 	uuid = gen_uuid();
 	ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
-	ast_free(uuid);
 
 	// create timestamp
 	tmp = get_utc_timestamp();
@@ -1082,11 +1081,11 @@ bool create_dl_list(struct ast_json* j_dl)
 	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
 		ast_free(uuid);
-		return false;
+		return NULL;
 	}
 
 	// do not send any create event for dl_list.
-	return true;
+	return uuid;
 }
 
 /**
