@@ -48,7 +48,7 @@ bool db_sqlite3_init(void)
 	int ret;
 	struct ast_json* j_database;
 	struct ast_json* j_res;
-	char* query;
+	char* sql;
 	db_res_t* db_res;
 
 	// get [database]
@@ -66,8 +66,9 @@ bool db_sqlite3_init(void)
 	}
 
 	// check table exist(campaign)
-	ast_asprintf(&query, "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';", "campaign");
-	db_res = db_sqlite3_query(query);
+	ast_asprintf(&sql, "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';", "campaign");
+	db_res = db_sqlite3_query(sql);
+	ast_free(sql);
 	j_res = db_sqlite3_get_record(db_res);
 	db_sqlite3_free(db_res);
 	if(j_res != NULL) {
