@@ -1447,9 +1447,139 @@ static struct ast_json* create_json_plan(const struct message* m)
 	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
 	ast_free(tmp);
 
+	return j_tmp;
+}
+
+static struct ast_json* create_json_dlma(const struct message* m)
+{
+	const char* tmp_const;
+	struct ast_json* j_tmp;
+	char* tmp;
+
+	if(m == NULL) {
+		return NULL;
+	}
+
+	j_tmp = ast_json_object_create();
+
+	tmp_const = message_get_header(m, "Name");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Detail");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+	// Variable
+	tmp = get_variables(m);
+	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
+	ast_free(tmp);
 
 	return j_tmp;
 }
+
+static struct ast_json* create_json_destination(const struct message* m)
+{
+	struct ast_json* j_tmp;
+	const char* tmp_const;
+	char* tmp;
+
+	if(m == NULL) {
+		return NULL;
+	}
+
+	j_tmp = ast_json_object_create();
+
+	tmp_const = message_get_header(m, "Name");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Detail");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Type");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "type", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Exten");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "exten", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Context");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "context", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Priority");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "priority", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Application");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "application", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Data");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "data", ast_json_string_create(tmp_const));}
+
+	// Variable
+	tmp = get_variables(m);
+	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
+	ast_free(tmp);
+
+	return j_tmp;
+}
+
+
+static struct ast_json* create_json_campaign(const struct message* m)
+{
+	struct ast_json* j_tmp;
+	const char* tmp_const;
+	char* tmp;
+
+	if(m == NULL) {
+		return NULL;
+	}
+
+	j_tmp = ast_json_object_create();
+
+	tmp_const = message_get_header(m, "Name");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Detail");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Plan");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "plan", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Dlma");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "Dest");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "ScMode");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_mode", ast_json_integer_create(atoi(tmp_const)));}
+
+	tmp_const = message_get_header(m, "ScTimeStart");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_time_start", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "ScTimeEnd");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_time_end", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "ScDateStart");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_start", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "ScDateEnd");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_end", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "ScDateList");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_list", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "ScDateListExcept");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_list_except", ast_json_string_create(tmp_const));}
+
+	tmp_const = message_get_header(m, "ScDayList");
+	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_day_list", ast_json_string_create(tmp_const));}
+
+	// Variable
+	tmp = get_variables(m);
+	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
+	ast_free(tmp);
+
+	return j_tmp;
+}
+
 
 static struct ast_json* create_json_dl_list(const struct message* m)
 {
@@ -2412,51 +2542,16 @@ void manager_out_campaign_stat_entry(struct mansession *s, const struct message 
 static int manager_out_campaign_create(struct mansession *s, const struct message *m)
 {
 	struct ast_json* j_tmp;
-	const char* tmp_const;
 	int ret;
 
 	ast_log(LOG_VERBOSE, "AMI request. OutCampaignCreate.\n");
 
-	j_tmp = ast_json_object_create();
-
-	tmp_const = message_get_header(m, "Name");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Plan");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "plan", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Dlma");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Dest");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScMode");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_mode", ast_json_integer_create(atoi(tmp_const)));}
-
-	tmp_const = message_get_header(m, "ScTimeStart");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_time_start", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScTimeEnd");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_time_end", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateStart");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_start", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateEnd");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_end", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateList");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_list", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateListExcept");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_list_except", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDayList");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_day_list", ast_json_string_create(tmp_const));}
+	j_tmp = create_json_campaign(m);
+	if(j_tmp == NULL) {
+		astman_send_error(s, m, "Error encountered while creating campaign");
+		ast_log(LOG_NOTICE, "OutCampaignCreate failed.\n");
+		return 0;
+	}
 
 	ret = create_campaign(j_tmp);
 	AST_JSON_UNREF(j_tmp);
@@ -2465,6 +2560,7 @@ static int manager_out_campaign_create(struct mansession *s, const struct messag
 		ast_log(LOG_NOTICE, "OutCampaignCreate failed.\n");
 		return 0;
 	}
+
 	astman_send_ack(s, m, "Campaign created successfully");
 	ast_log(LOG_NOTICE, "OutCampaignCreate succeed.\n");
 
@@ -2519,52 +2615,18 @@ static int manager_out_campaign_update(struct mansession *s, const struct messag
 
 	ast_log(LOG_VERBOSE, "AMI request. OutCampaignUpdate.\n");
 
-	j_tmp = ast_json_object_create();
+	tmp_const = message_get_header(m, "Uuid");
+	if(tmp_const == NULL) {
+		astman_send_error(s, m, "Error encountered while updating campaign");
+		ast_log(LOG_WARNING, "OutCampaignUpdate failed.\n");
+		return 0;
+	}
 
+	j_tmp = create_json_campaign(m);
+
+	// set uuid
 	tmp_const = message_get_header(m, "Uuid");
 	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Name");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Plan");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "plan", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Dlma");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "dlma", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Dest");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "dest", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Status");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "status", ast_json_integer_create(atoi(tmp_const)));}
-
-	tmp_const = message_get_header(m, "ScMode");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_mode", ast_json_integer_create(atoi(tmp_const)));}
-
-	tmp_const = message_get_header(m, "ScTimeStart");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_time_start", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScTimeEnd");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_time_end", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateStart");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_start", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateEnd");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_end", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateList");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_list", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDateListExcept");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_date_list_except", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "ScDayList");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "sc_day_list", ast_json_string_create(tmp_const));}
 
 	ret = update_campaign(j_tmp);
 	AST_JSON_UNREF(j_tmp);
@@ -2725,6 +2787,12 @@ static int manager_out_plan_create(struct mansession *s, const struct message *m
 	ast_log(LOG_VERBOSE, "AMI request. OutPlanCreate.\n");
 
 	j_tmp = create_json_plan(m);
+	if(j_tmp == NULL) {
+		astman_send_error(s, m, "Error encountered while creating plan");
+		ast_log(LOG_WARNING, "Could not create plan json.\n");
+		return 0;
+	}
+
 	ret = create_plan(j_tmp);
 	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
@@ -2888,18 +2956,16 @@ static int manager_out_plan_show(struct mansession *s, const struct message *m)
 static int manager_out_dlma_create(struct mansession *s, const struct message *m)
 {
 	struct ast_json* j_tmp;
-	const char* tmp_const;
 	int ret;
 
 	ast_log(LOG_VERBOSE, "AMI request. OutDlmaCreate.\n");
 
-	j_tmp = ast_json_object_create();
-
-	tmp_const = message_get_header(m, "Name");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
+	j_tmp = create_json_dlma(m);
+	if(j_tmp == NULL) {
+		astman_send_error(s, m, "Error encountered while creating dlma");
+		ast_log(LOG_WARNING, "OutDlmaCreate failed.\n");
+		return 0;
+	}
 
 	ret = create_dlma(j_tmp);
 	AST_JSON_UNREF(j_tmp);
@@ -2926,22 +2992,21 @@ static int manager_out_dlma_update(struct mansession *s, const struct message *m
 	const char* tmp_const;
 	int ret;
 
+	// validate
 	tmp_const = message_get_header(m, "Uuid");
 	if(tmp_const == NULL) {
 		astman_send_error(s, m, "Error encountered while updating dlma");
 		return 0;
 	}
 
-	j_tmp = ast_json_object_create();
+	j_tmp = create_json_dlma(m);
+	if(j_tmp == NULL) {
+		astman_send_error(s, m, "Error encountered while updating dlma");
+		return 0;
+	}
 
 	tmp_const = message_get_header(m, "Uuid");
 	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Name");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
 
 	ret = update_dlma(j_tmp);
 	AST_JSON_UNREF(j_tmp);
@@ -3299,42 +3364,16 @@ static int manager_out_dialing_summary(struct mansession *s, const struct messag
 static int manager_out_destination_create(struct mansession *s, const struct message *m)
 {
 	struct ast_json* j_tmp;
-	const char* tmp_const;
-	char* tmp;
 	int ret;
 
 	ast_log(LOG_VERBOSE, "AMI request. OutDestinationCreate.\n");
 
-	j_tmp = ast_json_object_create();
-
-	tmp_const = message_get_header(m, "Name");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Type");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "type", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Exten");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "exten", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Context");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "context", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Priority");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "priority", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Application");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "application", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Data");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "data", ast_json_string_create(tmp_const));}
-
-	// Variable
-	tmp = get_variables(m);
-	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
-	ast_free(tmp);
+	j_tmp = create_json_destination(m);
+	if(j_tmp == NULL) {
+		astman_send_error(s, m, "Error encountered while creating destination");
+		ast_log(LOG_NOTICE, "OutDestinationCreate failed.\n");
+		return 0;
+	}
 
 	ret = create_destination(j_tmp);
 	AST_JSON_UNREF(j_tmp);
@@ -3360,44 +3399,21 @@ static int manager_out_destination_update(struct mansession *s, const struct mes
 {
 	struct ast_json* j_tmp;
 	const char* tmp_const;
-	char* tmp;
 	int ret;
 
 	ast_log(LOG_VERBOSE, "AMI request. OutDestinationCreate.\n");
 
-	j_tmp = ast_json_object_create();
+	tmp_const = message_get_header(m, "Uuid");
+	if(tmp_const == NULL) {
+		astman_send_error(s, m, "Error encountered while updating destination");
+		ast_log(LOG_WARNING, "OutDestinationUpdate failed.\n");
+		return 0;
+	}
+
+	j_tmp = create_json_destination(m);
 
 	tmp_const = message_get_header(m, "Uuid");
 	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Name");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "name", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Detail");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "detail", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Type");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "type", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Exten");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "exten", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Context");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "context", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Priority");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "priority", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Application");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "application", ast_json_string_create(tmp_const));}
-
-	tmp_const = message_get_header(m, "Data");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "data", ast_json_string_create(tmp_const));}
-
-	// Variable
-	tmp = get_variables(m);
-	if((tmp != NULL) && (strlen(tmp) > 0)) {ast_json_object_set(j_tmp, "variables", ast_json_string_create(tmp));}
-	ast_free(tmp);
 
 	ret = update_destination(j_tmp);
 	AST_JSON_UNREF(j_tmp);
