@@ -8,7 +8,7 @@ CC = gcc
 UNAME := $(shell uname)
 # -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations
 #BASICOPTS = -g -pthread -pipe -g3 -O6 -fPIC -DAST_MODULE=\"res_outbound\"
-BASICOPTS = -Wall -g -pthread -pipe -g3 -O6 -fPIC -DAST_MODULE=\"res_outbound\"
+BASICOPTS = -Wall -g -pthread -pipe -g3 -O6 -fPIC -DAST_MODULE=\"res_outbound\" -DAST_MODULE_SELF_SYM=__res_outbound
 CFLAGS = $(BASICOPTS)
 PKGCONFIG="pkg-config"
 OSLDLIBS=

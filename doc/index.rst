@@ -19,6 +19,7 @@ Contents:
    asterisk_cli
    ami_action
    ami_event
+   application
 
 
 Indices and tables

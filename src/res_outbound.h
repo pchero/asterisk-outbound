@@ -8,7 +8,6 @@
 #ifndef SRC_RES_OUTBOUND_H_
 #define SRC_RES_OUTBOUND_H_
 
-#include "asterisk.h"
 #include "asterisk/json.h"
 
 typedef struct _app {

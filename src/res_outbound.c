@@ -6,13 +6,12 @@
  */
 
 /*** MODULEINFO
-	<depend>mysqlclient</depend>
 	<support_level>extended</support_level>
 ***/
 
 #include "asterisk.h"
 
-ASTERISK_FILE_VERSION(__FILE__, "$Revision: $")
+ASTERISK_REGISTER_FILE()
 
 #include "asterisk/module.h"
 #include "asterisk/config.h"
