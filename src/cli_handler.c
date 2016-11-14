@@ -59,7 +59,7 @@ static char* get_variables(const struct message *m);
 
 
 #define CAMPS_FORMAT2 "%-36.36s %-10.10s %-20.20s %-10.10s %-10.10s %-10.10s %-10.10s\n"
-#define CAMPS_FORMAT3 "%-36.36s %-10.10s %-20.20s %10ld %-10.10s %-10.10s %-10.10s\n"
+#define CAMPS_FORMAT3 "%-36.36s %-10.10s %-20.20s %10"PRIdMAX" %-10.10s %-10.10s %-10.10s\n"
 
 static char* _out_show_campaigns(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
@@ -220,7 +220,7 @@ static char *out_show_campaign(struct ast_cli_entry *e, int cmd, struct ast_cli_
 }
 
 #define PLANS_FORMAT2 "%-36.36s %-20.20s %-20.20s %-8.8s %-11.11s %-10.10s %-10.10s\n"
-#define PLANS_FORMAT3 "%-36.36s %-20.20s %-20.20s %8ld %11ld %-10.10s %-10.10s\n"
+#define PLANS_FORMAT3 "%-36.36s %-20.20s %-20.20s %8"PRIdMAX" %11"PRIdMAX" %-10.10s %-10.10s\n"
 
 static char* _out_show_plans(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
@@ -411,7 +411,7 @@ static char *out_show_dlma(struct ast_cli_entry *e, int cmd, struct ast_cli_args
 
 
 #define DIALINGS_FORMAT2 "%-36.36s %-6.6s %-20.20s %-20.20s %-10.10s %-10.10s %-10.10s %-10.10s %-10.10s\n"
-#define DIALINGS_FORMAT3 "%-36.36s %6ld %-20.20s %-20.20s %-10.10s %-10.10s %-10.10s %-10.10s %-10.10s\n"
+#define DIALINGS_FORMAT3 "%-36.36s %6"PRIdMAX" %-20.20s %-20.20s %-10.10s %-10.10s %-10.10s %-10.10s %-10.10s\n"
 
 static char* _out_show_dialings(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
@@ -717,7 +717,7 @@ static char *out_show_destination(struct ast_cli_entry *e, int cmd, struct ast_c
 }
 
 #define DESTS_FORMAT2 "%-36.36s %-10.10s %-20.20s %-5.5s %-10.10s %-10.10s %-10.10s %-10.10s\n"
-#define DESTS_FORMAT3 "%-36.36s %-10.10s %-20.20s %5ld %-10.10s %-10.10s %-10.10s %-10.10s\n"
+#define DESTS_FORMAT3 "%-36.36s %-10.10s %-20.20s %5"PRIdMAX" %-10.10s %-10.10s %-10.10s %-10.10s\n"
 
 static char* _out_show_destinations(int fd, int *total, struct mansession *s, const struct message *m, int argc, const char *argv[])
 {
@@ -863,12 +863,12 @@ static char* get_campaign_str(struct ast_json* j_camp)
 			"Uuid: %s\r\n"
 			"Name: %s\r\n"
 			"Detail: %s\r\n"
-			"Status: %ld\r\n"
+			"Status: %"PRIdMAX"\r\n"
 			"Plan: %s\r\n"
 			"Dlma: %s\r\n"
 			"Dest: %s\r\n"
 
-			"ScMode: %ld\r\n"
+			"ScMode: %"PRIdMAX"\r\n"
 			"ScTimeStart: %s\r\n"
 			"ScTimeEnd: %s\r\n"
 			"ScDateStart: %s\r\n"
@@ -921,11 +921,11 @@ static char* get_campaign_stat_str(struct ast_json* j_stat)
 	ast_asprintf(&tmp,
 			"Uuid: %s\r\n"
 
-			"DlTotalCount: %ld\r\n"
-			"DlFinishedCount: %ld\r\n"
-			"DlAvailableCount: %ld\r\n"
-			"DlDialingCount: %ld\r\n"
-			"DlCalledCount: %ld\r\n",
+			"DlTotalCount: %"PRIdMAX"\r\n"
+			"DlFinishedCount: %"PRIdMAX"\r\n"
+			"DlAvailableCount: %"PRIdMAX"\r\n"
+			"DlDialingCount: %"PRIdMAX"\r\n"
+			"DlCalledCount: %"PRIdMAX"\r\n",
 
 			ast_json_string_get(ast_json_object_get(j_stat, "uuid"))? : "<unknown>",
 
@@ -961,24 +961,24 @@ static char* get_plan_str(struct ast_json* j_plan)
 			"Uuid: %s\r\n"
 			"Name: %s\r\n"
 			"Detail: %s\r\n"
-			"DialMode: %ld\r\n"
-			"DialTimeout: %ld\r\n"
+			"DialMode: %"PRIdMAX"\r\n"
+			"DialTimeout: %"PRIdMAX"\r\n"
 
 			"CallerId: %s\r\n"
-			"DlEndHandle: %ld\r\n"
-			"RetryDelay: %ld\r\n"
+			"DlEndHandle: %"PRIdMAX"\r\n"
+			"RetryDelay: %"PRIdMAX"\r\n"
 			"TrunkName: %s\r\n"
 			"TechName: %s\r\n"
 			"%s"// Variables
 
-			"MaxRetryCnt1: %ld\r\n"
-			"MaxRetryCnt2: %ld\r\n"
-			"MaxRetryCnt3: %ld\r\n"
-			"MaxRetryCnt4: %ld\r\n"
-			"MaxRetryCnt5: %ld\r\n"
-			"MaxRetryCnt6: %ld\r\n"
-			"MaxRetryCnt7: %ld\r\n"
-			"MaxRetryCnt8: %ld\r\n"
+			"MaxRetryCnt1: %"PRIdMAX"\r\n"
+			"MaxRetryCnt2: %"PRIdMAX"\r\n"
+			"MaxRetryCnt3: %"PRIdMAX"\r\n"
+			"MaxRetryCnt4: %"PRIdMAX"\r\n"
+			"MaxRetryCnt5: %"PRIdMAX"\r\n"
+			"MaxRetryCnt6: %"PRIdMAX"\r\n"
+			"MaxRetryCnt7: %"PRIdMAX"\r\n"
+			"MaxRetryCnt8: %"PRIdMAX"\r\n"
 
 			"TmCreate: %s\r\n"
 			"TmDelete: %s\r\n"
@@ -1095,12 +1095,12 @@ static char* get_dialing_str(const rb_dialing* dialing)
 			"DlListUuid: %s\r\n"	// todo: need to do more...
 
 			// dial info
-			"DialIndex: %ld\r\n"
+			"DialIndex: %"PRIdMAX"\r\n"
 			"DialAddr: %s\r\n"
 			"DialChannel: %s\r\n"
-			"DialTryCnt: %ld\r\n"
-			"DialTimeout: %ld\r\n"
-			"DialType: %ld\r\n"
+			"DialTryCnt: %"PRIdMAX"\r\n"
+			"DialTimeout: %"PRIdMAX"\r\n"
+			"DialType: %"PRIdMAX"\r\n"
 			"DialExten: %s\r\n"
 			"DialContext: %s\r\n"
 			"DialApplication: %s\r\n"
@@ -1111,8 +1111,8 @@ static char* get_dialing_str(const rb_dialing* dialing)
 			"ChannelName: %s\r\n"
 
 			// dial result
-			"ResDial: %ld\r\n"
-			"ResHangup: %ld\r\n"
+			"ResDial: %"PRIdMAX"\r\n"
+			"ResHangup: %"PRIdMAX"\r\n"
 			"ResHangupDetail: %s\r\n"
 
 			// tm info
@@ -1195,7 +1195,7 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 			"DlmaUuid: %s\r\n"
 			"Name: %s\r\n"
 			"Detail: %s\r\n"
-			"Status: %ld\r\n"
+			"Status: %"PRIdMAX"\r\n"
 
 			"UKey: %s\r\n"
 			"%s"// Variables
@@ -1215,18 +1215,18 @@ static char* get_dl_list_str(struct ast_json* j_dl)
 
 			"Email: %s\r\n"
 
-			"TryCnt1: %ld\r\n"
-			"TryCnt2: %ld\r\n"
-			"TryCnt3: %ld\r\n"
-			"TryCnt4: %ld\r\n"
-			"TryCnt5: %ld\r\n"
-			"TryCnt6: %ld\r\n"
-			"TryCnt7: %ld\r\n"
-			"TryCnt8: %ld\r\n"
+			"TryCnt1: %"PRIdMAX"\r\n"
+			"TryCnt2: %"PRIdMAX"\r\n"
+			"TryCnt3: %"PRIdMAX"\r\n"
+			"TryCnt4: %"PRIdMAX"\r\n"
+			"TryCnt5: %"PRIdMAX"\r\n"
+			"TryCnt6: %"PRIdMAX"\r\n"
+			"TryCnt7: %"PRIdMAX"\r\n"
+			"TryCnt8: %"PRIdMAX"\r\n"
 
-			"ResDial: %ld\r\n"
+			"ResDial: %"PRIdMAX"\r\n"
 			"ResDialDetail: %s\r\n"
-			"ResHangup: %ld\r\n"
+			"ResHangup: %"PRIdMAX"\r\n"
 			"ResHangupDetail: %s\r\n"
 
 			"TmCreate: %s\r\n"
@@ -1302,7 +1302,7 @@ static char* get_destination_str(struct ast_json* j_dest)
 			"Name: %s\r\n"
 			"Detail: %s\r\n"
 
-			"Type: %ld\r\n"
+			"Type: %"PRIdMAX"\r\n"
 
 			"Exten: %s\r\n"
 			"Context: %s\r\n"

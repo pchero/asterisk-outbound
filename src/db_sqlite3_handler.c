@@ -402,7 +402,7 @@ bool db_sqlite3_insert(const char* table, const struct ast_json* j_data)
 
 			// numbers
 			case AST_JSON_INTEGER: {
-				ret = ast_asprintf(&tmp, "%s%ld", tmp_sub, ast_json_integer_get(j_val));
+				ret = ast_asprintf(&tmp, "%s%"PRIdMAX"", tmp_sub, ast_json_integer_get(j_val));
 			}
 			break;
 
@@ -512,7 +512,7 @@ char* db_sqlite3_get_update_str(const struct ast_json* j_data)
 
 			// numbers
 			case AST_JSON_INTEGER: {
-				ast_asprintf(&res, "%s%s = %ld", tmp, key, ast_json_integer_get(j_val));
+				ast_asprintf(&res, "%s%s = %"PRIdMAX"", tmp, key, ast_json_integer_get(j_val));
 			}
 			break;
 

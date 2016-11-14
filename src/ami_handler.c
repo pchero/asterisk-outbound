@@ -215,7 +215,7 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 			case AST_JSON_REAL:
 			case AST_JSON_INTEGER:
 			{
-				sprintf(str_cmd, "%s%s: %ld\n", str_cmd, key, ast_json_integer_get(j_val));
+				sprintf(str_cmd, "%s%s: %"PRIdMAX"\n", str_cmd, key, ast_json_integer_get(j_val));
 			}
 			break;
 
