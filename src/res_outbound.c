@@ -32,9 +32,9 @@
 
 #define MODULE_DESCRIPTION  "Outbound manager for Asterisk"
 
-MYSQL* g_mydb;
+MYSQL* g_mydb = NULL;
 pthread_t pth_outbound;
-app* g_app;
+app* g_app = NULL;
 
 /*!
  * \brief Load res_snmp.conf config file
@@ -131,7 +131,7 @@ static int load_module(void)
 		AST_JSON_UNREF(g_app->j_conf);
 		ast_free(g_app);
 	}
-	g_app = ast_malloc(sizeof(app));
+	g_app = ast_calloc(1, sizeof(app));
 	g_app->j_conf = NULL;
 
 	ret = load_config();

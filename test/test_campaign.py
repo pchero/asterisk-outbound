@@ -8,7 +8,21 @@ import os
 import sys
 import uuid
 
+def create_campaign():
+    # normal
+    ast = common.acli()
+    ast.conn()
+    ast.sendCmd("OutCampaignCreate")
+    
+    return True
+
+
 def main():
+    ret = create_campaign()
+    if ret != True:
+        raise
+    
+    
     ast = common.Ami()
     ast.username = sys.argv[1]
     ast.password = sys.argv[2]
