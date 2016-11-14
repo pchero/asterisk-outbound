@@ -8,7 +8,120 @@ import os
 import sys
 import uuid
 
+def plan_verify(**args):
+    ast = common.acli()
+    
+    ret = ast.conn()
+    if ret != True:
+        raise "Could not get plan info."
+
+    res = ast.sendCmd("OutPlanShow")
+    res_dict = common.make_dict(res)    
+    if res_dict["Response"] != "Success":
+        raise
+    res = ast.recvArr()
+        
+    ret = common.verify_items(res, args)
+    return ret
+
+def plan_create_simple():
+    ast = common.acli()
+    
+    ret = ast.conn()
+    if ret != True:
+        raise
+    
+    res = ast.sendCmd("OutPlanCreate")
+    res_dict = common.make_dict(res)    
+    if res_dict["Response"] != "Success":
+        raise "Error!"
+    
+    return True
+
+def plan_create_name():
+    ast = common.acli()
+    
+    ret = ast.conn()
+    if ret != True:
+        raise
+    
+    name = uuid.uuid4().__str__()
+    res = ast.sendCmd("OutPlanCreate", Name=name)
+    res_dict = common.make_dict(res)
+    
+    if res_dict["Response"] != "Success":
+        return False
+    
+    ret = plan_verify(Name=name)
+    if ret != True:
+        raise
+    
+    return True
+
+def check_plan_show_object():
+    ast = common.acli()
+    
+    ret = ast.conn()
+    if ret != True:
+        raise
+    
+    name = uuid.uuid4()
+    res = ast.sendCmd("OutPlanCreate", Name=name)
+    res_dict = common.make_dict(res)
+    
+    if res_dict["Response"] != "Success":
+        return False
+    
+    ret = plan_verify(
+        Uuid=None, 
+        Name=None,
+        Detail=None,
+        DialMode=None,
+        DialTimeout=None,
+        CallerId=None,
+        DlEndHandle=None,
+        RetryDelay=None,
+        TrunkName=None,
+        TechName=None,
+        Variable=None,
+        MaxRetryCnt1=None,
+        MaxRetryCnt2=None,
+        MaxRetryCnt3=None,
+        MaxRetryCnt4=None,
+        MaxRetryCnt5=None,
+        MaxRetryCnt6=None,
+        MaxRetryCnt7=None,
+        MaxRetryCnt8=None,
+        TmCreate=None,
+        TmDelete=None,
+        TmUpdate=None
+        )
+    if ret != True:
+        return False
+    
+    return True
+
+
+
+def plan_create():
+    ret = plan_create_simple()
+    if ret != True:
+        raise "Could not pass the test"
+    
+    ret = plan_create_name()
+    if ret != True:
+        raise "Could not pass the test"
+    
+    ret = check_plan_show_object()
+    if ret != True:
+        raise "Could not pass the test."
+
 def main():
+    plan_create()
+    plan_show()
+    
+    
+    
     ast = common.Ami()
     ast.username = sys.argv[1]
     ast.password = sys.argv[2]

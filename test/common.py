@@ -30,13 +30,34 @@ import socket
 import ConfigParser
 
 def make_dict(lst):
-    ret ={}
+    ret = {}
     for i in lst:
         i = i.strip()
         if i and i[0] is not "#" and i[-1] is not "=":
-            var,val = i.rsplit(":",1)
+            var, val = i.split(":", 1)
             ret[var.strip()] = val.strip()
     return ret
+
+
+def verify_items(res, args):
+    size = len(res)
+    for i in range(size):
+        res_dict = make_dict(res[i])
+        flg = True
+        for key, value in args.items():
+            if key not in res_dict:
+                flg = False
+                continue
+            if value == None:
+                continue
+            if res_dict[key] != value:
+                flg = False
+                continue
+        
+        if flg == True:
+            break
+    
+    return flg
 
 class acli:
     def __init__(self, ip="127.0.0.1", port=5038, filename="/etc/asterisk/manager.conf", username="admin"):        
@@ -62,7 +83,7 @@ class acli:
 
         return res
 
-    def sendCmd(self,action,**args):
+    def sendCmd(self, action, **args):
         self.sock.send("Action: %s\r\n" % action)
         for key, value in args.items():
             self.sock.send("%s: %s\r\n" % (key,value))
