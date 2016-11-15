@@ -186,7 +186,7 @@ struct ast_json* ami_cmd_handler(struct ast_json* j_cmd)
 
 	memset(str_cmd, 0x00, sizeof(str_cmd));
 	sprintf(str_cmd, "Action: %s\n", ast_json_string_get(j_val));
-	ast_log(LOG_DEBUG, "AMI Action command. action[%s]\n", ast_json_string_get(j_val));
+	ast_log(LOG_VERBOSE, "AMI Action command. action[%s]\n", ast_json_string_get(j_val));
 	for(j_iter = ast_json_object_iter(j_cmd);
 			j_iter != NULL;
 			j_iter = ast_json_object_iter_next(j_cmd, j_iter))

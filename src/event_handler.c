@@ -269,7 +269,7 @@ static void cb_campaign_start(__attribute__((unused)) int fd, __attribute__((unu
 		AST_JSON_UNREF(j_dest);
 		return;
 	}
-	ast_log(LOG_DEBUG, "Get dlma info. dlma_uuid[%s], dlma_name[%s]\n",
+	ast_log(LOG_VERBOSE, "Get dlma info. dlma_uuid[%s], dlma_name[%s]\n",
 			ast_json_string_get(ast_json_object_get(j_dlma, "uuid")),
 			ast_json_string_get(ast_json_object_get(j_dlma, "name"))
 			);

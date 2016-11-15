@@ -135,7 +135,7 @@ struct ast_json* get_destination(const char* uuid)
 		ast_log(LOG_ERROR, "Wrong input parameter.\n");
 		return NULL;
 	}
-	ast_log(LOG_DEBUG, "Get destination info. uuid[%s]\n", uuid);
+	ast_log(LOG_VERBOSE, "Get destination info. uuid[%s]\n", uuid);
 
 	// get specified destination
 	ast_asprintf(&sql, "select * from destination where uuid=\"%s\" and in_use=%d;", uuid, E_DL_USE_OK);
@@ -167,7 +167,7 @@ static struct ast_json* get_destination_deleted(const char* uuid)
 		ast_log(LOG_ERROR, "Wrong input parameter.\n");
 		return NULL;
 	}
-	ast_log(LOG_DEBUG, "Get destination info. uuid[%s]\n", uuid);
+	ast_log(LOG_VERBOSE, "Get destination info. uuid[%s]\n", uuid);
 
 	// get specified destination
 	ast_asprintf(&sql, "select * from destination where uuid=\"%s\" and in_use=%d;", uuid, E_DL_USE_NO);
@@ -365,7 +365,7 @@ static int get_avail_cnt_app(struct ast_json* j_dest)
 		ret = DEF_DESTINATION_AVAIL_CNT_UNLIMITED;
 	}
 
-	ast_log(LOG_DEBUG, "Available application count. cnt[%d]\n", ret);
+	ast_log(LOG_VERBOSE, "Available application count. cnt[%d]\n", ret);
 
 	return ret;
 }
@@ -426,7 +426,7 @@ static int get_avail_cnt_app_queue(const char* name)
 	AST_JSON_UNREF(j_tmp);
 
 	if(loggedin < 10) {
-		ast_log(LOG_DEBUG, "Not many people logged in. Ignore perf calculate. loggenin[%d], avail[%d]\n", loggedin, avail);
+		ast_log(LOG_VERBOSE, "Not many people logged in. Ignore perf calculate. loggenin[%d], avail[%d]\n", loggedin, avail);
 		return avail;
 	}
 
