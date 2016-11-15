@@ -21,6 +21,7 @@ Contents:
    ami_action
    ami_event
    application
+   result
 
 
 Indices and tables
