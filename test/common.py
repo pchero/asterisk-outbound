@@ -39,10 +39,31 @@ def make_dict(lst):
     return ret
 
 
-def verify_items(res, args):
-    size = len(res)
+def verify_items(items, args):
+    if items == None or args == None:
+        return False
+    
+    items_dict = make_dict(items)
+    
+    for key, value in args.items():
+        if key not in items_dict:
+            print("The key is not in items. key[%s]" % (key))
+            return False
+        
+        if value == None:
+            continue
+        
+        if items_dict[key] != value:
+            print("The key and value is not match. key[%s], value[%s]" % (key, value))
+            return False
+    
+    return True
+
+
+def verify_items_(items, args):
+    size = len(items)
     for i in range(size):
-        res_dict = make_dict(res[i])
+        res_dict = make_dict(items[i])
         flg = True
         for key, value in args.items():
             if key not in res_dict:
@@ -106,7 +127,6 @@ class acli:
         ret = self.sendCmd("login", Username=self.username, Secret=self.password, Events="OFF")
         #print "Connect response: ", ret
         if 'Response: Success' in ret:
-            print 'Connected.'
             return True
         else:
             print "Connect failed!"

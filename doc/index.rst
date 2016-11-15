@@ -13,6 +13,7 @@ Contents:
    
    intro
    installation
+   configuration
    tutorial
    basic
    structure

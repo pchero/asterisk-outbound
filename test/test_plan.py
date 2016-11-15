@@ -8,248 +8,212 @@ import os
 import sys
 import uuid
 
-def plan_verify(**args):
-    ast = common.acli()
-    
-    ret = ast.conn()
-    if ret != True:
-        raise "Could not get plan info."
 
-    res = ast.sendCmd("OutPlanShow")
-    res_dict = common.make_dict(res)    
-    if res_dict["Response"] != "Success":
-        raise
+def get_plan_by_name(name):
+    '''
+    Get plan info by name
+    '''
+    ast = common.acli()
+    ast.conn()
+    
+    ast.sendCmd("OutPlanShow")
     res = ast.recvArr()
         
-    ret = common.verify_items(res, args)
+    size = len(res)
+    for i in range(size):
+        res_dict = common.make_dict(res[i])
+        
+        if name == res_dict["Name"]:
+            return res[i]
+            
+    return None
+    
+
+def get_plan(uuid_str):
+    '''
+    Get plan info corresponding uuid.
+    '''
+    
+    if uuid_str == None:
+        return None
+    
+    ast = common.acli()
+    ast.conn()
+    
+    res = ast.sendCmd("OutPlanShow", Uuid=uuid_str)
+    res_dict = common.make_dict(res)
+    if "Response" not in res_dict or res_dict["Response"] == "Error":
+        return None
+    
+    res = ast.recvArr()
+
+    return res[0]
+
+def delete_plan(uuid_str):
+    '''
+    Delete plan info corresponding uuid.
+    '''
+    
+    ast = common.acli()
+    ast.conn()
+    
+    res = ast.sendCmd("OutPlanDelete", Uuid=uuid_str)
+    res_dict = common.make_dict(res)
+    
+    if res_dict["Response"] != "Success":
+        raise Exception("Failed plan_delete_simple")
+    
+    return True
+
+def verify_plan(plan, **args):
+    '''
+    verify plan items.
+    if args is given, check the given item
+    '''
+    items = {}
+    items["Uuid"] = None 
+    items["Name"] = None
+    items["Detail"] = None
+    items["DialMode"] = None
+    items["DialTimeout"] = None
+    items["CallerId"] = None
+    items["DlEndHandle"] = None
+    items["RetryDelay"] = None
+    items["TrunkName"] = None
+    items["TechName"] = None
+    items["Variable"] = None
+    items["MaxRetryCnt1"] = None
+    items["MaxRetryCnt2"] = None
+    items["MaxRetryCnt3"] = None
+    items["MaxRetryCnt4"] = None
+    items["MaxRetryCnt5"] = None
+    items["MaxRetryCnt6"] = None
+    items["MaxRetryCnt7"] = None
+    items["MaxRetryCnt8"] = None
+    items["TmCreate"] = None
+    items["TmDelete"] = None
+    items["TmUpdate"] = None
+
+    # update given item
+    for key, value in args.items():
+        if key not in items:
+            print("The key is not in item. key[%s]" % key)
+            return False
+        items[key] = value
+    
+    ret = common.verify_items(plan, items)
     return ret
 
-def plan_create_simple():
+def test_plan_create_no_arg():
+    '''
+    test plan create with no options
+    '''
     ast = common.acli()
-    
-    ret = ast.conn()
-    if ret != True:
-        raise
+    ast.conn()
     
     res = ast.sendCmd("OutPlanCreate")
     res_dict = common.make_dict(res)    
     if res_dict["Response"] != "Success":
-        raise "Error!"
-    
-    return True
+        raise Exception("Failed test_plan_create_no_arg")
 
-def plan_create_name():
+    print("Finished test_plan_create_no_arg")
+    return
+
+def test_plan_create_name():
+    '''
+    test plan create with name option
+    '''
     ast = common.acli()
+    ast.conn()
     
-    ret = ast.conn()
-    if ret != True:
-        raise
-    
+    # create plan with random name
     name = uuid.uuid4().__str__()
     res = ast.sendCmd("OutPlanCreate", Name=name)
     res_dict = common.make_dict(res)
-    
     if res_dict["Response"] != "Success":
-        return False
+        raise Exception("Failed test_plan_create_name")
     
-    ret = plan_verify(Name=name)
+    # get plan info by name
+    res = get_plan_by_name(name)
+    if res == None:
+        raise Exception("Failed test_plan_create_name")
+    res_dict = common.make_dict(res)
+    uuid_str = res_dict["Uuid"]
+    
+    # verify the plan info
+    ret = verify_plan(res, Name=name)
     if ret != True:
-        raise
-    
-    return True
+        raise Exception("Failed test_plan_create_name")    
+        
+    # delete plan
+    delete_plan(uuid_str)
+        
+    # get plan info by uuid
+    res = get_plan(uuid_str)
+    if res != None:
+        raise Exception("Failed plan_create.")
 
-def check_plan_show_object():
+    print("Finished test_plan_create_name")
+    return;
+
+
+def test_plan_update_name():
+    '''
+    test plan create with name option
+    '''
     ast = common.acli()
+    ast.conn()
     
-    ret = ast.conn()
-    if ret != True:
-        raise
-    
-    name = uuid.uuid4()
+    # create plan with random name
+    name = uuid.uuid4().__str__()
     res = ast.sendCmd("OutPlanCreate", Name=name)
     res_dict = common.make_dict(res)
-    
     if res_dict["Response"] != "Success":
-        return False
+        raise Exception("Failed test_plan_update_name")
     
-    ret = plan_verify(
-        Uuid=None, 
-        Name=None,
-        Detail=None,
-        DialMode=None,
-        DialTimeout=None,
-        CallerId=None,
-        DlEndHandle=None,
-        RetryDelay=None,
-        TrunkName=None,
-        TechName=None,
-        Variable=None,
-        MaxRetryCnt1=None,
-        MaxRetryCnt2=None,
-        MaxRetryCnt3=None,
-        MaxRetryCnt4=None,
-        MaxRetryCnt5=None,
-        MaxRetryCnt6=None,
-        MaxRetryCnt7=None,
-        MaxRetryCnt8=None,
-        TmCreate=None,
-        TmDelete=None,
-        TmUpdate=None
-        )
+    # get plan info by name
+    res = get_plan_by_name(name)
+    if res == None:
+        raise Exception("Failed test_plan_update_name")
+    res_dict = common.make_dict(res)
+    uuid_org = res_dict["Uuid"]
+    
+    # verify the plan info
+    ret = verify_plan(res, Name=name)
     if ret != True:
-        return False
-    
-    return True
-
-
-
-def plan_create():
-    ret = plan_create_simple()
-    if ret != True:
-        raise "Could not pass the test"
-    
-    ret = plan_create_name()
-    if ret != True:
-        raise "Could not pass the test"
-    
-    ret = check_plan_show_object()
-    if ret != True:
-        raise "Could not pass the test."
-
-def main():
-    plan_create()
-    plan_show()
-    
-    
-    
-    ast = common.Ami()
-    ast.username = sys.argv[1]
-    ast.password = sys.argv[2]
-    if ast.conn() == False:
-        print("Could not connect.")
-        return 1
-    
-    # create plan
-    print("Create plan")
-    plan_name = uuid.uuid4().__str__()
-    ret = ast.sendCmd("OutPlanCreate", Name=plan_name, Detail="TestDetail")
-    if ret[0]["Response"] != "Success":
-        print("Couldn not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
-    for i in range(100):
-        ret = ast.recvEvt()
-        if ret["Event"] != "OutPlanCreate":
-            continue
-        if ret["Name"] != plan_name:
-            continue
-        break
-        
-    # item check
-    if "Uuid" not in ret \
-        or "Name" not in ret \
-        or "Detail" not in ret \
-        or "DialMode" not in ret \
-        or "DialTimeout" not in ret \
-        or "CallerId" not in ret \
-        or "AnswerHandle" not in ret \
-        or "DlEndHandle" not in ret \
-        or "RetryDelay" not in ret \
-        or "TrunkName" not in ret \
-        or "QueueName" not in ret \
-        or "AmdMode" not in ret \
-        or "MaxRetryCnt1" not in ret \
-        or "MaxRetryCnt2" not in ret \
-        or "MaxRetryCnt3" not in ret \
-        or "MaxRetryCnt4" not in ret \
-        or "MaxRetryCnt5" not in ret \
-        or "MaxRetryCnt6" not in ret \
-        or "MaxRetryCnt7" not in ret \
-        or "MaxRetryCnt8" not in ret \
-        or "TmCreate" not in ret \
-        or "TmDelete" not in ret \
-        or "TmUpdate" not in ret:
-        
-            print("Couldn not pass the test_plan. ret[%s]" % ret)
-            raise "test_plan"
-    if ret["Name"] != plan_name or ret["Detail"] != "TestDetail":
-        print("Couldn not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
-    plan_uuid = ret["Uuid"]
-    
-    # get plan
-    print("Get plan")
-    ret = ast.sendCmd("OutPlanShow", Uuid=plan_uuid)
-    flg = False
-    for i in range(len(ret)):
-        msg = ret[i]
-        if "Uuid" not in msg:
-            continue
-        if msg["Uuid"] == plan_uuid:
-            flg = True
-            break
-    if flg == False:        
-        print("Couldn not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
+        raise Exception("Failed test_plan_update_name")    
     
     # update plan
-    print("Update plan")
-    ret = ast.sendCmd("OutPlanUpdate", Uuid=plan_uuid, Detail="Change")
-    if ret[0]["Response"] != "Success":
-        print("Could not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
-    for i in range(100):
-        ret = ast.recvEvt()
-        if ret["Event"] == "OutPlanUpdate":
-            break
-    if ret["Uuid"] != plan_uuid or ret["Detail"] != "Change":
-        print("Could not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
+    name_new = uuid.uuid4().__str__()
+    res = ast.sendCmd("OutPlanUpdate", Uuid=uuid_org, Name=name_new)
+    res_update = common.make_dict(res)
+    if res_update["Response"] != "Success":
+        raise Exception("Failed test_plan_update_name")
+    
+    # get plan info
+    res = get_plan(uuid_org)
+    ret = verify_plan(res, Uuid=uuid_org, Name=name_new)
+    if ret != True:
+        raise Exception("Failed test_plan_update_name")
     
     # delete plan
-    print("Delete plan")
-    ret = ast.sendCmd("OutPlanDelete", Uuid=plan_uuid)
-    if ret[0]["Response"] != "Success":
-        print("Couldn not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
-    for i in range(100):
-        ret = ast.recvEvt()
-        if ret["Event"] == "OutPlanDelete":
-            break
-    if ret["Uuid"] != plan_uuid:
-        print("Couldn not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
+    delete_plan(res_dict["Uuid"])
     
-    # get plan
-    print("Get plan")
-    ret = ast.sendCmd("OutPlanShow", Uuid=plan_uuid)
-    flg = True
-    for i in range(len(ret)):
-        msg = ret[i]
-        if "Uuid" not in msg:
-            continue
-        if msg["Uuid"] == plan_uuid:
-            flg = False
-            break
-    if flg == False:        
-        print("Couldn not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
-    
-    print("Get plan all")
-    ret = ast.sendCmd("OutPlanShow")
-#     print ret
-    flg = True
-    for i in range(len(ret)):
-        msg = ret[i]
-        if "Uuid" not in msg:
-            continue
-        if msg["Uuid"] == plan_uuid:
-            flg = False
-            break
-    if flg == False:        
-        print("Couldn not pass the test_plan. ret[%s]" % ret)
-        raise "test_plan"
+    # get plan info by uuid
+    res = get_plan(uuid_org)
+    if res != None:
+        raise Exception("Failed test_plan_update_name.")
 
-    return 0
+    print("Finished test_plan_update_name")
+    return
+
+def main():
+    test_plan_create_no_arg()
+    test_plan_create_name()
+    test_plan_update_name()
+    
+    print("Finished plan test")
+    return
 
 if __name__ == '__main__':
     main()
