@@ -24,19 +24,35 @@ Syntax
    Plan: <value>
    Dlma: <value>
    Dest: <value>
+   ScMode: <value>
+   ScTimeStart: <value>
+   ScTimeEnd: <value>
+   ScDateStart: <value>
+   ScDateEnd: <value>
+   ScDateList: <value>
+   ScDateListExcept: <value>
+   ScDayList: <value>
    TmCreate: <value>
    TmDelete: <value>
    TmUpdate: <value>
 
 Parameters
 
-* ``Uuid``: Campaign uuid.
-* ``Name``: Campaign name.
-* ``Detail``: Campaign detail info.
-* ``Status``: Campaign status. See detail :ref:`campaign_status`.
-* ``Plan``: Registered plan uuid.
-* ``Dlma``: Registered dlma uuid.
-* ``Dest``: Registered destination uuid.
+* Uuid : Campaign uuid.
+* Name : Campaign name.
+* Detail : Campaign detail info.
+* Status : Campaign status. See detail :ref:`campaign_status`.
+* Plan : Registered plan uuid.
+* Dlma : Registered dlma uuid.
+* Dest : Registered destination uuid.
+* ScMode : Scheduling mode. See detail :ref:`scheduling_mode`.
+* ScTimeStart : Campaign scheduling start time. See detail :ref:`scheduling_time`.
+* ScTimeEnd : Campaign scheduling end time. See detail :ref:`scheduling_time`.
+* ScDateStart : Campaign scheduling start date. See detail :ref:`scheduling_date`.
+* ScDateEnd : Campaign scheduling end date. See detail :ref:`scheduling_date`.
+* ScDateList : Campaign schedling date list. See detail :ref:`scheduling_date_list`.
+* ScDateListExcept : Campaign scheduling except date list. See detail :ref:`scheduling_date_list`.
+* ScDayList : Campaign scheduling day list. See detail :ref:`scheduling_day_list`.
 
 Example
 -------
@@ -45,14 +61,22 @@ Example
 
    Event: OutCampaignCreate
    Privilege: message,all
-   Uuid: 02c4aebf-789c-46aa-817e-b7406416d211
-   Name: Sales campaign
-   Detail: test campaign
+   Uuid: 9b098077-e265-4653-8e7c-838ff4dcd268
+   Name: <unknown>
+   Detail: <unknown>
    Status: 0
-   Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
-   Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
-   Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
-   TmCreate: 2016-10-22T14:34:45.33929956Z
+   Plan: <unknown>
+   Dlma: <unknown>
+   Dest: <unknown>
+   ScMode: 0
+   ScTimeStart: <unknown>
+   ScTimeEnd: <unknown>
+   ScDateStart: <unknown>
+   ScDateEnd: <unknown>
+   ScDateList: <unknown>
+   ScDateListExcept: <unknown>
+   ScDayList: <unknown>
+   TmCreate: 2016-11-14T23:01:00.489425780Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
@@ -83,13 +107,13 @@ Syntax
 
 Parameters
 
-* ``Uuid``: Campaign uuid.
-* ``Name``: Campaign name.
-* ``Detail``: Campaign detail info.
-* ``Status``: Campaign status. See detail :ref:`campaign_status`.
-* ``Plan``: Registered plan uuid.
-* ``Dlma``: Registered dlma uuid.
-* ``Dest``: Registered destination uuid.
+* Uuid: Campaign uuid.
+* Name: Campaign name.
+* Detail: Campaign detail info.
+* Status: Campaign status. See detail :ref:`campaign_status`.
+* Plan: Registered plan uuid.
+* Dlma: Registered dlma uuid.
+* Dest: Registered destination uuid.
 
 Example
 -------
@@ -128,7 +152,7 @@ Syntax
 
 Parameters
 
-* ``Uuid``: Campaign uuid.
+* Uuid: Campaign uuid.
 
 Example
 -------

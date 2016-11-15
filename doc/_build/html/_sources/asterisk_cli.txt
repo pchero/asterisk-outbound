@@ -38,7 +38,7 @@ Example
 ::
 
    pluto*CLI> out show plans
-   Uuid  
+   Uuid                                 Name                 Detail               DialMode DialTimeout TrunkName  TechName  
    4ea35c4b-c2db-4a22-baef-443b5fadd677 sales_plan           simple sales plan           1       30000            sip/      
    
 out show plan <plan-uuid>

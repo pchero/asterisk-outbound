@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; asterisk-outbound 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="res-outbound-conf">
+<h2>res_outbound.conf<a class="headerlink" href="#res-outbound-conf" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>;
+; Configuration file for res_outbound
+;---------------------------------
+;
+; The res_outbound can managing outbound calls.
+;
+; See https://github.com/pchero/asterisk-outbound
+
+[general]
+
+; result type 1:json
+result_type = 1
+result_filename = /var/lib/asterisk/astout.result
+result_info_enable = 0
+
+; write history events to the result.
+; required set history_events_enable
+result_history_events_enable = 0
+
+; fast event time delay(us). Default 100000. (0.1 sec)
+event_time_fast = 100000
+
+; slow event time delay(us). Default 3000000. (3 sec)
+event_time_slow = 3000000
+
+; save ami events.
+; makes huge amount of memory usage.
+history_events_enable = 0
+
+
+[database]
+
+; database type. 1:sqlite3
+db_type = 1
+
+; database meta data
+db_sqlite3_data = /var/lib/asterisk/astout.sqlite3
+</pre></div>
+</div>
+</div>
+<div class="section" id="general">
+<h2>general<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="result-type">
+<h3>result_type<a class="headerlink" href="#result-type" title="Permalink to this headline">¶</a></h3>
+<p>Define result data type.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">result_type</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>1 : json type</li>
+</ul>
+</div>
+<div class="section" id="result-filename">
+<h3>result_filename<a class="headerlink" href="#result-filename" title="Permalink to this headline">¶</a></h3>
+<p>Define result file name.</p>
+<div class="highlight-python"><div class="highlight"><pre>result_filename = /var/lib/asterisk/astout.result
+</pre></div>
+</div>
+</div>
+<div class="section" id="result-info-enable">
+<h3>result_info_enable<a class="headerlink" href="#result-info-enable" title="Permalink to this headline">¶</a></h3>
+<p>Enable/Disable result info detail.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">result_info_enable</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="result-history-events-enable">
+<h3>result_history_events_enable<a class="headerlink" href="#result-history-events-enable" title="Permalink to this headline">¶</a></h3>
+<p>Write history events to the result. Required set history_events_enable</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>result_history_events_enable = 0</dd>
+</dl>
+</div>
+<div class="section" id="event-time-fast">
+<h3>event_time_fast<a class="headerlink" href="#event-time-fast" title="Permalink to this headline">¶</a></h3>
+<p>Fast event time delay(us). Default 100000. (0.1 sec)</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>event_time_fast = 100000</dd>
+</dl>
+</div>
+<div class="section" id="event-time-slow">
+<h3>event_time_slow<a class="headerlink" href="#event-time-slow" title="Permalink to this headline">¶</a></h3>
+<p>Slow event time delay(us). Default 3000000. (3 sec)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">event_time_slow</span> <span class="o">=</span> <span class="mi">3000000</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="history-events-enable">
+<h3>history_events_enable<a class="headerlink" href="#history-events-enable" title="Permalink to this headline">¶</a></h3>
+<p>Save ami events. Makes huge amount of memory usage.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">history_events_enable</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="database">
+<h2>database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="db-type">
+<h3>db_type<a class="headerlink" href="#db-type" title="Permalink to this headline">¶</a></h3>
+<p>database type. 1:sqlite3</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db_type</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="db-sqlite3-data">
+<h3>db_sqlite3_data<a class="headerlink" href="#db-sqlite3-data" title="Permalink to this headline">¶</a></h3>
+<p>Database meta data</p>
+<div class="highlight-python"><div class="highlight"><pre>db_sqlite3_data = /var/lib/asterisk/astout.sqlite3
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#res-outbound-conf">res_outbound.conf</a></li>
+<li><a class="reference internal" href="#general">general</a><ul>
+<li><a class="reference internal" href="#result-type">result_type</a></li>
+<li><a class="reference internal" href="#result-filename">result_filename</a></li>
+<li><a class="reference internal" href="#result-info-enable">result_info_enable</a></li>
+<li><a class="reference internal" href="#result-history-events-enable">result_history_events_enable</a></li>
+<li><a class="reference internal" href="#event-time-fast">event_time_fast</a></li>
+<li><a class="reference internal" href="#event-time-slow">event_time_slow</a></li>
+<li><a class="reference internal" href="#history-events-enable">history_events_enable</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#database">database</a><ul>
+<li><a class="reference internal" href="#db-type">db_type</a></li>
+<li><a class="reference internal" href="#db-sqlite3-data">db_sqlite3_data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="next chapter">Tutorial</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, pchero.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

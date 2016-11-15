@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction &mdash; asterisk-outbound 0.0.1 documentation</title>
+    <title>Application &mdash; asterisk-outbound 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
-    <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="Welcome to asterisk-outbound’s documentation!" href="index.html" /> 
+    <link rel="next" title="Result" href="result.html" />
+    <link rel="prev" title="AMI Event" href="ami_event.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="result.html" title="Result"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to asterisk-outbound’s documentation!"
+          <a href="ami_event.html" title="AMI Event"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -49,14 +49,47 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>The asterisk-outbound is the outbound call manage module for the asterisk.
-This module makes easy to handle/manage the outbound calls.</p>
-<p>The asterisk-outbound support strategical-automatic dialing.</p>
-<div class="figure align-center">
-<img alt="_images/intro-outbound.png" src="_images/intro-outbound.png" />
-<p class="caption">The outbound dialing</p>
+  <div class="section" id="application">
+<h1>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="outdlcreate">
+<h2>OutDlCreate<a class="headerlink" href="#outdlcreate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="syntax">
+<h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>OutDlCreate(dlma_uuid,number1[:number2[...]][,name[,detail[,email[,ukey[,var1=val1[:var2=val2]]]]]])
+</pre></div>
+</div>
+<ul class="simple">
+<li>dlma_uuid : dlma uuid</li>
+<li>number : number</li>
+<li>name : name</li>
+<li>detail : dl detail info</li>
+<li>email : dl email info</li>
+<li>ukey : unique key for dl</li>
+<li>var : variables</li>
+</ul>
+</div>
+<div class="section" id="channel-variables">
+<h3>Channel variables<a class="headerlink" href="#channel-variables" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>OUTSTATUS : Result of application execution.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre>SUCCESS : Execute success.
+FAILURE : Execute failed.
+</pre></div>
+</div>
+<ul class="simple">
+<li>OUTDETAIL : Detail info of OUTSTATUS. If succeess, it sets dl&#8217;s uuid.</li>
+</ul>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>exten =&gt; s,n,OutDlCreate(25768502-ef6f-418c-b07b-d2bd1cf31b7e, 301: 302: 303: 304: 305: 306: 307 : 308, test dl client name, test dl client detail, test dl clie@test.com, test dl ukey, var1=val1:var2=val2 : var3 = var3 : var4 = var 4)
+
+OUTSTATUS=SUCCESS
+OUTDETAIL=10d3d96d-eecb-45c4-9526-0b90ad613119
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -66,15 +99,28 @@ This module makes easy to handle/manage the outbound calls.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Application</a><ul>
+<li><a class="reference internal" href="#outdlcreate">OutDlCreate</a><ul>
+<li><a class="reference internal" href="#syntax">Syntax</a></li>
+<li><a class="reference internal" href="#channel-variables">Channel variables</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to asterisk-outbound&#8217;s documentation!</a></p>
+  <p class="topless"><a href="ami_event.html"
+                        title="previous chapter">AMI Event</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="installation.html"
-                        title="next chapter">Installation</a></p>
+  <p class="topless"><a href="result.html"
+                        title="next chapter">Result</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/intro.txt"
+    <li><a href="_sources/application.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -101,10 +147,10 @@ This module makes easy to handle/manage the outbound calls.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="result.html" title="Result"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to asterisk-outbound’s documentation!"
+          <a href="ami_event.html" title="AMI Event"
              >previous</a> |</li>
         <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>

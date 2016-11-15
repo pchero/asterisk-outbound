@@ -24,6 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Application" href="application.html" />
     <link rel="prev" title="AMI Action" href="ami_action.html" /> 
   </head>
   <body>
@@ -33,6 +34,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="application.html" title="Application"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="ami_action.html" title="AMI Action"
              accesskey="P">previous</a> |</li>
@@ -63,6 +67,14 @@ Status: &lt;value&gt;
 Plan: &lt;value&gt;
 Dlma: &lt;value&gt;
 Dest: &lt;value&gt;
+ScMode: &lt;value&gt;
+ScTimeStart: &lt;value&gt;
+ScTimeEnd: &lt;value&gt;
+ScDateStart: &lt;value&gt;
+ScDateEnd: &lt;value&gt;
+ScDateList: &lt;value&gt;
+ScDateListExcept: &lt;value&gt;
+ScDayList: &lt;value&gt;
 TmCreate: &lt;value&gt;
 TmDelete: &lt;value&gt;
 TmUpdate: &lt;value&gt;
@@ -70,27 +82,43 @@ TmUpdate: &lt;value&gt;
 </div>
 <p>Parameters</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
-<li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
-<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
-<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status. See detail <a class="reference internal" href="structure.html#id4"><em>Campaign status</em></a>.</li>
-<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
-<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
-<li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Registered destination uuid.</li>
+<li>Uuid : Campaign uuid.</li>
+<li>Name : Campaign name.</li>
+<li>Detail : Campaign detail info.</li>
+<li>Status : Campaign status. See detail <a class="reference internal" href="structure.html#id4"><em>Campaign status</em></a>.</li>
+<li>Plan : Registered plan uuid.</li>
+<li>Dlma : Registered dlma uuid.</li>
+<li>Dest : Registered destination uuid.</li>
+<li>ScMode : Scheduling mode. See detail <a class="reference internal" href="structure.html#scheduling-mode"><em>Scheduling mode</em></a>.</li>
+<li>ScTimeStart : Campaign scheduling start time. See detail <a class="reference internal" href="structure.html#scheduling-time"><em>Scheduling time</em></a>.</li>
+<li>ScTimeEnd : Campaign scheduling end time. See detail <a class="reference internal" href="structure.html#scheduling-time"><em>Scheduling time</em></a>.</li>
+<li>ScDateStart : Campaign scheduling start date. See detail <a class="reference internal" href="structure.html#scheduling-date"><em>Scheduling date</em></a>.</li>
+<li>ScDateEnd : Campaign scheduling end date. See detail <a class="reference internal" href="structure.html#scheduling-date"><em>Scheduling date</em></a>.</li>
+<li>ScDateList : Campaign schedling date list. See detail <a class="reference internal" href="structure.html#scheduling-date-list"><em>Scheduling date list</em></a>.</li>
+<li>ScDateListExcept : Campaign scheduling except date list. See detail <a class="reference internal" href="structure.html#scheduling-date-list"><em>Scheduling date list</em></a>.</li>
+<li>ScDayList : Campaign scheduling day list. See detail <a class="reference internal" href="structure.html#scheduling-day-list"><em>Scheduling day list</em></a>.</li>
 </ul>
 </div>
 <div class="section" id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Event: OutCampaignCreate
 Privilege: message,all
-Uuid: 02c4aebf-789c-46aa-817e-b7406416d211
-Name: Sales campaign
-Detail: test campaign
+Uuid: 9b098077-e265-4653-8e7c-838ff4dcd268
+Name: &lt;unknown&gt;
+Detail: &lt;unknown&gt;
 Status: 0
-Plan: 4ea35c4b-c2db-4a22-baef-443b5fadd677
-Dlma: acc994d2-04d9-4a53-bfcf-50c96ff924bc
-Dest: 4e6ed9e6-5dd2-409a-b6fe-a07ca11b1e94
-TmCreate: 2016-10-22T14:34:45.33929956Z
+Plan: &lt;unknown&gt;
+Dlma: &lt;unknown&gt;
+Dest: &lt;unknown&gt;
+ScMode: 0
+ScTimeStart: &lt;unknown&gt;
+ScTimeEnd: &lt;unknown&gt;
+ScDateStart: &lt;unknown&gt;
+ScDateEnd: &lt;unknown&gt;
+ScDateList: &lt;unknown&gt;
+ScDateListExcept: &lt;unknown&gt;
+ScDayList: &lt;unknown&gt;
+TmCreate: 2016-11-14T23:01:00.489425780Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -120,13 +148,13 @@ TmUpdate: &lt;value&gt;
 </div>
 <p>Parameters</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
-<li><tt class="docutils literal"><span class="pre">Name</span></tt>: Campaign name.</li>
-<li><tt class="docutils literal"><span class="pre">Detail</span></tt>: Campaign detail info.</li>
-<li><tt class="docutils literal"><span class="pre">Status</span></tt>: Campaign status. See detail <a class="reference internal" href="structure.html#id4"><em>Campaign status</em></a>.</li>
-<li><tt class="docutils literal"><span class="pre">Plan</span></tt>: Registered plan uuid.</li>
-<li><tt class="docutils literal"><span class="pre">Dlma</span></tt>: Registered dlma uuid.</li>
-<li><tt class="docutils literal"><span class="pre">Dest</span></tt>: Registered destination uuid.</li>
+<li>Uuid: Campaign uuid.</li>
+<li>Name: Campaign name.</li>
+<li>Detail: Campaign detail info.</li>
+<li>Status: Campaign status. See detail <a class="reference internal" href="structure.html#id4"><em>Campaign status</em></a>.</li>
+<li>Plan: Registered plan uuid.</li>
+<li>Dlma: Registered dlma uuid.</li>
+<li>Dest: Registered destination uuid.</li>
 </ul>
 </div>
 <div class="section" id="id3">
@@ -162,7 +190,7 @@ Uuid: &lt;value&gt;
 </div>
 <p>Parameters</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">Uuid</span></tt>: Campaign uuid.</li>
+<li>Uuid: Campaign uuid.</li>
 </ul>
 </div>
 <div class="section" id="id6">
@@ -752,6 +780,9 @@ Uuid: 0db3d746-5185-42b9-9c5e-6bc95617ee00
   <h4>Previous topic</h4>
   <p class="topless"><a href="ami_action.html"
                         title="previous chapter">AMI Action</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="application.html"
+                        title="next chapter">Application</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/ami_event.txt"
@@ -780,6 +811,9 @@ Uuid: 0db3d746-5185-42b9-9c5e-6bc95617ee00
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="application.html" title="Application"
+             >next</a> |</li>
         <li class="right" >
           <a href="ami_action.html" title="AMI Action"
              >previous</a> |</li>

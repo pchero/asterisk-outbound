@@ -7,18 +7,6 @@ Structure
 Basic structures
 ================
 
-Dial mode
----------
-
-.. _dial_mode:
-.. table:: Dial mode
-
-   ==== ==================
-   Mode Detail
-   ==== ==================
-   0    None(No dial mode)
-   1    Predictive
-   ==== ==================
    
 Dial list end handling
 ----------------------
@@ -47,23 +35,7 @@ Tech name
    ==== ==================
 
 
-Campaign status
----------------
 
-.. _campaign_status:
-.. table:: Campaign status
-
-   ======   =================
-   Status   Detail
-   ======   =================
-   0        Stop
-   1        Start
-   2        Pause
-   10       Stopping
-   11       Starting
-   12       Pausing
-   30       Stopping forcedly
-   ======   =================
    
 
 Dial status
@@ -208,10 +180,43 @@ Destination type
    1    Application
    ==== ==================
 
+Application availability
+------------------------
+
+.. _application_availability:
+.. table:: Application availability
+
+   =========== =========================
+   Application Detail
+   =========== =========================
+   queue       QueueSummary's Available.
+   park        Unlimited.
+   others      Unlimited.
+   =========== =========================
+
 
 
 Campaign
 ========
+
+.. _campaign_status:
+
+Campaign status
+---------------
+
+.. table:: Campaign status
+
+   ======   =================
+   Status   Detail
+   ======   =================
+   0        Stop
+   1        Start
+   2        Pause
+   10       Stopping
+   11       Starting
+   12       Pausing
+   30       Stopping forcedly
+   ======   =================
 
 .. _scheduling:
 
@@ -309,4 +314,21 @@ Example
 ::
 
    0, 1, 3, 4
+
+
+Plan
+====
+
+Dial mode
+---------
+
+.. _dial_mode:
+.. table:: Dial mode
+
+   ==== ==================
+   Mode Detail
+   ==== ==================
+   0    None(No dial mode)
+   1    Predictive
+   ==== ==================
 

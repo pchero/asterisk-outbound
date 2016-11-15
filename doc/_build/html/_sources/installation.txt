@@ -22,6 +22,3 @@ Install
    $ sudo make install
    $ sudo cp conf/res_outbound.conf /etc/asterisk 
 
-Configuration
-=============
-

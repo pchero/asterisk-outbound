@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="asterisk-outbound 0.0.1 documentation" href="index.html" />
     <link rel="next" title="Basic" href="basic.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <link rel="prev" title="Settings" href="configuration.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="basic.html" title="Basic"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="configuration.html" title="Settings"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -97,6 +97,20 @@ host=dynamic
 </pre></div>
 </div>
 </div>
+<div class="section" id="settings">
+<h3>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>pluto*CLI&gt; sip show peers
+Name/username             Host                                    Dyn Forcerport Comedia    ACL Port     Status      Description
+300/300                   192.168.118.100                          D  Auto (No)  No             5060     Unmonitored
+301/301                   192.168.118.100                          D  Auto (No)  No             5060     Unmonitored
+302/302                   192.168.118.100                          D  Auto (No)  No             5060     Unmonitored
+agent-01/agent-01         192.168.118.100                          D  Auto (No)  No             5060     Unmonitored
+agent-02/agent-02         192.168.118.100                          D  Auto (No)  No             5060     Unmonitored
+agent-03/agent-03         192.168.118.100                          D  Auto (No)  No             5060     Unmonitored
+6  sip peers [Monitored: 0 online, 0 offline Unmonitored: 6 online, 0 offline]
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="basic-tutorial">
 <h2>Basic tutorial<a class="headerlink" href="#basic-tutorial" title="Permalink to this headline">¶</a></h2>
@@ -114,7 +128,7 @@ Message: Plan created successfully
 
 Event: OutPlanCreate
 Privilege: message,all
-Uuid: 687763ed-c977-4e5b-a30d-1221941a4d21
+Uuid: f9866959-9cf5-49fb-aee0-878bfc7bd71f
 Name: sales_plan
 Detail: simple sales plan
 DialMode: 1
@@ -124,6 +138,7 @@ DlEndHandle: 1
 RetryDelay: 60
 TrunkName: &lt;unknown&gt;
 TechName: sip/
+Variable: &lt;unknown&gt;
 MaxRetryCnt1: 5
 MaxRetryCnt2: 5
 MaxRetryCnt3: 5
@@ -132,7 +147,7 @@ MaxRetryCnt5: 5
 MaxRetryCnt6: 5
 MaxRetryCnt7: 5
 MaxRetryCnt8: 5
-TmCreate: 2016-10-24T21:36:03.702384603Z
+TmCreate: 2016-11-15T02:10:52.930031700Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -149,11 +164,12 @@ Message: Dlma created successfully
 
 Event: OutDlmaCreate
 Privilege: message,all
-Uuid: a6a29e7a-49c4-4339-92ff-543a121f348f
+Uuid: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
 Name: DialListMaster_Sales
 Detail: Test Dlma description
-DlTable: a6a29e7a_49c4_4339_92ff_543a121f348f
-TmCreate: 2016-10-24T21:37:39.972064103Z
+DlTable: 5d56b51d_dc4d_4ec9_9e82_88e8dc3737c1
+Variable: &lt;unknown&gt;
+TmCreate: 2016-11-15T02:11:22.128567345Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -172,7 +188,7 @@ Message: Destination created successfully
 
 Event: OutDestinationCreate
 Privilege: message,all
-Uuid: ef355147-48bf-4170-8f88-f49b00f3ab37
+Uuid: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
 Name: destination test
 Detail: test destination
 Type: 1
@@ -182,7 +198,7 @@ Priority: &lt;unknown&gt;
 Variable: &lt;unknown&gt;
 Application: park
 Data: &lt;unknown&gt;
-TmCreate: 2016-10-24T21:38:35.700905321Z
+TmCreate: 2016-11-15T02:11:43.506539333Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -191,7 +207,7 @@ TmUpdate: &lt;unknown&gt;
 <div class="section" id="create-dial-list">
 <h3>Create dial list<a class="headerlink" href="#create-dial-list" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
-DlmaUuid: a6a29e7a-49c4-4339-92ff-543a121f348f
+DlmaUuid: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
 Name: client 01
 Detail: Dial to client 01
 Number1: 300
@@ -206,23 +222,31 @@ Message: Dl list created successfully
 <div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
 Name: Sales campaign
 Detail: test campaign
-Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
-Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
-Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
 
 Response: Success
 Message: Campaign created successfully
 
 Event: OutCampaignCreate
 Privilege: message,all
-Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
 Name: Sales campaign
 Detail: test campaign
 Status: 0
-Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
-Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
-Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
-TmCreate: 2016-10-24T21:41:24.939663006Z
+Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+ScMode: 0
+ScTimeStart: &lt;unknown&gt;
+ScTimeEnd: &lt;unknown&gt;
+ScDateStart: &lt;unknown&gt;
+ScDateEnd: &lt;unknown&gt;
+ScDateList: &lt;unknown&gt;
+ScDateListExcept: &lt;unknown&gt;
+ScDayList: &lt;unknown&gt;
+TmCreate: 2016-11-15T02:13:09.876226960Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -231,7 +255,7 @@ TmUpdate: &lt;unknown&gt;
 <div class="section" id="update-campaign-status-to-start">
 <h3>Update Campaign status to start<a class="headerlink" href="#update-campaign-status-to-start" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignUpdate
-Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
 Status: 1
 
 Response: Success
@@ -239,16 +263,74 @@ Message: Campaign updated successfully
 
 Event: OutCampaignUpdate
 Privilege: message,all
-Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
+Name: Sales campaign
+Detail: test campaign
+Status: 11
+Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+ScMode: 0
+ScTimeStart: &lt;unknown&gt;
+ScTimeEnd: &lt;unknown&gt;
+ScDateStart: &lt;unknown&gt;
+ScDateEnd: &lt;unknown&gt;
+ScDateList: &lt;unknown&gt;
+ScDateListExcept: &lt;unknown&gt;
+ScDayList: &lt;unknown&gt;
+TmCreate: 2016-11-15T02:13:09.876226960Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-11-15T03:00:10.125931679Z
+
+Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
 Name: Sales campaign
 Detail: test campaign
 Status: 1
-Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
-Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
-Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
-TmCreate: 2016-10-24T21:41:24.939663006Z
+Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+ScMode: 0
+ScTimeStart: &lt;unknown&gt;
+ScTimeEnd: &lt;unknown&gt;
+ScDateStart: &lt;unknown&gt;
+ScDateEnd: &lt;unknown&gt;
+ScDateList: &lt;unknown&gt;
+ScDateListExcept: &lt;unknown&gt;
+ScDayList: &lt;unknown&gt;
+TmCreate: 2016-11-15T02:13:09.876226960Z
 TmDelete: &lt;unknown&gt;
-TmUpdate: 2016-10-24T21:42:38.66081477Z
+TmUpdate: 2016-11-15T03:00:12.181524802Z
+
+
+Event: OutDialingCreate
+Privilege: message,all
+Uuid: d070a649-a8e0-43f1-9cf6-671cb4046016
+Status: 0
+CampUuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
+PlanUuid: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+DlmaUuid: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+DestUuid: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+DlListUuid: 8e02be1f-cf5e-424e-8d00-001b2f9935aa
+DialIndex: 1
+DialAddr: 300
+DialChannel: sip/300
+DialTryCnt: 1
+DialTimeout: 30000
+DialType: 1
+DialExten: &lt;unknown&gt;
+DialContext: &lt;unknown&gt;
+DialApplication: park
+DialData:
+Variable: &lt;unknown&gt;
+ChannelName: &lt;unknown&gt;
+ResDial: 0
+ResHangup: 0
+ResHangupDetail: &lt;unknown&gt;
+TmCreate: 2016-11-15T03:00:12.580796983Z
+TmUpdate: &lt;unknown&gt;
+TmDelete: &lt;unknown&gt;
 </pre></div>
 </div>
 </div>
@@ -294,7 +376,7 @@ Message: Plan created successfully
 
 Event: OutPlanCreate
 Privilege: message,all
-Uuid: 5acea376-195a-4519-b68f-58e9ceaadc68
+Uuid: 947da8c6-88a1-4da2-a804-e4570e92fba5
 Name: queue distribute plan
 Detail: simple queue distbute plan
 DialMode: 1
@@ -304,6 +386,7 @@ DlEndHandle: 1
 RetryDelay: 60
 TrunkName: &lt;unknown&gt;
 TechName: sip/
+Variable: &lt;unknown&gt;
 MaxRetryCnt1: 5
 MaxRetryCnt2: 5
 MaxRetryCnt3: 5
@@ -312,7 +395,7 @@ MaxRetryCnt5: 5
 MaxRetryCnt6: 5
 MaxRetryCnt7: 5
 MaxRetryCnt8: 5
-TmCreate: 2016-10-24T22:46:14.893825038Z
+TmCreate: 2016-11-15T03:16:23.265536071Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -332,7 +415,7 @@ Message: Destination created successfully
 
 Event: OutDestinationCreate
 Privilege: message,all
-Uuid: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+Uuid: 45122654-5633-4af0-a739-e32eddfbd2ae
 Name: destination test
 Detail: test destination
 Type: 1
@@ -342,7 +425,7 @@ Priority: &lt;unknown&gt;
 Variable: &lt;unknown&gt;
 Application: queue
 Data: sales_1
-TmCreate: 2016-10-24T22:48:11.604966289Z
+TmCreate: 2016-11-15T03:17:11.997148863Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
@@ -360,18 +443,19 @@ Message: Dlma created successfully
 
 Event: OutDlmaCreate
 Privilege: message,all
-Uuid: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+Uuid: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
 Name: DialListMaster queue distribute
 Detail: Test Dlma description
-DlTable: 8f1cda4d_1a95_4cbc_9865_fb604ce3f70a
-TmCreate: 2016-10-24T22:47:00.685610240Z
+DlTable: bd62639a_3cbb_4fb5_9a2b_e5cdf0c336d0
+Variable: &lt;unknown&gt;
+TmCreate: 2016-11-15T03:17:46.927966757Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 <p>Create dial list(dl)</p>
 <div class="highlight-python"><div class="highlight"><pre>Action: OutDlListCreate
-DlmaUuid: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
+DlmaUuid: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
 Name: client 01
 Detail: Dial to client 01
 Number1: 300
@@ -387,30 +471,38 @@ Message: Dl list created successfully
 <div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
 Name: Sales campaign
 Detail: test campaign
-Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
-Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
-Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
+Plan: 947da8c6-88a1-4da2-a804-e4570e92fba5
+Dlma: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
+Dest: 45122654-5633-4af0-a739-e32eddfbd2ae
 
 Response: Success
 Message: Campaign created successfully
 
 Event: OutCampaignCreate
 Privilege: message,all
-Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+Uuid: 665a54d8-f672-48bd-8f05-1163e6b4dc7f
 Name: Sales campaign
 Detail: test campaign
 Status: 0
-Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
-Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
-Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
-TmCreate: 2016-10-24T22:49:45.907295315Z
+Plan: 947da8c6-88a1-4da2-a804-e4570e92fba5
+Dlma: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
+Dest: 45122654-5633-4af0-a739-e32eddfbd2ae
+ScMode: 0
+ScTimeStart: &lt;unknown&gt;
+ScTimeEnd: &lt;unknown&gt;
+ScDateStart: &lt;unknown&gt;
+ScDateEnd: &lt;unknown&gt;
+ScDateList: &lt;unknown&gt;
+ScDateListExcept: &lt;unknown&gt;
+ScDayList: &lt;unknown&gt;
+TmCreate: 2016-11-15T03:20:00.77987326Z
 TmDelete: &lt;unknown&gt;
 TmUpdate: &lt;unknown&gt;
 </pre></div>
 </div>
 <p>Update campaign status.</p>
 <div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignUpdate
-Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+Uuid: 665a54d8-f672-48bd-8f05-1163e6b4dc7f
 Status: 1
 
 Response: Success
@@ -418,16 +510,46 @@ Message: Campaign updated successfully
 
 Event: OutCampaignUpdate
 Privilege: message,all
-Uuid: ea289ed8-92f3-430c-b00c-b5254257282b
+Uuid: 665a54d8-f672-48bd-8f05-1163e6b4dc7f
+Name: Sales campaign
+Detail: test campaign
+Status: 11
+Plan: 947da8c6-88a1-4da2-a804-e4570e92fba5
+Dlma: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
+Dest: 45122654-5633-4af0-a739-e32eddfbd2ae
+ScMode: 0
+ScTimeStart: &lt;unknown&gt;
+ScTimeEnd: &lt;unknown&gt;
+ScDateStart: &lt;unknown&gt;
+ScDateEnd: &lt;unknown&gt;
+ScDateList: &lt;unknown&gt;
+ScDateListExcept: &lt;unknown&gt;
+ScDayList: &lt;unknown&gt;
+TmCreate: 2016-11-15T03:20:00.77987326Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-11-15T03:20:47.283063453Z
+
+
+Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: 665a54d8-f672-48bd-8f05-1163e6b4dc7f
 Name: Sales campaign
 Detail: test campaign
 Status: 1
-Plan: 5acea376-195a-4519-b68f-58e9ceaadc68
-Dlma: 8f1cda4d-1a95-4cbc-9865-fb604ce3f70a
-Dest: 1a88f58d-3353-4a55-83be-1d6ab58b2bfc
-TmCreate: 2016-10-24T22:49:45.907295315Z
+Plan: 947da8c6-88a1-4da2-a804-e4570e92fba5
+Dlma: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
+Dest: 45122654-5633-4af0-a739-e32eddfbd2ae
+ScMode: 0
+ScTimeStart: &lt;unknown&gt;
+ScTimeEnd: &lt;unknown&gt;
+ScDateStart: &lt;unknown&gt;
+ScDateEnd: &lt;unknown&gt;
+ScDateList: &lt;unknown&gt;
+ScDateListExcept: &lt;unknown&gt;
+ScDayList: &lt;unknown&gt;
+TmCreate: 2016-11-15T03:20:00.77987326Z
 TmDelete: &lt;unknown&gt;
-TmUpdate: 2016-10-24T22:52:16.250101358Z
+TmUpdate: 2016-11-15T03:20:48.181543776Z
 </pre></div>
 </div>
 </div>
@@ -436,147 +558,35 @@ TmUpdate: 2016-10-24T22:52:16.250101358Z
 <div class="highlight-python"><div class="highlight"><pre>tail -n 1 /var/lib/asterisk/astout.result
 
 {
-   &quot;dialing_uuid&quot;: &quot;a624ecec-e3a8-4e95-9538-abed6e2271ab&quot;,
-   &quot;camp_uuid&quot;: &quot;ea289ed8-92f3-430c-b00c-b5254257282b&quot;,
-   &quot;plan_uuid&quot;: &quot;5acea376-195a-4519-b68f-58e9ceaadc68&quot;,
-   &quot;tm_hangup&quot;: &quot;2016-10-24T22:51:32.482367256Z&quot;,
-   &quot;dlma_uuid&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
-   &quot;channel_name&quot;: &quot;SIP/300-00000014&quot;,
-   &quot;tm_dial_begin&quot;: &quot;2016-10-24T22:51:27.734721762Z&quot;,
-   &quot;info_camp&quot;: {
-      &quot;uuid&quot;: &quot;ea289ed8-92f3-430c-b00c-b5254257282b&quot;,
-      &quot;plan&quot;: &quot;5acea376-195a-4519-b68f-58e9ceaadc68&quot;,
-      &quot;dlma&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
-      &quot;detail&quot;: &quot;test campaign&quot;,
-      &quot;name&quot;: &quot;Sales campaign&quot;,
-      &quot;status&quot;: 1,
-      &quot;in_use&quot;: 1,
-      &quot;next_campaign&quot;: null,
-      &quot;dest&quot;: &quot;1a88f58d-3353-4a55-83be-1d6ab58b2bfc&quot;,
-      &quot;tm_create&quot;: &quot;2016-10-24T22:49:45.907295315Z&quot;,
-      &quot;tm_delete&quot;: null,
-      &quot;tm_update&quot;: &quot;2016-10-24T22:50:10.706866142Z&quot;
-   },
-   &quot;dest_uuid&quot;: &quot;1a88f58d-3353-4a55-83be-1d6ab58b2bfc&quot;,
-   &quot;res_hangup_detail&quot;: &quot;Normal Clearing&quot;,
-   &quot;dial_addr&quot;: &quot;300&quot;,
-   &quot;dl_list_uuid&quot;: &quot;8e0d1ef2-faf0-42d8-a70a-b494cae7f90d&quot;,
-   &quot;info_plan&quot;: {
-      &quot;caller_id&quot;: null,
-      &quot;uuid&quot;: &quot;5acea376-195a-4519-b68f-58e9ceaadc68&quot;,
-      &quot;trunk_name&quot;: null,
-      &quot;dl_end_handle&quot;: 1,
-      &quot;detail&quot;: &quot;simple queue distbute plan&quot;,
-      &quot;name&quot;: &quot;queue distribute plan&quot;,
-      &quot;max_retry_cnt_2&quot;: 5,
-      &quot;max_retry_cnt_5&quot;: 5,
-      &quot;uui_field&quot;: null,
-      &quot;tm_update&quot;: null,
-      &quot;service_level&quot;: 0,
-      &quot;in_use&quot;: 1,
-      &quot;dial_mode&quot;: 1,
-      &quot;retry_delay&quot;: 60,
-      &quot;max_retry_cnt_6&quot;: 5,
-      &quot;dial_timeout&quot;: 30000,
-      &quot;tech_name&quot;: &quot;sip/&quot;,
-      &quot;max_retry_cnt_1&quot;: 5,
-      &quot;max_retry_cnt_3&quot;: 5,
-      &quot;max_retry_cnt_4&quot;: 5,
-      &quot;max_retry_cnt_7&quot;: 5,
-      &quot;max_retry_cnt_8&quot;: 5,
-      &quot;tm_create&quot;: &quot;2016-10-24T22:46:14.893825038Z&quot;,
-      &quot;tm_delete&quot;: null
-   },
-   &quot;info_dlma&quot;: {
-      &quot;uuid&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
-      &quot;detail&quot;: &quot;Test Dlma description&quot;,
-      &quot;name&quot;: &quot;DialListMaster queue distribute&quot;,
-      &quot;dl_table&quot;: &quot;8f1cda4d_1a95_4cbc_9865_fb604ce3f70a&quot;,
-      &quot;tm_update&quot;: null,
-      &quot;in_use&quot;: 1,
-      &quot;tm_create&quot;: &quot;2016-10-24T22:47:00.685610240Z&quot;,
-      &quot;tm_delete&quot;: null
-   },
-   &quot;info_dest&quot;: {
-      &quot;uuid&quot;: &quot;1a88f58d-3353-4a55-83be-1d6ab58b2bfc&quot;,
-      &quot;name&quot;: &quot;destination test&quot;,
-      &quot;detail&quot;: &quot;test destination&quot;,
-      &quot;in_use&quot;: 1,
-      &quot;type&quot;: 1,
-      &quot;exten&quot;: null,
-      &quot;context&quot;: null,
-      &quot;tm_create&quot;: &quot;2016-10-24T22:48:11.604966289Z&quot;,
-      &quot;application&quot;: &quot;queue&quot;,
-      &quot;priority&quot;: null,
-      &quot;variables&quot;: null,
-      &quot;tm_update&quot;: null,
-      &quot;data&quot;: &quot;sales_1&quot;,
-      &quot;tm_delete&quot;: null
-   },
-   &quot;dial_trycnt&quot;: 1,
-   &quot;dial_channel&quot;: &quot;sip/300&quot;,
-   &quot;info_dl_list&quot;: {
-      &quot;number_4&quot;: null,
-      &quot;number_8&quot;: null,
-      &quot;uuid&quot;: &quot;8e0d1ef2-faf0-42d8-a70a-b494cae7f90d&quot;,
-      &quot;number_3&quot;: null,
-      &quot;ukey&quot;: null,
-      &quot;tm_update&quot;: null,
-      &quot;dlma_uuid&quot;: &quot;8f1cda4d-1a95-4cbc-9865-fb604ce3f70a&quot;,
-      &quot;in_use&quot;: 1,
-      &quot;tm_last_dial&quot;: null,
-      &quot;detail&quot;: &quot;Dial to client 01&quot;,
-      &quot;name&quot;: &quot;client 01&quot;,
-      &quot;status&quot;: 0,
-      &quot;dialing_camp_uuid&quot;: null,
-      &quot;resv_target&quot;: null,
-      &quot;number_6&quot;: null,
-      &quot;udata&quot;: null,
-      &quot;res_hangup_detail&quot;: null,
-      &quot;dialing_uuid&quot;: null,
-      &quot;number_2&quot;: null,
-      &quot;trycnt_4&quot;: 0,
-      &quot;res_dial_detail&quot;: null,
-      &quot;dialing_plan_uuid&quot;: null,
-      &quot;trycnt_3&quot;: 0,
-      &quot;number_1&quot;: &quot;300&quot;,
-      &quot;number_5&quot;: null,
-      &quot;trycnt_2&quot;: 0,
-      &quot;number_7&quot;: null,
-      &quot;email&quot;: null,
-      &quot;trycnt_1&quot;: 0,
-      &quot;trycnt_5&quot;: 0,
-      &quot;trycnt_6&quot;: 0,
-      &quot;trycnt_7&quot;: 0,
-      &quot;trycnt_8&quot;: 0,
-      &quot;res_dial&quot;: 0,
-      &quot;res_hangup&quot;: 0,
-      &quot;tm_create&quot;: &quot;2016-10-24T22:48:43.572379619Z&quot;,
-      &quot;tm_delete&quot;: null,
-      &quot;tm_last_hangup&quot;: null,
-      &quot;trycnt&quot;: 0
-   },
-   &quot;dial_index&quot;: 1,
-   &quot;dial_data&quot;: &quot;sales_1&quot;,
-   &quot;info_dial&quot;: {
-      &quot;dial_application&quot;: &quot;queue&quot;,
-      &quot;dial_index&quot;: 1,
-      &quot;dial_data&quot;: &quot;sales_1&quot;,
-      &quot;dial_trycnt&quot;: 1,
-      &quot;dial_channel&quot;: &quot;sip/300&quot;,
-      &quot;dial_type&quot;: 1,
-      &quot;uuid&quot;: &quot;8e0d1ef2-faf0-42d8-a70a-b494cae7f90d&quot;,
-      &quot;channelid&quot;: &quot;a624ecec-e3a8-4e95-9538-abed6e2271ab&quot;,
-      &quot;dial_addr&quot;: &quot;300&quot;,
-      &quot;timeout&quot;: 30000,
-      &quot;otherchannelid&quot;: &quot;cb1325bd-4ae7-4db8-aa64-bb0babadb782&quot;
-   },
-   &quot;dial_type&quot;: 1,
-   &quot;tm_dialing&quot;: &quot;2016-10-24T22:50:10.784443999Z&quot;,
-   &quot;dial_application&quot;: &quot;queue&quot;,
-   &quot;res_hangup&quot;: 16,
-   &quot;res_dial&quot;: 4,
-   &quot;tm_dial_end&quot;: &quot;2016-10-24T22:51:29.294001808Z&quot;
+    &quot;camp_uuid&quot;: &quot;665a54d8-f672-48bd-8f05-1163e6b4dc7f&quot;,
+    &quot;channel_name&quot;: &quot;SIP/300-00000004&quot;,
+    &quot;channelid&quot;: &quot;ff31ef95-30ed-4713-9ae8-0b009b745183&quot;,
+    &quot;dest_uuid&quot;: &quot;45122654-5633-4af0-a739-e32eddfbd2ae&quot;,
+    &quot;dest_variables&quot;: &quot;&quot;,
+    &quot;dial_addr&quot;: &quot;300&quot;,
+    &quot;dial_application&quot;: &quot;queue&quot;,
+    &quot;dial_channel&quot;: &quot;sip/300&quot;,
+    &quot;dial_data&quot;: &quot;sales_1&quot;,
+    &quot;dial_index&quot;: 1,
+    &quot;dial_timeout&quot;: 30000,
+    &quot;dial_trycnt&quot;: 1,
+    &quot;dial_type&quot;: 1,
+    &quot;dialing_uuid&quot;: &quot;ff31ef95-30ed-4713-9ae8-0b009b745183&quot;,
+    &quot;dl_list_uuid&quot;: &quot;0686b654-16c0-4d1e-bdba-4a295c0d3434&quot;,
+    &quot;dl_variables&quot;: &quot;&quot;,
+    &quot;dlma_uuid&quot;: &quot;bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0&quot;,
+    &quot;otherchannelid&quot;: &quot;07954c96-9b3a-445c-a6d6-cd34b09af83e&quot;,
+    &quot;plan_uuid&quot;: &quot;947da8c6-88a1-4da2-a804-e4570e92fba5&quot;,
+    &quot;plan_variables&quot;: &quot;&quot;,
+    &quot;res_dial&quot;: 4,
+    &quot;res_hangup&quot;: 16,
+    &quot;res_hangup_detail&quot;: &quot;Normal Clearing&quot;,
+    &quot;tm_dial_begin&quot;: &quot;2016-11-15T04:32:24.360896466Z&quot;,
+    &quot;tm_dial_end&quot;: &quot;2016-11-15T04:32:27.686378516Z&quot;,
+    &quot;tm_dialing&quot;: &quot;2016-11-15T04:32:20.791410475Z&quot;,
+    &quot;tm_hangup&quot;: &quot;2016-11-15T04:32:33.257211878Z&quot;,
+    &quot;uuid&quot;: &quot;0686b654-16c0-4d1e-bdba-4a295c0d3434&quot;,
+    &quot;variables&quot;: &quot;{}&quot;
 }
 </pre></div>
 </div>
@@ -605,21 +615,327 @@ TmUpdate: 2016-10-24T22:52:16.250101358Z
 <div class="section" id="transfer-to-the-dialplan">
 <h2>Transfer to the dialplan<a class="headerlink" href="#transfer-to-the-dialplan" title="Permalink to this headline">¶</a></h2>
 <p>Dial to the customer. If the customer answered call, the call will be transferred to the designated dialplan.</p>
+<div class="section" id="sample-dialplan">
+<h3>Sample dialplan<a class="headerlink" href="#sample-dialplan" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>/etc/asterisk/extension.conf
+
+;
+; ANI context: use in the same way as &quot;time&quot; above
+;
+
+[ani]
+exten =&gt; _X.,40000(ani),NoOp(ANI: ${EXTEN})
+exten =&gt; _X.,n,Wait(0.25)
+exten =&gt; _X.,n,Answer()
+exten =&gt; _X.,n,Playback(vm-from)
+exten =&gt; _X.,n,SayDigits(${CALLERID(ani)})
+exten =&gt; _X.,n,Wait(1.25)
+exten =&gt; _X.,n,SayDigits(${CALLERID(ani)})      ; playback again in case of missed digit
+exten =&gt; _X.,n,Return()
+</pre></div>
+</div>
+</div>
 <div class="section" id="id8">
 <h3>Create plan<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>Set dialplan context, extension.</p>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutPlanCreate
+Name: test plan
+Detail: extension test plan
+DialMode: 1
+TechName: sip/
+
+Response: Success
+Message: Plan created successfully
+
+Event: OutPlanCreate
+Privilege: message,all
+Uuid: 5b38a18f-ff18-4cb0-97fd-8450f2f77808
+Name: test plan
+Detail: extension test plan
+DialMode: 1
+DialTimeout: 30000
+CallerId: &lt;unknown&gt;
+DlEndHandle: 1
+RetryDelay: 60
+TrunkName: &lt;unknown&gt;
+TechName: sip/
+MaxRetryCnt1: 5
+MaxRetryCnt2: 5
+MaxRetryCnt3: 5
+MaxRetryCnt4: 5
+MaxRetryCnt5: 5
+MaxRetryCnt6: 5
+MaxRetryCnt7: 5
+MaxRetryCnt8: 5
+TmCreate: 2016-10-25T21:31:02.316412156Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
 </div>
 <div class="section" id="id9">
 <h3>Create destination<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDestinationCreate
+Name: test destination
+Detail: extension test destination
+Type: 0
+Exten: 10
+Context: ani
+Priority: 40000
+
+Response: Success
+Message: Destination created successfully
+
+Event: OutDestinationCreate
+Privilege: message,all
+Uuid: 7b55762b-c860-46cc-a366-6bf3df46b2f9
+Name: test destination
+Detail: extension test destination
+Type: 0
+Exten: 10
+Context: ani
+Priority: 40000
+Variable: &lt;unknown&gt;
+Application: &lt;unknown&gt;
+Data: &lt;unknown&gt;
+TmCreate: 2016-10-25T21:32:46.433808884Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+</pre></div>
+</div>
 </div>
 <div class="section" id="id10">
 <h3>Create dlma and dial list<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutDlmaCreate
+Name: DialListMaster_Sales
+Detail: extension Test Dlma description
+
+Response: Success
+Message: Dlma created successfully
+
+Event: OutDlmaCreate
+Privilege: message,all
+Uuid: b0185b80-444a-4def-be23-111f89d444d0
+Name: DialListMaster_Sales
+Detail: extension Test Dlma description
+DlTable: b0185b80_444a_4def_be23_111f89d444d0
+TmCreate: 2016-10-25T21:31:49.411809915Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+
+Action: OutDlListCreate
+DlmaUuid: b0185b80-444a-4def-be23-111f89d444d0
+Name: client 01
+Detail: Dial to client 01
+Number1: 300
+
+Response: Success
+Message: Dl list created successfully
+</pre></div>
+</div>
 </div>
 <div class="section" id="id11">
 <h3>Create campaign and status update<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre>Action: OutCampaignCreate
+Name: test campaign
+Detail: extension test campaign
+Plan: 5b38a18f-ff18-4cb0-97fd-8450f2f77808
+Dlma: b0185b80-444a-4def-be23-111f89d444d0
+Dest: 7b55762b-c860-46cc-a366-6bf3df46b2f9
+
+Response: Success
+Message: Campaign created successfully
+
+Event: OutCampaignCreate
+Privilege: message,all
+Uuid: c8cc2b6f-178e-4118-9c0c-b662811eeba6
+Name: test campaign
+Detail: extension test campaign
+Status: 0
+Plan: 5b38a18f-ff18-4cb0-97fd-8450f2f77808
+Dlma: b0185b80-444a-4def-be23-111f89d444d0
+Dest: 7b55762b-c860-46cc-a366-6bf3df46b2f9
+TmCreate: 2016-10-25T21:33:48.41309734Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: &lt;unknown&gt;
+
+Action: OutCampaignUpdate
+Uuid: c8cc2b6f-178e-4118-9c0c-b662811eeba6
+Status: 1
+
+Response: Success
+Message: Campaign updated successfully
+
+Event: OutCampaignUpdate
+Privilege: message,all
+Uuid: c8cc2b6f-178e-4118-9c0c-b662811eeba6
+Name: test campaign
+Detail: extension test campaign
+Status: 1
+Plan: 5b38a18f-ff18-4cb0-97fd-8450f2f77808
+Dlma: b0185b80-444a-4def-be23-111f89d444d0
+Dest: 7b55762b-c860-46cc-a366-6bf3df46b2f9
+TmCreate: 2016-10-25T21:33:48.41309734Z
+TmDelete: &lt;unknown&gt;
+TmUpdate: 2016-10-25T21:35:10.24364534Z
+</pre></div>
+</div>
 </div>
 <div class="section" id="id12">
 <h3>Check result<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+   <span class="s">&quot;dialing_uuid&quot;</span><span class="p">:</span> <span class="s">&quot;ed927e7e-6e59-467b-8cb8-0c44da80fa34&quot;</span><span class="p">,</span>
+   <span class="s">&quot;dial_exten&quot;</span><span class="p">:</span> <span class="s">&quot;10&quot;</span><span class="p">,</span>
+   <span class="s">&quot;info_dlma&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;DialListMaster_Sales&quot;</span><span class="p">,</span>
+      <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;b0185b80-444a-4def-be23-111f89d444d0&quot;</span><span class="p">,</span>
+      <span class="s">&quot;detail&quot;</span><span class="p">:</span> <span class="s">&quot;extension Test Dlma description&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dl_table&quot;</span><span class="p">:</span> <span class="s">&quot;b0185b80_444a_4def_be23_111f89d444d0&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:31:49.411809915Z&quot;</span>
+   <span class="p">},</span>
+   <span class="s">&quot;info_plan&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;test plan&quot;</span><span class="p">,</span>
+      <span class="s">&quot;trunk_name&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;5b38a18f-ff18-4cb0-97fd-8450f2f77808&quot;</span><span class="p">,</span>
+      <span class="s">&quot;retry_delay&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+      <span class="s">&quot;codecs&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;detail&quot;</span><span class="p">:</span> <span class="s">&quot;extension test plan&quot;</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_6&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;dial_timeout&quot;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
+      <span class="s">&quot;uui_field&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_7&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_3&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;dial_mode&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;service_level&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;caller_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_4&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;dl_end_handle&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;tech_name&quot;</span><span class="p">:</span> <span class="s">&quot;sip/&quot;</span><span class="p">,</span>
+      <span class="s">&quot;early_media&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_5&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_1&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_2&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;max_retry_cnt_8&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="s">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:31:02.316412156Z&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span>
+   <span class="p">},</span>
+   <span class="s">&quot;dial_timeout&quot;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
+   <span class="s">&quot;res_hangup&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+   <span class="s">&quot;camp_uuid&quot;</span><span class="p">:</span> <span class="s">&quot;c8cc2b6f-178e-4118-9c0c-b662811eeba6&quot;</span><span class="p">,</span>
+   <span class="s">&quot;info_dest&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;test destination&quot;</span><span class="p">,</span>
+      <span class="s">&quot;priority&quot;</span><span class="p">:</span> <span class="s">&quot;40000&quot;</span><span class="p">,</span>
+      <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;7b55762b-c860-46cc-a366-6bf3df46b2f9&quot;</span><span class="p">,</span>
+      <span class="s">&quot;detail&quot;</span><span class="p">:</span> <span class="s">&quot;extension test destination&quot;</span><span class="p">,</span>
+      <span class="s">&quot;exten&quot;</span><span class="p">:</span> <span class="s">&quot;10&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;data&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;application&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;variables&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;context&quot;</span><span class="p">:</span> <span class="s">&quot;ani&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:32:46.433808884Z&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span>
+   <span class="p">},</span>
+   <span class="s">&quot;dlma_uuid&quot;</span><span class="p">:</span> <span class="s">&quot;b0185b80-444a-4def-be23-111f89d444d0&quot;</span><span class="p">,</span>
+   <span class="s">&quot;dial_type&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="s">&quot;dial_addr&quot;</span><span class="p">:</span> <span class="s">&quot;300&quot;</span><span class="p">,</span>
+   <span class="s">&quot;dial_priority&quot;</span><span class="p">:</span> <span class="s">&quot;40000&quot;</span><span class="p">,</span>
+   <span class="s">&quot;plan_uuid&quot;</span><span class="p">:</span> <span class="s">&quot;5b38a18f-ff18-4cb0-97fd-8450f2f77808&quot;</span><span class="p">,</span>
+   <span class="s">&quot;dial_context&quot;</span><span class="p">:</span> <span class="s">&quot;ani&quot;</span><span class="p">,</span>
+   <span class="s">&quot;dest_uuid&quot;</span><span class="p">:</span> <span class="s">&quot;7b55762b-c860-46cc-a366-6bf3df46b2f9&quot;</span><span class="p">,</span>
+   <span class="s">&quot;dl_list_uuid&quot;</span><span class="p">:</span> <span class="s">&quot;a9b2efb4-9f2e-4728-8b1b-06d9928af157&quot;</span><span class="p">,</span>
+   <span class="s">&quot;res_dial&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+   <span class="s">&quot;info_camp&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;test campaign&quot;</span><span class="p">,</span>
+      <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;c8cc2b6f-178e-4118-9c0c-b662811eeba6&quot;</span><span class="p">,</span>
+      <span class="s">&quot;detail&quot;</span><span class="p">:</span> <span class="s">&quot;extension test campaign&quot;</span><span class="p">,</span>
+      <span class="s">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;dlma&quot;</span><span class="p">:</span> <span class="s">&quot;b0185b80-444a-4def-be23-111f89d444d0&quot;</span><span class="p">,</span>
+      <span class="s">&quot;next_campaign&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;plan&quot;</span><span class="p">:</span> <span class="s">&quot;5b38a18f-ff18-4cb0-97fd-8450f2f77808&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dest&quot;</span><span class="p">:</span> <span class="s">&quot;7b55762b-c860-46cc-a366-6bf3df46b2f9&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:33:48.41309734Z&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_update&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:35:10.24364534Z&quot;</span>
+   <span class="p">},</span>
+   <span class="s">&quot;info_dl_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&quot;res_hangup_detail&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;client 01&quot;</span><span class="p">,</span>
+      <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;number_4&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;a9b2efb4-9f2e-4728-8b1b-06d9928af157&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dlma_uuid&quot;</span><span class="p">:</span> <span class="s">&quot;b0185b80-444a-4def-be23-111f89d444d0&quot;</span><span class="p">,</span>
+      <span class="s">&quot;in_use&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;dialing_plan_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;detail&quot;</span><span class="p">:</span> <span class="s">&quot;Dial to client 01&quot;</span><span class="p">,</span>
+      <span class="s">&quot;tm_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;dialing_camp_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;ukey&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;res_dial_detail&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;tm_last_dial&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_4&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;tm_last_hangup&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;resv_target&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;dialing_uuid&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;udata&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;number_1&quot;</span><span class="p">:</span> <span class="s">&quot;300&quot;</span><span class="p">,</span>
+      <span class="s">&quot;number_2&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_8&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_7&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;number_3&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;number_5&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;number_6&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;number_7&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;number_8&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;email&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_3&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_5&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;tm_create&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:32:23.177900592Z&quot;</span><span class="p">,</span>
+      <span class="s">&quot;trycnt_6&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;res_dial&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;res_hangup&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;tm_update&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+      <span class="s">&quot;trycnt&quot;</span><span class="p">:</span> <span class="mi">0</span>
+   <span class="p">},</span>
+   <span class="s">&quot;tm_hangup&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:35:16.591497163Z&quot;</span><span class="p">,</span>
+   <span class="s">&quot;info_dial&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&quot;dial_timeout&quot;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
+      <span class="s">&quot;dial_exten&quot;</span><span class="p">:</span> <span class="s">&quot;10&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dial_priority&quot;</span><span class="p">:</span> <span class="s">&quot;40000&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dial_context&quot;</span><span class="p">:</span> <span class="s">&quot;ani&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dial_addr&quot;</span><span class="p">:</span> <span class="s">&quot;300&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dial_index&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;dial_type&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s">&quot;dial_trycnt&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;a9b2efb4-9f2e-4728-8b1b-06d9928af157&quot;</span><span class="p">,</span>
+      <span class="s">&quot;dial_channel&quot;</span><span class="p">:</span> <span class="s">&quot;sip/300&quot;</span><span class="p">,</span>
+      <span class="s">&quot;channelid&quot;</span><span class="p">:</span> <span class="s">&quot;ed927e7e-6e59-467b-8cb8-0c44da80fa34&quot;</span><span class="p">,</span>
+      <span class="s">&quot;otherchannelid&quot;</span><span class="p">:</span> <span class="s">&quot;0792c7fe-5fb4-4826-9938-306e43bce448&quot;</span>
+   <span class="p">},</span>
+   <span class="s">&quot;dial_index&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+   <span class="s">&quot;dial_trycnt&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+   <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;a9b2efb4-9f2e-4728-8b1b-06d9928af157&quot;</span><span class="p">,</span>
+   <span class="s">&quot;dial_channel&quot;</span><span class="p">:</span> <span class="s">&quot;sip/300&quot;</span><span class="p">,</span>
+   <span class="s">&quot;channelid&quot;</span><span class="p">:</span> <span class="s">&quot;ed927e7e-6e59-467b-8cb8-0c44da80fa34&quot;</span><span class="p">,</span>
+   <span class="s">&quot;tm_dial_end&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:35:14.333766501Z&quot;</span><span class="p">,</span>
+   <span class="s">&quot;info_events&quot;</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="s">&quot;otherchannelid&quot;</span><span class="p">:</span> <span class="s">&quot;0792c7fe-5fb4-4826-9938-306e43bce448&quot;</span><span class="p">,</span>
+   <span class="s">&quot;tm_dialing&quot;</span><span class="p">:</span> <span class="s">&quot;2016-10-25T21:35:10.462824521Z&quot;</span><span class="p">,</span>
+   <span class="s">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s">&quot;SIP/300-00000000&quot;</span><span class="p">,</span>
+   <span class="s">&quot;res_hangup_detail&quot;</span><span class="p">:</span> <span class="s">&quot;Normal Clearing&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="transfer-to-the-dialplan-check-human-machine">
@@ -643,6 +959,49 @@ TmUpdate: 2016-10-24T22:52:16.250101358Z
 <h3>Check result<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
+<div class="section" id="outbound-with-trunk">
+<h2>Outbound with trunk<a class="headerlink" href="#outbound-with-trunk" title="Permalink to this headline">¶</a></h2>
+<p>Dial to the customer with trunk.</p>
+<p>With correct trunk setting, it could call to the PSTN/Mobile.</p>
+<div class="section" id="set-check-trunk-info">
+<h3>Set/Check trunk info<a class="headerlink" href="#set-check-trunk-info" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id18">
+<h3>Create plan<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<p>Set dialplan context, extension, trunk name.</p>
+</div>
+<div class="section" id="id19">
+<h3>Create destination<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id20">
+<h3>Create dlma and dial list<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id21">
+<h3>Create campaign and status update<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id22">
+<h3>Check result<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="sending-an-sms-fax-email">
+<h2>Sending an SMS/Fax/Email<a class="headerlink" href="#sending-an-sms-fax-email" title="Permalink to this headline">¶</a></h2>
+<p>Using variables and dialplan, we can send an SMS/Fax/Email to the customers.</p>
+<div class="section" id="setting-dialplan">
+<h3>Setting dialplan<a class="headerlink" href="#setting-dialplan" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id23">
+<h3>Create plan<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id24">
+<h3>Create destination<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id25">
+<h3>Create dlma and dial list<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id26">
+<h3>Check result<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
 </div>
 
 
@@ -657,6 +1016,7 @@ TmUpdate: 2016-10-24T22:52:16.250101358Z
 <li><a class="reference internal" href="#preparation">Preparation</a><ul>
 <li><a class="reference internal" href="#add-the-agent-sip-info">Add the agent(sip) info</a></li>
 <li><a class="reference internal" href="#add-the-client-customer-sip-info">Add the client/customer(sip) info</a></li>
+<li><a class="reference internal" href="#settings">Settings</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#basic-tutorial">Basic tutorial</a><ul>
@@ -687,6 +1047,7 @@ TmUpdate: 2016-10-24T22:52:16.250101358Z
 </ul>
 </li>
 <li><a class="reference internal" href="#transfer-to-the-dialplan">Transfer to the dialplan</a><ul>
+<li><a class="reference internal" href="#sample-dialplan">Sample dialplan</a></li>
 <li><a class="reference internal" href="#id8">Create plan</a></li>
 <li><a class="reference internal" href="#id9">Create destination</a></li>
 <li><a class="reference internal" href="#id10">Create dlma and dial list</a></li>
@@ -702,13 +1063,30 @@ TmUpdate: 2016-10-24T22:52:16.250101358Z
 <li><a class="reference internal" href="#id17">Check result</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#outbound-with-trunk">Outbound with trunk</a><ul>
+<li><a class="reference internal" href="#set-check-trunk-info">Set/Check trunk info</a></li>
+<li><a class="reference internal" href="#id18">Create plan</a></li>
+<li><a class="reference internal" href="#id19">Create destination</a></li>
+<li><a class="reference internal" href="#id20">Create dlma and dial list</a></li>
+<li><a class="reference internal" href="#id21">Create campaign and status update</a></li>
+<li><a class="reference internal" href="#id22">Check result</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sending-an-sms-fax-email">Sending an SMS/Fax/Email</a><ul>
+<li><a class="reference internal" href="#setting-dialplan">Setting dialplan</a></li>
+<li><a class="reference internal" href="#id23">Create plan</a></li>
+<li><a class="reference internal" href="#id24">Create destination</a></li>
+<li><a class="reference internal" href="#id25">Create dlma and dial list</a></li>
+<li><a class="reference internal" href="#id26">Check result</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="installation.html"
-                        title="previous chapter">Installation</a></p>
+  <p class="topless"><a href="configuration.html"
+                        title="previous chapter">Settings</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="basic.html"
                         title="next chapter">Basic</a></p>
@@ -744,7 +1122,7 @@ TmUpdate: 2016-10-24T22:52:16.250101358Z
           <a href="basic.html" title="Basic"
              >next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="configuration.html" title="Settings"
              >previous</a> |</li>
         <li><a href="index.html">asterisk-outbound 0.0.1 documentation</a> &raquo;</li> 
       </ul>
