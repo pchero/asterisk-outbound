@@ -94,7 +94,7 @@ Create plan
    
    Event: OutPlanCreate
    Privilege: message,all
-   Uuid: 687763ed-c977-4e5b-a30d-1221941a4d21
+   Uuid: f9866959-9cf5-49fb-aee0-878bfc7bd71f
    Name: sales_plan
    Detail: simple sales plan
    DialMode: 1
@@ -104,6 +104,7 @@ Create plan
    RetryDelay: 60
    TrunkName: <unknown>
    TechName: sip/
+   Variable: <unknown>
    MaxRetryCnt1: 5
    MaxRetryCnt2: 5
    MaxRetryCnt3: 5
@@ -112,7 +113,7 @@ Create plan
    MaxRetryCnt6: 5
    MaxRetryCnt7: 5
    MaxRetryCnt8: 5
-   TmCreate: 2016-10-24T21:36:03.702384603Z
+   TmCreate: 2016-11-15T02:10:52.930031700Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
@@ -131,11 +132,12 @@ Create dlma
    
    Event: OutDlmaCreate
    Privilege: message,all
-   Uuid: a6a29e7a-49c4-4339-92ff-543a121f348f
+   Uuid: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
    Name: DialListMaster_Sales
    Detail: Test Dlma description
-   DlTable: a6a29e7a_49c4_4339_92ff_543a121f348f
-   TmCreate: 2016-10-24T21:37:39.972064103Z
+   DlTable: 5d56b51d_dc4d_4ec9_9e82_88e8dc3737c1
+   Variable: <unknown>
+   TmCreate: 2016-11-15T02:11:22.128567345Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
@@ -156,7 +158,7 @@ Create destination
    
    Event: OutDestinationCreate
    Privilege: message,all
-   Uuid: ef355147-48bf-4170-8f88-f49b00f3ab37
+   Uuid: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
    Name: destination test
    Detail: test destination
    Type: 1
@@ -166,9 +168,10 @@ Create destination
    Variable: <unknown>
    Application: park
    Data: <unknown>
-   TmCreate: 2016-10-24T21:38:35.700905321Z
+   TmCreate: 2016-11-15T02:11:43.506539333Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
+
 
 
 Create dial list
@@ -177,7 +180,7 @@ Create dial list
 ::
 
    Action: OutDlListCreate
-   DlmaUuid: a6a29e7a-49c4-4339-92ff-543a121f348f
+   DlmaUuid: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
    Name: client 01
    Detail: Dial to client 01
    Number1: 300
@@ -194,23 +197,31 @@ Create campaign
    Action: OutCampaignCreate
    Name: Sales campaign
    Detail: test campaign
-   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
-   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
-   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
+   Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+   Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+   Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
    
    Response: Success
    Message: Campaign created successfully
    
    Event: OutCampaignCreate
    Privilege: message,all
-   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+   Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
    Name: Sales campaign
    Detail: test campaign
    Status: 0
-   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
-   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
-   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
-   TmCreate: 2016-10-24T21:41:24.939663006Z
+   Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+   Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+   Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+   ScMode: 0
+   ScTimeStart: <unknown>
+   ScTimeEnd: <unknown>
+   ScDateStart: <unknown>
+   ScDateEnd: <unknown>
+   ScDateList: <unknown>
+   ScDateListExcept: <unknown>
+   ScDayList: <unknown>
+   TmCreate: 2016-11-15T02:13:09.876226960Z
    TmDelete: <unknown>
    TmUpdate: <unknown>
 
@@ -220,7 +231,7 @@ Update Campaign status to start
 ::
 
    Action: OutCampaignUpdate
-   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+   Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
    Status: 1
    
    Response: Success
@@ -228,18 +239,76 @@ Update Campaign status to start
    
    Event: OutCampaignUpdate
    Privilege: message,all
-   Uuid: c429c3cc-265f-458a-b64f-30023d4896d4
+   Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
+   Name: Sales campaign
+   Detail: test campaign
+   Status: 11
+   Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+   Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+   Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+   ScMode: 0
+   ScTimeStart: <unknown>
+   ScTimeEnd: <unknown>
+   ScDateStart: <unknown>
+   ScDateEnd: <unknown>
+   ScDateList: <unknown>
+   ScDateListExcept: <unknown>
+   ScDayList: <unknown>
+   TmCreate: 2016-11-15T02:13:09.876226960Z
+   TmDelete: <unknown>
+   TmUpdate: 2016-11-15T03:00:10.125931679Z
+
+   Event: OutCampaignUpdate
+   Privilege: message,all
+   Uuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
    Name: Sales campaign
    Detail: test campaign
    Status: 1
-   Plan: 687763ed-c977-4e5b-a30d-1221941a4d21
-   Dlma: a6a29e7a-49c4-4339-92ff-543a121f348f
-   Dest: ef355147-48bf-4170-8f88-f49b00f3ab37
-   TmCreate: 2016-10-24T21:41:24.939663006Z
+   Plan: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+   Dlma: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+   Dest: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+   ScMode: 0
+   ScTimeStart: <unknown>
+   ScTimeEnd: <unknown>
+   ScDateStart: <unknown>
+   ScDateEnd: <unknown>
+   ScDateList: <unknown>
+   ScDateListExcept: <unknown>
+   ScDayList: <unknown>
+   TmCreate: 2016-11-15T02:13:09.876226960Z
    TmDelete: <unknown>
-   TmUpdate: 2016-10-24T21:42:38.66081477Z
+   TmUpdate: 2016-11-15T03:00:12.181524802Z
+   
+   
+   Event: OutDialingCreate
+   Privilege: message,all
+   Uuid: d070a649-a8e0-43f1-9cf6-671cb4046016
+   Status: 0
+   CampUuid: a438f08f-96a0-4a72-b55d-cb6a74fd91a1
+   PlanUuid: f9866959-9cf5-49fb-aee0-878bfc7bd71f
+   DlmaUuid: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+   DestUuid: a1c8d1f5-c68f-4a01-8d93-5d110ea654de
+   DlListUuid: 8e02be1f-cf5e-424e-8d00-001b2f9935aa
+   DialIndex: 1
+   DialAddr: 300
+   DialChannel: sip/300
+   DialTryCnt: 1
+   DialTimeout: 30000
+   DialType: 1
+   DialExten: <unknown>
+   DialContext: <unknown>
+   DialApplication: park
+   DialData: 
+   Variable: <unknown>
+   ChannelName: <unknown>
+   ResDial: 0
+   ResHangup: 0
+   ResHangupDetail: <unknown>
+   TmCreate: 2016-11-15T03:00:12.580796983Z
+   TmUpdate: <unknown>
+   TmDelete: <unknown>
 
- 
+
 Normal call distribute
 ======================
 

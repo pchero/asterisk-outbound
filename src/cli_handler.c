@@ -2621,24 +2621,52 @@ static int manager_out_campaign_delete(struct mansession *s, const struct messag
 static int manager_out_campaign_update(struct mansession *s, const struct message *m)
 {
 	struct ast_json* j_tmp;
+	const char* uuid;
 	const char* tmp_const;
+	int status;
 	int ret;
 
 	ast_log(LOG_VERBOSE, "AMI request. OutCampaignUpdate.\n");
 
-	tmp_const = message_get_header(m, "Uuid");
-	if(tmp_const == NULL) {
+	uuid = message_get_header(m, "Uuid");
+	if(uuid == NULL) {
 		astman_send_error(s, m, "Error encountered while updating campaign");
 		ast_log(LOG_WARNING, "OutCampaignUpdate failed.\n");
 		return 0;
 	}
 
+	// create update info
 	j_tmp = create_json_campaign(m);
 
 	// set uuid
-	tmp_const = message_get_header(m, "Uuid");
-	if(tmp_const != NULL) {ast_json_object_set(j_tmp, "uuid", ast_json_string_create(tmp_const));}
+	ast_json_object_set(j_tmp, "uuid", ast_json_string_create(uuid));
 
+	// set status
+	tmp_const = message_get_header(m, "Status");
+	if(tmp_const != NULL) {
+		status = atoi(tmp_const);
+
+		if((status == E_CAMP_START) || (status == E_CAMP_STARTING)) {
+			status = E_CAMP_STARTING;
+		}
+		else if((status == E_CAMP_STOP) || (status == E_CAMP_STOPPING)) {
+			status = E_CAMP_STOPPING;
+		}
+		else if((status == E_CAMP_PAUSE) || (status == E_CAMP_PAUSING)) {
+			status = E_CAMP_PAUSING;
+		}
+		else {
+			astman_send_error(s, m, "Error encountered while updating campaign");
+			ast_log(LOG_WARNING, "OutCampaignUpdate failed. Wrong status parameter. status[%d]\n", status);
+			AST_JSON_UNREF(j_tmp);
+			return 0;
+		}
+
+		// set status object
+		ast_json_object_set(j_tmp, "status", ast_json_integer_create(status));
+	}
+
+	// update campaign
 	ret = update_campaign(j_tmp);
 	AST_JSON_UNREF(j_tmp);
 	if(ret == false) {
