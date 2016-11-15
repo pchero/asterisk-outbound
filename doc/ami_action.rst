@@ -17,7 +17,7 @@ Syntax
 ::
 
     Action: OutCampaignCreate
-    ActionID: <value>
+    [ActionId:] <value>
     [Name:] <value>
     [Detail:] <value>
     [Plan:] <value>
@@ -26,11 +26,11 @@ Syntax
 
 Parameters
 
-* ``Name``: Name of campaign.
-* ``Detail``: Description of campaign.
-* ``Plan``: Plan uuid.
-* ``Dlma``: Dlma uuid.
-* ``Dest``: Destination uuid.
+* Name: Name of campaign.
+* Detail: Description of campaign.
+* Plan: Plan uuid.
+* Dlma: Dlma uuid.
+* Dest: Destination uuid.
 
 Returns
 -------
@@ -66,7 +66,7 @@ Syntax
 ::
 
     Action: OutCampaignUpdate
-    ActionID: <value>
+    [ActionId:] <value>
     Uuid: <value>
     [Name:] <value>
     [Detail:] <value>
@@ -76,12 +76,12 @@ Syntax
 
 Parameters
 
-* ``Uuid``: Campaign UUID
-* ``Name``: <optional> Update campaign name.
-* ``Detail``: <optional> Update campaign description.
-* ``Status``: <optional> Update campaign status.
-* ``Plan``: <optional> Update campaign plan.
-* ``Dlma``: <optional> Update campaign dlma.
+* Uuid: Campaign UUID
+* Name: <optional> Update campaign name.
+* Detail: <optional> Update campaign description.
+* Status: <optional> Update campaign status.
+* Plan: <optional> Update campaign plan.
+* Dlma: <optional> Update campaign dlma.
 
 Returns
 -------
@@ -127,12 +127,12 @@ Syntax
 ::
 
     Action: OutCampaignDelete
-    ActionID: <value>
+    [ActionId:] <value>
     Uuid: <value>
 
 Parameters
 
-* ``Uuid``: Campaign UUID
+* Uuid: Campaign UUID
 
 Returns
 -------
@@ -169,12 +169,12 @@ Syntax
 ::
 
     Action: OutCampaignShow
-    ActionID: <value>
+    [ActionId:] <value>
     [Uuid:] <value>
 
 Parameters
 
-* ``Uuid``: Campaign UUID
+* Uuid: Campaign UUID
 
 Returns
 -------
@@ -229,12 +229,12 @@ Syntax
 ::
 
     Action: OutCampaignStatShow
-    ActionID: <value>
+    [ActionId:] <value>
     [Uuid:] <value>
 
 Parameters
 
-* ``Uuid``: Campaign UUID
+* Uuid: Campaign UUID
 
 Returns
 -------
@@ -283,6 +283,7 @@ Example
 
 OutPlanCreate
 =============
+
 Description
 -----------
 Create a new plan.
@@ -292,6 +293,8 @@ Syntax
 
 ::
 
+   Action: OutPlanCreate
+   [ActionID:] <value>
    [Name:] <value>
    [Detail:] <value>
    [DialMode:] <value>
@@ -311,7 +314,7 @@ Syntax
    [MaxRetry6:] <value>
    [MaxRetry7:] <value>
    [MaxRetry8:] <value>
-
+   [Variable:] <var=value>
 
 Parameters
 
@@ -334,7 +337,7 @@ Parameters
 * MaxRetry6: Max retry count for number 6. Default 5
 * MaxRetry7: Max retry count for number 7. Default 5
 * MaxRetry8: Max retry count for number 8. Default 5
-
+* Variable: Set(var=val). Could be more than one.
 
 Returns
 -------
@@ -370,31 +373,33 @@ Syntax
 
 ::
 
-    Action: OutPlanUpdate
-    ActionID: <value>
-    Uuid: <value>
-    [Name:] <value>
-    [Detail:] <value>
-    [DialMode:] <value>
-    [UuiField:] <value>
-    [DialTimeout:] <value>
-    [CallerId:] <value>
-    [DlEndHandle:] <value>
-    [RetryDelay:] <value>
-    [TrunkName:] <value>
-    [TechName:] <value>
-    [ServiceLevel:] <value>
-    [MaxRetry1:] <value>
-    [MaxRetry2:] <value>
-    [MaxRetry3:] <value>
-    [MaxRetry4:] <value>
-    [MaxRetry5:] <value>
-    [MaxRetry6:] <value>
-    [MaxRetry7:] <value>
-    [MaxRetry8:] <value>
+   Action: OutPlanUpdate
+   Uuid: <value>
+   [ActionID:] <value>
+   [Name:] <value>
+   [Detail:] <value>
+   [DialMode:] <value>
+   [UuiField:] <value>
+   [DialTimeout:] <value>
+   [CallerId:] <value>
+   [DlEndHandle:] <value>
+   [RetryDelay:] <value>
+   [TrunkName:] <value>
+   [TechName:] <value>
+   [ServiceLevel:] <value>
+   [MaxRetry1:] <value>
+   [MaxRetry2:] <value>
+   [MaxRetry3:] <value>
+   [MaxRetry4:] <value>
+   [MaxRetry5:] <value>
+   [MaxRetry6:] <value>
+   [MaxRetry7:] <value>
+   [MaxRetry8:] <value>
+   [Variable:] <var=value>
 
 Parameters
 
+* Uuid: Plan uuid.
 * Name: Plan name. Default null.
 * Detail: Detail info. Default null.
 * DialMode: Dialling mode. Default 1. See detail :ref:`dial_mode`.
@@ -456,31 +461,27 @@ Parameters
 
 * Uuid: Plan uuid.
 
-
 Returns
 -------
+
 ::
     
    Response: Success
-   ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
    Message: Plan deleted successfully
 
 Example
 -------
+
 ::
 
    Action: OutPlanDelete
-   ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+   [ActionId:] 5bda9fb8-88ec-11e6-a1a5-d719861709b2
    Uuid: fca7a70d-fefe-4264-b967-76e7784b0d92
    
    Response: Success
-   ActionID: 5bda9fb8-88ec-11e6-a1a5-d719861709b2
+   [ActionId:] 5bda9fb8-88ec-11e6-a1a5-d719861709b2
    Message: Plan deleted successfully
-   
-   Event: OutPlanDelete
-   Privilege: message,all
-   Uuid: fca7a70d-fefe-4264-b967-76e7784b0d92
-   
+
 
 OutPlanShow
 ===========
@@ -499,11 +500,9 @@ Syntax
     [ActionID:] <value>
     [Uuid:] <value>
 
-
 Parameters
 
 * Uuid: Plan uuid.
-
 
 Returns
 -------
@@ -513,47 +512,72 @@ Returns
    EventList: start
    Message: Plan List will follow
    
-   ...
+   Event: OutPlanEntry
+   Uuid: <value>
+   Name: <value>
+   Detail: <value>
+   DialMode: <value>
+   DialTimeout: <value>
+   CallerId: <value>
+   DlEndHandle: <value>
+   RetryDelay: <value>
+   TrunkName: <value>
+   TechName: <value>
+   Variable: <value>
+   MaxRetryCnt1: <value>
+   MaxRetryCnt2: <value>
+   MaxRetryCnt3: <value>
+   MaxRetryCnt4: <value>
+   MaxRetryCnt5: <value>
+   MaxRetryCnt6: <value>
+   MaxRetryCnt7: <value>
+   MaxRetryCnt8: <value>
+   TmCreate: <value>
+   TmDelete: <value>
+   TmUpdate: <value>
    
    Event: OutPlanListComplete
    EventList: Complete
-   ListItems: 31
-   
+   ListItems: <value>
 
 Example
 -------
+
 ::
 
-    Response: Success
-    EventList: start
-    Message: Plan List will follow
-
-    Event: OutPlanEntry
-    Uuid: 4ea35c4b-c2db-4a22-baef-443b5fadd677
-    Name: sales_plan
-    Detail: simple sales plan
-    DialMode: 1
-    DialTimeout: 30000
-    CallerId: <unknown>
-    DlEndHandle: 1
-    RetryDelay: 60
-    TrunkName: <unknown>
-    TechName: sip/
-    MaxRetryCnt1: 5
-    MaxRetryCnt2: 5
-    MaxRetryCnt3: 5
-    MaxRetryCnt4: 5
-    MaxRetryCnt5: 5
-    MaxRetryCnt6: 5
-    MaxRetryCnt7: 5
-    MaxRetryCnt8: 5
-    TmCreate: 2016-10-22T12:45:58.868877001Z
-    TmDelete: <unknown>
-    TmUpdate: <unknown>
-
-    Event: OutPlanListComplete
-    EventList: Complete
-    ListItems: 1
+   Action: OutPlanShow
+   
+   Response: Success
+   EventList: start
+   Message: Plan List will follow
+   
+   Event: OutPlanEntry
+   Uuid: b2ad8f78-cc87-4e73-b856-4407bbcadcbd
+   Name: <unknown>
+   Detail: <unknown>
+   DialMode: 1
+   DialTimeout: 30000
+   CallerId: <unknown>
+   DlEndHandle: 1
+   RetryDelay: 60
+   TrunkName: <unknown>
+   TechName: <unknown>
+   Variable: <unknown>
+   MaxRetryCnt1: 5
+   MaxRetryCnt2: 5
+   MaxRetryCnt3: 5
+   MaxRetryCnt4: 5
+   MaxRetryCnt5: 5
+   MaxRetryCnt6: 5
+   MaxRetryCnt7: 5
+   MaxRetryCnt8: 5
+   TmCreate: 2016-11-14T22:10:34.920976872Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+   
+   Event: OutPlanListComplete
+   EventList: Complete
+   ListItems: 1
 
 
 OutDlmaCreate
@@ -568,22 +592,24 @@ Syntax
 
 ::
 
-    Action: OutDlmaCreate
-    ActionID: <value>
-    [Name:] <value>
-    [Detail:] <value>
+   Action: OutDlmaCreate
+   [ActionID:] <value>
+   [Name:] <value>
+   [Detail:] <value>
+   [Variable:] <var=value>
 
 Parameters
 
 * Name: Dlma name.
 * Detail: Detail dlma info.
+* Variable: Set(var=val). Could be more than one.
 
 Returns
 -------
 ::
         
-    Response: Success
-    Message: Dlma created successfully
+   Response: Success
+   Message: Dlma created successfully
 
 Example
 -------
@@ -607,16 +633,19 @@ Syntax
 
 ::
 
-    Action: OutDlmaUpdate
-    ActionID: <value>
-    Uuid: <value>
-    [Name:] <value>
-    [Detail:] <value>
+   Action: OutDlmaUpdate
+   Uuid: <value>
+   [ActionID:] <value>
+   [Name:] <value>
+   [Detail:] <value>
+   [Variable:] <var=value>
+
 
 Parameters
 
 * Name: Dlma name.
 * Detail: Detail dlma info.
+* Variable: Set(var=val). Could be more than one.
 
 Returns
 -------
@@ -660,9 +689,9 @@ Syntax
 
 ::
 
-    Action: OutDlmaDelete
-    ActionID: <value>
-    Uuid: <value>
+   Action: OutDlmaDelete
+   Uuid: <value>
+   [ActionID:] <value>
 
 Parameters
 
@@ -672,18 +701,19 @@ Returns
 -------
 ::
         
-    Response: Success
-    Message: Dlma deleted successfully
+   Response: Success
+   Message: Dlma deleted successfully
 
 Example
 -------
 ::
 
-    Action: OutDlmaDelete
-    Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+   Action: OutDlmaDelete
+   Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
+   
+   Response: Success
+   Message: Dlma deleted successfully
 
-    Response: Success
-    Message: Dlma deleted successfully
 
 OutDlmaShow
 ===========
@@ -698,8 +728,8 @@ Syntax
 ::
 
     Action: OutDlmaShow
-    ActionID: <value>
     [Uuid:] <value>
+    [ActionID:] <value>
 
 Parameters
 
@@ -709,40 +739,51 @@ Returns
 -------
 ::
         
-    Response: Success
-    EventList: start
-    Message: Dlma List will follow
-
-    ...
-    
-    Event: OutDlmaListComplete
-    EventList: Complete
-    ListItems: 1
+   Response: Success
+   EventList: start
+   Message: Dlma List will follow
+   
+   Event: OutDlmaEntry
+   Uuid: <value>
+   Name: <value>
+   Detail: <value>
+   DlTable: <value>
+   Variable: <value>
+   TmCreate: <value>
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+   
+   ...
+       
+   Event: OutDlmaListComplete
+   EventList: Complete
+   ListItems: <value>
 
 Example
 -------
 ::
 
-    Action: OutDlmaShow
+   Action: OutDlmaShow
+   
+   Response: Success
+   EventList: start
+   Message: Dlma List will follow
+   
+   Event: OutDlmaEntry
+   Uuid: 71f7dbb6-9f80-4415-a98b-893f162e7bbf
+   Name: <unknown>
+   Detail: <unknown>
+   DlTable: 71f7dbb6_9f80_4415_a98b_893f162e7bbf
+   Variable: <unknown>
+   TmCreate: 2016-11-14T22:10:43.172756930Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+   
+   Event: OutDlmaListComplete
+   EventList: Complete
+   ListItems: 1
 
-    Response: Success
-    EventList: start
-    Message: Dlma List will follow
 
-    Event: OutDlmaEntry
-    Uuid: 0853bbaa-7366-4c46-9320-fe5daf92a56b
-    Name: Test dlma info
-    Detail: test dlma
-    DlTable: 0853bbaa_7366_4c46_9320_fe5daf92a56b
-    TmCreate: 2016-10-02 15:40:14.939472
-    TmDelete: <unknown>
-    TmUpdate: 2016-10-02 15:42:36.595071
-
-    Event: OutDlmaListComplete
-    EventList: Complete
-    ListItems: 1
-
-    
 OutDlListCreate
 ===============
 
@@ -756,7 +797,7 @@ Syntax
 ::
 
    Action: OutDlListCreate
-   ActionID: <value>
+   [ActionId:] <value>
    DlmaUuid: <dlma-uuid>
    Name: <customer-name>
    Detail: <customer-detail info>
@@ -813,6 +854,7 @@ Syntax
 ::
 
    Action: OutDestinationCreate
+   [ActionId:] <value>
    [Name:] <value>
    [Detail:] <value>
    [Type:] <value>
@@ -866,6 +908,7 @@ Syntax
 
    Action: OutDestinationUpdate
    Uuid: <value>
+   [ActionId:] <value>
    [Name:] <value>
    [Detail:] <value>
    [Type:] <value>

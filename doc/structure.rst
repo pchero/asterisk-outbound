@@ -208,3 +208,105 @@ Destination type
    1    Application
    ==== ==================
 
+
+
+Campaign
+========
+
+.. _scheduling:
+
+Scheduling
+----------
+The campaign can sets schedule. If the schedule sets, the campaign start and stop automatically on schedule.
+
+.. _scheduling_mode:
+
+Scheduling mode
++++++++++++++++
+
+.. table:: Scheduling mode
+
+   ==== ======================
+   Mode Detail
+   ==== ======================
+   0    Scheduling on
+   1    Scheduling off
+   ==== ======================
+
+.. _scheduling_time:
+
+Scheduling time
++++++++++++++++
+Scheduling time. 24H
+
+::
+
+   hh:mm:ss
+
+* hh : Hour. 00 ~ 23
+* mm : Minute. 00 ~ 59
+* ss : Second. 00 ~ 59
+
+Example
+   
+::
+
+   15:00:00
+
+.. _scheduling_date:
+
+Scheduling date
++++++++++++++++
+Scheduling date.
+
+::
+
+   YYYY-MM-DD
+
+* YYYY : Year.
+* MM : Month.
+* DD : Day.
+
+Example
+
+::
+   2016-11-17
+
+.. _scheduling_date_list:
+
+Scheduling date list
+++++++++++++++++++++
+List of scheduling date.
+
+::
+
+   YYYY-MM-DD, YYYY-MM-DD
+   
+Example
+
+::
+
+   2016-11-16, 2016-11-17, 2016-11-18, ...
+
+.. _scheduling_day_list:
+
+Scheduling day list
++++++++++++++++++++
+List of scheduling day.
+
+::
+
+   0 : Sunday
+   1 : Monday
+   2 : Tuesday
+   3 : Wednesday
+   4 : Thursday
+   5 : Friday
+   6 : Satursay
+
+Example
+
+::
+
+   0, 1, 3, 4
+

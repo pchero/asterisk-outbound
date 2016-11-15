@@ -147,6 +147,8 @@ static const char* g_db_sql_dl_list_ma =
 "    name        varchar(255),"                       // dial list name"
 "    detail      text,"                               // description of dialist"
 "    dl_table    varchar(255),"                       // dial list table name.(view)"
+"    variables   text,"		                            // string of json object. "{"var1":"value1", "var2":"value2", ... }"
+
 "    in_use      int default 1,"
 
 // timestamp. UTC."

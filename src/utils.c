@@ -142,6 +142,11 @@ int get_utc_timestamp_day(void)
 	return localtime(&time)->tm_wday;
 }
 
+/**
+ *
+ * @param str
+ * @return
+ */
 char* get_variables_info_ami_str_from_string(const char* str)
 {
 	struct ast_json* j_tmp;
@@ -170,6 +175,7 @@ char* get_variables_info_ami_str_from_string(const char* str)
 		}
 		variables = variable;
 	}
+	AST_JSON_UNREF(j_tmp);
 
 	return variables;
 }

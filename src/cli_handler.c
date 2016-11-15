@@ -1023,27 +1023,38 @@ static char* get_plan_str(struct ast_json* j_plan)
 static char* get_dlma_str(struct ast_json* j_dlma)
 {
 	char* tmp;
+	char* variables;
 
 	if(j_dlma == NULL) {
 		return NULL;
 	}
+
+	// get variables
+	variables = get_variables_info_ami_str(j_dlma, "variables");
 
 	ast_asprintf(&tmp,
 			"Uuid: %s\r\n"
 			"Name: %s\r\n"
 			"Detail: %s\r\n"
 			"DlTable: %s\r\n"
+			"%s"// Variables
+
 			"TmCreate: %s\r\n"
 			"TmDelete: %s\r\n"
 			"TmUpdate: %s\r\n",
+
 			ast_json_string_get(ast_json_object_get(j_dlma, "uuid"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dlma, "name"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dlma, "detail"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dlma, "dl_table"))? : "<unknown>",
+			variables? : "Variable: <unknown>\r\n",
+
 			ast_json_string_get(ast_json_object_get(j_dlma, "tm_create"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dlma, "tm_delete"))? : "<unknown>",
 			ast_json_string_get(ast_json_object_get(j_dlma, "tm_update"))? : "<unknown>"
 			);
+	ast_free(variables);
+
 	return tmp;
 }
 

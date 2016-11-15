@@ -65,9 +65,9 @@ def delete_plan(uuid_str):
     
     return True
 
-def verify_plan(plan, **args):
+def verify_plan(obj, **args):
     '''
-    verify plan items.
+    verify obj items.
     if args is given, check the given item
     '''
     items = {}
@@ -101,7 +101,7 @@ def verify_plan(plan, **args):
             return False
         items[key] = value
     
-    ret = common.verify_items(plan, items)
+    ret = common.verify_items(obj, items)
     return ret
 
 def test_plan_create_no_arg():
