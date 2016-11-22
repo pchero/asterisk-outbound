@@ -26,8 +26,12 @@ Channel variables
 -----------------
 
 * OUTSTATUS : Result of application execution.
-- SUCCESS : Execute success.
-- FAILURE : Execute failed.
+
+::
+
+   SUCCESS : Execute success.
+   FAILURE : Execute failed.
+
 * OUTDETAIL : Detail info of OUTSTATUS. If succeess, it sets dl's uuid.
 
 Example
