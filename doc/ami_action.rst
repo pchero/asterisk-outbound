@@ -837,6 +837,104 @@ Example
    Message: Dl list created successfully
    
 
+OutDlListShow
+=============
+
+Description
+-----------
+Show Dial list for dialing.
+
+Syntax
+------
+
+::
+
+   Action: OutDlListShow
+   [ActionId:] <value>
+   DlmaUuid: <dlma-uuid>
+   Name: <customer-name>
+   Detail: <customer-detail info>
+   UKey: <customer-unique key>
+   UData: <customer-UUI data>
+   Number1: <customer-destination 1>
+   Number2: <customer-destination 2>
+   Number3: <customer-destination 3>
+   Number4: <customer-destination 4>
+   Number5: <customer-destination 5>
+   Number6: <customer-destination 6>
+   Number7: <customer-destination 7>
+   Number8: <customer-destination 8>
+   res_dial: <dial-result>
+   res_dial_detail: <dial-result-detail>
+   res_hangup: <dial-hangup>
+   res_hangup_detail: <dial-hangup-detail>
+
+
+Parameters
+
+
+Returns
+-------
+::
+        
+   Response: Success
+   EventList: start
+   Message: Dl List will follow
+
+Example
+-------
+::
+
+   Action: OutDlListShow
+   DlmaUuid: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
+   
+   Response: Success
+   EventList: start
+   Message: Dl List will follow
+   
+   Event: OutDlListEntry
+   Uuid: bc85b6e3-19f3-4f21-8d9a-3c383f9cbdb5
+   DlmaUuid: bd62639a-3cbb-4fb5-9a2b-e5cdf0c336d0
+   Name: client 01
+   Detail: Dial to client 01
+   Status: 0
+   UKey: <unknown>
+   Variable: <unknown>
+   DialingUuid: <unknown>
+   DialingCampUuid: <unknown>
+   DialingPlanUuid: <unknown>
+   Number1: 300
+   Number2: <unknown>
+   Number3: <unknown>
+   Number4: <unknown>
+   Number5: <unknown>
+   Number6: <unknown>
+   Number7: <unknown>
+   Number8: <unknown>
+   Email: <unknown>
+   TryCnt1: 5
+   TryCnt2: 0
+   TryCnt3: 0
+   TryCnt4: 0
+   TryCnt5: 0
+   TryCnt6: 0
+   TryCnt7: 0
+   TryCnt8: 0
+   ResDial: 0
+   ResDialDetail: <unknown>
+   ResHangup: 0
+   ResHangupDetail: <unknown>
+   TmCreate: 2016-11-15T03:18:31.749575508Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+   
+   ...
+   
+   Event: OutDlListComplete
+   EventList: Complete
+   ListItems: 6
+   
+
 OutDestinationCreate
 ====================
 

@@ -2384,9 +2384,9 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 			count = atoi(tmp_count);
 		}
 
-		ast_log(LOG_DEBUG, "Finding dl_list. dlam_uuid[%s], count[%d]\n", tmp_const, count);
+		ast_log(LOG_DEBUG, "Finding dl_list. dlam_uuid[%s], count[%d]\n", dlma_uuid, count);
 
-		j_arr = get_dl_lists(tmp_const, count);
+		j_arr = get_dl_lists(dlma_uuid, count);
 		astman_send_listack(s, m, "Dl List will follow", "start");
 		size = ast_json_array_size(j_arr);
 		for(i = 0; i < size; i++) {
