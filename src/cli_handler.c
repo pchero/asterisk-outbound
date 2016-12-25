@@ -2340,6 +2340,8 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 	struct ast_json* j_arr;
 	const char* tmp_const;
 	const char* tmp_count;
+	const char* uuid;
+	const char* dlma_uuid;
 	char* action_id;
 	int count;
 	int size;
@@ -2355,8 +2357,9 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 		ast_asprintf(&action_id, "%s", "");
 	}
 
-	// uuid
-	if((tmp_const = message_get_header(m, "Uuid")) != NULL) {
+	uuid = message_get_header(m, "Uuid");
+	dlma_uuid = message_get_header(m, "DlmaUuid");
+	if(uuid != NULL) {
 		ast_log(LOG_DEBUG, "Finding dl_list. uuid[%s]\n", tmp_const);
 
 		j_tmp = get_dl_list(tmp_const);
@@ -2374,10 +2377,10 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 		astman_send_list_complete_start(s, m, "OutDlListComplete", 1);
 		astman_send_list_complete_end(s);
 	}
-	else if ((tmp_const = message_get_header(m, "DlmaUuid")) != NULL) {
+	else if(dlma_uuid != NULL) {
 		tmp_count = message_get_header(m, "Count");
 		count = 100;	// default
-		if(strcmp(tmp_count, "") != 0) {
+		if(tmp_count != NULL) {
 			count = atoi(tmp_count);
 		}
 
