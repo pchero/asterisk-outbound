@@ -298,7 +298,6 @@ Syntax
    [Name:] <value>
    [Detail:] <value>
    [DialMode:] <value>
-   [UuiField:] <value>
    [DialTimeout:] <value>
    [CallerId:] <value>
    [DlEndHandle:] <value>
@@ -321,7 +320,6 @@ Parameters
 * Name: Plan name. Default null.
 * Detail: Detail info. Default null.
 * DialMode: Dialling mode. Default 1. See detail :ref:`dial_mode`.
-* UuiField: Customer's Uui field name.
 * DialTimeout: Ringing timeout(ms). Default 30000.
 * CallerId: Caller's id. Default null.
 * DlEndHandle: Determine behavior of when the dial list end. Default 1. See detail :ref:`dial_list_end_handling`.
@@ -379,7 +377,6 @@ Syntax
    [Name:] <value>
    [Detail:] <value>
    [DialMode:] <value>
-   [UuiField:] <value>
    [DialTimeout:] <value>
    [CallerId:] <value>
    [DlEndHandle:] <value>
@@ -403,7 +400,6 @@ Parameters
 * Name: Plan name. Default null.
 * Detail: Detail info. Default null.
 * DialMode: Dialling mode. Default 1. See detail :ref:`dial_mode`.
-* UuiField: Customer's Uui field name.
 * DialTimeout: Ringing timeout(ms). Default 30000.
 * CallerId: Caller's id. Default null.
 * DlEndHandle: Determine behavior of when the dial list end. Default 1. See detail :ref:`dial_list_end_handling`.
