@@ -2360,6 +2360,7 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 	uuid = message_get_header(m, "Uuid");
 	dlma_uuid = message_get_header(m, "DlmaUuid");
 	if(uuid != NULL) {
+		// get specified diallist
 		ast_log(LOG_DEBUG, "Finding dl_list. uuid[%s]\n", tmp_const);
 
 		j_tmp = get_dl_list(tmp_const);
@@ -2378,6 +2379,7 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 		astman_send_list_complete_end(s);
 	}
 	else if(dlma_uuid != NULL) {
+		// get specified diallists of dlmauuid
 		tmp_count = message_get_header(m, "Count");
 		count = 100;	// default
 		if(tmp_count != NULL) {
@@ -2387,6 +2389,31 @@ static int manager_out_dl_list_show(struct mansession *s, const struct message *
 		ast_log(LOG_DEBUG, "Finding dl_list. dlam_uuid[%s], count[%d]\n", dlma_uuid, count);
 
 		j_arr = get_dl_lists(dlma_uuid, count);
+		astman_send_listack(s, m, "Dl List will follow", "start");
+		size = ast_json_array_size(j_arr);
+		for(i = 0; i < size; i++) {
+			j_tmp = ast_json_array_get(j_arr, i);
+			if(j_tmp == NULL) {
+				ast_log(LOG_WARNING, "Could not get correct object. idx[%i]\n", i);
+				continue;
+			}
+			manager_out_dl_list_entry(s, m, j_tmp, action_id);
+		}
+		AST_JSON_UNREF(j_arr);
+		astman_send_list_complete_start(s, m, "OutDlListComplete", size);
+		astman_send_list_complete_end(s);
+	}
+	else {
+		// get any diallists amount of count
+		tmp_count = message_get_header(m, "Count");
+		count = 100;	// default
+		if(tmp_count != NULL) {
+			count = atoi(tmp_count);
+		}
+
+		ast_log(LOG_DEBUG, "Finding dl_list. count[%d]\n", count);
+
+		j_arr = get_dl_lists_by_count(count);
 		astman_send_listack(s, m, "Dl List will follow", "start");
 		size = ast_json_array_size(j_arr);
 		for(i = 0; i < size; i++) {
@@ -3317,6 +3344,7 @@ static int manager_out_dialing_show(struct mansession *s, const struct message *
 	rb_dialing* dialing;
 	struct ao2_iterator iter;
 	char* action_id;
+	int cnt;
 
 	ast_log(LOG_VERBOSE, "AMI request. OutDialingShow.\n");
 
@@ -3344,6 +3372,7 @@ static int manager_out_dialing_show(struct mansession *s, const struct message *
 	}
 	else {
 		astman_send_listack(s, m, "Dialing List will follow", "start");
+		cnt = 0;
 		iter = rb_dialing_iter_init();
 		while(1) {
 			dialing = rb_dialing_iter_next(&iter);
@@ -3351,8 +3380,9 @@ static int manager_out_dialing_show(struct mansession *s, const struct message *
 				break;
 			}
 			manager_evt_out_dialing_entry(s, m, dialing, action_id);
+			cnt++;
 		}
-		astman_send_list_complete_start(s, m, "OutDialingListComplete", 1);
+		astman_send_list_complete_start(s, m, "OutDialingListComplete", cnt);
 		astman_send_list_complete_end(s);
 		rb_dialing_iter_destroy(&iter);
 	}

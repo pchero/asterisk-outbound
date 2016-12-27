@@ -45,6 +45,7 @@ struct ast_json* get_dlmas_all(void);
 struct ast_json* get_dlma(const char* uuid);
 struct ast_json* get_dl_list(const char* uuid);
 struct ast_json* get_dl_lists(const char* dlma_uuid, int count);
+struct ast_json* get_dl_lists_by_count(int count);
 int get_dl_list_cnt_total(struct ast_json* j_dlma);
 int get_dl_list_cnt_finshed(struct ast_json* j_dlma, struct ast_json* j_plan);
 int get_dl_list_cnt_available(struct ast_json* j_dlma, struct ast_json* j_plan);
