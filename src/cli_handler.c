@@ -2120,6 +2120,92 @@ void send_manager_evt_out_destination_delete(struct ast_json* j_dest)
 
 /**
  * AMI Event handler
+ * Event: OutDlListCreate
+ * @param j_camp
+ */
+void send_manager_evt_out_dl_list_create(struct ast_json* j_tmp)
+{
+	char* tmp;
+
+	ast_log(LOG_VERBOSE, "AMI event. OutDlListCreate.\n");
+
+	if(j_tmp == NULL) {
+		// nothing to send.
+		ast_log(LOG_WARNING, "AMI event. OutDlListCreate. Failed.\n");
+		return;
+	}
+
+	tmp = get_dl_list_str(j_tmp);
+	if(tmp == NULL) {
+		return;
+	}
+
+	manager_event(EVENT_FLAG_MESSAGE, "OutDlListCreate", "%s\r\n", tmp);
+	ast_free(tmp);
+	ast_log(LOG_VERBOSE, "AMI event. OutDlListCreate. Succeed.\n");
+
+	return;
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDlListUpdate
+ * @param j_camp
+ */
+void send_manager_evt_out_dl_list_update(struct ast_json* j_tmp)
+{
+	char* tmp;
+
+	ast_log(LOG_VERBOSE, "AMI event. OutDlListUpdate.\n");
+
+	if(j_tmp == NULL) {
+		// nothing to send.
+		ast_log(LOG_WARNING, "Nothing to send.\n");
+		return;
+	}
+
+	tmp = get_dl_list_str(j_tmp);
+	if(tmp == NULL) {
+		return;
+	}
+
+	manager_event(EVENT_FLAG_MESSAGE, "OutDlListUpdate", "%s\r\n", tmp);
+	ast_free(tmp);
+	ast_log(LOG_VERBOSE, "AMI event. OutDlListUpdate. Succeed.\n");
+
+	return;
+}
+
+/**
+ * AMI Event handler
+ * Event: OutDlListDelete
+ * @param j_camp
+ */
+void send_manager_evt_out_dl_list_delete(const char* uuid)
+{
+	char* tmp;
+
+	ast_log(LOG_VERBOSE, "AMI event. OutDlListDelete.\n");
+
+	if(uuid == NULL) {
+		// nothing to send.
+		ast_log(LOG_WARNING, "AMI event. OutDlListDelete. Failed.\n");
+		return;
+	}
+
+	ast_asprintf(&tmp,
+			"Uuid: %s\r\n",
+			uuid
+			);
+	manager_event(EVENT_FLAG_MESSAGE, "OutDlListDelete", "%s\r\n", tmp);
+	ast_free(tmp);
+	ast_log(LOG_VERBOSE, "AMI event. OutDlListDelete. Succeed.\n");
+
+	return;
+}
+
+/**
+ * AMI Event handler
  * Event: OutDialingEntry
  * @param s
  * @param m

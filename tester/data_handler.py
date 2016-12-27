@@ -137,7 +137,7 @@ class DataHandler(object):
             print("Wrong input parameter")
             return False
 
-        sql = """update campaigns set data=%s where uuid=%s;""" % (str(data), uuid)
+        sql = """update campaigns set data="%s" where uuid="%s";""" % (str(data), uuid)
         self.cur.execute(sql)
 
         # view handler update
@@ -153,7 +153,7 @@ class DataHandler(object):
             print("Wrong input parameter.")
             return False
 
-        sql = """delete from campaigns where uuid=%s;""" % uuid
+        sql = """delete from campaigns where uuid="%s";""" % uuid
         self.cur.execute(sql)
 
         
@@ -211,7 +211,7 @@ class DataHandler(object):
             print("Wrong input parameter")
             return False
 
-        sql = """update dlmas set data=%s where uuid=%s;""" % (str(data), uuid)
+        sql = """update dlmas set data="%s" where uuid="%s";""" % (str(data), uuid)
         self.cur.execute(sql)
 
         # view handler update
@@ -227,7 +227,7 @@ class DataHandler(object):
             print("Wrong input parameter.")
             return False
 
-        sql = """delete from dlmas where uuid=%s;""" % uuid
+        sql = """delete from dlmas where uuid="%s";""" % uuid
         self.cur.execute(sql)
 
         
@@ -298,7 +298,7 @@ class DataHandler(object):
             print("Wrong input parameter")
             return False
 
-        sql = """update destinations set data=%s where uuid=%s;""" % (str(data), uuid)
+        sql = """update destinations set data="%s" where uuid="%s";""" % (str(data), uuid)
         self.cur.execute(sql)
 
         # view handler update
@@ -314,7 +314,7 @@ class DataHandler(object):
             print("Wrong input parameter.")
             return False
 
-        sql = """delete from destinations where uuid=%s;""" % uuid
+        sql = """delete from destinations where uuid="%s";""" % uuid
         self.cur.execute(sql)
 
         # view handler update
@@ -376,7 +376,7 @@ class DataHandler(object):
         # get dlma_uuid
         dlma_uuid = data["DlmaUuid"]
         
-        sql = """update diallists set dlma_uuid="%s", data="%s" where uuid=%s;""" % (dlma_uuid, str(data), uuid)
+        sql = """update diallists set dlma_uuid="%s", data="%s" where uuid="%s";""" % (dlma_uuid, str(data), uuid)
         self.cur.execute(sql)
 
         # view handler update
@@ -392,7 +392,7 @@ class DataHandler(object):
             print("Wrong input parameter.")
             return False
 
-        sql = """delete from diallists where uuid=%s;""" % (uuid)
+        sql = """delete from diallists where uuid="%s";""" % (uuid)
         self.cur.execute(sql)
 
         print("Diallist info deleted.")
@@ -445,7 +445,7 @@ class DataHandler(object):
             print("Wrong input parameter")
             return False
 
-        sql = """update dialings set data=%s where uuid=%s;""" % (str(data), uuid)
+        sql = """update dialings set data="%s" where uuid="%s";""" % (str(data), uuid)
         self.cur.execute(sql)
 
         # view handler update
@@ -461,7 +461,7 @@ class DataHandler(object):
             print("Wrong input parameter.")
             return False
 
-        sql = """delete from dialings where uuid=%s;""" % uuid
+        sql = """delete from dialings where uuid="%s";""" % uuid
         self.cur.execute(sql)
 
         # view handler update

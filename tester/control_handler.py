@@ -524,6 +524,7 @@ class MainControl(object):
         message handler : OutDlListUpdate
         '''
         print("message_outdllistupdate")
+        print("Detail info. data[%s]" % data)
         if data == None or "Uuid" not in data:
             return
         

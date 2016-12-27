@@ -34,6 +34,8 @@ void send_manager_evt_out_dialing_delete(rb_dialing* dialing);
 void send_manager_evt_out_destination_create(struct ast_json* j_dest);
 void send_manager_evt_out_destination_delete(struct ast_json* j_dest);
 void send_manager_evt_out_destination_update(struct ast_json* j_dest);
-
+void send_manager_evt_out_dl_list_create(struct ast_json* j_tmp);
+void send_manager_evt_out_dl_list_update(struct ast_json* j_tmp);
+void send_manager_evt_out_dl_list_delete(const char* uuid);
 
 #endif /* CLI_HANDLER_H_ */

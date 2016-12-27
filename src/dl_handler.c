@@ -146,20 +146,39 @@ bool update_dl_list(struct ast_json* j_dl)
 	char* sql;
 	int ret;
 	char* tmp;
+	char* uuid;
+	const char* tmp_const;
+	struct ast_json* j_tmp;
 
 	if(j_dl == NULL) {
 		ast_log(LOG_WARNING, "Wrong input parameter.\n");
 		return false;
 	}
 
-	tmp = db_get_update_str(j_dl);
-	if(tmp == NULL) {
-		ast_log(LOG_ERROR, "Could not get update sql.\n");
+	j_tmp = ast_json_deep_copy(j_dl);
+	if(j_tmp == NULL) {
 		return false;
 	}
 
+	tmp_const = ast_json_string_get(ast_json_object_get(j_tmp, "uuid"));
+	if(tmp_const == NULL) {
+		ast_log(LOG_WARNING, "Could not get uuid info.\n");
+		AST_JSON_UNREF(j_tmp);
+		return false;
+	}
+	uuid = ast_strdup(tmp_const);
+
+	tmp = db_get_update_str(j_tmp);
+	if(tmp == NULL) {
+		ast_log(LOG_ERROR, "Could not get update sql.\n");
+		ast_free(uuid);
+		AST_JSON_UNREF(j_tmp);
+		return false;
+	}
+	AST_JSON_UNREF(j_tmp);
+
 	ast_asprintf(&sql, "update dl_list set %s where uuid = \"%s\";\n",
-			tmp, ast_json_string_get(ast_json_object_get(j_dl, "uuid"))
+			tmp, uuid
 			);
 	ast_free(tmp);
 
@@ -169,6 +188,18 @@ bool update_dl_list(struct ast_json* j_dl)
 		ast_log(LOG_ERROR, "Could not update dl_list info.");
 		return false;
 	}
+
+	j_tmp = get_dl_list(uuid);
+	ast_free(uuid);
+	if(j_tmp == NULL) {
+		ast_log(LOG_WARNING, "Could not get updated dl_list info.\n");
+		return false;
+	}
+	send_manager_evt_out_dl_list_update(j_tmp);
+	AST_JSON_UNREF(j_tmp);
+
+	return true;
+
 
 	return true;
 }
@@ -1128,6 +1159,11 @@ char* create_dl_list(struct ast_json* j_dl)
 		return NULL;
 	}
 
+	// send ami event
+	j_tmp = get_dl_list(uuid);
+	send_manager_evt_out_dl_list_create(j_tmp);
+	AST_JSON_UNREF(j_tmp);
+
 	// do not send any create event for dl_list.
 	return uuid;
 }
@@ -1167,7 +1203,8 @@ bool delete_dl_list(const char* uuid)
 		return false;
 	}
 
-	// No notifications for dl list.
+	// send notification
+	send_manager_evt_out_dl_list_delete(uuid);
 
 	return true;
 }
