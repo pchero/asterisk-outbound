@@ -864,11 +864,9 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 	int ret;
 	struct ast_json* j_dl_list;
 	struct ast_json* j_dial;
-//	struct ast_json* j_dl_update;
 	struct ast_json* j_res;
 	rb_dialing* dialing;
 	char* tmp;
-//	char* try_count_field;
 	E_DESTINATION_TYPE dial_type;
 
 	// get dl_list info to dial.
