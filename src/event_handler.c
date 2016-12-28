@@ -864,11 +864,11 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 	int ret;
 	struct ast_json* j_dl_list;
 	struct ast_json* j_dial;
-	struct ast_json* j_dl_update;
+//	struct ast_json* j_dl_update;
 	struct ast_json* j_res;
 	rb_dialing* dialing;
 	char* tmp;
-	char* try_count_field;
+//	char* try_count_field;
 	E_DESTINATION_TYPE dial_type;
 
 	// get dl_list info to dial.
@@ -929,6 +929,15 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 		return;
 	}
 
+	// update dl list using dialing info
+	ret = update_dl_list_after_create_dialing_info(dialing);
+	if(ret == false) {
+		rb_dialing_destory(dialing);
+		clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")));
+		ast_log(LOG_ERROR, "Could not update dial list info.\n");
+		return;
+	}
+
 	// dial to customer
 	dial_type = ast_json_integer_get(ast_json_object_get(j_dial, "dial_type"));
 	switch(dial_type) {
@@ -968,32 +977,6 @@ static void dial_predictive(struct ast_json* j_camp, struct ast_json* j_plan, st
 
 	// update dialing status
 	rb_dialing_update_status(dialing, E_DIALING_ORIGINATE_REQUEST);
-
-	// create update dl_list
-	tmp = get_utc_timestamp();
-	ast_asprintf(&try_count_field, "trycnt_%"PRIdMAX, ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index")));
-
-	j_dl_update = ast_json_pack("{s:s, s:I, s:i, s:s, s:s, s:s, s:s}",
-			"uuid",				 ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
-			try_count_field,		ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_trycnt")),
-			"status",			   E_DL_DIALING,
-			"dialing_uuid",		 dialing->uuid,
-			"dialing_camp_uuid",	ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid")),
-			"dialing_plan_uuid",	ast_json_string_get(ast_json_object_get(dialing->j_dialing, "plan_uuid")),
-			"tm_last_dial",		 tmp
-			);
-	ast_free(tmp);
-	ast_free(try_count_field);
-
-	// dl update
-	ret = update_dl_list(j_dl_update);
-	AST_JSON_UNREF(j_dl_update);
-	if(ret == false) {
-		rb_dialing_destory(dialing);
-		clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")));
-		ast_log(LOG_ERROR, "Could not update dial list info.\n");
-		return;
-	}
 
 	return;
 }

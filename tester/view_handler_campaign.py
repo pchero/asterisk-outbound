@@ -105,7 +105,7 @@ class FrameMain(object):
         print("key, value. key[%s], value[%s]" % (key, value))
 
         # get new value
-        ret = tkSimpleDialog.askstring("New value", "Please enter a new value")
+        ret = tkSimpleDialog.askstring("New value", "Please enter a new value", initialvalue=value)
         if ret == None:
             return
             
@@ -150,7 +150,11 @@ class FrameMain(object):
     
     def _action_button_delete(self):
         print("_action_button_delete")
-        items = self.detail_items
+        
+        items = self.detail_items        
+        if items == None:
+            print("No activated items")
+            return
         
         uuid = items.pop("Uuid", None)
         if uuid == None:

@@ -199,9 +199,6 @@ bool update_dl_list(struct ast_json* j_dl)
 	AST_JSON_UNREF(j_tmp);
 
 	return true;
-
-
-	return true;
 }
 
 /**
@@ -1430,4 +1427,45 @@ static struct ast_json* get_dl_available(struct ast_json* j_dlma, struct ast_jso
 	}
 
 	return j_res;
+}
+
+bool update_dl_list_after_create_dialing_info(rb_dialing* dialing)
+{
+	int ret;
+	char* tmp;
+	char* try_count_field;
+	struct ast_json* j_dl_update;
+
+	// get timestamp
+	tmp = get_utc_timestamp();
+
+	// get
+	ast_asprintf(&try_count_field, "trycnt_%"PRIdMAX,
+			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_index"))
+			);
+
+	// create update dl_list
+	j_dl_update = ast_json_pack("{s:s, s:I, s:i, s:s, s:s, s:s, s:s}",
+			"uuid",				 				ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")),
+			try_count_field,			ast_json_integer_get(ast_json_object_get(dialing->j_dialing, "dial_trycnt")),
+			"status",			   			E_DL_DIALING,
+			"dialing_uuid",		 		dialing->uuid,
+			"dialing_camp_uuid",	ast_json_string_get(ast_json_object_get(dialing->j_dialing, "camp_uuid")),
+			"dialing_plan_uuid",	ast_json_string_get(ast_json_object_get(dialing->j_dialing, "plan_uuid")),
+			"tm_last_dial",		 		tmp
+			);
+	ast_free(tmp);
+	ast_free(try_count_field);
+
+	// dl update
+	ret = update_dl_list(j_dl_update);
+	AST_JSON_UNREF(j_dl_update);
+	if(ret == false) {
+		rb_dialing_destory(dialing);
+		clear_dl_list_dialing(ast_json_string_get(ast_json_object_get(dialing->j_dialing, "dl_list_uuid")));
+		ast_log(LOG_ERROR, "Could not update dial list info.\n");
+		return false;
+	}
+
+	return true;
 }

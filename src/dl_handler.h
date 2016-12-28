@@ -60,5 +60,6 @@ void clear_dl_list_dialing(const char* uuid);
 struct ast_json* create_dial_info(struct ast_json* j_plan, struct ast_json* j_dl_list, struct ast_json* j_dest);
 struct ast_json* create_json_for_dl_result(rb_dialing* dialing);
 
+bool update_dl_list_after_create_dialing_info(rb_dialing* dialing);
 
 #endif /* SRC_DL_HANDLER_H_ */

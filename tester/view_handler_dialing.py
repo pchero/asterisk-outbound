@@ -105,7 +105,7 @@ class FrameMain(object):
         print("key, value. key[%s], value[%s]" % (key, value))
 
         # get new value
-        ret = tkSimpleDialog.askstring("New value", "Please enter a new value")
+        ret = tkSimpleDialog.askstring("New value", "Please enter a new value", initialvalue=value)
         if ret == None:
             return
             

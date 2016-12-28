@@ -278,7 +278,7 @@ class MainControl(object):
         if uuid == None:
             return
         
-        self.data_handler.campaign_delete(uuid, data)
+        self.data_handler.campaign_delete(uuid)
         return
 
 
@@ -413,7 +413,7 @@ class MainControl(object):
         if uuid == None:
             return
         
-        self.data_handler.dlma_delete(uuid, data)
+        self.data_handler.dlma_delete(uuid)
         return
 
 
@@ -481,7 +481,7 @@ class MainControl(object):
         if uuid == None:
             return
         
-        self.data_handler.destination_delete(uuid, data)
+        self.data_handler.destination_delete(uuid)
         return
     
     

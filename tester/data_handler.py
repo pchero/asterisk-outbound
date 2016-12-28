@@ -149,13 +149,13 @@ class DataHandler(object):
 
     def campaign_delete(self, uuid):
         # get uuid
+        print("campaign_delete")
         if uuid == None:
             print("Wrong input parameter.")
             return False
 
         sql = """delete from campaigns where uuid="%s";""" % uuid
         self.cur.execute(sql)
-
         
         # view handler update
         self._update_list_items("campaign")
@@ -318,7 +318,7 @@ class DataHandler(object):
         self.cur.execute(sql)
 
         # view handler update
-        self._update_list_items("destintion")
+        self._update_list_items("destination")
 
         print("Destination info deleted. uuid[%s]" % uuid)
         return True
