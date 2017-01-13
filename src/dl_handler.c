@@ -551,6 +551,50 @@ struct ast_json* get_dl_lists(const char* dlma_uuid, int count)
 	return j_res;
 }
 
+/**
+ * Get dl_list from database.
+ * @param j_dlma
+ * @param j_plan
+ * @return
+ */
+struct ast_json* get_dl_lists_by_count(int count)
+{
+	char* sql;
+	db_res_t* db_res;
+	struct ast_json* j_res;
+	struct ast_json* j_tmp;
+
+	if(count <= 0) {
+		ast_log(LOG_WARNING, "Wrong input parameter.\n");
+		return NULL;
+	}
+
+	ast_asprintf(&sql, "select * from dl_list where in_use=%d limit %d;",
+			E_DL_USE_OK,
+			count
+			);
+
+	db_res = db_query(sql);
+	ast_free(sql);
+	if(db_res == NULL) {
+		ast_log(LOG_ERROR, "Could not get dial list info.");
+		return NULL;
+	}
+
+	j_res = ast_json_array_create();
+	while(1) {
+		j_tmp = db_get_record(db_res);
+		if(j_tmp == NULL) {
+			break;
+		}
+
+		ast_json_array_append(j_res, j_tmp);
+	}
+	db_free(db_res);
+
+	return j_res;
+}
+
 struct ast_json* get_dl_list(const char* uuid)
 {
 	char* sql;
