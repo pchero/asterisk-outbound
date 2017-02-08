@@ -365,6 +365,92 @@ Example
    Privilege: message,all
    Uuid: 945e7631-047f-49a8-a389-fb52ebc8ca45
 
+OutPlanEntry
+============
+
+Description
+-----------
+Plan entry.
+
+Syntax
+------
+
+::
+
+   Event: OutPlanEntry
+   Uuid: <value>
+   Name: <value>
+   Detail: <value>
+   DialMode: <value>
+   DialTimeout: <value>
+   CallerId: <value>
+   DlEndHandle: <value>
+   RetryDelay: <value>
+   TrunkName: <value>
+   TechName: <value>
+   Variable: <value>
+   MaxRetryCnt1: <value>
+   MaxRetryCnt2: <value>
+   MaxRetryCnt3: <value>
+   MaxRetryCnt4: <value>
+   MaxRetryCnt5: <value>
+   MaxRetryCnt6: <value>
+   MaxRetryCnt7: <value>
+   MaxRetryCnt8: <value>
+   TmCreate: <value>
+   TmDelete: <value>
+   TmUpdate: <value>
+
+Parameters
+
+* Name: Plan name.
+* Detail: Detail info.
+* DialMode: Dialling mode. See detail :ref:`dial_mode`.
+* UuiField: Customer's Uui field name.
+* DialTimeout: Ringing timeout(ms).
+* CallerId: Caller's id.
+* DlEndHandle: Determine behavior of when the dial list end. See detail :ref:`dial_list_end_handling`.
+* RetryDelay: Delay time for next try(sec).
+* TrunkName: Trunkname for outbound dialing.
+* TechName: Tech name for outbound dialing. See detail :ref:`tech_name`.
+* ServiceLevel: Determine service level.
+* MaxRetry1: Max retry count for number 1.
+* MaxRetry2: Max retry count for number 2.
+* MaxRetry3: Max retry count for number 3.
+* MaxRetry4: Max retry count for number 4.
+* MaxRetry5: Max retry count for number 5.
+* MaxRetry6: Max retry count for number 6.
+* MaxRetry7: Max retry count for number 7. 
+* MaxRetry8: Max retry count for number 8.
+
+Example
+-------
+
+::
+
+   Event: OutPlanEntry
+   Uuid: edbb8fb0-4543-4590-9d12-7ab2c66de3ea
+   Name: <unknown>
+   Detail: <unknown>
+   DialMode: 1
+   DialTimeout: 30000
+   CallerId: <unknown>
+   DlEndHandle: 1
+   RetryDelay: 60
+   TrunkName: <unknown>
+   TechName: <unknown>
+   Variable: <unknown>
+   MaxRetryCnt1: 5
+   MaxRetryCnt2: 5
+   MaxRetryCnt3: 5
+   MaxRetryCnt4: 5
+   MaxRetryCnt5: 5
+   MaxRetryCnt6: 5
+   MaxRetryCnt7: 5
+   MaxRetryCnt8: 5
+   TmCreate: 2016-12-25T14:55:20.84455813Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
 
 OutDlmaCreate
 =============
@@ -481,6 +567,29 @@ Example
    Privilege: message,all
    Uuid: a0dc9df7-89bd-4c2c-ac81-bc7fbc54ff96
 
+OutDlmaEntry
+============
+
+Description
+-----------
+Dlma entry
+
+Example
+-------
+
+::
+
+   Event: OutDlmaEntry
+   Uuid: 5d56b51d-dc4d-4ec9-9e82-88e8dc3737c1
+   Name: DialListMaster_Sales
+   Detail: Test Dlma description
+   DlTable: 5d56b51d_dc4d_4ec9_9e82_88e8dc3737c1
+   Variable: <unknown>
+   TmCreate: 2016-11-15T02:11:22.128567345Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
+
 
 OutDestinationCreate
 ====================
@@ -544,6 +653,68 @@ Example
    Privilege: message,all
    Uuid: 36612bfb-3830-4c77-b0f0-e74bb77fb3ac
    
+OutDestinationEntry
+===================
+Description
+-----------
+Destination entry.
+
+Syntax
+------
+
+::
+
+   Event: OutDestinationEntry
+   Uuid: <value>
+   Name: <value>
+   Detail: <value>
+   Type: <value>
+   Exten: <value>
+   Context: <value>
+   Priority: <unknown>
+   Variable: <unknown>
+   Application: <value>
+   Data: <value>
+   TmCreate: <value>
+   TmDelete: <value>
+   TmUpdate: <value>
+   
+Parameters
+
+* Uuid: Destination uuid.
+* Name: Destination name.
+* Detail: Destination detail info.
+* Type: Destination type. See detail :ref:`destination_type`.
+* Exten: Extension. Type: 0(exten) only
+* Context: Conetxt. Type: 0(exten) only
+* Priority: Priority. Type: 0(exten) only
+* Variable: Set(var=val). Could be more than one. Type: 0(exten) only.
+* Application: Application name. Type: 1(application) only
+* Data: Application data. Type: 1(application) only
+* TmCreate: <value>
+* TmDelete: <value>
+* TmUpdate: <value>
+
+Example
+-------
+
+::
+
+   Event: OutDestinationEntry
+   Uuid: 45122654-5633-4af0-a739-e32eddfbd2ae
+   Name: destination test
+   Detail: test destination
+   Type: 1
+   Exten: <unknown>
+   Context: <unknown>
+   Priority: <unknown>
+   Variable: <unknown>
+   Application: queue
+   Data: sales_1
+   TmCreate: 2016-11-15T03:17:11.997148863Z
+   TmDelete: <unknown>
+   TmUpdate: <unknown>
+
 
 OutDialingCreate
 ================
