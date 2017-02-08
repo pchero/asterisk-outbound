@@ -969,7 +969,7 @@ Parameters
 * Priority: Priority. Type: 0(exten) only
 * Variable: Set(var=val). Could be more than one. Type: 0(exten) only.
 * Application: Application name. Type: 1(application) only
-* Data: Application name. Type: 1(application) only
+* Data: Application data. Type: 1(application) only
 
 Example
 -------
