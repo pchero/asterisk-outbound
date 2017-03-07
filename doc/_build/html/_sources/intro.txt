@@ -13,3 +13,4 @@ The asterisk-outbound support strategical-automatic dialing.
    :align: center
    
    The outbound dialing
+
